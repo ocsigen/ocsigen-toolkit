@@ -147,23 +147,17 @@ META: META.in
 		-e 's#@@SERVER_ARCHIVES_NATIVE_PLUGIN@@#$(PKG_NAME).server.cmxs#g' \
 		$< > $@
 
-CLIENT_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
-SERVER_CMI=$(wildcard $(addsuffix /eba_*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
 install: all META
 	$(OCAMLFIND) install $(PKG_NAME) META
 	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(CLIENT_CMO) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	cp $(CLIENT_CMI) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	cp $(SERVER_CMI) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
 	cp $(LIBDIR)/$(PKG_NAME).client.cma $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
-	scripts/install.sh $(TEMPLATE_DIR) $(TEMPLATE_NAME)
 
 uninstall:
 	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
 	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
-	scripts/uninstall.sh $(TEMPLATE_NAME)
 	$(OCAMLFIND) remove $(PKG_NAME)
 
 reinstall: uninstall install
