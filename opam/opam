@@ -1,0 +1,17 @@
+opam-version: "1"
+maintainer: "dev@ocsigen.org"
+version: "dev"
+build: [
+  [ make ]
+  [ make "install" ]
+]
+remove: [
+  [ "rm" "-rf" "%{lib}%/ocsigen-toolkit/server" ]
+  [ "rm" "-rf" "%{lib}%/ocsigen-toolkit/client" ]
+  [ "ocamlfind" "remove" "ocsigen-toolkit" ]
+]
+depends: [
+  "ocamlfind"
+  "js_of_ocaml" {>= "dev"}
+  "eliom" {>= "dev"}
+]
