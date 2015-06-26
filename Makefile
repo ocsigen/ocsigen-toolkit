@@ -26,7 +26,6 @@ OCAMLFIND         := ocamlfind
 export ELIOM_SERVER_DIR := _server
 export ELIOM_CLIENT_DIR := _client
 export ELIOM_TYPE_DIR   := _server
-export OCAMLFIND_DESTDIR := $(shell $(OCAMLFIND) printconf destdir)
 
 ifeq ($(DEBUG),yes)
   GENERATE_DEBUG ?= -g
@@ -133,14 +132,19 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 ##----------------------------------------------------------------------
 ## Installation
 
-CLIENT_CMO=$(wildcard $(addsuffix /*.cmo,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
-CLIENT_CMO_FILENAMES=$(foreach f, $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES)), $(patsubst $(dir $(f))%,%,$(f)))
+CLIENT_CMO=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmo,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
+CLIENT_CMI=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
+SERVER_CMI=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+
+basename_for_each = $(shell echo $(foreach f,$(1),$(shell basename $(f))))
+CLIENT_CMO_META=$(call basename_for_each, $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES)))
+
 META: META.in
 	sed -e 's#@@PKG_NAME@@#$(PKG_NAME)#g' \
 		-e 's#@@PKG_VERS@@#$(PKG_VERS)#g' \
 		-e 's#@@PKG_DESC@@#$(PKG_DESC)#g' \
 		-e 's#@@CLIENT_REQUIRES@@#$(CLIENT_PACKAGES)#g' \
-		-e 's#@@CLIENT_ARCHIVES_BYTE@@#$(CLIENT_CMO_FILENAMES)#g' \
+		-e 's#@@CLIENT_ARCHIVES_BYTE@@#$(CLIENT_CMO_META)#g' \
 		-e 's#@@SERVER_REQUIRES@@#$(SERVER_PACKAGES)#g' \
 		-e 's#@@SERVER_ARCHIVES_BYTE@@#$(PKG_NAME).server.cma#g' \
 		-e 's#@@SERVER_ARCHIVES_NATIVE@@#$(PKG_NAME).server.cmxa#g' \
@@ -149,23 +153,22 @@ META: META.in
 
 install: all META
 	$(OCAMLFIND) install $(PKG_NAME) META
-	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	mkdir -p $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
-	cp $(CLIENT_CMO) $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	cp $(LIBDIR)/$(PKG_NAME).client.cma $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	cp $(LIBDIR)/$(PKG_NAME).server.cm* $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
+	mkdir -p `$(OCAMLFIND) query $(PKG_NAME)`/client
+	mkdir -p `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(CLIENT_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/client
+	cp $(CLIENT_CMO) `$(OCAMLFIND) query $(PKG_NAME)`/client
+	cp $(SERVER_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(LIBDIR)/$(PKG_NAME).server.cm* `$(OCAMLFIND) query $(PKG_NAME)`/server
 
 uninstall:
-	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/client
-	rm -rf $(OCAMLFIND_DESTDIR)/$(PKG_NAME)/server
+	rm -rf `$(OCAMLFIND) query $(PKG_NAME)`/client
+	rm -rf `$(OCAMLFIND) query $(PKG_NAME)`/server
 	$(OCAMLFIND) remove $(PKG_NAME)
 
 reinstall: uninstall install
 
 ##----------------------------------------------------------------------
 ## Dependencies
-
-DEPSDIR := _deps
 
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
@@ -174,6 +177,8 @@ ifneq ($(MAKECMDGOALS),depend)
 endif
 endif
 endif
+
+DEPSDIR := _deps
 
 .depend: $(patsubst %,$(DEPSDIR)/%.server,$(SERVER_FILES)) $(patsubst %,$(DEPSDIR)/%.client,$(CLIENT_FILES))
 	cat $^ > $@
@@ -204,19 +209,20 @@ doc:
 	mkdir -p doc/client/wiki
 	mkdir -p doc/server/html
 	mkdir -p doc/server/wiki
-	$(call eliomdoc_html,client, $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
-	$(call eliomdoc_wiki,client, $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
-	$(call eliomdoc_html,server, $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
-	$(call eliomdoc_wiki,server, $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
+	$(call eliomdoc_html,client, $(CLIENT_INC) $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
+	$(call eliomdoc_wiki,client, $(CLIENT_INC) $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
+	$(call eliomdoc_html,server, $(SERVER_INC) $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
+	$(call eliomdoc_wiki,server, $(SERVER_INC) $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
 
 ##----------------------------------------------------------------------
 ## Clean up
 
 clean:
+	-rm -f .depend
 	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
 	-rm -f *.type_mli
 	-rm -f META
-	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR}
+	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR} ${LIBDIR} ${DEPSDIR}
 
 distclean: clean
 	-rm -rf $(DEPSDIR) .depend
