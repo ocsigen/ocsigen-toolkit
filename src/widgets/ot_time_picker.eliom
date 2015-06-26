@@ -1,5 +1,7 @@
 {shared{
+
 open Eliom_content
+
 open Html5.F
 
 type polar = float * float
@@ -83,26 +85,7 @@ let svg_with_onclick s w h f =
 
 {client{
 
-    let svg_with_onclick s w h f =
-      let open Eliom_content.Svg.F in
-      let s = svg [s] in
-      Eliom_content.Html5.F.svg
-        ~a:[a_width (float_of_int w, Some `Px);
-            a_height (float_of_int h, Some `Px);
-            a_onclick
-              (fun ev ->
-                 Js.Opt.iter
-                   (ev##currentTarget)
-                   (fun d ->
-                      let r = d##getBoundingClientRect () in
-                      let ox = truncate r##left
-                      and oy = truncate r##top
-                      and x = ev##clientX
-                      and y = ev##clientY in
-                      f (x - ox) (y - oy)))]
-        [s]
-
-let svg_time_picker a f =
+let time_picker a f =
   assert (a > 0);
   assert (a mod 10 = 0);
   let a_over_two = a / 2 in
@@ -113,16 +96,3 @@ let svg_time_picker a f =
             (x, y)))
 
 }}
-
-let svg_time_picker a f =
-  assert (a > 0);
-  assert (a mod 10 = 0);
-  let a_over_two = a / 2 in
-  svg_with_onclick (clock_svg a) a a
-    {int -> int -> unit{
-        fun x y ->
-          cartesian_to_hours_minutes
-            (%a_over_two, %a_over_two)
-            (x, y) |>
-          %f
-      }} ;;
