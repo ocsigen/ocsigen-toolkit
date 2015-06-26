@@ -54,10 +54,7 @@ let clock_svg x =
           a_cy (float_of_int y, Some `Px);
           a_r (7., Some `Percent)]
       [title (pcdata (string_of_int i))]
-  and l = [270; 300; 330;
-           0; 30; 60;
-           90; 120; 150;
-           180; 210; 240] in
+  and l = [270; 300; 330; 0; 30; 60; 90; 120; 150; 180; 210; 240] in
   g (List.mapi f l)
 
 let svg_with_onclick s w h f =
