@@ -6,9 +6,7 @@ build: [
   [ make "install" ]
 ]
 remove: [
-  [ "rm" "-rf" "%{lib}%/ocsigen-toolkit/server" ]
-  [ "rm" "-rf" "%{lib}%/ocsigen-toolkit/client" ]
-  [ "ocamlfind" "remove" "ocsigen-toolkit" ]
+  [ "make" "uninstall" ]
 ]
 depends: [
   "ocamlfind"
