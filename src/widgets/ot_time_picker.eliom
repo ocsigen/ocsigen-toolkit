@@ -8,6 +8,8 @@ type polar = float * float
 
 type cartesian = int * int
 
+type time_receiver = (int -> int -> unit) Eliom_lib.client_value
+
 let polar_to_cartesian (cx, cy) (r, h) =
   let h = h *. 3.14159 /. 180. in
   let x = cx + int_of_float (r *. cos h)
@@ -95,32 +97,36 @@ let clock_svg
 
 }} ;;
 
-{client{
+{shared{
 
-    let time_picker_base_discrete a f =
-      let f ev =
-        let (>>!) = Js.Opt.iter in
-        ev##currentTarget >>! fun x ->
-        x##firstChild >>! fun x ->
-        x##firstChild >>! fun x ->
-        x##nodeValue >>! fun x ->
-        f (int_of_string (Js.to_string x)) 0
+    let time_picker_discrete a (f : time_receiver) =
+      let f = {{
+          fun ev ->
+            let (>>!) = Js.Opt.iter in
+            ev##currentTarget >>! fun x ->
+            x##firstChild >>! fun x ->
+            x##firstChild >>! fun x ->
+            x##nodeValue >>! fun x ->
+            %f (int_of_string (Js.to_string x)) 0
+        }}
       in
       let extra_attributes = [Eliom_content.Svg.F.a_onclick f] in
       html_wrap_svg (clock_svg ~extra_attributes a) a a
 
-let time_picker_base_continuous a f =
+let time_picker_continuous a f =
   let extra_attributes =
     let a_over_two = a / 2 in
-    let f x y =
-      let h, m =
-        cartesian_to_hours_minutes
-          (a_over_two, a_over_two)
-          (x, y)
-      in
-      f h m
+    let f =
+      {int -> int -> unit{
+          fun x y ->
+            let h, m =
+              cartesian_to_hours_minutes
+                (%a_over_two, %a_over_two)
+                (x, y)
+            in
+            %f h m }}
     in
-    [Eliom_content.Svg.F.a_onclick (wrap_f_for_onclick f)]
+    [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick %f}}]
   in
   html_wrap_svg ~extra_attributes (clock_svg a) a a
 
@@ -128,8 +134,8 @@ let time_picker ?discrete:(discrete = true) a f =
   assert (a > 0);
   assert (a mod 10 = 0);
   if discrete then
-    time_picker_base_discrete a f
+    time_picker_discrete a f
   else
-    time_picker_base_continuous a f
+    time_picker_continuous a f
 
 }}
