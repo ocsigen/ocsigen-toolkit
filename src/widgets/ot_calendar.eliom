@@ -9,26 +9,26 @@ open Html5.F
 
 type 'a event = CalendarLib.Calendar.t * CalendarLib.Calendar.t * 'a
 
-(* FIXME:
+}}
 
-   [timezone_offset], [tz], [user_tz], [local_to_calendar],
-   [to_local], and [now] copied from eba_date
-
-*)
+{client{
 
 let timezone_offset =
   truncate (-. float (jsnew Js.date_now() ##getTimezoneOffset()) /. 60.)
 
-let tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
+}} ;;
 
-let user_tz () = tz
+{server{ let timezone_offset = 0 }} ;;
 
-(* FIXME : implement properly *)
-let local_to_calendar x = x
+{shared{
+
+let user_tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
 
 let to_local date =
-  let user_tz = user_tz () in
   CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz date)
+
+let to_utc date =
+  CalendarLib.(Time_Zone.on Calendar.to_gmt user_tz date)
 
 let now () =
   to_local (CalendarLib.Calendar.now ())
@@ -64,7 +64,7 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   Html5.D.table ~a ~thead (map_interval 0 i_max f)
 
 let rec build_calendar ?events:(events = []) day =
-  let now = local_to_calendar (now ()) in
+  let now = to_utc (now ()) in
   let module D = CalendarLib.Date in
   let month =
     D.nth_weekday_of_month (D.year day) (D.month day) D.Sun 1 in
@@ -98,9 +98,9 @@ let rec build_calendar ?events:(events = []) day =
       if
         let f (s, e, _) =
           C.compare
-            (local_to_calendar s) enddate < 0 &&
+            (to_utc s) enddate < 0 &&
           C.compare
-            startdate (local_to_calendar e) < 0 in
+            startdate (to_utc e) < 0 in
         List.exists f events
       then
         ["sel"]
@@ -149,9 +149,9 @@ let rec build_calendar ?events:(events = []) day =
             List.filter
               (fun (s, e, _) ->
                  CalendarLib.Calendar.compare
-                   (local_to_calendar s) enddate < 0 &&
+                   (to_utc s) enddate < 0 &&
                  CalendarLib.Calendar.compare
-                   startdate (local_to_calendar e) < 0)
+                   startdate (to_utc e) < 0)
               events
           in
           match l with
@@ -175,7 +175,7 @@ let rec attach_behavior ?events ?get_events day (cal, prev, next) =
     Js._false
   in
   let module D = CalendarLib.Date in
-  let d =
+  let day =
     D.lmake ~year:(D.year day) ~month:(D.int_of_month (D.month day)) ()
   in
   (match events, get_events with
