@@ -98,8 +98,8 @@ let clock_svg
 {client{
 
     let time_picker_base_discrete a f =
-      let (>>!) = Js.Opt.iter in
       let f ev =
+        let (>>!) = Js.Opt.iter in
         ev##currentTarget >>! fun x ->
         x##firstChild >>! fun x ->
         x##firstChild >>! fun x ->
@@ -107,7 +107,7 @@ let clock_svg
         f (int_of_string (Js.to_string x)) 0
       in
       let extra_attributes = [Eliom_content.Svg.F.a_onclick f] in
-      html_wrap_svg (clock_svg ~extra_attributes a)
+      html_wrap_svg (clock_svg ~extra_attributes a) a a
 
 let time_picker_base_continuous a f =
   let extra_attributes =
@@ -122,14 +122,14 @@ let time_picker_base_continuous a f =
     in
     [Eliom_content.Svg.F.a_onclick (wrap_f_for_onclick f)]
   in
-  html_wrap_svg ~extra_attributes (clock_svg a)
+  html_wrap_svg ~extra_attributes (clock_svg a) a a
 
 let time_picker ?discrete:(discrete = true) a f =
   assert (a > 0);
   assert (a mod 10 = 0);
-  (if discrete then
-     time_picker_base_discrete a f
-   else
-     time_picker_base_continuous a f) a a
+  if discrete then
+    time_picker_base_discrete a f
+  else
+    time_picker_base_continuous a f
 
 }}
