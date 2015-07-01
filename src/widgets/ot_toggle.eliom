@@ -33,7 +33,7 @@ let is_up = function
   | T_Down ->
     false
 
-let display ?init_up:(init_up = false) ?up_txt ?down_txt () =
+let make ?init_up:(init_up = false) ?up_txt ?down_txt () =
   let e, f =
     (if init_up then T_Up else T_Down) |>
     Eliom_csreact.React.S.create
@@ -48,11 +48,11 @@ let display ?init_up:(init_up = false) ?up_txt ?down_txt () =
 
 {server{
 
-    let display ?init_up ?up_txt ?down_txt () =
+    let make ?init_up ?up_txt ?down_txt () =
       let e_f =
         {[> Html5_types.div ] Eliom_content.Html5.F.elt *
          bool React.signal{
-           display
+           make
              ?init_up:%init_up
              ?up_txt:%up_txt
              ?down_txt:%down_txt

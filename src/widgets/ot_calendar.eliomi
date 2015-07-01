@@ -3,7 +3,7 @@
 type 'a event =
   CalendarLib.Calendar.t * CalendarLib.Calendar.t * 'a
 
-val calendar :
+val make :
   ?events:'a event list ->
   ?get_events:(CalendarLib.Date.t -> 'a event list Lwt.t) ->
   unit ->

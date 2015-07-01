@@ -197,7 +197,7 @@ let rec attach_behavior ?events ?get_events day (cal, prev, next) =
 
 {shared{
 
-    let calendar ?events ?get_events () =
+    let make ?events ?get_events () =
       let today = CalendarLib.Date.today () in
       let (cal, _, _) as c =
         build_calendar ?events today in

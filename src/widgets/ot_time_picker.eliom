@@ -126,8 +126,8 @@ let time_picker_continuous f =
   html_wrap_svg ~extra_attributes (clock_svg ())
 
 
-let time_picker ?discrete:(discrete = true) f =
-  let c, is_pm = Ot_toggle.display ~up_txt:"PM" ~down_txt:"AM" () in
+let make ?discrete:(discrete = true) f =
+  let c, is_pm = Ot_toggle.make ~up_txt:"PM" ~down_txt:"AM" () in
   let f =
     {{
       fun h m ->

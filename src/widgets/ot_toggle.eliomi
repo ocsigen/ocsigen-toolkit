@@ -1,6 +1,6 @@
 {shared{
 
-val display :
+val make :
   ?init_up:bool ->
   ?up_txt:string ->
   ?down_txt:string ->
