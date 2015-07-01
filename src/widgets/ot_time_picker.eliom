@@ -66,15 +66,23 @@ let clock_svg
 {client{
 
     let wrap_f_for_onclick f ev =
-      let f d =
-        let r = d##getBoundingClientRect () in
-        let ox = truncate r##left
-        and oy = truncate r##top
-        and x = ev##clientX
-        and y = ev##clientY in
-        f (x - ox) (y - oy)
-      in
-      Js.Opt.iter (ev##currentTarget) f
+      let (>>!) = Js.Opt.iter in
+      ev##currentTarget >>! fun a ->
+      let r = a##getBoundingClientRect () in
+      let ox = r##left
+      and ox' = r##right
+      and oy = r##top
+      and oy' = r##bottom
+      and x = ev##clientX
+      and y = ev##clientY in
+      assert (ox' > ox);
+      assert (oy' > oy);
+      f
+        (truncate
+           (float_of_int (x - truncate ox) *. 100. /. (ox' -. ox)))
+        (truncate
+           (float_of_int (y - truncate oy) *. 100. /. (oy' -. oy)))
+
 
   }} ;;
 
