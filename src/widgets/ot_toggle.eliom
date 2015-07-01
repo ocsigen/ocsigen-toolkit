@@ -39,7 +39,9 @@ let display ?init_up:(init_up = false) ?up_txt ?down_txt () =
     Eliom_csreact.React.S.create
   in
   Eliom_content.Html5.R.node
-    (Eliom_csreact.React.S.map (display_toggle f) e),
+    (Eliom_csreact.React.S.map
+       (display_toggle f ?up_txt ?down_txt)
+       e),
   Eliom_csreact.React.S.map is_up e
 
 }} ;;
