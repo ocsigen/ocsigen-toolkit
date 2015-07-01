@@ -133,9 +133,24 @@ let time_picker_continuous a f =
 let time_picker ?discrete:(discrete = true) a f =
   assert (a > 0);
   assert (a mod 10 = 0);
-  if discrete then
-    time_picker_discrete a f
-  else
-    time_picker_continuous a f
+  let c, is_pm = Ot_toggle.display ~up_txt:"PM" ~down_txt:"AM" () in
+  let f =
+    {{
+      fun h m ->
+        let h =
+          if Eliom_csreact.React.S.value %is_pm then
+            h + 12
+          else
+            h
+        in
+        %f h m
+    }}
+  in
+  div
+    [(if discrete then
+        time_picker_discrete a f
+      else
+        time_picker_continuous a f);
+     c]
 
 }}

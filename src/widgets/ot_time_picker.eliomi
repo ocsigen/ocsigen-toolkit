@@ -9,6 +9,6 @@
 val time_picker :
   ?discrete:bool ->
   int -> (int -> int -> unit) Eliom_lib.client_value ->
-  [> Html5_types.svg ] Eliom_content.Html5.F.elt
+  [> Html5_types.div ] Eliom_content.Html5.F.elt
 
 }}
