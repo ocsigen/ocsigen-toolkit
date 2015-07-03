@@ -4,7 +4,7 @@ open Eliom_content
 
 open Html5.F
 
-type polar = float * float
+type polar = int * int
 
 type cartesian = int * int
 
@@ -33,57 +33,47 @@ let round x =
 
 (* polar / cartesian / hours:minutes conversions *)
 
+(* functions perform implicit rotation, so that angle = 0 means noon /
+   midnight *)
+
 let polar_to_cartesian (cx, cy) (r, h) =
   let h = h *. 3.14159 /. 180. in
-  let x = cx + int_of_float (r *. cos h)
-  and y = cy + int_of_float (r *. sin h) in
+  let x = cx + int_of_float (r *. sin h)
+  and y = cy - int_of_float (r *. cos h) in
   x, y
+
+let pi = 3.14159
 
 let cartesian_to_polar (cx, cy) (x, y) =
   let x = float_of_int (x - cx)
   and y = float_of_int (y - cy) in
-  hypot x y,
-  atan2 y x *. 180. /. 3.14159
+  let r = hypot x y |> round |> int_of_float
+  and h =
+    let h = atan2 y x *. 180. /. pi |> round |> int_of_float in
+    (h + 450) mod 360
+  in
+  r, h
 
 let polar_to_hours_minutes ((_, h) : polar) =
-  let hours =
-    if h >= 0. then
-      3. +. h /. 30.
-    else if h >= -. 90. then
-      (90. +. h) /. 30.
-    else
-      9. +. (180. +. h) /. 30.
-  in
-  let floor_hours = floor hours in
-  let minutes = hours -. floor_hours in
-  let hours = int_of_float hours
-  and minutes = int_of_float (minutes *. 60.) in
+  let minutes = h * 2 in
+  let hours = minutes / 60
+  and minutes = minutes mod 60 in
   assert (0 <= hours && hours <= 11);
   assert (0 <= minutes && minutes <= 59);
   hours, minutes
 
-let polar_to_hours ((_, h) : polar) =
+let polar_to_hours p =
+  let hours, minutes = polar_to_hours_minutes p in
   let hours =
-    if h >= 0. then
-      3. +. h /. 30.
-    else if h >= -. 90. then
-      (90. +. h) /. 30.
+    if minutes > 30 then
+      hours + 1
     else
-      9. +. (180. +. h) /. 30.
+      hours
   in
-  let hours = int_of_float (round hours) in
   if hours = 12 then 0 else hours
 
 let polar_to_minutes ((_, h) : polar) =
-  let minutes =
-    if h >= 0. then
-      15. +. h /. 6.
-    else if h >= -. 90. then
-      (90. +. h) /. 6.
-    else
-      45. +. (180. +. h) /. 6.
-  in
-  let minutes = int_of_float (round minutes) in
+  let minutes = h / 6 in
   if minutes = 60 then 0 else minutes
 
 let cartesian_to_hours_minutes (cx, cy) (x, y) =
@@ -93,8 +83,8 @@ let cartesian_to_hours_minutes (cx, cy) (x, y) =
 
 let clock_radius = 40.
 
-let polar_of_i dh i =
-  let h = 270 + i * dh |> float_of_int in
+let cartesian_of_i dh i =
+  let h = i * dh |> float_of_int in
   polar_to_cartesian (50, 50) (clock_radius, h)
 
 let clock_svg_circles
@@ -107,7 +97,7 @@ let clock_svg_circles
   let open Eliom_content.Svg.F in
   let dh = 360 / n in
   let f i =
-    let x, y = polar_of_i dh i in
+    let x, y = cartesian_of_i dh i in
     let a =
       a_class ["ot-tp-point"]
       :: a_r (float_of_int radius, Some `Px)
@@ -129,7 +119,7 @@ let clock_svg
   let open Eliom_content.Svg.F in
   let dh = 360 / n in
   let f i =
-    let x, y = polar_of_i dh i in
+    let x, y = cartesian_of_i dh i in
     let a =
       a_class ["ot-tp-text"]
       :: a_dominant_baseline `Central
