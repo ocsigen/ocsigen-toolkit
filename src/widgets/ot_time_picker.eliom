@@ -119,7 +119,7 @@ let clock_reactive_hand v_f =
       in
       Eliom_content.Svg.F.path ~a []
     in
-    Eliom_content.Svg.R.node (Eliom_csreact.React.S.map display v)
+    Eliom_content.Svg.R.node (React.S.map display v)
   }}
 
 let clock_reactive_hand_circle v_f =
@@ -136,7 +136,7 @@ let clock_reactive_hand_circle v_f =
       in
       circle ~a [title (pcdata "" )]
     in
-    Eliom_content.Svg.R.node (Eliom_csreact.React.S.map display v)
+    Eliom_content.Svg.R.node (React.S.map display v)
   }}
 
 let clock_svg
@@ -171,6 +171,8 @@ let clock_svg
     :: l in
   g l
 
+let convert_24h is_am h = if is_am then h else h + 12
+
 }} ;;
 
 {client{
@@ -196,118 +198,101 @@ let clock_svg
       in
       f (cartesian_to_angle (x, y))
 
-  }} ;;
+let make_hours_signal v_f is_am f =
+  let h =
+    let f h b = angle_to_hours h |> convert_24h b in
+    React.S.l2 f (fst v_f) is_am
+  in
+  ignore (React.E.map f (React.S.changes h));
+  h
 
-{shared{
+let make_minutes_signal v_f f =
+  let m = React.S.map angle_to_minutes (fst v_f) in
+  ignore (React.E.map f (React.S.changes m));
+  m
 
-    let html_wrap_svg
-        ?extra_classes:(extra_classes = [])
-        ?extra_attributes:(extra_attributes = []) s =
-      let open Eliom_content.Svg.F in
-      let a =
-        a_class ("ot-tp-clock" :: extra_classes)
-        :: a_viewbox ( 0. , 0. , 100. , 100. )
-        :: extra_attributes
-      in
-      Eliom_content.Html5.F.svg ~a [s]
-
-  }} ;;
-
-{client{
-
-    let convert_24h is_am h =
-      if is_am then h else h + 12
+let make_hm_signal v_f is_am f =
+  let (hm : (int * int) React.signal) =
+    let f h b =
+      let h, m = angle_to_hours_minutes h in
+      let h = convert_24h b h in
+      h, m
+    in
+    React.S.l2 f (fst v_f) is_am
+  in
+  ignore (React.E.map f (React.S.changes hm));
+  hm
 
 }} ;;
 
 {shared{
 
-    let container l =
-      div ~a:[a_class ["ot-tp-container"]] l
+    let clock_html_wrap s v_f =
+      let a =
+        let open Eliom_content.Svg.F in
+        [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
+         a_viewbox ( 0. , 0. , 100. , 100. );
+         a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
+      in
+      Eliom_content.Html5.F.svg ~a [s]
+
+let container l = div ~a:[a_class ["ot-tp-container"]] l
+
+let am_pm_toggle () = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" ()
+
+let display_hours h =
+  {{
+    (let f h =
+       let a = [a_class ["ot-tp-display"]] in
+       div ~a [pcdata (Printf.sprintf "%d:00" h)]
+     in
+     React.S.map f %h) |> Eliom_content.Html5.R.node
+  }} |> Eliom_content.Html5.C.node
 
 let make_hours f =
-  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }}
-  and c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
-  let h =
-    {int React.signal{
-        let f h b = angle_to_hours h |> convert_24h b in
-        Eliom_csreact.React.S.l2 f (fst %v_f) %is_am }}
-  in
-  ignore
-    {unit React.event{ React.E.map %f (React.S.changes %h) }};
-  let g =
-    let g = clock_svg v_f
-    and extra_attributes =
-      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
-    and extra_classes = ["ot-tp-click-anywhere"] in
-    html_wrap_svg ~extra_attributes ~extra_classes g
+  let v_f = {int rp{ React.S.create 0 }}
+  and c, is_am = am_pm_toggle () in
+  let g = clock_html_wrap (clock_svg v_f) v_f
   and d =
-    Eliom_content.Html5.C.node
-      {{
-        let f h =
-          div ~a:[a_class ["ot-tp-display"]]
-            [pcdata (Printf.sprintf "%d:00" h)]
-        in
-        Eliom_csreact.React.S.map f %h |> Eliom_content.Html5.R.node
-      }}
+    {int React.signal{ make_hours_signal %v_f %is_am %f }} |>
+    display_hours
   in
   container [g; c; d]
 
+let display_minutes m =
+  {{
+    (let f m =
+       let a = [a_class ["ot-tp-display"]] in
+       div ~a [pcdata (string_of_int m)]
+     in
+     React.S.map f %m) |> Eliom_content.Html5.R.node
+  }} |> Eliom_content.Html5.C.node
+
 let make_minutes f =
-  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }} in
-  let h =
-    {int React.signal{
-        Eliom_csreact.React.S.map angle_to_minutes (fst %v_f) }}
-  in
-  ignore
-    {unit React.event{ React.E.map %f (React.S.changes %h) }};
-  let g =
-    let g = clock_svg v_f
-    and extra_attributes =
-      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
-    and extra_classes = ["ot-tp-click-anywhere"] in
-    html_wrap_svg ~extra_attributes ~extra_classes g
+  let v_f = {int rp{ React.S.create 0 }} in
+  let g = clock_html_wrap (clock_svg ~n:12 ~step:5 v_f) v_f
   and d =
-    Eliom_content.Html5.C.node
-      {{
-        let f h =
-          div ~a:[a_class ["ot-tp-display"]]
-            [pcdata (string_of_int h)]
-        in
-        Eliom_csreact.React.S.map f %h |> Eliom_content.Html5.R.node
-      }}
+    {int React.signal{ make_minutes_signal %v_f %f }} |>
+    display_minutes
   in
   container [g; d]
 
+let display_hours_minutes hm =
+  {{
+    (let f (h, m) =
+       let a = [a_class ["ot-tp-display"]] in
+       div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
+     in
+     React.S.map f %hm) |> Eliom_content.Html5.R.node
+  }} |> Eliom_content.Html5.C.node
+
 let make_hours_minutes f =
-  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }}
-  and c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
-  let hm =
-    {(int * int) React.signal{
-        let f h b =
-          let h, m = angle_to_hours_minutes h in
-          let h = convert_24h b h in
-          h, m
-        in
-        Eliom_csreact.React.S.l2 f (fst %v_f) %is_am }}
-  in
-  ignore
-    {unit React.event{ React.E.map %f (React.S.changes %hm) }};
-  let g =
-    let g = clock_svg v_f
-    and extra_attributes =
-      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
-    and extra_classes = ["ot-tp-click-anywhere"] in
-    html_wrap_svg ~extra_attributes ~extra_classes g
+  let v_f = {int rp{ React.S.create 0 }}
+  and c, is_am = am_pm_toggle () in
+  let g = clock_html_wrap (clock_svg v_f) v_f
   and d =
-    Eliom_content.Html5.C.node
-      {{
-        let f (h, m) =
-          div ~a:[a_class ["ot-tp-display"]]
-            [pcdata (Printf.sprintf "%d:%02d" h m)]
-        in
-        Eliom_csreact.React.S.map f %hm |> Eliom_content.Html5.R.node
-      }}
+    {(int * int) React.signal{ make_hm_signal %v_f %is_am %f }} |>
+    display_hours_minutes
   in
   container [g; c; d]
 
