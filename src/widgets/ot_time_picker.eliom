@@ -10,6 +10,10 @@ type cartesian = int * int
 
 type time_receiver = (int -> int -> unit) Eliom_lib.client_value
 
+type 'a rf = ?step:React.step -> int -> unit
+
+type 'a rp = 'a React.signal * 'a rf
+
 (* utils *)
 
 let rec list_init ?acc:(acc = []) i f =
@@ -36,12 +40,16 @@ let round x =
 (* functions perform implicit rotation, so that angle = 0 means noon /
    midnight *)
 
-let polar_to_cartesian (cx, cy) (r, h) =
+let center_x = 50
+
+let center_y = 50
+
+let polar_to_cartesian (r, h) =
   let r = float_of_int r
   and h = float_of_int h in
   let h = h *. 3.14159 /. 180. in
-  let x = cx + int_of_float (r *. sin h)
-  and y = cy - int_of_float (r *. cos h) in
+  let x = center_x + int_of_float (r *. sin h)
+  and y = center_y - int_of_float (r *. cos h) in
   x, y
 
 }} ;;
@@ -50,9 +58,9 @@ let polar_to_cartesian (cx, cy) (r, h) =
 
 let pi = 3.14159
 
-let cartesian_to_polar (cx, cy) (x, y) =
-  let x = float_of_int (x - cx)
-  and y = float_of_int (y - cy) in
+let cartesian_to_polar (x, y) =
+  let x = float_of_int (x - center_x)
+  and y = float_of_int (y - center_y) in
   let r = hypot x y |> round |> int_of_float
   and h =
     let h = atan2 y x *. 180. /. pi |> round |> int_of_float in
@@ -60,7 +68,10 @@ let cartesian_to_polar (cx, cy) (x, y) =
   in
   r, h
 
-let polar_to_hours_minutes ((_, h) : polar) =
+let cartesian_to_angle (x, y) =
+  cartesian_to_polar (x, y) |> snd
+
+let angle_to_hours_minutes h =
   let minutes = h * 2 in
   let hours = minutes / 60
   and minutes = minutes mod 60 in
@@ -68,8 +79,8 @@ let polar_to_hours_minutes ((_, h) : polar) =
   assert (0 <= minutes && minutes <= 59);
   hours, minutes
 
-let polar_to_hours p =
-  let hours, minutes = polar_to_hours_minutes p in
+let angle_to_hours h =
+  let hours, minutes = angle_to_hours_minutes h in
   let hours =
     if minutes > 30 then
       hours + 1
@@ -78,18 +89,19 @@ let polar_to_hours p =
   in
   if hours = 12 then 0 else hours
 
-let polar_to_minutes ((_, h) : polar) =
+let angle_to_minutes h =
   let minutes = h / 6 in
+  assert (0 <= minutes && minutes <= 59);
   if minutes = 60 then 0 else minutes
 
-let cartesian_to_hours_minutes (cx, cy) (x, y) =
-  cartesian_to_polar (cx, cy) (x, y) |> polar_to_hours_minutes
+let cartesian_to_hours_minutes (x, y) =
+  cartesian_to_polar (x, y) |> snd |> angle_to_hours_minutes
 
 (* build SVG *)
 
 let cartesian_of_i ?radius:(radius = 40) dh i =
   let h = i * dh in
-  polar_to_cartesian (50, 50) (radius, h)
+  polar_to_cartesian (radius, h)
 
 let clock_reactive_hand v_f =
   {[> Svg_types.path ] Eliom_content.Svg.elt{
@@ -97,8 +109,10 @@ let clock_reactive_hand v_f =
     let display h =
       let a =
         let s =
-          let x, y = polar_to_cartesian (50, 50) (31, h) in
-          Printf.sprintf "M 50 50 L %d %d" x y
+          let x, y = polar_to_cartesian (31, h) in
+          Printf.sprintf "M %d %d L %d %d"
+            center_x center_y
+            x y
         in
         [Eliom_content.Svg.F.a_class ["ot-tp-hand"];
          Eliom_content.Svg.F.a_d s]
@@ -114,7 +128,7 @@ let clock_reactive_hand_circle v_f =
     let v, f = %v_f in
     let display h =
       let a =
-        let x, y = polar_to_cartesian (50, 50) (40, h) in
+        let x, y = polar_to_cartesian (40, h) in
         [a_class ["ot-tp-hand-circle"];
          a_r (float_of_int 9, Some `Px);
          a_cx (float_of_int x, Some `Px);
@@ -130,8 +144,8 @@ let clock_svg
     ?n:(n = 12)
     ?step:(step = 1)
     ?radius:(radius = 7)
-    () =
-  assert ((n >= 0) && (360 mod n) = 0);
+    v_f =
+  assert (n >= 0 && 360 mod n = 0);
   let open Eliom_content.Svg.F in
   let dh = 360 / n in
   let l =
@@ -149,16 +163,13 @@ let clock_svg
         [pcdata (string_of_int (step * i))]
     in list_init n f
   in
-  let v_f =
-    {int React.signal * (?step:React.step -> int -> unit){
-        Eliom_csreact.React.S.create 0 }}
-  in
   let h1 = clock_reactive_hand v_f
-  and h2 = clock_reactive_hand_circle v_f
-  and f = {?step:React.step -> int -> unit{ snd %v_f }} in
-  g (Eliom_content.Svg.C.node h1 ::
-     Eliom_content.Svg.C.node h2 ::
-     l), f
+  and h2 = clock_reactive_hand_circle v_f in
+  let l =
+    Eliom_content.Svg.C.node h1
+    :: Eliom_content.Svg.C.node h2
+    :: l in
+  g l
 
 }} ;;
 
@@ -176,12 +187,14 @@ let clock_svg
       and y = ev##clientY in
       assert (ox' > ox);
       assert (oy' > oy);
-      f
-        (truncate
-           (float_of_int (x - truncate ox) *. 100. /. (ox' -. ox)))
-        (truncate
-           (float_of_int (y - truncate oy) *. 100. /. (oy' -. oy)))
-
+      let x =
+        float_of_int (x - truncate ox) *. 100. /. (ox' -. ox)
+        |> truncate
+      and y =
+        float_of_int (y - truncate oy) *. 100. /. (oy' -. oy)
+        |> truncate
+      in
+      f (cartesian_to_angle (x, y))
 
   }} ;;
 
@@ -203,10 +216,7 @@ let clock_svg
 {client{
 
     let convert_24h is_am h =
-      if Eliom_csreact.React.S.value is_am then
-        h
-      else
-        h + 12
+      if is_am then h else h + 12
 
 }} ;;
 
@@ -216,81 +226,89 @@ let clock_svg
       div ~a:[a_class ["ot-tp-container"]] l
 
 let make_hours f =
-  let g, f' = clock_svg () in
-  let c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
-  let extra_attributes =
-    let f =
-      {int -> int -> unit{
-          fun x y ->
-            let h =
-              cartesian_to_polar (50, 50) (x, y) |>
-              polar_to_hours
-            in
-            assert (h >= 0 && h <= 11);
-            %f' (h * 30);
-            let h = convert_24h %is_am h in
-            %f h }}
-    in
-    [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick %f}}]
-  and extra_classes = ["ot-tp-click-anywhere"] in
-  container [html_wrap_svg
-               ~extra_attributes ~extra_classes
-               g;
-             c]
+  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }}
+  and c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
+  let h =
+    {int React.signal{
+        let f h b = angle_to_hours h |> convert_24h b in
+        Eliom_csreact.React.S.l2 f (fst %v_f) %is_am }}
+  in
+  ignore
+    {unit React.event{ React.E.map %f (React.S.changes %h) }};
+  let g =
+    let g = clock_svg v_f
+    and extra_attributes =
+      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
+    and extra_classes = ["ot-tp-click-anywhere"] in
+    html_wrap_svg ~extra_attributes ~extra_classes g
+  and d =
+    Eliom_content.Html5.C.node
+      {{
+        let f h =
+          div ~a:[a_class ["ot-tp-display"]]
+            [pcdata (Printf.sprintf "%d:00" h)]
+        in
+        Eliom_csreact.React.S.map f %h |> Eliom_content.Html5.R.node
+      }}
+  in
+  container [g; c; d]
 
 let make_minutes f =
-  let g, f' = clock_svg () ~n:12 ~step:5 in
-  let extra_attributes =
-    let f =
-      {int -> int -> unit{
-          fun x y ->
-            let m =
-              cartesian_to_polar (50, 50) (x, y) |>
-              polar_to_minutes
-            in
-            assert (m >= 0 && m <= 59);
-            %f' (m * 6);
-            %f m
-        }}
-    in
-    [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick %f}}]
-  and extra_classes = ["ot-tp-click-anywhere"] in
-  container [html_wrap_svg ~extra_attributes ~extra_classes g]
-
-let make_discrete_aux (f : time_receiver) =
-  let f = {{
-      fun ev ->
-        let (>>!) = Js.Opt.iter in
-        ev##currentTarget >>! fun x ->
-        x##textContent >>! fun x ->
-        %f (int_of_string (Js.to_string x)) 0
-    }}
+  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }} in
+  let h =
+    {int React.signal{
+        Eliom_csreact.React.S.map angle_to_minutes (fst %v_f) }}
   in
-  let extra_attributes = [Eliom_content.Svg.F.a_onclick f] in
-  html_wrap_svg (fst (clock_svg ~extra_attributes ()))
+  ignore
+    {unit React.event{ React.E.map %f (React.S.changes %h) }};
+  let g =
+    let g = clock_svg v_f
+    and extra_attributes =
+      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
+    and extra_classes = ["ot-tp-click-anywhere"] in
+    html_wrap_svg ~extra_attributes ~extra_classes g
+  and d =
+    Eliom_content.Html5.C.node
+      {{
+        let f h =
+          div ~a:[a_class ["ot-tp-display"]]
+            [pcdata (string_of_int h)]
+        in
+        Eliom_csreact.React.S.map f %h |> Eliom_content.Html5.R.node
+      }}
+  in
+  container [g; d]
 
 let make_hours_minutes f =
-  let g, f' = clock_svg () in
-  let c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
-  let extra_attributes =
-    let f =
-      {int -> int -> unit{
-          fun x y ->
-            let h, m =
-              cartesian_to_polar (50, 50) (x, y) |>
-              polar_to_hours_minutes
-            in
-            assert (h >= 0 && h <= 11);
-            assert (m >= 0 && m <= 59);
-            %f' ((h * 60 + m) / 2);
-            let h = convert_24h %is_am h in
-            %f h m }}
-    in
-    [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick %f}}]
-  and extra_classes = ["ot-tp-click-anywhere"] in
-  container [html_wrap_svg
-               ~extra_attributes ~extra_classes
-               g;
-             c]
+  let v_f = {int rp{ Eliom_csreact.React.S.create 0 }}
+  and c, is_am = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" () in
+  let hm =
+    {(int * int) React.signal{
+        let f h b =
+          let h, m = angle_to_hours_minutes h in
+          let h = convert_24h b h in
+          h, m
+        in
+        Eliom_csreact.React.S.l2 f (fst %v_f) %is_am }}
+  in
+  ignore
+    {unit React.event{ React.E.map %f (React.S.changes %hm) }};
+  let g =
+    let g = clock_svg v_f
+    and extra_attributes =
+      [Eliom_content.Svg.F.a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
+    and extra_classes = ["ot-tp-click-anywhere"] in
+    html_wrap_svg ~extra_attributes ~extra_classes g
+  and d =
+    Eliom_content.Html5.C.node
+      {{
+        let f (h, m) =
+          div ~a:[a_class ["ot-tp-display"]]
+            [pcdata (Printf.sprintf "%d:%02d" h m)]
+        in
+        Eliom_csreact.React.S.map f %hm |> Eliom_content.Html5.R.node
+      }}
+  in
+  container [g; c; d]
 
 }}
