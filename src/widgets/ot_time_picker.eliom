@@ -199,30 +199,20 @@ let wrap_click ev f =
   in
   cartesian_to_angle (x, y) |> f
 
-let make_hours_signal v_f is_am f =
-  let h =
-    let f h b = angle_to_hours h |> convert_24h b in
-    React.S.l2 f (fst v_f) is_am
-  in
-  ignore (React.E.map f (React.S.changes h));
-  h
+let make_hours_signal v_f is_am =
+  let f h b = angle_to_hours h |> convert_24h b in
+  React.S.l2 f (fst v_f) is_am
 
-let make_minutes_signal v_f f =
-  let m = React.S.map angle_to_minutes (fst v_f) in
-  ignore (React.E.map f (React.S.changes m));
-  m
+let make_minutes_signal v_f =
+  React.S.map angle_to_minutes (fst v_f)
 
-let make_hm_signal v_f is_am f =
-  let (hm : (int * int) React.signal) =
-    let f h b =
-      let h, m = angle_to_hours_minutes h in
-      let h = convert_24h b h in
-      h, m
-    in
-    React.S.l2 f (fst v_f) is_am
+let make_hm_signal v_f is_am =
+  let f h b =
+    let h, m = angle_to_hours_minutes h in
+    let h = convert_24h b h in
+    h, m
   in
-  ignore (React.E.map f (React.S.changes hm));
-  hm
+  React.S.l2 f (fst v_f) is_am
 
 }} ;;
 
@@ -250,15 +240,13 @@ let display_hours h =
      React.S.map f %h) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
-let make_hours f =
+let make_hours () =
   let v_f = {int rp{ React.S.create 0 }}
   and c, is_am = am_pm_toggle () in
+  let h = {int React.signal{ make_hours_signal %v_f %is_am }} in
   let g = clock_html_wrap (clock_svg v_f) v_f
-  and d =
-    {int React.signal{ make_hours_signal %v_f %is_am %f }} |>
-    display_hours
-  in
-  container [g; c; d]
+  and d = display_hours h in
+  container [g; c; d], h
 
 let display_minutes m =
   {{
@@ -269,14 +257,12 @@ let display_minutes m =
      React.S.map f %m) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
-let make_minutes f =
+let make_minutes () =
   let v_f = {int rp{ React.S.create 0 }} in
+  let m = {int React.signal{ make_minutes_signal %v_f }} in
   let g = clock_html_wrap (clock_svg ~n:12 ~step:5 v_f) v_f
-  and d =
-    {int React.signal{ make_minutes_signal %v_f %f }} |>
-    display_minutes
-  in
-  container [g; d]
+  and d = display_minutes m in
+  container [g; d], m
 
 let display_hours_minutes hm =
   {{
@@ -296,15 +282,13 @@ let display_hours_minutes hm =
      React.S.map f %hm) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
-let make_hours_minutes f =
+let make_hours_minutes () =
   let v_f = {int rp{ React.S.create 0 }}
   and c, is_am = am_pm_toggle () in
+  let hm = {(int * int) React.signal{ make_hm_signal %v_f %is_am }} in
   let g = clock_html_wrap (clock_svg v_f) v_f
-  and d =
-    {(int * int) React.signal{ make_hm_signal %v_f %is_am %f }} |>
-    display_hours_minutes
-  in
-  container [g; c; d]
+  and d = display_hours_minutes hm in
+  container [g; c; d], hm
 
 }}
 
@@ -320,11 +304,9 @@ let make_hours_minutes f =
       let ((h_h, f_h_h) as v_h_h) = React.S.create 0
       and ((h_m, f_h_m) as v_h_m) = React.S.create 0
       and c, is_am = am_pm_toggle () in
+      let hm = combine_inputs_hours_minutes h_h h_m is_am in
       let g_h = clock_html_wrap (clock_svg v_h_h) v_h_h
-      and d =
-        combine_inputs_hours_minutes h_h h_m is_am |>
-        display_hours_minutes
-      in
+      and d = display_hours_minutes hm in
       let r =
         container [g_h; c; d] |>
         Eliom_content.Html5.To_dom.of_div
@@ -339,15 +321,18 @@ let make_hours_minutes f =
         in
         React.E.map f (React.S.changes h_h)
       in
-      Eliom_content.Html5.Of_dom.of_div r
+      Eliom_content.Html5.Of_dom.of_div r, hm
 
 }}
 
 {server{
 
     let make_hours_minutes_seq () =
-      {Html5_types.div Eliom_content.Html5.elt{
-          make_hours_minutes_seq ()
-        }} |> Eliom_content.Html5.C.node
+      let p =
+        {Html5_types.div Eliom_content.Html5.elt *
+         (int * int) React.signal{
+           make_hours_minutes_seq () }} in
+      Eliom_content.Html5.C.node {{ fst %p }},
+      {(int * int) React.signal{ snd %p }}
 
   }}
