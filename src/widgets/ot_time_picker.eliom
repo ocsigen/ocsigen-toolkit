@@ -177,26 +177,27 @@ let convert_24h is_am h = if is_am then h else h + 12
 
 {client{
 
-    let wrap_f_for_onclick f ev =
-      let (>>!) = Js.Opt.iter in
-      ev##currentTarget >>! fun a ->
-      let r = a##getBoundingClientRect () in
-      let ox = r##left
-      and ox' = r##right
-      and oy = r##top
-      and oy' = r##bottom
-      and x = ev##clientX
-      and y = ev##clientY in
-      assert (ox' > ox);
-      assert (oy' > oy);
-      let x =
-        float_of_int (x - truncate ox) *. 100. /. (ox' -. ox)
-        |> truncate
-      and y =
-        float_of_int (y - truncate oy) *. 100. /. (oy' -. oy)
-        |> truncate
-      in
-      f (cartesian_to_angle (x, y))
+    let (>>!) = Js.Opt.iter
+
+let wrap_click ev f =
+  ev##currentTarget >>! fun a ->
+  let r = a##getBoundingClientRect () in
+  let ox = r##left
+  and ox' = r##right
+  and oy = r##top
+  and oy' = r##bottom
+  and x = ev##clientX
+  and y = ev##clientY in
+  assert (ox' > ox);
+  assert (oy' > oy);
+  let x =
+    float_of_int (x - truncate ox) *. 100. /. (ox' -. ox)
+    |> truncate
+  and y =
+    float_of_int (y - truncate oy) *. 100. /. (oy' -. oy)
+    |> truncate
+  in
+  cartesian_to_angle (x, y) |> f
 
 let make_hours_signal v_f is_am f =
   let h =
@@ -232,7 +233,7 @@ let make_hm_signal v_f is_am f =
         let open Eliom_content.Svg.F in
         [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
          a_viewbox ( 0. , 0. , 100. , 100. );
-         a_onclick {{wrap_f_for_onclick (snd %v_f)}}]
+         a_onclick {{ fun ev -> wrap_click ev (snd %v_f) }}]
       in
       Eliom_content.Html5.F.svg ~a [s]
 
@@ -286,6 +287,15 @@ let display_hours_minutes hm =
      React.S.map f %hm) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
+let display_hours_minutes hm =
+  {{
+    (let f (h, m) =
+       let a = [a_class ["ot-tp-display"]] in
+       div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
+     in
+     React.S.map f %hm) |> Eliom_content.Html5.R.node
+  }} |> Eliom_content.Html5.C.node
+
 let make_hours_minutes f =
   let v_f = {int rp{ React.S.create 0 }}
   and c, is_am = am_pm_toggle () in
@@ -297,3 +307,47 @@ let make_hours_minutes f =
   container [g; c; d]
 
 }}
+
+{client{
+
+    let combine_inputs_hours_minutes =
+      (fun h_h h_m is_am ->
+         let h = angle_to_hours h_h |> convert_24h is_am
+         and m = angle_to_minutes h_m in
+         h, m) |> React.S.l3
+
+    let make_hours_minutes_seq () =
+      let ((h_h, f_h_h) as v_h_h) = React.S.create 0
+      and ((h_m, f_h_m) as v_h_m) = React.S.create 0
+      and c, is_am = am_pm_toggle () in
+      let g_h = clock_html_wrap (clock_svg v_h_h) v_h_h
+      and d =
+        combine_inputs_hours_minutes h_h h_m is_am |>
+        display_hours_minutes
+      in
+      let r =
+        container [g_h; c; d] |>
+        Eliom_content.Html5.To_dom.of_div
+      in
+      let _ =
+        let f h =
+          r##firstChild >>! fun g_h ->
+          let g_m =
+            clock_html_wrap (clock_svg ~n:12 ~step:5 v_h_m) v_h_m |>
+            Eliom_content.Html5.To_dom.of_node in
+          Dom.replaceChild r g_m g_h
+        in
+        React.E.map f (React.S.changes h_h)
+      in
+      Eliom_content.Html5.Of_dom.of_div r
+
+}}
+
+{server{
+
+    let make_hours_minutes_seq () =
+      {Html5_types.div Eliom_content.Html5.elt{
+          make_hours_minutes_seq ()
+        }} |> Eliom_content.Html5.C.node
+
+  }}

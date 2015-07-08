@@ -22,4 +22,7 @@ val make_minutes :
   (int -> unit) Eliom_lib.client_value ->
   [> Html5_types.div ] Eliom_content.Html5.F.elt
 
+val make_hours_minutes_seq :
+  unit -> Html5_types.div Eliom_content.Html5.elt
+
 }}
