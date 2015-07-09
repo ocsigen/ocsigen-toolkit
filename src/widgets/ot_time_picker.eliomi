@@ -21,16 +21,19 @@ val make_hours_minutes_seq :
   [> Html5_types.div ] Eliom_content.Html5.F.elt *
   (int * int) React.signal Eliom_pervasives.client_value
 
-(** [make_hours f] produces a clock-style hour picker. When the user
-    picks an hour [h], we call [f h] on the client side. *)
+(** [make_hours f] produces a clock-style hour picker. *)
 
 val make_hours :
   unit ->
   [> Html5_types.div ] Eliom_content.Html5.F.elt *
   int React.signal Eliom_pervasives.client_value
 
-(** [make_minutes f] produces a clock-style minute picker. When the
-    user picks an hour [m], we call [f m] on the client side. *)
+val make_hours_24h :
+  unit ->
+  [> Html5_types.div ] Eliom_content.Html5.F.elt *
+  int React.signal Eliom_pervasives.client_value
+
+(** [make_minutes f] produces a clock-style minute picker. *)
 
 val make_minutes :
   unit ->
