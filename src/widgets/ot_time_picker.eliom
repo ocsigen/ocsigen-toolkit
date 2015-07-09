@@ -288,10 +288,19 @@ let display_hours h =
      React.S.map f %h) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
+let angle_signal_of_hours h =
+  {int React.signal{
+      let f h =
+        let h = if h >= 12 then h - 12 else h in
+        h * 30
+      in
+      React.S.map f %h }}
+
 let make_hours () =
   let e, f_e = react_create_int 0
   and c, is_am = am_pm_toggle () in
   let h = {int React.signal{ make_hours_signal %e %is_am }} in
+  let e = angle_signal_of_hours h in
   let g = clock_html_wrap (clock_svg e) f_e
   and d = display_hours h in
   container [g; c; d], h
@@ -300,6 +309,7 @@ let make_hours_24h () =
   let e, f_e = react_create_int 0
   and b, f_b = react_create_bool true in
   let h = {int React.signal{ make_hours_signal %e %b }} in
+  let e = angle_signal_of_hours h in
   let g = clock_html_wrap_24h (clock_svg_24h b e) f_e f_b
   and d = display_hours h in
   container_24h [g; d], h
@@ -313,9 +323,13 @@ let display_minutes m =
      React.S.map f %m) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
+let angle_signal_of_minutes m =
+  {int React.signal{ React.S.map (( * ) 6) %m }}
+
 let make_minutes () =
   let e, f_e = react_create_int 0 in
   let m = {int React.signal{ make_minutes_signal %e }} in
+  let e = angle_signal_of_minutes m in
   let g = clock_html_wrap (clock_svg ~n:12 ~step:5 e) f_e
   and d = display_minutes m in
   container [g; d], m
@@ -329,19 +343,19 @@ let display_hours_minutes hm =
      React.S.map f %hm) |> Eliom_content.Html5.R.node
   }} |> Eliom_content.Html5.C.node
 
-let display_hours_minutes hm =
-  {{
-    (let f (h, m) =
-       let a = [a_class ["ot-tp-display"]] in
-       div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
-     in
-     React.S.map f %hm) |> Eliom_content.Html5.R.node
-  }} |> Eliom_content.Html5.C.node
+let angle_signal_of_hours_minutes hm =
+  {int React.signal{
+      let f (h, m) =
+        let h = if h >= 12 then h - 12 else h in
+        h * 30 + m / 2
+      in
+      React.S.map f %hm }}
 
 let make_hours_minutes () =
   let e, f_e = react_create_int 0
   and c, is_am = am_pm_toggle () in
   let hm = {(int * int) React.signal{ make_hm_signal %e %is_am }} in
+  let e = angle_signal_of_hours_minutes hm in
   let g = clock_html_wrap (clock_svg e) f_e
   and d = display_hours_minutes hm in
   container [g; c; d], hm
@@ -356,28 +370,41 @@ let make_hours_minutes () =
          and m = angle_to_minutes h_m in
          h, m) |> React.S.l3
 
-    let make_hours_minutes_seq () =
-      let e_h, f_e_h = React.S.create 0
-      and e_m, f_e_m = React.S.create 0
-      and c, is_am = am_pm_toggle () in
-      let hm = combine_inputs_hours_minutes e_h e_m is_am in
-      let g_h = clock_html_wrap (clock_svg e_h) f_e_h
-      and d = display_hours_minutes hm in
-      let r =
-        container [g_h; c; d] |>
-        Eliom_content.Html5.To_dom.of_div
-      in
-      let _ =
-        let f h =
-          r##firstChild >>! fun g_h ->
-          let g_m =
-            clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f_e_m |>
-            Eliom_content.Html5.To_dom.of_node in
-          Dom.replaceChild r g_m g_h
-        in
-        React.E.map f (React.S.changes hm)
-      in
-      Eliom_content.Html5.Of_dom.of_div r, hm
+let angle_signal_of_hours' (hm : (int * int) React.signal) =
+  let f (h, _) =
+    let h = if h >= 12 then h - 12 else h in
+    h * 30
+  in
+  React.S.map f hm
+
+let angle_signal_of_minutes' (hm : (int * int) React.signal) =
+  let f (_, m) = m * 6 in
+  React.S.map f hm
+
+let make_hours_minutes_seq () =
+  let e_h, f_e_h = React.S.create 0
+  and e_m, f_e_m = React.S.create 0
+  and c, is_am = am_pm_toggle () in
+  let hm = combine_inputs_hours_minutes e_h e_m is_am in
+  let e_h = angle_signal_of_hours' hm in
+  let g_h = clock_html_wrap (clock_svg e_h) f_e_h
+  and d = display_hours_minutes hm in
+  let r =
+    container [g_h; c; d] |>
+    Eliom_content.Html5.To_dom.of_div
+  in
+  let _ =
+    let f h =
+      r##firstChild >>! fun g_h ->
+      let g_m =
+        let e_m = angle_signal_of_minutes' hm in
+        clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f_e_m |>
+        Eliom_content.Html5.To_dom.of_node in
+      Dom.replaceChild r g_m g_h
+    in
+    React.E.map f (React.S.changes hm)
+  in
+  Eliom_content.Html5.Of_dom.of_div r, hm
 
 }}
 
