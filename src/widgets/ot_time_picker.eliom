@@ -267,8 +267,11 @@ let clock_html_wrap_24h s f_e (f_b : bool rf Eliom_lib.client_value) =
               "ot-tp-click-anywhere"];
      a_viewbox ( 0. , 0. , 100. , 100. );
      a_onclick {{
-         let f_b r = %f_b (r <= 35) in
-         fun ev -> wrap_click_24h ev %f_e f_b }}]
+         fun ev ->
+           let step = React.Step.create () in
+           let f_b r = %f_b ~step (r <= 35) in
+           wrap_click_24h ev (%f_e ~step) f_b;
+           React.Step.execute step }}]
   in
   Eliom_content.Html5.F.svg ~a [s]
 
