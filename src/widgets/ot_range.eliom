@@ -5,26 +5,35 @@ open Html5.F
 
 {shared{
 
-type t = int * int * string array
+type t = int * int * string array option
 
 type irs = int React.signal
 
-type irp = irs * (?step:React.step -> int -> unit)
+type irf = ?step:React.step -> int -> unit
+
+type irp = irs * irf
 
 }} ;;
 
 {client{
 
     let display_aux (_, _, a) v =
-      div ~a:[a_class ["ot-r-value"]] [pcdata a.(v)]
+      let v =
+        match a with
+        | Some a ->
+          a.(v)
+        | None ->
+          string_of_int v
+      and a = [a_class ["ot-r-value"]] in
+      div ~a [pcdata v]
 
 let go_up (lb, ub, a) ((r, f) : irp) =
-  let v = Eliom_csreact.React.S.value r in
+  let v = React.S.value r in
   assert (v <= ub - 1);
   f (if v = ub - 1 then lb else v + 1)
 
 let go_down (lb, ub, a) ((r, f) : irp) =
-  let v = Eliom_csreact.React.S.value r in
+  let v = React.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)
 
@@ -42,19 +51,24 @@ let go_down (lb, ub, a) ((r, f) : irp) =
            [pcdata txt_up];
          Eliom_content.Html5.C.node
            {{ Eliom_content.Html5.R.node
-                (Eliom_csreact.React.S.map
+                (React.S.map
                    (display_aux %e)
                    (fst %r)) }};
          div ~a:[a_class ["ot-r-down"];
                  a_onclick {{ fun _ -> go_down %e %r }}]
            [pcdata txt_down]]
 
-let make ?txt_up ?txt_down ?lb:(lb = 0) ~ub f =
+let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
   assert (ub > lb);
-  let a =
-    let f i = f (i + lb) in
-    Array.init (ub - lb) f
-  and r = {irp{ Eliom_csreact.React.S.create %lb }} in
-  display ?txt_up ?txt_down (lb, ub, a) r, {irs{ fst %r }}
+  let r = {irp{ React.S.create %lb }}
+  and a =
+    match f with
+    | Some f ->
+      let f i = f (i + lb) in
+      Some (Array.init (ub - lb) f)
+    | None ->
+      None
+  in
+  display ?txt_up ?txt_down (lb, ub, a) r
 
 }}
