@@ -378,9 +378,12 @@ let make_hours_minutes () =
 {client{
 
     let combine_inputs_hours_minutes =
-      (fun h_h h_m is_am ->
-         let h = angle_to_hours h_h |> convert_24h is_am
-         and m = angle_to_minutes h_m in
+      (fun e_h e_m is_am ->
+         let h =
+           (match e_h with Some e_h -> e_h | _ -> 0) |>
+           angle_to_hours |>
+           convert_24h is_am
+         and m = angle_to_minutes e_m in
          h, m) |> React.S.l3
 
 let angle_signal_of_hours' (hm : (int * int) React.signal) =
@@ -395,12 +398,13 @@ let angle_signal_of_minutes' (hm : (int * int) React.signal) =
   React.S.map f hm
 
 let make_hours_minutes_seq () =
-  let e_h, f_e_h = React.S.create 0
-  and e_m, f_e_m = React.S.create 0
+  let e_h, f_e_h = React.S.create None
+  and e_m, f_e_m = React.S.create 0 in
+  let f_e_h ?step x = f_e_h ?step (Some x)
   and c, is_am = am_pm_toggle () in
   let hm = combine_inputs_hours_minutes e_h e_m is_am in
-  let e_h = angle_signal_of_hours' hm in
-  let g_h = clock_html_wrap (clock_svg ~zero_is_12:true e_h) f_e_h
+  let e_h' = angle_signal_of_hours' hm in
+  let g_h = clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
   and d = display_hours_minutes hm in
   let r =
     container [g_h; c; d] |>
@@ -415,7 +419,7 @@ let make_hours_minutes_seq () =
         Eliom_content.Html5.To_dom.of_node in
       Dom.replaceChild r g_m g_h
     in
-    React.E.map f (React.S.changes hm)
+    React.E.map f (React.S.changes e_h)
   in
   Eliom_content.Html5.Of_dom.of_div r, hm
 
