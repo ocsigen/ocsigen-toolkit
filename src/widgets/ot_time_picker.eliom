@@ -137,7 +137,9 @@ let clock_reactive_hand_circle
     Eliom_content.Svg.R.node (React.S.l2 display %at_radius %e)
   }}
 
-let make_clock_point extra_attributes radius de step i =
+let make_clock_point
+    ?zero_is_12:(zero_is_12 = false)
+    extra_attributes radius de step i =
   let open Eliom_content.Svg.F in
   let x, y = cartesian_of_i ~radius de i in
   let a =
@@ -147,17 +149,25 @@ let make_clock_point extra_attributes radius de step i =
     :: a_x_list [float_of_int x, Some `Px]
     :: a_y_list [float_of_int y, Some `Px]
     :: extra_attributes
+  and txt =
+    if i = 0 && zero_is_12 then
+      "12"
+    else
+      string_of_int (step * i)
   in
-  text ~a [pcdata (string_of_int (step * i))]
+  text ~a [pcdata txt]
 
 let clock_svg
+    ?zero_is_12
     ?extra_attributes:(extra_attributes = [])
     ?n:(n = 12)
     ?step:(step = 1)
     e =
   assert (n >= 0 && 360 mod n = 0);
   let de = 360 / n in
-  let l = list_init n (make_clock_point extra_attributes 40 de step)
+  let l =
+    make_clock_point ?zero_is_12 extra_attributes 40 de step |>
+    list_init n
   and h1 = Eliom_content.Svg.C.node (clock_reactive_hand e)
   and h2 = Eliom_content.Svg.C.node (clock_reactive_hand_circle e) in
   Eliom_content.Svg.F.g (h1 :: h2 :: l)
@@ -304,7 +314,7 @@ let make_hours () =
   and c, is_am = am_pm_toggle () in
   let h = {int React.signal{ make_hours_signal %e %is_am }} in
   let e = angle_signal_of_hours h in
-  let g = clock_html_wrap (clock_svg e) f_e
+  let g = clock_html_wrap (clock_svg ~zero_is_12:true e) f_e
   and d = display_hours h in
   container [g; c; d], h
 
@@ -390,7 +400,7 @@ let make_hours_minutes_seq () =
   and c, is_am = am_pm_toggle () in
   let hm = combine_inputs_hours_minutes e_h e_m is_am in
   let e_h = angle_signal_of_hours' hm in
-  let g_h = clock_html_wrap (clock_svg e_h) f_e_h
+  let g_h = clock_html_wrap (clock_svg ~zero_is_12:true e_h) f_e_h
   and d = display_hours_minutes hm in
   let r =
     container [g_h; c; d] |>
