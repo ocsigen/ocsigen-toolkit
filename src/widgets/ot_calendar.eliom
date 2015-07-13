@@ -9,7 +9,7 @@ open Html5.F
 
 type handler =
   ((int -> int -> int list Lwt.t) Eliom_lib.client_value *
-   (int -> unit) Eliom_lib.client_value)
+   (int -> int -> int -> unit) Eliom_lib.client_value)
 
 }}
 
@@ -116,11 +116,13 @@ let rec build_calendar day =
             let open CalendarLib.Calendar.Date in
             j + 7 * i |> Period.day |> add zero
           in
-          let dom = CalendarLib.Calendar.Date.day_of_month d in
+          let dom = CalendarLib.Calendar.Date.day_of_month d
+          and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
+          and y = CalendarLib.Calendar.Date.year d in
           if List.exists ((=) dom) events then
             (c##classList##add(Js.string "ot-c-event");
              c##onclick <-
-               let f _ = act dom; Js._false in
+               let f _ = act y m dom; Js._false in
                Dom_html.handler f)
           else
             ()
@@ -134,7 +136,7 @@ let attach_events_lwt d ~handler:(get, act) cal =
     let m = CalendarLib.Date.(month d |> int_of_month)
     and y = CalendarLib.Date.year d in
     let open Lwt.Infix in
-    get m y >>= fun events ->
+    get y m >>= fun events ->
     attach_events d cal events act; Lwt.return ()
   in
   Lwt.async f
