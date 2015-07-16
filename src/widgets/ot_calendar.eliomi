@@ -33,4 +33,9 @@ val make :
   ?handler:handler -> unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
 
+val make_date_picker :
+  unit ->
+  [> Html5_types.table ] Eliom_content.Html5.F.elt *
+  (int * int * int) React.signal Eliom_pervasives.client_value
+
 }}

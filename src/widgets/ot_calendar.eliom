@@ -194,4 +194,19 @@ let rec attach_behavior ?handler d (cal, prev, next) =
           attach_behavior ?handler:%handler %today %c }};
       cal
 
+    let make_date_picker () =
+      let get = {_ -> _{ fun _ _ ->
+          Lwt.return [1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;
+                      21;22;23;24;25;26;27;28;29;30;31] }}
+      in
+      let v = {_ * _{
+          let s, set = React.S.create (0, 0, 0) in
+          let act = fun y m d -> set (y, m, d) in
+          s, act
+        }}
+      in
+      let handler = get, {_ -> _{ snd %v }} in
+      let d = make ~handler () in
+      d, {_ React.signal{fst %v}}
+
 }}
