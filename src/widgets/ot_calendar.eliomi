@@ -20,18 +20,32 @@
 
 {shared{
 
-    (** Given a handler [(get, act)], [get y m] provides the dates
-        that need to be handled for month [m] of year [y]. [act y m d]
-        is the client-side action to be performed for the day
-        [y]:[m]:[d] (where [d] needs to be in [get y m]). *)
+   (** [make ?highlight ?click_any ?action] produces a calendar.
 
-type handler =
-  ((int -> int -> int list Lwt.t) Eliom_lib.client_value *
-   (int -> int -> int -> unit) Eliom_lib.client_value)
+       If a client-side function [highlight] is provided, [highlight y
+       m] should produce the list of days for the month [m] of the
+       year [y] that need to be visually denoted.
+
+       If [click_any] is [true], every date is clickable; otherwise,
+       only the dates that [highlight] returns (if [highlight] is
+       provided) are clickable.
+
+       If a client-side function [action] is provided, when the user
+       clicks on the date [d]:[m]:[y], [action d m y] is called. *)
 
 val make :
-  ?handler:handler -> unit ->
+  ?highlight :
+    (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
+  ?click_any :
+    bool ->
+  ?action :
+    (int -> int -> int -> unit) Eliom_lib.client_value ->
+  unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
+
+(** [make_date_picker ()] returns a client-side reactive signal [(y,
+    m, d)] corresponding to the date [d]:[m]:[y] that the user clicks
+    on. *)
 
 val make_date_picker :
   unit ->
