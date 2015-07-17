@@ -67,17 +67,6 @@ svg.ot-tp-clock.ot-tp-click-anywhere {
 }
 
 div.ot-tp-container {
-    width: 120pt;
-    border-radius: 4pt;
-    background-color: #f9f9f9;
-    margin: 5pt;
-    padding: 5pt;
-    border: solid 1px #999999;
-    display: block;
-    text-align: center
-}
-
-div.ot-tp-container {
     width: 160pt;
     border-radius: 4pt;
     background-color: #f9f9f9;
@@ -128,4 +117,16 @@ div.ot-tp-container div.ot-tp-display {
     display: inline-block;
     margin-left: 4pt;
     padding: 6pt;
+}
+.ot-c-table th,
+.ot-c-table td {
+    padding: .6rem;
+    text-align: right;
+}
+.ot-c-table td {
+    cursor: pointer;
+}
+.ot-c-clicked {
+    background-color: #990000;
+    border-radius: 50%;
 }
