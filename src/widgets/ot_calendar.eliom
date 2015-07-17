@@ -112,7 +112,27 @@ let rec build_calendar day =
 
 {client{
 
-   let attach_events
+   let onclick_update_classes cal zero d =
+     let rows = (Html5.To_dom.of_table cal)##rows in
+     let f i =
+       rows##item(i + 2) >>! fun r ->
+       let cells = r##cells in
+       let f j =
+         cells##item(j) >>! fun c ->
+         let d' =
+           let open CalendarLib.Calendar.Date in
+           j + 7 * i |> Period.day |> add zero
+         in
+         if d = d' then
+           c##classList##add(Js.string "ot-c-clicked")
+         else
+           c##classList##remove(Js.string "ot-c-clicked")
+       in
+       iter_interval 0 6 f
+     in
+     iter_interval 0 4 f
+
+let attach_events
        ?action
        ?click_any:(click_any = false)
        d cal highlight =
@@ -138,7 +158,10 @@ let rec build_calendar day =
            match action with
            | Some action ->
              c##onclick <-
-               let f _ = action y m dom; Js._false in
+               let f _ =
+                 onclick_update_classes cal zero d;
+                 action y m dom;
+                 Js._false in
                Dom_html.handler f
            | None ->
              ()
@@ -170,7 +193,7 @@ let rec attach_behavior
     d (cal, prev, next) =
   let update d =
     let (cal', _, _) as c = build_calendar d in
-    attach_behavior ?highlight ?action d c;
+    attach_behavior ?highlight ?click_any ?action d c;
     let cal = Html5.To_dom.of_element cal in
     let cal' = Html5.To_dom.of_element cal' in
     (cal##parentNode >>! fun p -> Dom.replaceChild p cal' cal);
