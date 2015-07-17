@@ -457,7 +457,7 @@ let make_hours_minutes_seq () =
          (unit -> unit){
            make_hours_minutes_seq () }}
       in
-      Eliom_content.Html5.C.node {{ let v, _, _ gi= %p in v }},
+      Eliom_content.Html5.C.node {{ let v, _, _ = %p in v }},
       {(int * int) React.signal{ let _, v, _ = %p in v }},
       {unit -> unit{ let _, _, v = %p in v }}
 
