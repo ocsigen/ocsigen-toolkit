@@ -20,10 +20,11 @@
 
 {shared{
 
-    (** [make_hours_minutes ()] produces a clock-style time picker for
-        hours and minutes. The output is a reactive signal [(h, m)]
-        where [h] are the hours and [m] the minutes that the user
-        picked. *)
+   (** [make_hours_minutes ()] produces a clock-style time picker for
+       hours and minutes. The first part of the output is the
+       clock. The second part of the output is a reactive signal [(h,
+       m)] where [h] are the hours and [m] the minutes that the user
+       picked. *)
 
 val make_hours_minutes :
   unit ->
@@ -32,14 +33,13 @@ val make_hours_minutes :
 
 (** [make_hours_minutes ()] produces a clock-style time picker for
     hours and minutes. The user is first asked to pick hours, then
-    minutes with a separate clock. The output is a reactive signal
-    [(h, m)] where [h] are the hours and [m] the minutes that the user
-    picked. *)
+    minutes with a separate clock. *)
 
 val make_hours_minutes_seq :
   unit ->
   [> Html5_types.div ] Eliom_content.Html5.F.elt *
-  (int * int) React.signal Eliom_pervasives.client_value
+  (int * int) React.signal Eliom_pervasives.client_value *
+  (unit -> unit) Eliom_pervasives.client_value
 
 (** [make_hours f] produces a clock-style hour picker. *)
 

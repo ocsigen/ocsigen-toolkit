@@ -440,8 +440,11 @@ let make_hours_minutes_seq () =
       Dom.replaceChild r g_m g_h
     in
     React.E.map f (React.S.changes e_h)
+  and go_back () =
+    let g_h = Eliom_content.Html5.To_dom.of_node g_h in
+    r##firstChild >>! Dom.replaceChild r g_h
   in
-  Eliom_content.Html5.Of_dom.of_div r, hm
+  Eliom_content.Html5.Of_dom.of_div r, hm, go_back
 
 }}
 
@@ -450,9 +453,12 @@ let make_hours_minutes_seq () =
     let make_hours_minutes_seq () =
       let p =
         {Html5_types.div Eliom_content.Html5.elt *
-         (int * int) React.signal{
-           make_hours_minutes_seq () }} in
-      Eliom_content.Html5.C.node {{ fst %p }},
-      {(int * int) React.signal{ snd %p }}
+         (int * int) React.signal *
+         (unit -> unit){
+           make_hours_minutes_seq () }}
+      in
+      Eliom_content.Html5.C.node {{ let v, _, _ gi= %p in v }},
+      {(int * int) React.signal{ let _, v, _ = %p in v }},
+      {unit -> unit{ let _, _, v = %p in v }}
 
   }}
