@@ -233,11 +233,20 @@ let rec attach_behavior
            ?action:%action %today %c }};
        cal
 
-let make_date_picker () =
+let make_date_picker ?init () =
+  let init =
+    match init with
+    | Some init ->
+      init
+    | None ->
+      let open CalendarLib.Date in
+      let d = today () in
+      year d, month d |> int_of_month, day_of_month d
+  in
   let v =
     {(int * int * int) React.signal *
      (int -> int -> int -> unit){
-       let s, set = React.S.create (0, 0, 0) in
+       let s, set = React.S.create %init in
        let set = fun y m d -> set (y, m, d) in
        s, set }}
   in
@@ -245,6 +254,5 @@ let make_date_picker () =
   and click_any = true in
   let d = make ~click_any ~action () in
   d, {_ React.signal{fst %v}}
-
 
 }}

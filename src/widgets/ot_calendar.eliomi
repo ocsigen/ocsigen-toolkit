@@ -43,11 +43,13 @@ val make :
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
 
-(** [make_date_picker ()] returns a client-side reactive signal [(y,
-    m, d)] corresponding to the date [d]:[m]:[y] that the user clicks
-    on. *)
+(** [make_date_picker ?init ()] returns a client-side reactive signal
+    [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
+    clicks on. The optional parameter [init] provides an initial value
+    for the signal. *)
 
 val make_date_picker :
+  ?init : (int * int * int) ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
   (int * int * int) React.signal Eliom_pervasives.client_value
