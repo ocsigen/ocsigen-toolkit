@@ -16,13 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+*)
+
+{client{
+
+module Eliom_lib = struct
+  (* copied from Eliom_csreact ; find a proper place for this *)
+  include Eliom_lib
+  let create_shared_value _ x = x
+end
+
+let r_node a = Eliom_content.Html5.R.node a
+
+}}
+
+{server{ let r_node a = Eliom_csreact.R.node a }} ;;
 
 {shared{
 
 open Eliom_content
 
-open Html5.F
+open Html5.D
 
 type polar = int * int
 
@@ -76,7 +90,7 @@ let polar_to_cartesian (r, h) =
 
 {shared{
 
-let pi = 3.14159
+   let pi = 3.14159
 
 let cartesian_to_polar (x, y) =
   let x = float_of_int (x - center_x)
@@ -118,79 +132,86 @@ let cartesian_of_i ?radius:(radius = 40) de i =
   let e = i * de in
   polar_to_cartesian (radius, e)
 
-let clock_reactive_hand
-    ?radius:(radius = {int React.signal{ React.S.const 31 }})
-    e =
-  {[> Svg_types.path ] Eliom_content.Svg.elt{
-    let display r e =
-      let a =
-        let s =
-          let x, y = polar_to_cartesian (r, e) in
-          Printf.sprintf "M %d %d L %d %d"
-            center_x center_y
-            x y
-        in
-        [Eliom_content.Svg.F.a_class ["ot-tp-hand"];
-         Eliom_content.Svg.F.a_d s]
-      in
-      Eliom_content.Svg.F.path ~a []
-    in
-    Eliom_content.Svg.R.node (React.S.l2 display %radius %e)
-  }}
+}}
+
+{client{
+
+   let clock_reactive_hand
+       ?radius:(radius = React.S.const 31)
+       e =
+     let display r e =
+       let a =
+         let s =
+           let x, y = polar_to_cartesian (r, e) in
+           Printf.sprintf "M %d %d L %d %d"
+             center_x center_y
+             x y
+         in
+         [Eliom_content.Svg.D.a_class ["ot-tp-hand"];
+          Eliom_content.Svg.D.a_d s]
+       in
+       Eliom_content.Svg.D.path ~a []
+     in
+     Eliom_content.Svg.R.node (React.S.l2 display radius e)
 
 let clock_reactive_hand_circle
     ?radius:(radius = 9)
-    ?at_radius:(at_radius = {int React.signal{ React.S.const 40 }})
+    ?at_radius:(at_radius = React.S.const 40)
     e =
-  {[> Svg_types.circle ] Eliom_content.Svg.elt{
-    let open Eliom_content.Svg.F in
-    let display r e =
-      let a =
-        let x, y = polar_to_cartesian (r, e) in
-        [a_class ["ot-tp-hand-circle"];
-         a_r (float_of_int %radius, Some `Px);
-         a_cx (float_of_int x, Some `Px);
-         a_cy (float_of_int y, Some `Px)]
-      in
-      circle ~a [title (pcdata "" )]
-    in
-    Eliom_content.Svg.R.node (React.S.l2 display %at_radius %e)
-  }}
-
-let make_clock_point
-    ?zero_is_12:(zero_is_12 = false)
-    extra_attributes radius de step i =
   let open Eliom_content.Svg.F in
-  let x, y = cartesian_of_i ~radius de i in
-  let a =
-    a_class ["ot-tp-text"]
-    :: a_dominant_baseline `Central
-    :: a_text_anchor `Middle
-    :: a_x_list [float_of_int x, Some `Px]
-    :: a_y_list [float_of_int y, Some `Px]
-    :: extra_attributes
-  and txt =
-    if i = 0 && zero_is_12 then
-      "12"
-    else
-      string_of_int (step * i)
+  let display r e =
+    let a =
+      let x, y = polar_to_cartesian (r, e) in
+      [a_class ["ot-tp-hand-circle"];
+       a_r (float_of_int radius, Some `Px);
+       a_cx (float_of_int x, Some `Px);
+       a_cy (float_of_int y, Some `Px)]
+    in
+    circle ~a [title (pcdata "" )]
   in
-  text ~a [pcdata txt]
+  Eliom_content.Svg.R.node (React.S.l2 display at_radius e)
+
+}}
+
+{shared{
+
+   let make_clock_point
+       ?zero_is_12:(zero_is_12 = false)
+       extra_attributes radius de step i =
+     let open Eliom_content.Svg.F in
+     let x, y = cartesian_of_i ~radius de i in
+     let a =
+       a_class ["ot-tp-text"]
+       :: a_dominant_baseline `Central
+       :: a_text_anchor `Middle
+       :: a_x_list [float_of_int x, Some `Px]
+       :: a_y_list [float_of_int y, Some `Px]
+       :: extra_attributes
+     and txt =
+       if i = 0 && zero_is_12 then
+         "12"
+       else
+         string_of_int (step * i)
+     in
+     text ~a [pcdata txt]
 
 let clock_svg
     ?zero_is_12
     ?extra_attributes:(extra_attributes = [])
     ?n:(n = 12)
     ?step:(step = 1)
-    e =
+    (e : int Eliom_csreact.SharedReact.S.t) =
   assert (n >= 0 && 360 mod n = 0);
   let de = 360 / n in
   let l =
     make_clock_point ?zero_is_12 extra_attributes 40 de step |>
     list_init n
-  and h1 = Eliom_content.Svg.C.node (clock_reactive_hand e)
-  and h2 = Eliom_content.Svg.C.node (clock_reactive_hand_circle e) in
-  Eliom_content.Svg.F.g (h1 :: h2 :: l)
+  and h1 =
+    Eliom_content.Svg.C.node {{ clock_reactive_hand %e }}
+  and h2 =
+    Eliom_content.Svg.C.node {{ clock_reactive_hand_circle %e }}
+  in
+  Eliom_content.Svg.D.g (h1 :: h2 :: l)
 
 let clock_svg_24h
     ?extra_attributes:(extra_attributes = [])
@@ -203,20 +224,22 @@ let clock_svg_24h
   and h1 =
     let radius =
       {int React.signal{
-          let f b = if b then 24 else 36 in
-          React.S.map f %b }}
+         let f b = if b then 24 else 36 in
+         React.S.map f %b }}
     in
-    clock_reactive_hand ~radius h |> Eliom_content.Svg.C.node
+    {{ clock_reactive_hand ~radius:%radius %h }} |>
+    Eliom_content.Svg.C.node
   and h2 =
     let at_radius =
       {int React.signal{
-          let f b = if b then 30 else 42 in
-          React.S.map f %b }}
+         let f b = if b then 30 else 42 in
+         React.S.map f %b }}
     in
-    clock_reactive_hand_circle ~radius:6 ~at_radius h |>
+    {{ clock_reactive_hand_circle
+         ~radius:6 ~at_radius:%at_radius %h }} |>
     Eliom_content.Svg.C.node
   in
-  Eliom_content.Svg.F.g (h1 :: h2 :: l1 @ l2)
+  Eliom_content.Svg.D.g (h1 :: h2 :: l1 @ l2)
 
 let convert_24h is_am h = if is_am then h else h + 12
 
@@ -224,7 +247,7 @@ let convert_24h is_am h = if is_am then h else h + 12
 
 {client{
 
-    let (>>!) = Js.Opt.iter
+   let (>>!) = Js.Opt.iter
 
 let wrap_click_aux ev f =
   ev##currentTarget >>! fun a ->
@@ -254,42 +277,50 @@ let wrap_click_24h ev f_e f_b =
   let f (r, e) = f_b r; f_e e in
   wrap_click_aux ev f
 
-let make_hours_signal h is_am =
-  let f h b = angle_to_hours h |> convert_24h b in
-  React.S.l2 f h is_am
+}}
 
-let make_minutes_signal = React.S.map angle_to_minutes
+{shared{
+   let make_hours_signal h is_am =
+     angle_to_hours h |> convert_24h is_am
 
 let make_hm_signal e is_am =
-  let f e b =
-    let h, m = angle_to_hours_minutes e in
-    let h = convert_24h b h in
-    h, m
-  in
-  React.S.l2 f e is_am
+  let h, m = angle_to_hours_minutes e in
+  let h = convert_24h is_am h in
+  h, m
 
 }} ;;
 
 {shared{
 
-    let react_create_int v =
-      let r = {int rp{ React.S.create %v }} in
-      {int React.signal{ fst %r }}, {int rf{ snd %r }}
+   let make_hours_signal =
+     Eliom_lib.create_shared_value
+       make_hours_signal {{make_hours_signal}} |>
+     Eliom_csreact.SharedReact.S.l2
 
-    let react_create_bool v =
-      let r = {bool rp{ React.S.create %v }} in
-      {bool React.signal{ fst %r }}, {bool rf{ snd %r }}
+let make_hm_signal =
+  Eliom_lib.create_shared_value
+    make_hm_signal {{make_hm_signal}} |>
+  Eliom_csreact.SharedReact.S.l2
 
-    let clock_html_wrap s f =
-      let a =
-        let open Eliom_content.Svg.F in
-        [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
-         a_viewbox ( 0. , 0. , 100. , 100. );
-         a_onclick {{ fun ev -> wrap_click ev %f }}]
-      in
-      Eliom_content.Html5.F.svg ~a [s]
+let make_minutes_signal =
+  Eliom_lib.create_shared_value
+    angle_to_minutes {{angle_to_minutes}} |>
+  Eliom_csreact.SharedReact.S.map
 
-let clock_html_wrap_24h s f_e (f_b : bool rf Eliom_lib.client_value) =
+}} ;;
+
+{shared{
+
+   let clock_html_wrap s f =
+     let a =
+       let open Eliom_content.Svg.F in
+       [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
+        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_onclick {{ fun ev -> wrap_click ev %f }}]
+     in
+     Eliom_content.Html5.D.svg ~a [s]
+
+let clock_html_wrap_24h s f_e f_b =
   let a =
     let open Eliom_content.Svg.F in
     [a_class ["ot-tp-clock";
@@ -297,13 +328,14 @@ let clock_html_wrap_24h s f_e (f_b : bool rf Eliom_lib.client_value) =
               "ot-tp-click-anywhere"];
      a_viewbox ( 0. , 0. , 100. , 100. );
      a_onclick {{
-         fun ev ->
-           let step = React.Step.create () in
-           let f_b r = %f_b ~step (r <= 35) in
-           wrap_click_24h ev (%f_e ~step) f_b;
-           React.Step.execute step }}]
+       fun ev ->
+         let step' = React.Step.create () in
+         let step =  Some step' in
+         let f_b r = %f_b ?step (r <= 35) in
+         wrap_click_24h ev (%f_e ?step) f_b;
+         React.Step.execute step' }}]
   in
-  Eliom_content.Html5.F.svg ~a [s]
+  Eliom_content.Html5.D.svg ~a [s]
 
 let container l = div ~a:[a_class ["ot-tp-container"]] l
 
@@ -313,152 +345,159 @@ let container_24h l =
 let am_pm_toggle () = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" ()
 
 let display_hours h =
-  {{
-    (let f h =
-       let a = [a_class ["ot-tp-display"]] in
-       div ~a [pcdata (Printf.sprintf "%d:00" h)]
-     in
-     React.S.map f %h) |> Eliom_content.Html5.R.node
-  }} |> Eliom_content.Html5.C.node
+  let a = [a_class ["ot-tp-display"]] in
+  div ~a [pcdata (Printf.sprintf "%d:00" h)]
 
 let angle_signal_of_hours h =
-  {int React.signal{
-      let f h =
-        let h = if h >= 12 then h - 12 else h in
-        h * 30
-      in
-      React.S.map f %h }}
+  let h = if h >= 12 then h - 12 else h in
+  h * 30
+
+let display_minutes m =
+  let a = [a_class ["ot-tp-display"]] in
+  div ~a [pcdata (string_of_int m)]
+
+let angle_signal_of_minutes =
+  Eliom_lib.create_shared_value (( * ) 6) {{ ( * ) 6 }} |>
+  Eliom_csreact.SharedReact.S.map
+
+let display_hours_minutes (h, m) =
+  let a = [a_class ["ot-tp-display"]] in
+  div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
+
+let angle_signal_of_hours_minutes (h, m) =
+  let h = if h >= 12 then h - 12 else h in
+  h * 30 + m / 2
+
+let combine_inputs_hours_minutes e_h e_m is_am =
+  let h =
+    (match e_h with Some e_h -> e_h | _ -> 0) |>
+    angle_to_hours |>
+    convert_24h is_am
+  and m = angle_to_minutes e_m in
+  h, m
+
+let angle_signal_of_hours' (h, _) =
+  (if h >= 12 then h - 12 else h) * 30
+
+let angle_signal_of_minutes' (_, m) = m * 6
+
+}}
+
+{shared{
+
+   let display_hours =
+     Eliom_lib.create_shared_value display_hours {{display_hours}} |>
+     Eliom_csreact.SharedReact.S.map
+
+let angle_signal_of_hours =
+  Eliom_lib.create_shared_value
+    angle_signal_of_hours {{angle_signal_of_hours}} |>
+  Eliom_csreact.SharedReact.S.map
 
 let make_hours () =
-  let e, f_e = react_create_int 0
+  let e, f_e = Eliom_csreact.SharedReact.S.create 0
   and c, is_am = am_pm_toggle () in
-  let h = {int React.signal{ make_hours_signal %e %is_am }} in
+  let h = make_hours_signal e is_am in
   let e = angle_signal_of_hours h in
   let g = clock_html_wrap (clock_svg ~zero_is_12:true e) f_e
-  and d = display_hours h in
+  and d = display_hours h |> r_node in
   container [g; c; d], h
 
 let make_hours_24h () =
-  let e, f_e = react_create_int 0
-  and b, f_b = react_create_bool true in
-  let h = {int React.signal{ make_hours_signal %e %b }} in
+  let e, f_e = Eliom_csreact.SharedReact.S.create 0
+  and b, f_b = Eliom_csreact.SharedReact.S.create true in
+  let h = make_hours_signal e b in
   let e = angle_signal_of_hours h in
   let g = clock_html_wrap_24h (clock_svg_24h b e) f_e f_b
-  and d = display_hours h in
+  and d = display_hours h |> r_node in
   container_24h [g; d], h
 
-let display_minutes m =
-  {{
-    (let f m =
-       let a = [a_class ["ot-tp-display"]] in
-       div ~a [pcdata (string_of_int m)]
-     in
-     React.S.map f %m) |> Eliom_content.Html5.R.node
-  }} |> Eliom_content.Html5.C.node
-
-let angle_signal_of_minutes m =
-  {int React.signal{ React.S.map (( * ) 6) %m }}
+let display_minutes =
+  Eliom_lib.create_shared_value display_minutes {{display_minutes}} |>
+  Eliom_csreact.SharedReact.S.map
 
 let make_minutes () =
-  let e, f_e = react_create_int 0 in
-  let m = {int React.signal{ make_minutes_signal %e }} in
+  let e, f_e = Eliom_csreact.SharedReact.S.create 0 in
+  let m = make_minutes_signal e in
   let e = angle_signal_of_minutes m in
   let g = clock_html_wrap (clock_svg ~n:12 ~step:5 e) f_e
-  and d = display_minutes m in
+  and d = display_minutes m |> r_node in
   container [g; d], m
 
-let display_hours_minutes hm =
-  {{
-    (let f (h, m) =
-       let a = [a_class ["ot-tp-display"]] in
-       div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
-     in
-     React.S.map f %hm) |> Eliom_content.Html5.R.node
-  }} |> Eliom_content.Html5.C.node
+let display_hours_minutes =
+  Eliom_lib.create_shared_value
+    display_hours_minutes {{display_hours_minutes}} |>
+  Eliom_csreact.SharedReact.S.map
 
-let angle_signal_of_hours_minutes hm =
-  {int React.signal{
-      let f (h, m) =
-        let h = if h >= 12 then h - 12 else h in
-        h * 30 + m / 2
-      in
-      React.S.map f %hm }}
+let angle_signal_of_hours_minutes =
+  Eliom_lib.create_shared_value
+    angle_signal_of_hours_minutes {{angle_signal_of_hours_minutes}} |>
+  Eliom_csreact.SharedReact.S.map
 
 let make_hours_minutes () =
-  let e, f_e = react_create_int 0
+  let e, f_e = Eliom_csreact.SharedReact.S.create 0
   and c, is_am = am_pm_toggle () in
-  let hm = {(int * int) React.signal{ make_hm_signal %e %is_am }} in
+  let hm = make_hm_signal e is_am in
   let e = angle_signal_of_hours_minutes hm in
-  let g = clock_html_wrap (clock_svg e) f_e
-  and d = display_hours_minutes hm in
+  let g =
+    let svg = clock_svg e in
+    clock_html_wrap svg f_e
+  and d = display_hours_minutes hm |> r_node in
   container [g; c; d], hm
 
-}}
+let combine_inputs_hours_minutes =
+  Eliom_csreact.SharedReact.S.l3
+    (Eliom_lib.create_shared_value
+       combine_inputs_hours_minutes
+       {{combine_inputs_hours_minutes}})
 
-{client{
+let angle_signal_of_hours' =
+  Eliom_lib.create_shared_value
+    angle_signal_of_hours' {{angle_signal_of_hours'}} |>
+  Eliom_csreact.SharedReact.S.map
 
-    let combine_inputs_hours_minutes =
-      (fun e_h e_m is_am ->
-         let h =
-           (match e_h with Some e_h -> e_h | _ -> 0) |>
-           angle_to_hours |>
-           convert_24h is_am
-         and m = angle_to_minutes e_m in
-         h, m) |> React.S.l3
-
-let angle_signal_of_hours' (hm : (int * int) React.signal) =
-  let f (h, _) =
-    let h = if h >= 12 then h - 12 else h in
-    h * 30
-  in
-  React.S.map f hm
-
-let angle_signal_of_minutes' (hm : (int * int) React.signal) =
-  let f (_, m) = m * 6 in
-  React.S.map f hm
-
-let make_hours_minutes_seq () =
-  let e_h, f_e_h = React.S.create None
-  and e_m, f_e_m = React.S.create 0 in
-  let f_e_h ?step x = f_e_h ?step (Some x)
-  and c, is_am = am_pm_toggle () in
-  let hm = combine_inputs_hours_minutes e_h e_m is_am in
-  let e_h' = angle_signal_of_hours' hm in
-  let g_h = clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
-  and d = display_hours_minutes hm in
-  let r =
-    container [g_h; c; d] |>
-    Eliom_content.Html5.To_dom.of_div
-  in
-  let _ =
-    let f h =
-      r##firstChild >>! fun g_h ->
-      let g_m =
-        let e_m = angle_signal_of_minutes' hm in
-        clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f_e_m |>
-        Eliom_content.Html5.To_dom.of_node in
-      Dom.replaceChild r g_m g_h
-    in
-    React.E.map f (React.S.changes e_h)
-  and go_back () =
-    let g_h = Eliom_content.Html5.To_dom.of_node g_h in
-    r##firstChild >>! Dom.replaceChild r g_h
-  in
-  Eliom_content.Html5.Of_dom.of_div r, hm, go_back
+let angle_signal_of_minutes' =
+  Eliom_lib.create_shared_value
+    angle_signal_of_minutes' {{angle_signal_of_minutes'}} |>
+  Eliom_csreact.SharedReact.S.map
 
 }}
 
-{server{
+{shared{
 
-    let make_hours_minutes_seq () =
-      let p =
-        {Html5_types.div Eliom_content.Html5.elt *
-         (int * int) React.signal *
-         (unit -> unit){
-           make_hours_minutes_seq () }}
-      in
-      Eliom_content.Html5.C.node {{ let v, _, _ = %p in v }},
-      {(int * int) React.signal{ let _, v, _ = %p in v }},
-      {unit -> unit{ let _, _, v = %p in v }}
+   let make_hours_minutes_seq () =
+     let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
+     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0 in
+     let f_e_h =
+       Eliom_lib.create_shared_value
+         (fun ?step x ->
+            (Eliom_csreact.Shared.local f_e_h) ?step (Some x))
+         {{ fun ?step x -> %f_e_h ?step (Some x) }}
+     in
+     let c, is_am = am_pm_toggle () in
+     let hm = combine_inputs_hours_minutes e_h e_m is_am in
+     let e_h' = angle_signal_of_hours' hm in
+     let g_h =
+       clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
+     and d = display_hours_minutes hm |> r_node in
+     let r = container [g_h; c; d] in
+     {unit{
+        let f h =
+          let r = Eliom_content.Html5.To_dom.of_div %r in
+          r##firstChild >>! fun g_h ->
+          let g_m =
+            let e_m = angle_signal_of_minutes' %hm in
+            clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) %f_e_m |>
+            Eliom_content.Html5.To_dom.of_node in
+          Dom.replaceChild r g_m g_h
+        in
+        React.E.map f (React.S.changes %e_h) |> ignore }} |> ignore;
+     let go_back = {unit -> unit{
+       fun () ->
+         let r = Eliom_content.Html5.To_dom.of_div %r
+         and g_h = Eliom_content.Html5.To_dom.of_node %g_h in
+         r##firstChild >>! Dom.replaceChild r g_h }}
+     in
+     r, hm, go_back
 
-  }}
+ }}
