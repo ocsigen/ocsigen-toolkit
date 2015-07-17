@@ -489,7 +489,10 @@ let angle_signal_of_minutes' =
             let e_m = angle_signal_of_minutes' %hm in
             clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) %f_e_m |>
             Eliom_content.Html5.To_dom.of_node in
-          Dom.replaceChild r g_m g_h
+          Lwt.async (fun () ->
+            lwt () = Lwt_js.sleep 0.3 in
+            Dom.replaceChild r g_m g_h;
+            Lwt.return ())
         in
         React.E.map f (React.S.changes %e_h) |> ignore }} |> ignore;
      let go_back = {unit -> unit{
