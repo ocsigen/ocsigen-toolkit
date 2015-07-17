@@ -78,16 +78,16 @@ let rec build_calendar day =
   let zero = D.prev fst_sun `Week
   and prev_button =
     let a = [a_class ["ot-c-prev-button"]] in
-    Html5.D.span ~a [pcdata "previous"]
+    Html5.D.span ~a [pcdata "<"]
   and next_button =
     let a = [a_class ["ot-c-next-button"]] in
-    Html5.D.span ~a [pcdata "next"] in
+    Html5.D.span ~a [pcdata ">"] in
   let thead =
     thead
       [tr [th ~a:[a_colspan 7; a_class ["ot-c-header"]]
-             [CalendarLib.Printer.Date.sprint "%B %Y" fst_sun |>
+             [prev_button;
+              CalendarLib.Printer.Date.sprint "%B %Y" fst_sun |>
               pcdata;
-              prev_button;
               next_button]];
        tr (List.map (fun d -> th [pcdata d]) days)]
   and f_cell i j =

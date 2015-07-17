@@ -130,3 +130,11 @@ div.ot-tp-container div.ot-tp-display {
     background-color: #990000;
     border-radius: 50%;
 }
+.ot-c-prev-button,
+.ot-c-next-button {
+    padding: 0 2rem;
+    cursor: pointer;
+}
+th.ot-c-header {
+    text-align:center;
+}
