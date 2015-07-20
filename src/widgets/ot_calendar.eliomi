@@ -23,7 +23,7 @@
    (** [make ?highlight ?click_any ?action] produces a calendar.
 
        If a client-side function [highlight] is provided, [highlight y
-       m] should produce the list of days for the month [m] of the
+       m] needs to produce the list of days for the month [m] of the
        year [y] that need to be visually denoted.
 
        If [click_any] is [true], every date is clickable; otherwise,
@@ -31,7 +31,7 @@
        provided) are clickable.
 
        If a client-side function [action] is provided, when the user
-       clicks on the date [d]:[m]:[y], [action d m y] is called. *)
+       clicks on the date [d]:[m]:[y], [action y m d] is called. *)
 
 val make :
   ?highlight :

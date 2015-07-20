@@ -20,12 +20,19 @@
 
 {shared{
 
+   (* [make ?init_up ?up_txt ?down_txt ()] produces a binary
+      toggle. If [init_up] is true, the toggle is originally up
+      (default: down). The buttons for the "up" and "down" positions
+      are marked with [up_txt] and [down_txt]. The first part of the
+      output is the toggle, and the second part is a Boolean reactive
+      signal, where true means "up". *)
+
 val make :
   ?init_up:bool ->
   ?up_txt:string ->
   ?down_txt:string ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.F.elt *
+  [> Html5_types.div ] Eliom_content.Html5.D.elt *
   bool Eliom_csreact.SharedReact.S.t
 
 }}
