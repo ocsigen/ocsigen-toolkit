@@ -123,6 +123,20 @@ let angle_to_minutes e =
   assert (0 <= m && m <= 59);
   if m = 60 then 0 else m
 
+let angle_to_minutes_round e =
+  let m = e / 30 * 5 in
+  assert (0 <= m && m <= 59);
+  if e mod 30 >= 15 && m <= 50 then
+    m + 5
+  else
+    m
+
+let angle_to_minutes ?round_5:(round_5 = false) e =
+  if round_5 then
+    angle_to_minutes_round e
+  else
+    angle_to_minutes e
+
 let cartesian_to_hours_minutes (x, y) =
   cartesian_to_polar (x, y) |> snd |> angle_to_hours_minutes
 
@@ -302,9 +316,10 @@ let make_hm_signal =
     make_hm_signal {{make_hm_signal}} |>
   Eliom_csreact.SharedReact.S.l2
 
-let make_minutes_signal =
+let make_minutes_signal ?round_5 =
   Eliom_lib.create_shared_value
-    angle_to_minutes {{angle_to_minutes}} |>
+    (angle_to_minutes ?round_5)
+    {{angle_to_minutes ?round_5:%round_5}} |>
   Eliom_csreact.SharedReact.S.map
 
 }} ;;
@@ -390,12 +405,12 @@ let angle_signal_of_hours_minutes (h, m) =
   let h = if h >= 12 then h - 12 else h in
   h * 30 + m / 2
 
-let combine_inputs_hours_minutes e_h e_m is_am =
+let combine_inputs_hours_minutes ?round_5 e_h e_m is_am =
   let h =
     (match e_h with Some e_h -> e_h | _ -> 0) |>
     angle_to_hours |>
     convert_24h is_am
-  and m = angle_to_minutes e_m in
+  and m = angle_to_minutes ?round_5 e_m in
   h, m
 
 let angle_signal_of_hours' (h, _) =
@@ -438,9 +453,9 @@ let display_minutes =
   Eliom_lib.create_shared_value display_minutes {{display_minutes}} |>
   Eliom_csreact.SharedReact.S.map
 
-let make_minutes () =
+let make_minutes ?round_5 () =
   let e, f_e = Eliom_csreact.SharedReact.S.create 0 in
-  let m = make_minutes_signal e in
+  let m = make_minutes_signal ?round_5 e in
   let e = angle_signal_of_minutes m in
   let g = clock_html_wrap (clock_svg ~n:12 ~step:5 e) f_e
   and d = display_minutes m |> r_node in
@@ -473,11 +488,11 @@ let make_hours_minutes () =
   and d = display_hours_minutes hm |> r_node in
   container [g; c; d], hm
 
-let combine_inputs_hours_minutes =
+let combine_inputs_hours_minutes ?round_5 =
   Eliom_csreact.SharedReact.S.l3
     (Eliom_lib.create_shared_value
-       combine_inputs_hours_minutes
-       {{combine_inputs_hours_minutes}})
+       (combine_inputs_hours_minutes ?round_5)
+       {{combine_inputs_hours_minutes ?round_5:%round_5}})
 
 let angle_signal_of_hours' =
   Eliom_lib.create_shared_value
@@ -493,7 +508,7 @@ let angle_signal_of_minutes' =
 
 {shared{
 
-   let make_hours_minutes_seq () =
+   let make_hours_minutes_seq ?round_5 () =
      let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
      and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
      and b, f_b = Eliom_csreact.SharedReact.S.create true in
@@ -504,7 +519,7 @@ let angle_signal_of_minutes' =
          {{ fun ?step x -> %f_e_h ?step (Some x) }}
      in
      let c, is_am = am_pm_toggle () in
-     let hm = combine_inputs_hours_minutes e_h e_m is_am in
+     let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
      let g_h =
        let e_h' = angle_signal_of_hours' hm in
        clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
