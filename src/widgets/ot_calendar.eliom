@@ -20,7 +20,7 @@
 
 {shared{
 module Html5 = Eliom_content.Html5
-open Html5.F
+open Html5.D
 }}
 
 {shared{ let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"] }}
@@ -243,16 +243,10 @@ let make_date_picker ?init () =
       let d = today () in
       year d, month d |> int_of_month, day_of_month d
   in
-  let v =
-    {(int * int * int) React.signal *
-     (int -> int -> int -> unit){
-       let s, set = React.S.create %init in
-       let set = fun y m d -> set (y, m, d) in
-       s, set }}
-  in
-  let action = {{ snd %v }}
+  let v, f =  Eliom_csreact.SharedReact.S.create init in
+  let action = {{ fun y m d -> %f (y, m, d) }}
   and click_any = true in
   let d = make ~click_any ~action () in
-  d, {_ React.signal{fst %v}}
+  d, v
 
 }}

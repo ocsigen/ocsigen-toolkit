@@ -52,6 +52,6 @@ val make_date_picker :
   ?init : (int * int * int) ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
-  (int * int * int) React.signal Eliom_pervasives.client_value
+  (int * int * int) Eliom_csreact.SharedReact.S.t
 
 }}
