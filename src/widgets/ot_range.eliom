@@ -16,44 +16,52 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+*)
 
 {shared{
+
 module Html5 = Eliom_content.Html5
-open Html5.F
-}}
-
-{shared{
+open Html5.D
 
 type t = int * int * string array option
 
-type irs = int React.signal
-
-type irf = ?step:React.step -> int -> unit
-
-type irp = irs * irf
-
-}} ;;
+}}
 
 {client{
 
-    let display_aux (_, _, a) v =
-      let v =
-        match a with
-        | Some a ->
-          a.(v)
-        | None ->
-          string_of_int v
-      and a = [a_class ["ot-r-value"]] in
-      div ~a [pcdata v]
+module Eliom_lib = struct
+  (* copied from Eliom_csreact ; find a proper place for this *)
+  include Eliom_lib
+  let create_shared_value _ x = x
+end
 
-let go_up (lb, ub, a) ((r, f) : irp) =
-  let v = React.S.value r in
-  assert (v <= ub - 1);
-  f (if v = ub - 1 then lb else v + 1)
+let r_node a = Eliom_content.Html5.R.node a
 
-let go_down (lb, ub, a) ((r, f) : irp) =
-  let v = React.S.value r in
+}}
+
+{server{ let r_node a = Eliom_csreact.R.node a }} ;;
+
+{shared{
+
+let display_aux (_, _, a) v =
+  let v =
+    match a with
+    | Some a ->
+      a.(v)
+    | None ->
+      string_of_int v
+  and a = [a_class ["ot-r-value"]] in
+  div ~a [pcdata v] }} ;;
+
+{client{
+
+   let go_up (lb, ub, a) r f =
+     let v = Eliom_csreact.SharedReact.S.value r in
+     assert (v <= ub - 1);
+     f (if v = ub - 1 then lb else v + 1)
+
+let go_down (lb, ub, a) r f =
+  let v = Eliom_csreact.SharedReact.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)
 
@@ -61,26 +69,28 @@ let go_down (lb, ub, a) ((r, f) : irp) =
 
 {shared{
 
-    let display
-        ?txt_up:(txt_up = "up")
-        ?txt_down:(txt_down = "down")
-        (e : t) r =
-      div ~a:[a_class ["ot-range"]]
-        [div ~a:[a_class ["ot-r-up"];
-                 a_onclick {{ fun _ -> go_up %e %r }}]
-           [pcdata txt_up];
-         Eliom_content.Html5.C.node
-           {{ Eliom_content.Html5.R.node
-                (React.S.map
-                   (display_aux %e)
-                   (fst %r)) }};
-         div ~a:[a_class ["ot-r-down"];
-                 a_onclick {{ fun _ -> go_down %e %r }}]
-           [pcdata txt_down]]
+let display_aux e r =
+  Eliom_csreact.React.S.map
+    (Eliom_lib.create_shared_value (display_aux e) {{display_aux %e}})
+    r |>
+  r_node
+
+let display
+    ?txt_up:(txt_up = "up")
+    ?txt_down:(txt_down = "down")
+    e (v, f) =
+  div ~a:[a_class ["ot-range"]]
+    [div ~a:[a_class ["ot-r-up"];
+             a_onclick {{ fun _ -> go_up %e %v %f }}]
+       [pcdata txt_up];
+     display_aux e v;
+     div ~a:[a_class ["ot-r-down"];
+             a_onclick {{ fun _ -> go_down %e %v %f }}]
+       [pcdata txt_down]]
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
   assert (ub > lb);
-  let r = {irp{ React.S.create %lb }}
+  let ((v, _) as rp) = Eliom_csreact.SharedReact.S.create lb
   and a =
     match f with
     | Some f ->
@@ -89,6 +99,6 @@ let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
     | None ->
       None
   in
-  display ?txt_up ?txt_down (lb, ub, a) r
+  display ?txt_up ?txt_down (lb, ub, a) rp, v
 
 }}
