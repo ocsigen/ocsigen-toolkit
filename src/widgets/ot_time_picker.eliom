@@ -364,6 +364,28 @@ let display_hours_minutes (h, m) =
   let a = [a_class ["ot-tp-display"]] in
   div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
 
+let display_hours_minutes_seq f (h, m) b =
+  let h =
+    let a =
+      if b then
+        [a_class ["ot-tp-hours"; "ot-tp-active"]]
+      else
+        [a_class ["ot-tp-hours"; "ot-tp-inactive"];
+         a_onclick {{ fun _ -> %f true }}]
+    and c = [string_of_int h |> pcdata] in
+    span ~a c
+  and m =
+    let a =
+      if b then
+        [a_class ["ot-tp-minutes"; "ot-tp-inactive"];
+         a_onclick {{ fun _ -> %f false }}]
+      else
+        [a_class ["ot-tp-minutes"; "ot-tp-active"]]
+    and c = [Printf.sprintf "%02d" m |> pcdata] in
+    span ~a c
+  and a = [a_class ["ot-tp-display"]] in
+  div ~a [h; pcdata ":"; m]
+
 let angle_signal_of_hours_minutes (h, m) =
   let h = if h >= 12 then h - 12 else h in
   h * 30 + m / 2
@@ -429,6 +451,12 @@ let display_hours_minutes =
     display_hours_minutes {{display_hours_minutes}} |>
   Eliom_csreact.SharedReact.S.map
 
+let display_hours_minutes_seq f =
+  Eliom_lib.create_shared_value
+    (display_hours_minutes_seq f)
+    {{display_hours_minutes_seq %f}} |>
+  Eliom_csreact.SharedReact.S.l2
+
 let angle_signal_of_hours_minutes =
   Eliom_lib.create_shared_value
     angle_signal_of_hours_minutes {{angle_signal_of_hours_minutes}} |>
@@ -467,7 +495,8 @@ let angle_signal_of_minutes' =
 
    let make_hours_minutes_seq () =
      let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
-     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0 in
+     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
+     and b, f_b = Eliom_csreact.SharedReact.S.create true in
      let f_e_h =
        Eliom_lib.create_shared_value
          (fun ?step x ->
@@ -476,31 +505,35 @@ let angle_signal_of_minutes' =
      in
      let c, is_am = am_pm_toggle () in
      let hm = combine_inputs_hours_minutes e_h e_m is_am in
-     let e_h' = angle_signal_of_hours' hm in
      let g_h =
+       let e_h' = angle_signal_of_hours' hm in
        clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
-     and d = display_hours_minutes hm |> r_node in
+     and d = display_hours_minutes_seq f_b hm b |> r_node in
      let r = container [g_h; c; d] in
+     let show_hours = {unit -> unit{
+       let r = Eliom_content.Html5.To_dom.of_div %r
+       and g_h = Eliom_content.Html5.To_dom.of_node %g_h in
+       fun () -> r##firstChild >>! Dom.replaceChild r g_h }}
+     and show_minutes = {unit -> unit{
+       let p = Eliom_content.Html5.To_dom.of_div %r
+       and g_m =
+         let e_m = angle_signal_of_minutes' %hm in
+         clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) %f_e_m |>
+         Eliom_content.Html5.To_dom.of_node
+       in
+       fun () -> p##firstChild >>! Dom.replaceChild p g_m }}
+     in
+     {unit{
+        let f b = if b then %show_hours () else %show_minutes () in
+        React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
      {unit{
         let f h =
-          let r = Eliom_content.Html5.To_dom.of_div %r in
-          r##firstChild >>! fun g_h ->
-          let g_m =
-            let e_m = angle_signal_of_minutes' %hm in
-            clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) %f_e_m |>
-            Eliom_content.Html5.To_dom.of_node in
           Lwt.async (fun () ->
             lwt () = Lwt_js.sleep 0.3 in
-            Dom.replaceChild r g_m g_h;
+            %f_b false;
             Lwt.return ())
         in
-        React.E.map f (React.S.changes %e_h) |> ignore }} |> ignore;
-     let go_back = {unit -> unit{
-       fun () ->
-         let r = Eliom_content.Html5.To_dom.of_div %r
-         and g_h = Eliom_content.Html5.To_dom.of_node %g_h in
-         r##firstChild >>! Dom.replaceChild r g_h }}
-     in
-     r, hm, go_back
+        React.(E.map f (S.changes %e_h)) |> ignore }} |> ignore;
+     r, hm, show_hours
 
  }}
