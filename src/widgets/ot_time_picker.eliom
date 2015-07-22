@@ -105,10 +105,25 @@ let cartesian_to_polar (x, y) =
 let cartesian_to_angle (x, y) =
   cartesian_to_polar (x, y) |> snd
 
-let angle_to_hours_minutes e =
+let angle_to_hours_minutes ?round_5:(round_5 = false) e =
   let m = e * 2 in
   let h = m / 60
-  and m = m mod 60 in
+  and m =
+    let m = m mod 60 in
+    if round_5 then
+      if m mod 5 > 2 then
+        (m / 5) * 5 + 5
+      else
+        m / 5 * 5
+    else
+      m
+  in
+  let m =
+    if m >= 60 then
+      if round_5 then 55 else 59
+    else
+      m
+  in
   assert (0 <= h && h <= 11);
   assert (0 <= m && m <= 59);
   h, m
@@ -297,8 +312,8 @@ let wrap_click_24h ev f_e f_b =
    let make_hours_signal h is_am =
      angle_to_hours h |> convert_24h is_am
 
-let make_hm_signal e is_am =
-  let h, m = angle_to_hours_minutes e in
+let make_hm_signal ?round_5 e is_am =
+  let h, m = angle_to_hours_minutes ?round_5 e in
   let h = convert_24h is_am h in
   h, m
 
@@ -311,9 +326,10 @@ let make_hm_signal e is_am =
        make_hours_signal {{make_hours_signal}} |>
      Eliom_csreact.SharedReact.S.l2
 
-let make_hm_signal =
+let make_hm_signal ?round_5 =
   Eliom_lib.create_shared_value
-    make_hm_signal {{make_hm_signal}} |>
+    (make_hm_signal ?round_5)
+    {{make_hm_signal ?round_5:%round_5}} |>
   Eliom_csreact.SharedReact.S.l2
 
 let make_minutes_signal ?round_5 =
@@ -331,7 +347,8 @@ let make_minutes_signal ?round_5 =
        let open Eliom_content.Svg.F in
        [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
         a_viewbox ( 0. , 0. , 100. , 100. );
-        a_onclick {{ fun ev -> wrap_click ev %f }}]
+        a_onclick
+          {{ fun ev -> wrap_click ev %f }}]
      in
      Eliom_content.Html5.D.svg ~a [s]
 
@@ -431,7 +448,7 @@ let angle_signal_of_hours =
     angle_signal_of_hours {{angle_signal_of_hours}} |>
   Eliom_csreact.SharedReact.S.map
 
-let make_hours () =
+let make_hours_12h () =
   let e, f_e = Eliom_csreact.SharedReact.S.create 0
   and c, is_am = am_pm_toggle () in
   let h = make_hours_signal e is_am in
@@ -448,6 +465,12 @@ let make_hours_24h () =
   let g = clock_html_wrap_24h (clock_svg_24h b e) f_e f_b
   and d = display_hours h |> r_node in
   container_24h [g; d], h
+
+let make_hours ?h24:(h24 = false) () =
+  if h24 then
+    make_hours_24h ()
+  else
+    make_hours_12h ()
 
 let display_minutes =
   Eliom_lib.create_shared_value display_minutes {{display_minutes}} |>
@@ -474,13 +497,14 @@ let display_hours_minutes_seq f =
 
 let angle_signal_of_hours_minutes =
   Eliom_lib.create_shared_value
-    angle_signal_of_hours_minutes {{angle_signal_of_hours_minutes}} |>
+    (angle_signal_of_hours_minutes)
+    {{angle_signal_of_hours_minutes}} |>
   Eliom_csreact.SharedReact.S.map
 
-let make_hours_minutes () =
+let make_hours_minutes ?round_5 () =
   let e, f_e = Eliom_csreact.SharedReact.S.create 0
   and c, is_am = am_pm_toggle () in
-  let hm = make_hm_signal e is_am in
+  let hm = make_hm_signal ?round_5 e is_am in
   let e = angle_signal_of_hours_minutes hm in
   let g =
     let svg = clock_svg e in
@@ -508,7 +532,7 @@ let angle_signal_of_minutes' =
 
 {shared{
 
-   let make_hours_minutes_seq ?round_5 () =
+   let make_hours_minutes_seq ?action ?round_5 () =
      let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
      and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
      and b, f_b = Eliom_csreact.SharedReact.S.create true in
@@ -532,8 +556,17 @@ let angle_signal_of_minutes' =
      and show_minutes = {unit -> unit{
        let p = Eliom_content.Html5.To_dom.of_div %r
        and g_m =
-         let e_m = angle_signal_of_minutes' %hm in
-         clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) %f_e_m |>
+         let e_m = angle_signal_of_minutes' %hm
+         and f ?step m =
+           %f_e_m m;
+           match %action with
+           | Some action ->
+             let v = React.S.value %hm in
+             Lwt.async (fun () -> action v)
+           | None ->
+             ()
+         in
+         clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f |>
          Eliom_content.Html5.To_dom.of_node
        in
        fun () -> p##firstChild >>! Dom.replaceChild p g_m }}

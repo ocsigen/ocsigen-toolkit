@@ -27,8 +27,9 @@
        picked. *)
 
 val make_hours_minutes :
+  ?round_5 : bool ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
+  [> Html5_types.div] Eliom_content.Html5.D.elt *
   (int * int) Eliom_csreact.SharedReact.S.t
 
 (** [make_hours_minutes_seq ()] produces a clock-style time picker for
@@ -41,28 +42,25 @@ val make_hours_minutes :
     is a function that can be called to go back to hours selection. *)
 
 val make_hours_minutes_seq :
-  ?round_5 : bool ->
+  ?action :
+    (int * int -> unit Lwt.t) Eliom_pervasives.client_value ->
+  ?round_5 :
+    bool ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
+  [> Html5_types.div] Eliom_content.Html5.D.elt *
   (int * int) Eliom_csreact.SharedReact.S.t *
   (unit -> unit) Eliom_pervasives.client_value
 
-(** [make_hours ()] produces a clock-style hour picker.  The first
-    part of the output is the clock. The second part of the output is
-    a reactive signal for the hour that the user picked. *)
+(** [make_hours ?h24 ()] produces a clock-style hour picker. If [h24]
+    is true, a 24-hour version is produced (i.e., 24 points in nested
+    circles). The first part of the output is the clock. The second
+    part of the output is a reactive signal for the hour that the user
+    picked. *)
 
 val make_hours :
+  ?h24 : bool ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
-  int Eliom_csreact.SharedReact.S.t
-
-(** [make_hours_24h ()] produces a 24-hour version of the hour
-    picker. The clock has 24 points in nested circles (in place of an
-    AM/PM button). *)
-
-val make_hours_24h :
-  unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
+  [> Html5_types.div] Eliom_content.Html5.D.elt *
   int Eliom_csreact.SharedReact.S.t
 
 (** [make_hours ?round_5 ()] produces a clock-style hour picker.  If
@@ -74,7 +72,7 @@ val make_hours_24h :
 val make_minutes :
   ?round_5 : bool ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
+  [> Html5_types.div] Eliom_content.Html5.D.elt *
   int Eliom_csreact.SharedReact.S.t
 
 }}
