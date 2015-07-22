@@ -26,9 +26,9 @@
        m] needs to produce the list of days for the month [m] of the
        year [y] that need to be visually denoted.
 
-       If [click_any] is [true], every date is clickable; otherwise,
-       only the dates that [highlight] returns (if [highlight] is
-       provided) are clickable.
+       If [click_non_highlighted] is [true], every date is clickable;
+       otherwise, only the dates that [highlight] returns (if
+       [highlight] is provided) are clickable.
 
        If a client-side function [action] is provided, when the user
        clicks on the date [d]:[m]:[y], [action y m d] is called. *)
@@ -36,10 +36,10 @@
 val make :
   ?highlight :
     (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
-  ?click_any :
+  ?click_non_highlighted :
     bool ->
   ?action :
-    (int -> int -> int -> unit) Eliom_lib.client_value ->
+    (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
 
