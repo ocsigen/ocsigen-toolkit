@@ -392,19 +392,38 @@ let angle_signal_of_minutes =
   Eliom_lib.create_shared_value (( * ) 6) {{ ( * ) 6 }} |>
   Eliom_csreact.SharedReact.S.map
 
-let display_hours_minutes (h, m) =
-  let a = [a_class ["ot-tp-display"]] in
-  div ~a [pcdata (Printf.sprintf "%d:%02d" h m)]
+let string_of_hours ?h24:(h24 = false) h =
+  if h24 then
+    string_of_int h
+  else if h = 0 || h = 12 then
+    "12"
+  else if h < 12 then
+    string_of_int h
+  else
+    string_of_int (h - 12)
 
-let display_hours_minutes_seq f (h, m) b =
-  let h =
+let display_hours_minutes ?h24:(h24 = false) (h, m) =
+  let a = [a_class ["ot-tp-display"]] in
+  let s =
+    if h24 then
+      Printf.sprintf "%d:%02d" h m
+    else
+      Printf.sprintf "%s:%02d %s"
+        (string_of_hours ~h24 h)
+        m
+        (if h < 12 then "AM" else "PM")
+  in
+  div ~a [pcdata s]
+
+let display_hours_minutes_seq ?h24:(h24 = false) f (h, m) b =
+  let h' =
     let a =
       if b then
         [a_class ["ot-tp-hours"; "ot-tp-active"]]
       else
         [a_class ["ot-tp-hours"; "ot-tp-inactive"];
          a_onclick {{ fun _ -> %f true }}]
-    and c = [string_of_int h |> pcdata] in
+    and c = [string_of_hours ~h24 h |> pcdata] in
     span ~a c
   and m =
     let a =
@@ -416,7 +435,11 @@ let display_hours_minutes_seq f (h, m) b =
     and c = [Printf.sprintf "%02d" m |> pcdata] in
     span ~a c
   and a = [a_class ["ot-tp-display"]] in
-  div ~a [h; pcdata ":"; m]
+  if h24 then
+    div ~a [h'; pcdata ":"; m]
+  else
+    div ~a [h'; pcdata ":"; m;
+            pcdata (if h < 12 then " AM" else " PM")]
 
 let angle_signal_of_hours_minutes (h, m) =
   let h = if h >= 12 then h - 12 else h in
@@ -484,15 +507,16 @@ let make_minutes ?round_5 () =
   and d = display_minutes m |> r_node in
   container [g; d], m
 
-let display_hours_minutes =
+let display_hours_minutes ?h24 =
   Eliom_lib.create_shared_value
-    display_hours_minutes {{display_hours_minutes}} |>
+    (display_hours_minutes ?h24)
+    {{display_hours_minutes ?h24:%h24}} |>
   Eliom_csreact.SharedReact.S.map
 
-let display_hours_minutes_seq f =
+let display_hours_minutes_seq ?h24 f =
   Eliom_lib.create_shared_value
-    (display_hours_minutes_seq f)
-    {{display_hours_minutes_seq %f}} |>
+    (display_hours_minutes_seq ?h24 f)
+    {{display_hours_minutes_seq ?h24:%h24 %f}} |>
   Eliom_csreact.SharedReact.S.l2
 
 let angle_signal_of_hours_minutes =
@@ -507,9 +531,9 @@ let make_hours_minutes ?round_5 () =
   let hm = make_hm_signal ?round_5 e is_am in
   let e = angle_signal_of_hours_minutes hm in
   let g =
-    let svg = clock_svg e in
+    let svg = clock_svg ~zero_is_12:true e in
     clock_html_wrap svg f_e
-  and d = display_hours_minutes hm |> r_node in
+  and d = display_hours_minutes ~h24:false hm |> r_node in
   container [g; c; d], hm
 
 let combine_inputs_hours_minutes ?round_5 =
@@ -547,7 +571,7 @@ let angle_signal_of_minutes' =
      let g_h =
        let e_h' = angle_signal_of_hours' hm in
        clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
-     and d = display_hours_minutes_seq f_b hm b |> r_node in
+     and d = display_hours_minutes_seq ~h24:false f_b hm b |> r_node in
      let r = container [g_h; c; d] in
      let show_hours = {unit -> unit{
        let r = Eliom_content.Html5.To_dom.of_div %r
