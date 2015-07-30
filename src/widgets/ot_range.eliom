@@ -55,12 +55,12 @@ let display_aux (_, _, a) v =
 
 {client{
 
-   let go_up (lb, ub, a) r f =
+   let go_up (lb, ub, a) r (f : ?step:_ -> _) =
      let v = Eliom_csreact.SharedReact.S.value r in
      assert (v <= ub - 1);
      f (if v = ub - 1 then lb else v + 1)
 
-let go_down (lb, ub, a) r f =
+let go_down (lb, ub, a) r (f : ?step:_ -> _) =
   let v = Eliom_csreact.SharedReact.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)

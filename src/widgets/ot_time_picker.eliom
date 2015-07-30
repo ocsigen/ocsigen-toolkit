@@ -298,7 +298,7 @@ let wrap_click_aux ev f =
   in
   cartesian_to_polar (x, y) |> f
 
-let wrap_click ev f =
+let wrap_click ev (f : _ rf) =
   let f p = f (snd p) in
   wrap_click_aux ev f
 
