@@ -554,7 +554,72 @@ let angle_signal_of_minutes' =
 
 }}
 
+{client{
+
+   let show_hours_aux r h =
+     let r = Eliom_content.Html5.To_dom.of_div r
+     and h = Eliom_content.Html5.To_dom.of_node h in
+     fun () -> r##firstChild >>! Dom.replaceChild r h
+
+let show_minutes_aux ?action r h hm f_e_m =
+  let p = Eliom_content.Html5.To_dom.of_div r
+  and g_m =
+    let e_m = angle_signal_of_minutes' hm
+    and f ?step m =
+      f_e_m m;
+      match action with
+      | Some action ->
+        let v = React.S.value hm in
+        Lwt.async (fun () -> action v)
+      | None ->
+        ()
+    in
+    clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f |>
+    Eliom_content.Html5.To_dom.of_node
+  in
+  fun () -> p##firstChild >>! Dom.replaceChild p g_m
+
+let toggle_on_click_aux e_h f_b =
+  let f h =
+    Lwt.async (fun () ->
+      lwt () = Lwt_js.sleep 0.3 in
+      f_b false;
+      Lwt.return ())
+  in
+  React.(E.map f (S.changes e_h)) |> ignore
+
+ }}
+
 {shared{
+
+   let make_hours_minutes_seq_24h ?action ?round_5 () =
+     let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
+     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
+     and is_am, f_is_am = Eliom_csreact.SharedReact.S.create true
+     and b, f_b = Eliom_csreact.SharedReact.S.create true in
+     let f_e_h =
+       Eliom_lib.create_shared_value
+         (fun ?step x ->
+            (Eliom_csreact.Shared.local f_e_h) ?step (Some x))
+         {{ fun ?step x -> %f_e_h ?step (Some x) }}
+     in
+     let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
+     let g_h =
+       let e_h' = angle_signal_of_hours' hm in
+       clock_html_wrap_24h (clock_svg_24h is_am e_h') f_e_h f_is_am
+     and d = display_hours_minutes_seq ~h24:true f_b hm b |> r_node in
+     let r = container [g_h; d] in
+     let show_hours = {unit -> unit{
+       show_hours_aux %r %g_h
+     }}
+     and show_minutes = {unit -> unit{
+       show_minutes_aux ?action:%action %r %g_h %hm %f_e_m
+     }} in
+     {unit{ toggle_on_click_aux %e_h %f_b }} |> ignore;
+     {unit{
+        let f b = if b then %show_hours () else %show_minutes () in
+        React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
+     r, hm, show_hours
 
    let make_hours_minutes_seq ?action ?round_5 () =
      let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
@@ -574,38 +639,21 @@ let angle_signal_of_minutes' =
      and d = display_hours_minutes_seq ~h24:false f_b hm b |> r_node in
      let r = container [g_h; c; d] in
      let show_hours = {unit -> unit{
-       let r = Eliom_content.Html5.To_dom.of_div %r
-       and g_h = Eliom_content.Html5.To_dom.of_node %g_h in
-       fun () -> r##firstChild >>! Dom.replaceChild r g_h }}
+       show_hours_aux %r %g_h
+     }}
      and show_minutes = {unit -> unit{
-       let p = Eliom_content.Html5.To_dom.of_div %r
-       and g_m =
-         let e_m = angle_signal_of_minutes' %hm
-         and f ?step m =
-           %f_e_m m;
-           match %action with
-           | Some action ->
-             let v = React.S.value %hm in
-             Lwt.async (fun () -> action v)
-           | None ->
-             ()
-         in
-         clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f |>
-         Eliom_content.Html5.To_dom.of_node
-       in
-       fun () -> p##firstChild >>! Dom.replaceChild p g_m }}
-     in
+       show_minutes_aux ?action:%action %r %g_h %hm %f_e_m
+     }} in
+     {unit{ toggle_on_click_aux %e_h %f_b }} |> ignore;
      {unit{
         let f b = if b then %show_hours () else %show_minutes () in
         React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
-     {unit{
-        let f h =
-          Lwt.async (fun () ->
-            lwt () = Lwt_js.sleep 0.3 in
-            %f_b false;
-            Lwt.return ())
-        in
-        React.(E.map f (S.changes %e_h)) |> ignore }} |> ignore;
      r, hm, show_hours
+
+let make_hours_minutes_seq ?action ?round_5 ?h24:(h24 = true) () =
+  if h24 then
+    make_hours_minutes_seq_24h ?action ?round_5 ()
+  else
+    make_hours_minutes_seq ?action ?round_5 ()
 
  }}
