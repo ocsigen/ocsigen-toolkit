@@ -34,6 +34,7 @@
        clicks on the date [d]:[m]:[y], [action y m d] is called. *)
 
 val make :
+  ?init : (int * int * int) ->
   ?highlight :
     (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
   ?click_non_highlighted :

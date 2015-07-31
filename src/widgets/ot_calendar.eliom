@@ -71,7 +71,8 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   in
   Html5.D.table ~a ~thead (map_interval 0 i_max f)
 
-let rec build_calendar day =
+let rec build_calendar
+    ?class_for_day:(class_for_day = false) day =
   let module D = CalendarLib.Date in
   let fst_sun =
     D.nth_weekday_of_month (D.year day) (D.month day) D.Sun 1 in
@@ -98,14 +99,22 @@ let rec build_calendar day =
     if D.month fst_sun = D.month d then
       let module C = CalendarLib.Calendar in
       (let today = CalendarLib.Date.today () in
-       [a_class
-          [if d < today then
-             "ot-c-past"
-           else if d = today then
-             "ot-c-today"
-           else
-             "ot-c-future"]]),
-      [div [D.day_of_month d |> string_of_int |> pcdata]]
+       let classes =
+         [if d < today then
+            "ot-c-past"
+          else if d = today then
+            "ot-c-today"
+          else
+            "ot-c-future"]
+       in
+       let classes =
+         if d = day && class_for_day then
+           "ot-c-default" :: classes
+         else
+           classes
+       in
+       [a_class classes],
+       [div [D.day_of_month d |> string_of_int |> pcdata]])
     else
       [], []
   and f_a_row i = [] in
@@ -219,6 +228,7 @@ let rec attach_behavior
 {shared{
 
    let make :
+     ?init : (int * int * int) ->
      ?highlight :
      (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
      ?click_non_highlighted : bool ->
@@ -226,14 +236,21 @@ let rec attach_behavior
      (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
      unit ->
      [> Html5_types.table ] Eliom_content.Html5.elt =
-     fun ?highlight ?click_non_highlighted ?action () ->
-       let today = CalendarLib.Date.today () in
-       let (cal, _, _) as c = build_calendar today in
+     fun ?init ?highlight ?click_non_highlighted ?action () ->
+       let init =
+         match init with
+         | Some (y, m, d) ->
+           CalendarLib.Date.make y m d
+         | None ->
+           CalendarLib.Date.today ()
+       in
+       let (cal, _, _) as c =
+         build_calendar ~class_for_day:true init in
        ignore {unit{
          attach_behavior
            ?highlight:%highlight
            ?click_non_highlighted:%click_non_highlighted
-           ?action:%action %today %c }};
+           ?action:%action %init %c }};
        cal
 
 let make_date_picker ?init () =
@@ -249,7 +266,7 @@ let make_date_picker ?init () =
   let v, f =  Eliom_csreact.SharedReact.S.create init in
   let action = {{ fun y m d -> %f (y, m, d); Lwt.return () }}
   and click_non_highlighted = true in
-  let d = make ~click_non_highlighted ~action () in
+  let d = make ~init ~click_non_highlighted ~action () in
   d, v
 
 }}
