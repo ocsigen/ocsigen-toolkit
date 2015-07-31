@@ -105,6 +105,19 @@ let cartesian_to_polar (x, y) =
 let cartesian_to_angle (x, y) =
   cartesian_to_polar (x, y) |> snd
 
+let round_5_minutes ?round_5:(round_5 = false) m =
+  if round_5 then
+    let m = m mod 60 in
+    let m =
+      if m mod 5 > 2 then
+        (m / 5) * 5 + 5
+      else
+        m / 5 * 5
+    in
+    if m >= 60 then 55 else m
+  else
+    m
+
 let angle_to_hours_minutes ?round_5:(round_5 = false) e =
   let m = e * 2 in
   let h = m / 60
@@ -374,7 +387,9 @@ let container l = div ~a:[a_class ["ot-tp-container"]] l
 let container_24h l =
   div ~a:[a_class ["ot-tp-container"; "ot-tp-container-24h"]] l
 
-let am_pm_toggle () = Ot_toggle.make ~up_txt:"AM" ~down_txt:"PM" ()
+let am_pm_toggle ?init_am:(init_am = true) () =
+  let init_up = not init_am in
+  Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ()
 
 let display_hours h =
   let a = [a_class ["ot-tp-display"]] in
@@ -445,11 +460,8 @@ let angle_signal_of_hours_minutes (h, m) =
   let h = if h >= 12 then h - 12 else h in
   h * 30 + m / 2
 
-let combine_inputs_hours_minutes ?round_5 e_h e_m is_am =
-  let h =
-    (match e_h with Some e_h -> e_h | _ -> 0) |>
-    angle_to_hours |>
-    convert_24h is_am
+let combine_inputs_hours_minutes ?round_5 (e_h, _) e_m is_am =
+  let h = angle_to_hours e_h |> convert_24h is_am
   and m = angle_to_minutes ?round_5 e_m in
   h, m
 
@@ -592,16 +604,20 @@ let toggle_on_click_aux e_h f_b =
 
 {shared{
 
-   let make_hours_minutes_seq_24h ?action ?round_5 () =
-     let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
-     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
-     and is_am, f_is_am = Eliom_csreact.SharedReact.S.create true
+   let make_hours_minutes_seq_24h
+       ?action ?init:(init = (0, 0)) ?round_5 () =
+     let i_h, i_m = init in
+     let i_m = round_5_minutes ?round_5 i_m in
+     let e_h, f_e_h = Eliom_csreact.SharedReact.S.create
+         ((i_h mod 12) * 30, false)
+     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create (i_m * 6)
+     and is_am, f_is_am = Eliom_csreact.SharedReact.S.create (i_h < 12)
      and b, f_b = Eliom_csreact.SharedReact.S.create true in
      let f_e_h =
        Eliom_lib.create_shared_value
          (fun ?step x ->
-            (Eliom_csreact.Shared.local f_e_h) ?step (Some x))
-         {{ fun ?step x -> %f_e_h ?step (Some x) }}
+            (Eliom_csreact.Shared.local f_e_h) ?step (x, true))
+         {{ fun ?step x -> %f_e_h ?step (x, true) }}
      in
      let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
      let g_h =
@@ -621,39 +637,43 @@ let toggle_on_click_aux e_h f_b =
         React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
      r, hm, show_hours
 
-   let make_hours_minutes_seq ?action ?round_5 () =
-     let e_h, f_e_h = Eliom_csreact.SharedReact.S.create None
-     and e_m, f_e_m = Eliom_csreact.SharedReact.S.create 0
-     and b, f_b = Eliom_csreact.SharedReact.S.create true in
-     let f_e_h =
-       Eliom_lib.create_shared_value
-         (fun ?step x ->
-            (Eliom_csreact.Shared.local f_e_h) ?step (Some x))
-         {{ fun ?step x -> %f_e_h ?step (Some x) }}
-     in
-     let c, is_am = am_pm_toggle () in
-     let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
-     let g_h =
-       let e_h' = angle_signal_of_hours' hm in
-       clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
-     and d = display_hours_minutes_seq ~h24:false f_b hm b |> r_node in
-     let r = container [g_h; c; d] in
-     let show_hours = {unit -> unit{
-       show_hours_aux %r %g_h
-     }}
-     and show_minutes = {unit -> unit{
-       show_minutes_aux ?action:%action %r %g_h %hm %f_e_m
-     }} in
-     {unit{ toggle_on_click_aux %e_h %f_b }} |> ignore;
-     {unit{
-        let f b = if b then %show_hours () else %show_minutes () in
-        React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
-     r, hm, show_hours
+let make_hours_minutes_seq ?action ?init:(init = (0, 0)) ?round_5 () =
+  let i_h, i_m = init in
+  let i_m = round_5_minutes ?round_5 i_m in
+  let e_h, f_e_h =
+    Eliom_csreact.SharedReact.S.create ((i_h mod 12) * 30, false)
+  and e_m, f_e_m = Eliom_csreact.SharedReact.S.create (i_m * 6)
+  and b, f_b = Eliom_csreact.SharedReact.S.create true in
+  let f_e_h =
+    Eliom_lib.create_shared_value
+      (fun ?step x ->
+         (Eliom_csreact.Shared.local f_e_h) ?step (x, true))
+      {{ fun ?step x -> %f_e_h ?step (x, true) }}
+  in
+  let c, is_am = am_pm_toggle ~init_am:(i_h < 12) () in
+  let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
+  let g_h =
+    let e_h' = angle_signal_of_hours' hm in
+    clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
+  and d = display_hours_minutes_seq ~h24:false f_b hm b |> r_node in
+  let r = container [g_h; c; d] in
+  let show_hours = {unit -> unit{
+    show_hours_aux %r %g_h
+  }}
+  and show_minutes = {unit -> unit{
+    show_minutes_aux ?action:%action %r %g_h %hm %f_e_m
+  }} in
+  {unit{ toggle_on_click_aux %e_h %f_b }} |> ignore;
+  {unit{
+     let f b = if b then %show_hours () else %show_minutes () in
+     React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
+  r, hm, show_hours
 
-let make_hours_minutes_seq ?action ?round_5 ?h24:(h24 = true) () =
+let make_hours_minutes_seq
+    ?action ?init ?round_5 ?h24:(h24 = true) () =
   if h24 then
-    make_hours_minutes_seq_24h ?action ?round_5 ()
+    make_hours_minutes_seq_24h ?action ?init ?round_5 ()
   else
-    make_hours_minutes_seq ?action ?round_5 ()
+    make_hours_minutes_seq ?action ?init ?round_5 ()
 
  }}

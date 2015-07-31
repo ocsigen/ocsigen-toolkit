@@ -37,17 +37,20 @@ val make_hours_minutes :
     clock-style time picker for hours and minutes. The user is first
     asked to pick hours, then minutes with a separate clock. If
     [action] is provided, it is called when a new time is
-    available. If [round_5] is true (default: false), the output for
-    the minutes is rounded to multiples of 5. If [h24] is true
-    (default: true), a 24-hour hour picker is used. The first part of
-    the output is the clock. The second part of the output is a
-    reactive signal [(h, m)] where [h] are the hours and [m] the
-    minutes that the user picked. The third part of the output is a
-    function that can be called to go back to hours selection. *)
+    available. [init] (if provided) is the default displayed time. If
+    [round_5] is true (default: false), the output for the minutes is
+    rounded to multiples of 5. If [h24] is true (default: true), a
+    24-hour hour picker is used. The first part of the output is the
+    clock. The second part of the output is a reactive signal [(h, m)]
+    where [h] are the hours and [m] the minutes that the user
+    picked. The third part of the output is a function that can be
+    called to go back to hours selection. *)
 
 val make_hours_minutes_seq :
   ?action :
     (int * int -> unit Lwt.t) Eliom_pervasives.client_value ->
+  ?init :
+    int * int ->
   ?round_5 :
     bool ->
   ?h24 :
