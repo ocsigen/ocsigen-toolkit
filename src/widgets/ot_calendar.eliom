@@ -109,7 +109,7 @@ let rec build_calendar
        in
        let classes =
          if d = day && class_for_day then
-           "ot-c-default" :: classes
+           "ot-c-current" :: classes
          else
            classes
        in
@@ -137,9 +137,9 @@ let rec build_calendar
            j + 7 * i |> Period.day |> add zero
          in
          if d = d' then
-           c##classList##add(Js.string "ot-c-clicked")
+           c##classList##add(Js.string "ot-c-current")
          else
-           c##classList##remove(Js.string "ot-c-clicked")
+           c##classList##remove(Js.string "ot-c-current")
        in
        iter_interval 0 6 f
      in
