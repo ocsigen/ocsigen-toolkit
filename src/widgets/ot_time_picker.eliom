@@ -578,7 +578,7 @@ let show_minutes_aux ?action r h hm f_e_m =
   and g_m =
     let e_m = angle_signal_of_minutes' hm
     and f ?step m =
-      f_e_m m;
+      f_e_m ?step m;
       match action with
       | Some action ->
         let v = React.S.value hm in
