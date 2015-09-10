@@ -388,7 +388,7 @@ let container_24h l =
   div ~a:[a_class ["ot-tp-container"; "ot-tp-container-24h"]] l
 
 let am_pm_toggle ?init_am:(init_am = true) () =
-  let init_up = not init_am in
+  let init_up = init_am in
   Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ()
 
 let display_hours h =
