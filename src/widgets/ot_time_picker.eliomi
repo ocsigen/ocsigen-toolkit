@@ -51,6 +51,8 @@ val make_hours_minutes_seq :
     (int * int -> unit Lwt.t) Eliom_pervasives.client_value ->
   ?init :
     int * int ->
+  ?update :
+    (int * int) React.E.t Eliom_pervasives.client_value ->
   ?round_5 :
     bool ->
   ?h24 :

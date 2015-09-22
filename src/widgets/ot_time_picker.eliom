@@ -387,9 +387,9 @@ let container l = div ~a:[a_class ["ot-tp-container"]] l
 let container_24h l =
   div ~a:[a_class ["ot-tp-container"; "ot-tp-container-24h"]] l
 
-let am_pm_toggle ?init_am:(init_am = true) () =
+let am_pm_toggle ?init_am:(init_am = true) ?update () =
   let init_up = init_am in
-  Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ()
+  Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ?update ()
 
 let display_hours h =
   let a = [a_class ["ot-tp-display"]] in
@@ -634,13 +634,31 @@ let delay f delay =
         React.(E.map f (S.changes %b)) |> ignore }} |> ignore;
      r, hm, {unit -> unit{ fun () -> %f_b true }}
 
-let make_hours_minutes_seq ?action ?init:(init = (0, 0)) ?round_5 () =
+let make_hours_minutes_seq
+    ?action ?init:(init = (0, 0)) ?update ?round_5 () =
   let i_h, i_m = init in
   let i_m = round_5_minutes ?round_5 i_m in
   let e_h, f_e_h =
     Eliom_csreact.SharedReact.S.create ((i_h mod 12) * 30)
   and e_m, f_e_m = Eliom_csreact.SharedReact.S.create (i_m * 6)
   and b, f_b = Eliom_csreact.SharedReact.S.create true in
+  let c, is_am =
+    match update with
+    | Some update ->
+      {unit{
+         let f (h, m) =
+           (let h = if h > 12 then h - 12 else h in
+            %f_e_h (h * 30)); %f_e_m (m * 6)
+         in
+         React.E.map f %update |> ignore
+       }} |> ignore;
+      (let update = {bool React.E.t{
+         React.E.map (fun (h, _) -> h < 12) %update
+       }} in
+       am_pm_toggle ~init_am:(i_h < 12) ~update ())
+    | None ->
+      am_pm_toggle ~init_am:(i_h < 12) ()
+  in
   let f_e_h =
     Eliom_lib.create_shared_value
       (Eliom_csreact.Shared.local f_e_h)
@@ -648,7 +666,6 @@ let make_hours_minutes_seq ?action ?init:(init = (0, 0)) ?round_5 () =
          %f_e_h ?step x;
          delay (fun () -> %f_b false) 0.3 }}
   in
-  let c, is_am = am_pm_toggle ~init_am:(i_h < 12) () in
   let hm = combine_inputs_hours_minutes ?round_5 e_h e_m is_am in
   let g_h =
     let e_h' = angle_signal_of_hours' hm in
@@ -667,10 +684,10 @@ let make_hours_minutes_seq ?action ?init:(init = (0, 0)) ?round_5 () =
   r, hm, {unit -> unit{ fun () -> %f_b true }}
 
 let make_hours_minutes_seq
-    ?action ?init ?round_5 ?h24:(h24 = true) () =
+    ?action ?init ?update ?round_5 ?h24:(h24 = true) () =
   if h24 then
     make_hours_minutes_seq_24h ?action ?init ?round_5 ()
   else
-    make_hours_minutes_seq ?action ?init ?round_5 ()
+    make_hours_minutes_seq ?action ?init ?update ?round_5 ()
 
 }}

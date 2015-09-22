@@ -72,11 +72,18 @@ let is_up = function
 
 {shared{
 
-let make ?init_up:(init_up = false) ?up_txt ?down_txt () =
+let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
   let e, f =
     (if init_up then T_Up else T_Down) |>
     Eliom_csreact.SharedReact.S.create
   in
+  (match update with
+   | Some update ->
+     {unit{
+        let f b = if b then %f T_Up else %f T_Down in
+        React.E.map f %update |> ignore }} |> ignore;
+   | None ->
+     ());
   r_node
     (Eliom_csreact.SharedReact.S.map
        (Eliom_lib.create_shared_value
