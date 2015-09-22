@@ -125,7 +125,7 @@ let rec build_calendar
 
 {client{
 
-   let onclick_update_classes cal zero d =
+   let update_classes cal zero d =
      let rows = (Html5.To_dom.of_table cal)##rows in
      let f i =
        rows##item(i + 2) >>! fun r ->
@@ -148,6 +148,7 @@ let rec build_calendar
 let attach_events
        ?action
        ?click_non_highlighted:(click_non_highlighted = false)
+       ?update
        d cal highlight =
      let module D = CalendarLib.Date in
      let rows = (Html5.To_dom.of_table cal)##rows in
@@ -167,15 +168,21 @@ let attach_events
          let dom = CalendarLib.Calendar.Date.day_of_month d
          and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
          and y = CalendarLib.Calendar.Date.year d in
-         let set_onclick () =
+         let action =
            match action with
            | Some action ->
-             let f _ r =
-               onclick_update_classes cal zero d;
-               action y m dom in
-             Lwt.async (fun () -> Lwt_js_events.clicks c f)
+             (fun _ r ->
+                update_classes cal zero d;
+                action y m dom;
+                Lwt.return ())
            | None ->
-             ()
+             (fun _ r ->
+                update_classes cal zero d;
+                Lwt.return ())
+         in
+         let set_onclick () =
+           let f () = Lwt_js_events.clicks c action in
+           Lwt.async f
          in
          if List.exists ((=) dom) highlight then begin
            c##classList##add(Js.string "ot-c-highlight");
@@ -189,7 +196,8 @@ let attach_events
      in
      iter_interval 0 4 f
 
-let attach_events_lwt ?action ?click_non_highlighted d cal highlight =
+let attach_events_lwt
+    ?action ?click_non_highlighted d cal highlight =
   let f () =
     let m = CalendarLib.Date.(month d |> int_of_month)
     and y = CalendarLib.Date.year d in
@@ -199,17 +207,9 @@ let attach_events_lwt ?action ?click_non_highlighted d cal highlight =
   in
   Lwt.async f
 
-let rec attach_behavior
+let attach_behavior
     ?highlight ?click_non_highlighted ?action
-    d (cal, prev, next) =
-  let update d =
-    let (cal', _, _) as c = build_calendar d in
-    attach_behavior ?highlight ?click_non_highlighted ?action d c;
-    let cal = Html5.To_dom.of_element cal in
-    let cal' = Html5.To_dom.of_element cal' in
-    (cal##parentNode >>! fun p -> Dom.replaceChild p cal' cal);
-    Js._false
-  in
+    d (cal, prev, next) f_d =
   (match highlight with
    | Some highlight ->
      attach_events_lwt ?click_non_highlighted ?action d cal highlight
@@ -219,41 +219,76 @@ let rec attach_behavior
   (* FIXME: these may fail to go to the previous month, e.g., for May
      31 (April and June have only 30) *)
   (Html5.To_dom.of_element prev)##onclick <-
-    Dom_html.handler (fun _ -> update (D.prev d `Month));
+    Dom_html.handler (fun _ -> f_d (D.prev d `Month); Js._false);
   (Html5.To_dom.of_element next)##onclick <-
-    Dom_html.handler (fun _ -> update (D.next d `Month))
+    Dom_html.handler (fun _ -> f_d (D.next d `Month); Js._false)
+
+let make :
+  ?init : (int * int * int) ->
+  ?highlight : (int -> int -> int list Lwt.t) ->
+  ?click_non_highlighted : bool ->
+  ?update : (int * int * int) React.E.t ->
+  ?action : (int -> int -> int -> unit Lwt.t) ->
+  unit ->
+  [> Html5_types.table ] Eliom_content.Html5.elt =
+  fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
+    let init =
+      CalendarLib.Date.(match init with
+        | Some (y, m, d) ->
+          make y m d
+        | None ->
+          today ())
+    in
+    let d, f_d = React.S.create init in
+    let f d =
+      let (cal, _, _) as c = build_calendar ~class_for_day:true d in
+      attach_behavior ?highlight ?click_non_highlighted ?action d c f_d;
+      cal
+    in
+    (match update with
+     | Some update ->
+       let f (y, m, d) =
+         CalendarLib.Date.make y m d |> f_d;
+         (match action with
+          | Some action ->
+            Lwt.async (fun () -> action y m d)
+          | None ->
+            ())
+       in
+       React.E.map f update |> ignore
+     | None ->
+       ());
+    React.S.map f d |> Eliom_content.Html5.R.node
 
 }}
 
-{shared{
+{server{
 
    let make :
      ?init : (int * int * int) ->
      ?highlight :
      (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
      ?click_non_highlighted : bool ->
+     ?update :
+     (int * int * int) React.E.t Eliom_lib.client_value ->
      ?action :
      (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
      unit ->
      [> Html5_types.table ] Eliom_content.Html5.elt =
-     fun ?init ?highlight ?click_non_highlighted ?action () ->
-       let init =
-         match init with
-         | Some (y, m, d) ->
-           CalendarLib.Date.make y m d
-         | None ->
-           CalendarLib.Date.today ()
-       in
-       let (cal, _, _) as c =
-         build_calendar ~class_for_day:true init in
-       ignore {unit{
-         attach_behavior
-           ?highlight:%highlight
-           ?click_non_highlighted:%click_non_highlighted
-           ?action:%action %init %c }};
-       cal
+     fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
+       {[> Html5_types.table ] Eliom_content.Html5.elt{ make
+            ?init:%init
+            ?highlight:%highlight
+            ?click_non_highlighted:%click_non_highlighted
+            ?update:%update
+            ?action:%action () }} |>
+       Eliom_content.Html5.C.node
 
-let make_date_picker ?init () =
+ }} ;;
+
+{shared{
+
+let make_date_picker ?init ?update () =
   let init =
     match init with
     | Some init ->
@@ -266,7 +301,7 @@ let make_date_picker ?init () =
   let v, f =  Eliom_csreact.SharedReact.S.create init in
   let action = {{ fun y m d -> %f (y, m, d); Lwt.return () }}
   and click_non_highlighted = true in
-  let d = make ~init ~click_non_highlighted ~action () in
+  let d = make ~init ~click_non_highlighted ?update ~action () in
   d, v
 
 }}

@@ -39,6 +39,8 @@ val make :
     (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
   ?click_non_highlighted :
     bool ->
+  ?update :
+    (int * int * int) React.E.t Eliom_lib.client_value ->
   ?action :
     (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
   unit ->
@@ -51,6 +53,8 @@ val make :
 
 val make_date_picker :
   ?init : (int * int * int) ->
+  ?update :
+    (int * int * int) React.E.t Eliom_lib.client_value ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
   (int * int * int) Eliom_csreact.SharedReact.S.t
