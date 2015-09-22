@@ -602,14 +602,23 @@ let delay f delay =
 {shared{
 
    let make_hours_minutes_seq_24h
-       ?action ?init:(init = (0, 0)) ?round_5 () =
+       ?action ?init:(init = (0, 0)) ?update ?round_5 () =
      let i_h, i_m = init in
      let i_m = round_5_minutes ?round_5 i_m in
      let e_h, f_e_h =
        Eliom_csreact.SharedReact.S.create ((i_h mod 12) * 30)
      and e_m, f_e_m = Eliom_csreact.SharedReact.S.create (i_m * 6)
-     and is_am, f_is_am = Eliom_csreact.SharedReact.S.create (i_h < 12)
-     and b, f_b = Eliom_csreact.SharedReact.S.create true in
+     and is_am, f_is_am = Eliom_csreact.SharedReact.S.create (i_h < 12) in
+     (match update with
+      | Some update -> {unit{
+        let f (h, m) =
+          let h, b = if h > 12 then h - 12, false else h, true in
+          %f_e_h (h * 30); %f_e_m (m * 6); %f_is_am b
+        in
+        React.E.map f %update |> ignore }} |> ignore
+      | None ->
+        ());
+     let b, f_b = Eliom_csreact.SharedReact.S.create true in
      let f_e_h =
        Eliom_lib.create_shared_value
          (Eliom_csreact.Shared.local f_e_h)
@@ -685,9 +694,9 @@ let make_hours_minutes_seq
 
 let make_hours_minutes_seq
     ?action ?init ?update ?round_5 ?h24:(h24 = true) () =
-  if h24 then
-    make_hours_minutes_seq_24h ?action ?init ?round_5 ()
-  else
-    make_hours_minutes_seq ?action ?init ?update ?round_5 ()
+  (if h24 then
+     make_hours_minutes_seq_24h
+   else
+     make_hours_minutes_seq) ?action ?init ?update ?round_5 ()
 
 }}
