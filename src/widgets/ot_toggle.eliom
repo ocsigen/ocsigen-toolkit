@@ -20,7 +20,7 @@
 
 {shared{
 
-open Eliom_content.Html5.D
+open Eliom_content.Html5
 
 open Eliom_shared.React.S.Infix
 
@@ -28,14 +28,13 @@ type t = T_Up | T_Down
 
 }}
 
-{shared{ let r_node a = Eliom_content.Html5.R.node a }} ;;
-
 {shared{
 
 let display_toggle
     ?up_txt:(up_txt = "up")
     ?down_txt:(down_txt = "down")
     f =
+  let open D in
   function
   | T_Up ->
     div ~a:[a_class ["ot-toggle"]]
@@ -51,12 +50,6 @@ let display_toggle
          [pcdata up_txt];
        div ~a:[a_class ["ot-active"; "ot-down"]]
          [pcdata down_txt]]
-
-let is_up = function
-  | T_Up ->
-    true
-  | T_Down ->
-    false
 
 }}
 
@@ -76,7 +69,7 @@ let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
   e >|=
   {shared# {
      display_toggle %f ?up_txt:%up_txt ?down_txt:%down_txt }} |>
-  r_node,
-  e >|= {shared# { is_up }}
+  R.node,
+  e >|= {shared# { function T_Up -> true | _ -> false }}
 
 }}

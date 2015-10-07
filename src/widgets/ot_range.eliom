@@ -19,18 +19,11 @@
 *)
 
 {shared{
-
+open Eliom_content.Html5
 open Eliom_shared.React.S.Infix
-open Eliom_content.Html5.D
-
-type t = int * int * string array option
-
 }}
 
 {shared{
-
-let r_node = Eliom_content.Html5.R.node
-
 let display_aux (_, _, a) v =
   let v =
     match a with
@@ -38,8 +31,8 @@ let display_aux (_, _, a) v =
       a.(v)
     | None ->
       string_of_int v
-  and a = [a_class ["ot-r-value"]] in
-  div ~a [pcdata v] }} ;;
+  and a = [D.a_class ["ot-r-value"]] in
+  D.div ~a [D.pcdata v] }} ;;
 
 {client{
 
@@ -58,20 +51,20 @@ let go_down (lb, ub, a) r (f : ?step:_ -> _) =
 {shared{
 
 let display_aux e r =
-  r >|= {shared# { display_aux %e }} |> r_node
+  r >|= {shared# { display_aux %e }} |> R.node
 
 let display
     ?txt_up:(txt_up = "up")
     ?txt_down:(txt_down = "down")
     e (v, f) =
-  div ~a:[a_class ["ot-range"]]
-    [div ~a:[a_class ["ot-r-up"];
-             a_onclick {{ fun _ -> go_up %e %v %f }}]
-       [pcdata txt_up];
-     display_aux e v;
-     div ~a:[a_class ["ot-r-down"];
-             a_onclick {{ fun _ -> go_down %e %v %f }}]
-       [pcdata txt_down]]
+  D.(div ~a:[a_class ["ot-range"]]
+       [div ~a:[a_class ["ot-r-up"];
+                a_onclick {{ fun _ -> go_up %e %v %f }}]
+          [pcdata txt_up];
+        display_aux e v;
+        div ~a:[a_class ["ot-r-down"];
+                a_onclick {{ fun _ -> go_down %e %v %f }}]
+          [pcdata txt_down]])
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
   assert (ub > lb);

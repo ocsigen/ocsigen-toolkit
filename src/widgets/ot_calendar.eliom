@@ -19,11 +19,10 @@
  *)
 
 {shared{
-module Html5 = Eliom_content.Html5
-open Html5.D
-}}
+open Eliom_content.Html5
 
-{shared{ let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"] }}
+let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
+}}
 
 {client{
 
@@ -65,38 +64,37 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   let f i =
     let f j =
       let a, c = f_cell i j in
-      td ~a c
+      D.td ~a c
     in
-    tr ~a:(f_a_row i) (map_interval 0 j_max f)
+    D.tr ~a:(f_a_row i) (map_interval 0 j_max f)
   in
-  Html5.D.table ~a ~thead (map_interval 0 i_max f)
+  D.table ~a ~thead (map_interval 0 i_max f)
 
 let rec build_calendar
     ?class_for_day:(class_for_day = false) day =
-  let module D = CalendarLib.Date in
+  let module A = CalendarLib.Date in
   let fst_sun =
-    D.nth_weekday_of_month (D.year day) (D.month day) D.Sun 1 in
-  let zero = D.prev fst_sun `Week
+    A.(nth_weekday_of_month (year day) (month day) Sun 1) in
+  let zero = A.prev fst_sun `Week
   and prev_button =
-    let a = [a_class ["ot-c-prev-button"]] in
-    Html5.D.span ~a [pcdata "<"]
+    D.(span ~a:[a_class ["ot-c-prev-button"]] [pcdata "<"])
   and next_button =
-    let a = [a_class ["ot-c-next-button"]] in
-    Html5.D.span ~a [pcdata ">"] in
+    D.(span ~a:[a_class ["ot-c-next-button"]] [pcdata ">"])
+  in
   let thead =
-    thead
-      [tr [th ~a:[a_colspan 7; a_class ["ot-c-header"]]
-             [prev_button;
-              CalendarLib.Printer.Date.sprint "%B %Y" fst_sun |>
-              pcdata;
-              next_button]];
-       tr (List.map (fun d -> th [pcdata d]) days)]
+    D.(thead
+         [tr [th ~a:[a_colspan 7; a_class ["ot-c-header"]]
+                [prev_button;
+                 CalendarLib.Printer.Date.sprint "%B %Y" fst_sun |>
+                 pcdata;
+                 next_button]];
+          tr (List.map (fun d -> th [pcdata d]) days)])
   and f_cell i j =
     let d =
       let open CalendarLib.Calendar.Date in
       add zero (Period.day (j + 7 * i))
     in
-    if D.month fst_sun = D.month d then
+    if A.month fst_sun = A.month d then
       let module C = CalendarLib.Calendar in
       (let today = CalendarLib.Date.today () in
        let classes =
@@ -113,12 +111,12 @@ let rec build_calendar
          else
            classes
        in
-       [a_class classes],
-       [div [D.day_of_month d |> string_of_int |> pcdata]])
+       [D.a_class classes],
+       [D.div [A.day_of_month d |> string_of_int |> D.pcdata]])
     else
       [], []
   and f_a_row i = [] in
-  build_table 5 6 ~a:[a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row,
+  build_table 5 6 ~a:[D.a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row,
   prev_button, next_button
 
 }} ;;
@@ -126,7 +124,7 @@ let rec build_calendar
 {client{
 
    let update_classes cal zero d =
-     let rows = (Html5.To_dom.of_table cal)##rows in
+     let rows = (To_dom.of_table cal)##rows in
      let f i =
        rows##item(i + 2) >>! fun r ->
        let cells = r##cells in
@@ -150,12 +148,12 @@ let attach_events
        ?click_non_highlighted:(click_non_highlighted = false)
        ?update
        d cal highlight =
-     let module D = CalendarLib.Date in
-     let rows = (Html5.To_dom.of_table cal)##rows in
+     let module A = CalendarLib.Date in
+     let rows = (To_dom.of_table cal)##rows in
      let fst_sun =
-       D.nth_weekday_of_month (D.year d) (D.month d) D.Sun 1
+       A.nth_weekday_of_month (A.year d) (A.month d) A.Sun 1
      in
-     let zero = D.prev fst_sun `Week in
+     let zero = A.prev fst_sun `Week in
      let f i =
        rows##item(i + 2) >>! fun r ->
        let cells = r##cells in
@@ -215,13 +213,13 @@ let attach_behavior
      attach_events_lwt ?click_non_highlighted ?action d cal highlight
    | None ->
      attach_events ?click_non_highlighted ?action d cal []);
-  let module D = CalendarLib.Date in
+  let module A = CalendarLib.Date in
   (* FIXME: these may fail to go to the previous month, e.g., for May
      31 (April and June have only 30) *)
-  (Html5.To_dom.of_element prev)##onclick <-
-    Dom_html.handler (fun _ -> f_d (D.prev d `Month); Js._false);
-  (Html5.To_dom.of_element next)##onclick <-
-    Dom_html.handler (fun _ -> f_d (D.next d `Month); Js._false)
+  (To_dom.of_element prev)##onclick <-
+    Dom_html.handler (fun _ -> f_d (A.prev d `Month); Js._false);
+  (To_dom.of_element next)##onclick <-
+    Dom_html.handler (fun _ -> f_d (A.next d `Month); Js._false)
 
 let make :
   ?init : (int * int * int) ->
@@ -230,7 +228,7 @@ let make :
   ?update : (int * int * int) React.E.t ->
   ?action : (int -> int -> int -> unit Lwt.t) ->
   unit ->
-  [> Html5_types.table ] Eliom_content.Html5.elt =
+  [> Html5_types.table ] elt =
   fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
     let init =
       CalendarLib.Date.(match init with
@@ -258,7 +256,7 @@ let make :
        React.E.map f update |> ignore
      | None ->
        ());
-    React.S.map f d |> Eliom_content.Html5.R.node
+    React.S.map f d |> R.node
 
 }}
 
@@ -274,15 +272,15 @@ let make :
      ?action :
      (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
      unit ->
-     [> Html5_types.table ] Eliom_content.Html5.elt =
+     [> Html5_types.table ] elt =
      fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
-       {[> Html5_types.table ] Eliom_content.Html5.elt{ make
+       {[> Html5_types.table ] elt{ make
             ?init:%init
             ?highlight:%highlight
             ?click_non_highlighted:%click_non_highlighted
             ?update:%update
             ?action:%action () }} |>
-       Eliom_content.Html5.C.node
+       C.node
 
  }} ;;
 
