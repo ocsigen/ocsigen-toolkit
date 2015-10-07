@@ -32,6 +32,6 @@ val make :
   ?lb : int ->
   int ->
   [> Html5_types.div ] Eliom_content.Html5.D.elt *
-  int Eliom_csreact.React.S.t
+  int Eliom_shared.React.S.t
 
 }}

@@ -22,23 +22,13 @@
 
 open Eliom_content.Html5.D
 
+open Eliom_shared.React.S.Infix
+
 type t = T_Up | T_Down
-
- }}
-
-{client{
-
-module Eliom_lib = struct
-  (* copied from Eliom_csreact ; find a proper place for this *)
-  include Eliom_lib
-  let create_shared_value _ x = x
-end
-
-let r_node a = Eliom_content.Html5.R.node a
 
 }}
 
-{server{ let r_node a = Eliom_csreact.R.node a }} ;;
+{shared{ let r_node a = Eliom_content.Html5.R.node a }} ;;
 
 {shared{
 
@@ -74,8 +64,7 @@ let is_up = function
 
 let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
   let e, f =
-    (if init_up then T_Up else T_Down) |>
-    Eliom_csreact.SharedReact.S.create
+    Eliom_shared.React.S.create (if init_up then T_Up else T_Down)
   in
   (match update with
    | Some update ->
@@ -84,14 +73,10 @@ let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
         React.E.map f %update |> ignore }} |> ignore;
    | None ->
      ());
-  r_node
-    (Eliom_csreact.SharedReact.S.map
-       (Eliom_lib.create_shared_value
-          (display_toggle f ?up_txt ?down_txt)
-          {{display_toggle %f ?up_txt:%up_txt ?down_txt:%down_txt}})
-       e),
-  Eliom_csreact.SharedReact.S.map
-    (Eliom_lib.create_shared_value is_up {{ is_up }} )
-    e
+  e >|=
+  {shared# {
+     display_toggle %f ?up_txt:%up_txt ?down_txt:%down_txt }} |>
+  r_node,
+  e >|= {shared# { is_up }}
 
 }}

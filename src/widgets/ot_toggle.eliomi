@@ -34,6 +34,6 @@ val make :
   ?update   : bool React.E.t Eliom_lib.client_value ->
   unit ->
   [> Html5_types.div ] Eliom_content.Html5.D.elt *
-  bool Eliom_csreact.SharedReact.S.t
+  bool Eliom_shared.React.S.t
 
 }}

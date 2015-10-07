@@ -20,28 +20,16 @@
 
 {shared{
 
-module Html5 = Eliom_content.Html5
-open Html5.D
+open Eliom_shared.React.S.Infix
+open Eliom_content.Html5.D
 
 type t = int * int * string array option
 
 }}
 
-{client{
-
-module Eliom_lib = struct
-  (* copied from Eliom_csreact ; find a proper place for this *)
-  include Eliom_lib
-  let create_shared_value _ x = x
-end
-
-let r_node a = Eliom_content.Html5.R.node a
-
-}}
-
-{server{ let r_node a = Eliom_csreact.R.node a }} ;;
-
 {shared{
+
+let r_node = Eliom_content.Html5.R.node
 
 let display_aux (_, _, a) v =
   let v =
@@ -56,12 +44,12 @@ let display_aux (_, _, a) v =
 {client{
 
    let go_up (lb, ub, a) r (f : ?step:_ -> _) =
-     let v = Eliom_csreact.SharedReact.S.value r in
+     let v = Eliom_shared.React.S.value r in
      assert (v <= ub - 1);
      f (if v = ub - 1 then lb else v + 1)
 
 let go_down (lb, ub, a) r (f : ?step:_ -> _) =
-  let v = Eliom_csreact.SharedReact.S.value r in
+  let v = Eliom_shared.React.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)
 
@@ -70,10 +58,7 @@ let go_down (lb, ub, a) r (f : ?step:_ -> _) =
 {shared{
 
 let display_aux e r =
-  Eliom_csreact.React.S.map
-    (Eliom_lib.create_shared_value (display_aux e) {{display_aux %e}})
-    r |>
-  r_node
+  r >|= {shared# { display_aux %e }} |> r_node
 
 let display
     ?txt_up:(txt_up = "up")
@@ -90,7 +75,7 @@ let display
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
   assert (ub > lb);
-  let ((v, _) as rp) = Eliom_csreact.SharedReact.S.create lb
+  let ((v, _) as rp) = Eliom_shared.React.S.create lb
   and a =
     match f with
     | Some f ->

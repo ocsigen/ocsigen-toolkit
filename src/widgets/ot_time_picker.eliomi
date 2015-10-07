@@ -31,7 +31,7 @@ val make_hours_minutes :
   ?round_5 : bool ->
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
-  (int * int) Eliom_csreact.SharedReact.S.t
+  (int * int) Eliom_shared.React.S.t
 
 (** [make_hours_minutes_seq ?action ?round_5 ?h24 ()] produces a
     clock-style time picker for hours and minutes. The user is first
@@ -59,7 +59,7 @@ val make_hours_minutes_seq :
     bool ->
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
-  (int * int) Eliom_csreact.SharedReact.S.t *
+  (int * int) Eliom_shared.React.S.t *
   (unit -> unit) Eliom_pervasives.client_value
 
 (** [make_hours ?h24 ()] produces a clock-style hour picker. If [h24]
@@ -72,7 +72,7 @@ val make_hours :
   ?h24 : bool ->
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
-  int Eliom_csreact.SharedReact.S.t
+  int Eliom_shared.React.S.t
 
 (** [make_minutes ?round_5 ()] produces a clock-style minute picker.
     If [round_5] is true (default: false), the output is rounded to
@@ -84,6 +84,6 @@ val make_minutes :
   ?round_5 : bool ->
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
-  int Eliom_csreact.SharedReact.S.t
+  int Eliom_shared.React.S.t
 
 }}
