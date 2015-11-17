@@ -555,7 +555,7 @@ let make_hours_minutes_seq_24h
         show_minutes_aux ?action:%action %hm %f_e_m }} |>
     R.node
   and d = display_hours_minutes_seq ~h24:true f_b hm b |> R.node in
-  container [g; d], hm, {unit -> unit{ fun () -> %f_b true }}
+  container [d; g], hm, {unit -> unit{ fun () -> %f_b true }}
 
 let make_hours_minutes_seq
     ?action ?init:(init = (0, 0)) ?update ?round_5 () =
@@ -599,7 +599,7 @@ let make_hours_minutes_seq
         show_minutes_aux ?action:%action %hm %f_e_m }} |>
     R.node
   and d = display_hours_minutes_seq ~h24:false f_b hm b |> R.node in
-  container [g; c; d], hm, {unit -> unit{ fun () -> %f_b true }}
+  container [d; g; c], hm, {unit -> unit{ fun () -> %f_b true }}
 
 let make_hours_minutes_seq
     ?action ?init ?update ?round_5 ?(h24 = true) () =
