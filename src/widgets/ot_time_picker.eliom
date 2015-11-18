@@ -267,6 +267,33 @@ let convert_24h is_am h = if is_am then h else h + 12
 
    let (>>!) = Js.Opt.iter
 
+let wrap_touchend_aux ev f =
+  ev##currentTarget >>! fun a ->
+  let r = a##getBoundingClientRect () in
+  let ox = r##left
+  and ox' = r##right
+  and oy = r##top
+  and oy' = r##bottom in
+  assert (ox' > ox);
+  assert (oy' > oy);
+  Js.Optdef.iter (ev##changedTouches)##item(0) @@ fun touch0 ->
+  let x =
+    float_of_int (touch0##clientX - truncate ox) *. 100. /. (ox' -. ox)
+    |> truncate
+  and y =
+    float_of_int (touch0##clientY - truncate oy) *. 100. /. (oy' -. oy)
+    |> truncate
+  in
+  cartesian_to_polar (x, y) |> f
+
+let wrap_touchend ev (f : _ rf) =
+  let f p = f (snd p) in
+  wrap_touchend_aux ev f
+
+let wrap_touchend_24h ev f_e f_b =
+  let f (r, e) = f_b r; f_e e in
+  wrap_touchend_aux ev f
+
 let wrap_click_aux ev f =
   ev##currentTarget >>! fun a ->
   let r = a##getBoundingClientRect () in
@@ -320,31 +347,57 @@ let make_minutes_signal ?round_5 =
     {shared#{ angle_to_minutes ?round_5:%round_5 }}
 
 let clock_html_wrap s (f : _ Eliom_lib.client_value) =
-  let a =
-    let open Eliom_content.Svg.F in
-    [a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
-     a_viewbox ( 0. , 0. , 100. , 100. );
-     a_onclick
-       {{ fun ev -> wrap_click ev %f }}]
+  let e =
+    let a =
+      let open Eliom_content.Svg.F in [
+        a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
+        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_onclick {{ fun ev -> wrap_click ev %f }}
+      ]
+    in
+    Eliom_content.Html5.D.svg ~a [s]
   in
-  Eliom_content.Html5.D.svg ~a [s]
+  let _ = {unit{
+    let e = Eliom_content.Html5.To_dom.of_element %e in
+    Lwt.async @@ fun () ->
+    Lwt_js_events.touchends e @@ fun ev _ ->
+    Lwt.return (wrap_touchend ev %f)
+  }} in
+  e
 
 let clock_html_wrap_24h s f_e f_b =
-  let a =
-    let open Eliom_content.Svg.F in
-    [a_class ["ot-tp-clock";
-              "ot-tp-clock-24h";
-              "ot-tp-click-anywhere"];
-     a_viewbox ( 0. , 0. , 100. , 100. );
-     a_onclick {{
-       fun ev ->
-         let step' = React.Step.create () in
-         let step =  Some step' in
-         let f_b r = %f_b ?step (r <= 35) in
-         wrap_click_24h ev (%f_e ?step) f_b;
-         React.Step.execute step' }}]
+  let e =
+    let a =
+      let f = {{ fun ev ->
+        let step' = React.Step.create () in
+        let step =  Some step' in
+        let f_b r = %f_b ?step (r <= 35) in
+        wrap_click_24h ev (%f_e ?step) f_b;
+        React.Step.execute step'
+      }} in
+      let open Eliom_content.Svg.F in [
+        a_class ["ot-tp-clock";
+                 "ot-tp-clock-24h";
+                 "ot-tp-click-anywhere"];
+        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_onclick f
+      ]
+    in
+    Eliom_content.Html5.D.svg ~a [s]
   in
-  Eliom_content.Html5.D.svg ~a [s]
+  let _ = {unit{
+    let f ev =
+      let step' = React.Step.create () in
+      let step = Some step' in
+      let f_b r = %f_b ?step (r <= 35) in
+      wrap_touchend_24h ev (%f_e ?step) f_b;
+      React.Step.execute step'
+    and e = Eliom_content.Html5.To_dom.of_element %e in
+    Lwt.async @@ fun () ->
+    Lwt_js_events.touchends e @@ fun ev _ ->
+    Lwt.return (f ev)
+  }} in
+  e
 
 let container = D.(div ~a:[a_class ["ot-tp-container"]])
 
