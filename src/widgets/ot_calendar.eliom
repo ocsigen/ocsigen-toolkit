@@ -22,6 +22,8 @@
 open Eliom_content.Html5
 
 let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
+
+module A = CalendarLib.Date
 }}
 
 {client{
@@ -70,12 +72,17 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   in
   D.table ~a ~thead (map_interval 0 i_max f)
 
+let zeroth_displayed_day d =
+  let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1) in
+  if A.day_of_month fst_sun = 1 then
+    fst_sun
+  else
+    A.prev fst_sun `Week
+
 let rec build_calendar
     ?class_for_day:(class_for_day = false) day =
-  let module A = CalendarLib.Date in
-  let fst_sun =
-    A.(nth_weekday_of_month (year day) (month day) Sun 1) in
-  let zero = A.prev fst_sun `Week
+  let fst_sun = A.(nth_weekday_of_month (year day) (month day) Sun 1)
+  and zero = zeroth_displayed_day day
   and prev_button =
     D.(span ~a:[a_class ["ot-c-prev-button"]] [pcdata "<"])
   and next_button =
@@ -148,51 +155,43 @@ let attach_events
        ?click_non_highlighted:(click_non_highlighted = false)
        ?update
        d cal highlight =
-     let module A = CalendarLib.Date in
      let rows = (To_dom.of_table cal)##rows in
-     let fst_sun =
-       A.nth_weekday_of_month (A.year d) (A.month d) A.Sun 1
+     let zero = zeroth_displayed_day d in
+     iter_interval 0 4 @@ fun i ->
+     rows##item(i + 2) >>! fun r ->
+     let cells = r##cells in
+     iter_interval 0 6 @@ fun j ->
+     cells##item(j) >>! fun c ->
+     let d =
+       let open CalendarLib.Calendar.Date in
+       j + 7 * i |> Period.day |> add zero
      in
-     let zero = A.prev fst_sun `Week in
-     let f i =
-       rows##item(i + 2) >>! fun r ->
-       let cells = r##cells in
-       let f j =
-         cells##item(j) >>! fun c ->
-         let d =
-           let open CalendarLib.Calendar.Date in
-           j + 7 * i |> Period.day |> add zero
-         in
-         let dom = CalendarLib.Calendar.Date.day_of_month d
-         and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
-         and y = CalendarLib.Calendar.Date.year d in
-         let action =
-           match action with
-           | Some action ->
-             (fun _ r ->
-                update_classes cal zero d;
-                action y m dom;
-                Lwt.return ())
-           | None ->
-             (fun _ r ->
-                update_classes cal zero d;
-                Lwt.return ())
-         in
-         let set_onclick () =
-           let f () = Lwt_js_events.clicks c action in
-           Lwt.async f
-         in
-         if List.exists ((=) dom) highlight then begin
-           c##classList##add(Js.string "ot-c-highlight");
-           set_onclick ()
-         end else if click_non_highlighted then
-           set_onclick ()
-         else
-           ()
-       in
-       iter_interval 0 6 f
+     let dom = CalendarLib.Calendar.Date.day_of_month d
+     and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
+     and y = CalendarLib.Calendar.Date.year d in
+     let action =
+       match action with
+       | Some action ->
+         (fun _ r ->
+            update_classes cal zero d;
+            action y m dom;
+            Lwt.return ())
+       | None ->
+         (fun _ r ->
+            update_classes cal zero d;
+            Lwt.return ())
      in
-     iter_interval 0 4 f
+     let set_onclick () =
+       let f () = Lwt_js_events.clicks c action in
+       Lwt.async f
+     in
+     if List.exists ((=) dom) highlight then begin
+       c##classList##add(Js.string "ot-c-highlight");
+       set_onclick ()
+     end else if click_non_highlighted then
+       set_onclick ()
+     else
+       ()
 
 let attach_events_lwt
     ?action ?click_non_highlighted d cal highlight =
@@ -213,7 +212,6 @@ let attach_behavior
      attach_events_lwt ?click_non_highlighted ?action d cal highlight
    | None ->
      attach_events ?click_non_highlighted ?action d cal []);
-  let module A = CalendarLib.Date in
   (* FIXME: these may fail to go to the previous month, e.g., for May
      31 (April and June have only 30) *)
   (To_dom.of_element prev)##onclick <-
