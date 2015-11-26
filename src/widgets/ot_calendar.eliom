@@ -103,7 +103,7 @@ let rec build_calendar
     in
     if A.month fst_sun = A.month d then
       let module C = CalendarLib.Calendar in
-      (let today = CalendarLib.Date.today () in
+      (let today = A.today () in
        let classes =
          [if d < today then
             "ot-c-past"
@@ -156,7 +156,9 @@ let attach_events
        ?update
        d cal highlight =
      let rows = (To_dom.of_table cal)##rows in
-     let zero = zeroth_displayed_day d in
+     let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1)
+     and zero = zeroth_displayed_day d in
+     let mnth = A.month fst_sun in
      iter_interval 0 4 @@ fun i ->
      rows##item(i + 2) >>! fun r ->
      let cells = r##cells in
@@ -166,38 +168,39 @@ let attach_events
        let open CalendarLib.Calendar.Date in
        j + 7 * i |> Period.day |> add zero
      in
-     let dom = CalendarLib.Calendar.Date.day_of_month d
-     and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
-     and y = CalendarLib.Calendar.Date.year d in
-     let action =
-       match action with
-       | Some action ->
-         (fun _ r ->
-            update_classes cal zero d;
-            action y m dom;
-            Lwt.return ())
-       | None ->
-         (fun _ r ->
-            update_classes cal zero d;
-            Lwt.return ())
-     in
-     let set_onclick () =
-       let f () = Lwt_js_events.clicks c action in
-       Lwt.async f
-     in
-     if List.exists ((=) dom) highlight then begin
-       c##classList##add(Js.string "ot-c-highlight");
-       set_onclick ()
-     end else if click_non_highlighted then
-       set_onclick ()
-     else
-       ()
+     if mnth = A.month d then
+       let dom = CalendarLib.Calendar.Date.day_of_month d
+       and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
+       and y = CalendarLib.Calendar.Date.year d in
+       let action =
+         match action with
+         | Some action ->
+           (fun _ r ->
+              update_classes cal zero d;
+              action y m dom;
+              Lwt.return ())
+         | None ->
+           (fun _ r ->
+              update_classes cal zero d;
+              Lwt.return ())
+       in
+       let set_onclick () =
+         let f () = Lwt_js_events.clicks c action in
+         Lwt.async f
+       in
+       if List.exists ((=) dom) highlight then begin
+         c##classList##add(Js.string "ot-c-highlight");
+         set_onclick ()
+       end else if click_non_highlighted then
+         set_onclick ()
+       else
+         ()
 
 let attach_events_lwt
     ?action ?click_non_highlighted d cal highlight =
   let f () =
-    let m = CalendarLib.Date.(month d |> int_of_month)
-    and y = CalendarLib.Date.year d in
+    let m = A.(month d |> int_of_month)
+    and y = A.year d in
     lwt highlight = highlight y m in
     attach_events ?action ?click_non_highlighted d cal highlight;
     Lwt.return ()
@@ -229,7 +232,7 @@ let make :
   [> Html5_types.table ] elt =
   fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
     let init =
-      CalendarLib.Date.(match init with
+      A.(match init with
         | Some (y, m, d) ->
           make y m d
         | None ->
@@ -244,7 +247,7 @@ let make :
     (match update with
      | Some update ->
        let f (y, m, d) =
-         CalendarLib.Date.make y m d |> f_d;
+         A.make y m d |> f_d;
          (match action with
           | Some action ->
             Lwt.async (fun () -> action y m d)
@@ -290,9 +293,8 @@ let make_date_picker ?init ?update () =
     | Some init ->
       init
     | None ->
-      let open CalendarLib.Date in
-      let d = today () in
-      year d, month d |> int_of_month, day_of_month d
+      let d = A.today () in
+      A.(year d, month d |> int_of_month, day_of_month d)
   in
   let v, f =  Eliom_shared.React.S.create init in
   let action = {{ fun y m d -> %f (y, m, d); Lwt.return () }}
