@@ -40,9 +40,9 @@ TEMPLATE_DIR := template.distillery
 TEMPLATE_NAME := none.pgocaml
 
 # OCamlfind packages for the server
-SERVER_PACKAGES := calendar
+SERVER_PACKAGES := calendar js_of_ocaml.ppx lwt.ppx
 # OCamlfind packages for the client
-CLIENT_PACKAGES := calendar
+CLIENT_PACKAGES := calendar js_of_ocaml.ppx lwt.ppx
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG := no

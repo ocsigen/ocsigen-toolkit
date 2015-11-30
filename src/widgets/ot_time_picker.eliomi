@@ -18,14 +18,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared]
 
-   (** [make_hours_minutes ?round_5 ()] produces a clock-style time
-       picker for hours and minutes. If [round_5] is true (default:
-       false), the output for the minutes is rounded to multiples of
-       5. The first part of the output is the clock. The second part
-       of the output is a reactive signal [(h, m)] where [h] are the
-       hours and [m] the minutes that the user picked. *)
+(** [make_hours_minutes ?round_5 ()] produces a clock-style time
+    picker for hours and minutes. If [round_5] is true (default:
+    false), the output for the minutes is rounded to multiples of
+    5. The first part of the output is the clock. The second part of
+    the output is a reactive signal [(h, m)] where [h] are the hours
+    and [m] the minutes that the user picked. *)
 
 val make_hours_minutes :
   ?round_5 : bool ->
@@ -85,5 +85,3 @@ val make_minutes :
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
   int Eliom_shared.React.S.t
-
-}}

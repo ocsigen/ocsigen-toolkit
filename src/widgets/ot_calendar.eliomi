@@ -18,20 +18,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared]
 
-   (** [make ?highlight ?click_any ?action] produces a calendar.
+(** [make ?highlight ?click_any ?action] produces a calendar.
 
-       If a client-side function [highlight] is provided, [highlight y
-       m] needs to produce the list of days for the month [m] of the
-       year [y] that need to be visually denoted.
+    If a client-side function [highlight] is provided, [highlight y m]
+    needs to produce the list of days for the month [m] of the year
+    [y] that need to be visually denoted.
 
-       If [click_non_highlighted] is [true], every date is clickable;
-       otherwise, only the dates that [highlight] returns (if
-       [highlight] is provided) are clickable.
+    If [click_non_highlighted] is [true], every date is clickable;
+    otherwise, only the dates that [highlight] returns (if [highlight]
+    is provided) are clickable.
 
-       If a client-side function [action] is provided, when the user
-       clicks on the date [d]:[m]:[y], [action y m d] is called. *)
+    If a client-side function [action] is provided, when the user
+    clicks on the date [d]:[m]:[y], [action y m d] is called. *)
 
 val make :
   ?init : (int * int * int) ->
@@ -58,5 +58,3 @@ val make_date_picker :
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
   (int * int * int) Eliom_shared.React.S.t
-
-}}

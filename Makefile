@@ -12,9 +12,9 @@ include Makefile.options
 ##			      Internals
 
 ## Required binaries
-ELIOMC            := eliomc
-ELIOMOPT          := eliomopt
-JS_OF_ELIOM       := js_of_eliom
+ELIOMC            := eliomc -ppx
+ELIOMOPT          := eliomopt -ppx
+JS_OF_ELIOM       := js_of_eliom -ppx
 ELIOMDEP          := eliomdep
 OCAMLFIND         := ocamlfind
 
@@ -48,7 +48,7 @@ opt:: $(LIBDIR)/${PKG_NAME}.server.cmxs
 
 # Use `eliomdep -sort' only in OCaml>4
 ifeq ($(shell ocamlc -version|cut -c1),4)
-eliomdep=$(shell $(ELIOMDEP) $(1) -sort $(2) $(filter %.eliom %.ml,$(3))))
+eliomdep=$(shell $(ELIOMDEP) $(1) -ppx -sort $(2) $(filter %.eliom %.ml,$(3))))
 else
 eliomdep=$(3)
 endif
@@ -184,10 +184,10 @@ DEPSDIR := _deps
 	cat $^ > $@
 
 $(DEPSDIR)/%.server: % | $(DEPSDIR)
-	$(ELIOMDEP) -server $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
+	$(ELIOMDEP) -server -ppx $(SERVER_INC) $(SERVER_DEP_DIRS) $< > $@
 
 $(DEPSDIR)/%.client: % | $(DEPSDIR)
-	$(ELIOMDEP) -client $(CLIENT_INC) $(CLIENT_DEP_DIRS) $< > $@
+	$(ELIOMDEP) -client -ppx $(CLIENT_INC) $(CLIENT_DEP_DIRS) $< > $@
 
 $(DEPSDIR):
 	mkdir -p $@

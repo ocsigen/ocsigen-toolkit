@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-{shared{
+[%%shared]
 
 (* [make ?txt_up ?txt_down ~f ~lb ub] produces a widget for picking
    one of the values in [\[lb, ub)] via "up" and "down" buttons marked
@@ -33,5 +33,3 @@ val make :
   int ->
   [> Html5_types.div ] Eliom_content.Html5.D.elt *
   int Eliom_shared.React.S.t
-
-}}
