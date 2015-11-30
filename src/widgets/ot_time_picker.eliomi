@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared]
+[%%shared.start]
 
 (** [make_hours_minutes ?round_5 ()] produces a clock-style time
     picker for hours and minutes. If [round_5] is true (default:

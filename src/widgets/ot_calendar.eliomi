@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared]
+[%%shared.start]
 
 (** [make ?highlight ?click_any ?action] produces a calendar.
 

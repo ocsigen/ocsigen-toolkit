@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared]
+[%%shared.start]
 
 (* [make ?init_up ?up_txt ?down_txt ()] produces a binary toggle. If
    [init_up] is true, the toggle is originally up (default: down). The
