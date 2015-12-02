@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
+[%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_content.Html5
 
@@ -26,9 +26,7 @@ open Eliom_shared.React.S.Infix
 
 type t = T_Up | T_Down
 
-]
-
-[%%shared
+let up_for_true = function true -> T_Up | _ -> T_Down
 
 let display_toggle
     ?up_txt:(up_txt = "up")
@@ -41,19 +39,15 @@ let display_toggle
       [div ~a:[a_class ["ot-active"; "ot-up"]]
          [pcdata up_txt];
        div ~a:[a_class ["ot-inactive"; "ot-down"];
-               a_onclick  [%client  fun _ -> ~%f T_Down ] ]
+               a_onclick [%client fun _ -> ~%f T_Down ]]
          [pcdata down_txt]]
   | T_Down ->
     div ~a:[a_class ["ot-toggle"]]
       [div ~a:[a_class ["ot-inactive"; "ot-up"];
-               a_onclick  [%client  fun _ -> ~%f T_Up ] ]
+               a_onclick [%client  fun _ -> ~%f T_Up ]]
          [pcdata up_txt];
        div ~a:[a_class ["ot-active"; "ot-down"]]
          [pcdata down_txt]]
-
-]
-
-[%%shared
 
 let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
   let e, f =
@@ -61,15 +55,14 @@ let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
   in
   (match update with
    | Some update ->
-     [%client (
-        let f b = if b then ~%f T_Up else ~%f T_Down in
-        React.E.map f ~%update |> ignore : unit)] |> ignore;
+     ignore @@ [%client
+       ((let f b = ~%f (up_for_true b) in
+         Eliom_shared.React.E.map f ~%update |> ignore)
+        : unit)
+     ]
    | None ->
      ());
-  e >|=
-  [%shared
-     display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt ] |>
-  R.node,
-  e >|= [%shared  function T_Up -> true | _ -> false ]
-
-]
+  e >|= [%shared
+    display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt
+  ] |> R.node,
+  e >|= [%shared function T_Up -> true | _ -> false ]

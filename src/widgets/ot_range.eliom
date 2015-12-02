@@ -18,12 +18,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-[%%shared
-open Eliom_content.Html5
-open Eliom_shared.React.S.Infix
-]
+[%%shared.start] (* shared by default, override as necessary *)
 
-[%%shared
+open Eliom_content.Html5
+
+open Eliom_shared.React.S.Infix
+
 let display_aux (_, _, a) v =
   let v =
     match a with
@@ -32,26 +32,20 @@ let display_aux (_, _, a) v =
     | None ->
       string_of_int v
   and a = [D.a_class ["ot-r-value"]] in
-  D.div ~a [D.pcdata v] ] ;;
+  D.div ~a [D.pcdata v]
 
-[%%client
+let%client go_up (lb, ub, a) r (f : ?step:_ -> _) =
+  let v = Eliom_shared.React.S.value r in
+  assert (v <= ub - 1);
+  f (if v = ub - 1 then lb else v + 1)
 
-   let go_up (lb, ub, a) r (f : ?step:_ -> _) =
-     let v = Eliom_shared.React.S.value r in
-     assert (v <= ub - 1);
-     f (if v = ub - 1 then lb else v + 1)
-
-let go_down (lb, ub, a) r (f : ?step:_ -> _) =
+let%client go_down (lb, ub, a) r (f : ?step:_ -> _) =
   let v = Eliom_shared.React.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)
 
-] ;;
-
-[%%shared
-
 let display_aux e r =
-  r >|= [%shared  display_aux ~%e ] |> R.node
+  r >|= [%shared display_aux ~%e ] |> R.node
 
 let display
     ?txt_up:(txt_up = "up")
@@ -59,11 +53,11 @@ let display
     e (v, f) =
   D.(div ~a:[a_class ["ot-range"]]
        [div ~a:[a_class ["ot-r-up"];
-                a_onclick  [%client  fun _ -> go_up ~%e ~%v ~%f ]]
+                a_onclick [%client fun _ -> go_up ~%e ~%v ~%f ]]
           [pcdata txt_up];
         display_aux e v;
         div ~a:[a_class ["ot-r-down"];
-                a_onclick  [%client  fun _ -> go_down ~%e ~%v ~%f ]]
+                a_onclick [%client fun _ -> go_down ~%e ~%v ~%f ]]
           [pcdata txt_down]])
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
@@ -78,5 +72,3 @@ let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
       None
   in
   display ?txt_up ?txt_down (lb, ub, a) rp, v
-
-]

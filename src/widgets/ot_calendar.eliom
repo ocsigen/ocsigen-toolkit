@@ -18,26 +18,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
+[%%shared.start] (* shared by default, override as necessary *)
+
 open Eliom_content.Html5
 
 let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
 
 module A = CalendarLib.Date
-]
 
-[%%client
-
-let timezone_offset =
+let%client timezone_offset =
   truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
 
-let (>>!) = Js.Opt.iter
+let%client (>>!) = Js.Opt.iter
 
-] ;;
-
-[%%server let timezone_offset = 0 ] ;;
-
-[%%shared
+let%server timezone_offset = 0
 
 let user_tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
 
@@ -126,77 +120,73 @@ let rec build_calendar
   build_table 5 6 ~a:[D.a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row,
   prev_button, next_button
 
-] ;;
+let%client update_classes cal zero d =
+  let rows = (To_dom.of_table cal)##.rows in
+  let f i =
+    rows##(item (i + 2)) >>! fun r ->
+    let cells = r##.cells in
+    let f j =
+      cells##(item j) >>! fun c ->
+      let d' =
+        let open CalendarLib.Calendar.Date in
+        j + 7 * i |> Period.day |> add zero
+      in
+      if d = d' then
+        c##.classList##(add (Js.string "ot-c-current"))
+      else
+        c##.classList##(remove (Js.string "ot-c-current"))
+    in
+    iter_interval 0 6 f
+  in
+  iter_interval 0 4 f
 
-[%%client
+let%client attach_events
+    ?action
+    ?click_non_highlighted:(click_non_highlighted = false)
+    ?update
+    d cal highlight =
+  let rows = (To_dom.of_table cal)##.rows in
+  let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1)
+  and zero = zeroth_displayed_day d in
+  let mnth = A.month fst_sun in
+  iter_interval 0 4 @@ fun i ->
+  rows##(item (i + 2)) >>! fun r ->
+  let cells = r##.cells in
+  iter_interval 0 6 @@ fun j ->
+  cells##(item j) >>! fun c ->
+  let d =
+    let open CalendarLib.Calendar.Date in
+    j + 7 * i |> Period.day |> add zero
+  in
+  if mnth = A.month d then
+    let dom = CalendarLib.Calendar.Date.day_of_month d
+    and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
+    and y = CalendarLib.Calendar.Date.year d in
+    let action =
+      match action with
+      | Some action ->
+        (fun _ r ->
+           update_classes cal zero d;
+           action y m dom;
+           Lwt.return ())
+      | None ->
+        (fun _ r ->
+           update_classes cal zero d;
+           Lwt.return ())
+    in
+    let set_onclick () =
+      let f () = Lwt_js_events.clicks c action in
+      Lwt.async f
+    in
+    if List.exists ((=) dom) highlight then begin
+      c##.classList##(add (Js.string "ot-c-highlight"));
+      set_onclick ()
+    end else if click_non_highlighted then
+      set_onclick ()
+    else
+      ()
 
-   let update_classes cal zero d =
-     let rows = (To_dom.of_table cal)##.rows in
-     let f i =
-       rows##(item (i + 2)) >>! fun r ->
-       let cells = r##.cells in
-       let f j =
-         cells##(item j) >>! fun c ->
-         let d' =
-           let open CalendarLib.Calendar.Date in
-           j + 7 * i |> Period.day |> add zero
-         in
-         if d = d' then
-           c##.classList##(add (Js.string "ot-c-current"))
-         else
-           c##.classList##(remove (Js.string "ot-c-current"))
-       in
-       iter_interval 0 6 f
-     in
-     iter_interval 0 4 f
-
-let attach_events
-       ?action
-       ?click_non_highlighted:(click_non_highlighted = false)
-       ?update
-       d cal highlight =
-     let rows = (To_dom.of_table cal)##.rows in
-     let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1)
-     and zero = zeroth_displayed_day d in
-     let mnth = A.month fst_sun in
-     iter_interval 0 4 @@ fun i ->
-     rows##(item (i + 2)) >>! fun r ->
-     let cells = r##.cells in
-     iter_interval 0 6 @@ fun j ->
-     cells##(item j) >>! fun c ->
-     let d =
-       let open CalendarLib.Calendar.Date in
-       j + 7 * i |> Period.day |> add zero
-     in
-     if mnth = A.month d then
-       let dom = CalendarLib.Calendar.Date.day_of_month d
-       and m = CalendarLib.Calendar.Date.(month d |> int_of_month)
-       and y = CalendarLib.Calendar.Date.year d in
-       let action =
-         match action with
-         | Some action ->
-           (fun _ r ->
-              update_classes cal zero d;
-              action y m dom;
-              Lwt.return ())
-         | None ->
-           (fun _ r ->
-              update_classes cal zero d;
-              Lwt.return ())
-       in
-       let set_onclick () =
-         let f () = Lwt_js_events.clicks c action in
-         Lwt.async f
-       in
-       if List.exists ((=) dom) highlight then begin
-         c##.classList##(add (Js.string "ot-c-highlight"));
-         set_onclick ()
-       end else if click_non_highlighted then
-         set_onclick ()
-       else
-         ()
-
-let attach_events_lwt
+let%client attach_events_lwt
     ?action ?click_non_highlighted d cal highlight =
   let f () =
     let m = A.(month d |> int_of_month)
@@ -207,7 +197,7 @@ let attach_events_lwt
   in
   Lwt.async f
 
-let attach_behavior
+let%client attach_behavior
     ?highlight ?click_non_highlighted ?action
     d (cal, prev, next) f_d =
   (match highlight with
@@ -222,7 +212,7 @@ let attach_behavior
   (To_dom.of_element next)##.onclick :=
     Dom_html.handler (fun _ -> f_d (A.next d `Month); Js._false)
 
-let make :
+let%client make :
   ?init : (int * int * int) ->
   ?highlight : (int -> int -> int list Lwt.t) ->
   ?click_non_highlighted : bool ->
@@ -259,33 +249,27 @@ let make :
        ());
     React.S.map f d |> R.node
 
-]
-
-[%%server
-
-   let make :
-     ?init : (int * int * int) ->
-     ?highlight :
-     (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
-     ?click_non_highlighted : bool ->
-     ?update :
-     (int * int * int) React.E.t Eliom_lib.client_value ->
-     ?action :
-     (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
-     unit ->
-     [> Html5_types.table ] elt =
-     fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
-       [%client ( make
-            ?init:~%init
-            ?highlight:~%highlight
-            ?click_non_highlighted:~%click_non_highlighted
-            ?update:~%update
-            ?action:~%action () : [> Html5_types.table ] elt)] |>
-       C.node
-
- ] ;;
-
-[%%shared
+let%server make :
+  ?init : (int * int * int) ->
+  ?highlight :
+  (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
+  ?click_non_highlighted : bool ->
+  ?update :
+  (int * int * int) React.E.t Eliom_lib.client_value ->
+  ?action :
+  (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
+  unit ->
+  [> Html5_types.table ] elt =
+  fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
+    C.node [%client
+      (make
+         ?init:~%init
+         ?highlight:~%highlight
+         ?click_non_highlighted:~%click_non_highlighted
+         ?update:~%update
+         ?action:~%action ()
+       : [> Html5_types.table ] elt)
+    ]
 
 let make_date_picker ?init ?update () =
   let init =
@@ -297,9 +281,7 @@ let make_date_picker ?init ?update () =
       A.(year d, month d |> int_of_month, day_of_month d)
   in
   let v, f =  Eliom_shared.React.S.create init in
-  let action =  [%client  fun y m d -> ~%f (y, m, d); Lwt.return () ]
+  let action = [%client fun y m d -> ~%f (y, m, d); Lwt.return () ]
   and click_non_highlighted = true in
   let d = make ~init ~click_non_highlighted ?update ~action () in
   d, v
-
-]
