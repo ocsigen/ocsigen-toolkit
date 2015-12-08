@@ -22,10 +22,12 @@
 
 (** [intl] is the type of internationalization specifiers. [i_days]
     contains the names of the weekdays, starting with
-    Sunday. [i_start] specifies the first day of the week. *)
+    Sunday. [i_months] contains the names of the months, starting with
+    January. [i_start] specifies the first day of the week. *)
 type intl = {
-  i_days  : string list;
-  i_start : [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
+  i_days    : string list;
+  i_months  : string list;
+  i_start   : [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
 }
 
 (** [make ?highlight ?click_any ?action] produces a calendar.

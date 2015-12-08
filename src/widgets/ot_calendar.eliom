@@ -22,19 +22,26 @@
 
 open Eliom_content.Html5
 
+module A = CalendarLib.Date
+
 type dow = [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
 
 type intl = {
-  i_days  : string list;
-  i_start : dow;
+  i_days   : string list;
+  i_months : string list;
+  i_start  : dow;
 }
 
 let default_intl = {
   i_days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"];
+  i_months = [
+    "Jan"; "Feb"; "Mar"; "Apr"; "May"; "Jun";
+    "Jul"; "Aug"; "Sep"; "Oct"; "Nov"; "Dec"
+  ];
   i_start = `Sun
 }
 
-let calendarlib_of_dow = CalendarLib.Date.(function
+let calendarlib_of_dow = A.(function
   | `Sun -> Sun
   | `Mon -> Mon
   | `Tue -> Tue
@@ -64,11 +71,15 @@ let rec rotate_list ?(acc = []) l i =
 
 let get_rotated_days {i_days; i_start} =
   if List.length i_days != 7 then
-    invalid_arg "get_rotated_days"
+    invalid_arg "intl.i_days"
   else
     rotate_list i_days (int_of_dow i_start)
 
-module A = CalendarLib.Date
+let name_of_calendarlib_month {i_months} m =
+  if List.length i_months != 12 then
+    invalid_arg "intl.i_months"
+  else
+    List.nth i_months (A.int_of_month m - 1)
 
 let%client timezone_offset =
   truncate (-. float ((new%js Js.date_now) ##getTimezoneOffset) /. 60.)
@@ -283,6 +294,7 @@ let%client make :
         | None ->
           today ())
     in
+    CalendarLib.Printer.month_name := name_of_calendarlib_month intl;
     let d, f_d = React.S.create init in
     let f d =
       let (cal, _, _) as c =
