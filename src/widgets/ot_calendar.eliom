@@ -22,7 +22,51 @@
 
 open Eliom_content.Html5
 
-let days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
+type dow = [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
+
+type intl = {
+  i_days  : string list;
+  i_start : dow;
+}
+
+let default_intl = {
+  i_days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"];
+  i_start = `Sun
+}
+
+let calendarlib_of_dow = CalendarLib.Date.(function
+  | `Sun -> Sun
+  | `Mon -> Mon
+  | `Tue -> Tue
+  | `Wed -> Wed
+  | `Thu -> Thu
+  | `Fri -> Fri
+  | `Sat -> Sat)
+
+let int_of_dow = function
+  | `Sun -> 0
+  | `Mon -> 1
+  | `Tue -> 2
+  | `Wed -> 3
+  | `Thu -> 4
+  | `Fri -> 5
+  | `Sat -> 6
+
+let rec rotate_list ?(acc = []) l i =
+  if i <= 0 then
+    List.append l (List.rev acc)
+  else
+    match l with
+    | h :: l ->
+      rotate_list ~acc:(h :: acc) l (i - 1)
+    | [] ->
+      failwith "rotate_list"
+
+let get_rotated_days {i_days; i_start} =
+  if List.length i_days != 7 then
+    invalid_arg "get_rotated_days"
+  else
+    rotate_list i_days (int_of_dow i_start)
 
 module A = CalendarLib.Date
 
@@ -66,17 +110,21 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   in
   D.table ~a ~thead (map_interval 0 i_max f)
 
-let zeroth_displayed_day d =
-  let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1) in
-  if A.day_of_month fst_sun = 1 then
-    fst_sun
+let fst_dow ~intl:{i_start} d =
+  A.(nth_weekday_of_month
+       (year d) (month d) (calendarlib_of_dow i_start) 1)
+
+let zeroth_displayed_day ~intl d =
+  let o = fst_dow ~intl d in
+  if A.day_of_month o = 1 then
+    o
   else
-    A.prev fst_sun `Week
+    A.prev o `Week
 
 let rec build_calendar
-    ?class_for_day:(class_for_day = false) day =
-  let fst_sun = A.(nth_weekday_of_month (year day) (month day) Sun 1)
-  and zero = zeroth_displayed_day day
+    ~intl ?class_for_day:(class_for_day = false) day =
+  let fst_dow = fst_dow ~intl day
+  and zero = zeroth_displayed_day ~intl day
   and prev_button =
     D.(span ~a:[a_class ["ot-c-prev-button"]] [pcdata "<"])
   and next_button =
@@ -86,16 +134,18 @@ let rec build_calendar
     D.(thead
          [tr [th ~a:[a_colspan 7; a_class ["ot-c-header"]]
                 [prev_button;
-                 CalendarLib.Printer.Date.sprint "%B %Y" fst_sun |>
+                 CalendarLib.Printer.Date.sprint "%B %Y" fst_dow |>
                  pcdata;
                  next_button]];
-          tr (List.map (fun d -> th [pcdata d]) days)])
+          tr (List.map
+                (fun d -> th [pcdata d])
+                (get_rotated_days intl))])
   and f_cell i j =
     let d =
       let open CalendarLib.Calendar.Date in
       add zero (Period.day (j + 7 * i))
     in
-    if A.month fst_sun = A.month d then
+    if A.month fst_dow = A.month d then
       let module C = CalendarLib.Calendar in
       (let today = A.today () in
        let classes =
@@ -144,11 +194,12 @@ let%client attach_events
     ?action
     ?click_non_highlighted:(click_non_highlighted = false)
     ?update
+    ~intl
     d cal highlight =
   let rows = (To_dom.of_table cal)##.rows in
-  let fst_sun = A.(nth_weekday_of_month (year d) (month d) Sun 1)
-  and zero = zeroth_displayed_day d in
-  let mnth = A.month fst_sun in
+  let fst_dow = fst_dow ~intl d
+  and zero = zeroth_displayed_day ~intl d in
+  let mnth = A.month fst_dow in
   iter_interval 0 4 @@ fun i ->
   rows##(item (i + 2)) >>! fun r ->
   let cells = r##.cells in
@@ -187,24 +238,25 @@ let%client attach_events
       ()
 
 let%client attach_events_lwt
-    ?action ?click_non_highlighted d cal highlight =
+    ?action ?click_non_highlighted ~intl d cal highlight =
   let f () =
     let m = A.(month d |> int_of_month)
     and y = A.year d in
     let%lwt highlight = highlight y m in
-    attach_events ?action ?click_non_highlighted d cal highlight;
+    attach_events ?action ?click_non_highlighted ~intl d cal highlight;
     Lwt.return ()
   in
   Lwt.async f
 
 let%client attach_behavior
-    ?highlight ?click_non_highlighted ?action
+    ?highlight ?click_non_highlighted ?action ~intl
     d (cal, prev, next) f_d =
   (match highlight with
    | Some highlight ->
-     attach_events_lwt ?click_non_highlighted ?action d cal highlight
+     attach_events_lwt ?click_non_highlighted ?action ~intl
+       d cal highlight
    | None ->
-     attach_events ?click_non_highlighted ?action d cal []);
+     attach_events ?click_non_highlighted ?action ~intl d cal []);
   (* FIXME: these may fail to go to the previous month, e.g., for May
      31 (April and June have only 30) *)
   (To_dom.of_element prev)##.onclick :=
@@ -218,9 +270,12 @@ let%client make :
   ?click_non_highlighted : bool ->
   ?update : (int * int * int) React.E.t ->
   ?action : (int -> int -> int -> unit Lwt.t) ->
+  ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
-  fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
+  fun ?init ?highlight ?click_non_highlighted ?update ?action
+    ?(intl = default_intl)
+    () ->
     let init =
       A.(match init with
         | Some (y, m, d) ->
@@ -230,8 +285,12 @@ let%client make :
     in
     let d, f_d = React.S.create init in
     let f d =
-      let (cal, _, _) as c = build_calendar ~class_for_day:true d in
-      attach_behavior ?highlight ?click_non_highlighted ?action d c f_d;
+      let (cal, _, _) as c =
+        build_calendar ~intl ~class_for_day:true d
+      in
+      attach_behavior
+        ?highlight ?click_non_highlighted ?action ~intl
+        d c f_d;
       cal
     in
     (match update with
@@ -258,20 +317,25 @@ let%server make :
   (int * int * int) React.E.t Eliom_lib.client_value ->
   ?action :
   (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
+  ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
-  fun ?init ?highlight ?click_non_highlighted ?update ?action () ->
+  fun
+    ?init ?highlight ?click_non_highlighted ?update ?action ?intl
+    () ->
     C.node [%client
       (make
          ?init:~%init
          ?highlight:~%highlight
          ?click_non_highlighted:~%click_non_highlighted
          ?update:~%update
-         ?action:~%action ()
+         ?action:~%action
+         ?intl:~%intl
+         ()
        : [> Html5_types.table ] elt)
     ]
 
-let make_date_picker ?init ?update () =
+let make_date_picker ?init ?update ?intl () =
   let init =
     match init with
     | Some init ->

@@ -20,6 +20,14 @@
 
 [%%shared.start]
 
+(** [intl] is the type of internationalization specifiers. [i_days]
+    contains the names of the weekdays, starting with
+    Sunday. [i_start] specifies the first day of the week. *)
+type intl = {
+  i_days  : string list;
+  i_start : [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
+}
+
 (** [make ?highlight ?click_any ?action] produces a calendar.
 
     If a client-side function [highlight] is provided, [highlight y m]
@@ -43,6 +51,7 @@ val make :
     (int * int * int) React.E.t Eliom_lib.client_value ->
   ?action :
     (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
+  ?intl : intl ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
 
@@ -55,6 +64,7 @@ val make_date_picker :
   ?init : (int * int * int) ->
   ?update :
     (int * int * int) React.E.t Eliom_lib.client_value ->
+  ?intl : intl ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
   (int * int * int) Eliom_shared.React.S.t
