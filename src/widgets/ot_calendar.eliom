@@ -359,5 +359,5 @@ let make_date_picker ?init ?update ?intl () =
   let v, f =  Eliom_shared.React.S.create init in
   let action = [%client fun y m d -> ~%f (y, m, d); Lwt.return () ]
   and click_non_highlighted = true in
-  let d = make ~init ~click_non_highlighted ?update ~action () in
+  let d = make ~init ~click_non_highlighted ?update ?intl ~action () in
   d, v
