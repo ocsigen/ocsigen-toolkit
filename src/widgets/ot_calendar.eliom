@@ -199,7 +199,7 @@ let%client update_classes cal zero d =
     in
     iter_interval 0 6 f
   in
-  iter_interval 0 4 f
+  iter_interval 0 5 f
 
 let%client attach_events
     ?action
@@ -211,7 +211,7 @@ let%client attach_events
   let fst_dow = fst_dow ~intl d
   and zero = zeroth_displayed_day ~intl d in
   let mnth = A.month fst_dow in
-  iter_interval 0 4 @@ fun i ->
+  iter_interval 0 5 @@ fun i ->
   rows##(item (i + 2)) >>! fun r ->
   let cells = r##.cells in
   iter_interval 0 6 @@ fun j ->
