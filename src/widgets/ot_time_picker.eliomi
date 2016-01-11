@@ -20,33 +20,18 @@
 
 [%%shared.start]
 
-(** [make_hours_minutes ?round_5 ()] produces a clock-style time
-    picker for hours and minutes. If [round_5] is true (default:
-    false), the output for the minutes is rounded to multiples of
-    5. The first part of the output is the clock. The second part of
-    the output is a reactive signal [(h, m)] where [h] are the hours
-    and [m] the minutes that the user picked. *)
-
-val make_hours_minutes :
-  ?round_5 : bool ->
-  unit ->
-  [> Html5_types.div] Eliom_content.Html5.D.elt *
-  (int * int) Eliom_shared.React.S.t
-
-(** [make_hours_minutes_seq ?action ?round_5 ?h24 ()] produces a
-    clock-style time picker for hours and minutes. The user is first
-    asked to pick hours, then minutes with a separate clock. If
-    [action] is provided, it is called when a new time is
-    available. [init] (if provided) is the default displayed time. If
-    [round_5] is true (default: false), the output for the minutes is
-    rounded to multiples of 5. If [h24] is true (default: true), a
-    24-hour hour picker is used. The first part of the output is the
-    clock. The second part of the output is a reactive signal [(h, m)]
-    where [h] are the hours and [m] the minutes that the user
-    picked. The third part of the output is a function that can be
-    called to go back to hours selection. *)
-
-val make_hours_minutes_seq :
+(** [make ?action ?round_5 ?h24 ()] produces a clock-style time picker
+    for hours and minutes. The user is first asked to pick hours, then
+    minutes with a separate clock. If [action] is provided, it is
+    called when a new time is available. [init] (if provided) is the
+    default displayed time. If [round_5] is true (default: false), the
+    output for the minutes is rounded to multiples of 5. If [h24] is
+    true (default: true), a 24-hour hour picker is used. The first
+    part of the output is the clock. The second part of the output is
+    a reactive signal [(h, m)] where [h] are the hours and [m] the
+    minutes that the user picked. The third part of the output is a
+    function that can be called to go back to hours selection. *)
+val make :
   ?action :
     (int * int -> unit Lwt.t) Eliom_pervasives.client_value ->
   ?init :
@@ -62,26 +47,19 @@ val make_hours_minutes_seq :
   (int * int) Eliom_shared.React.S.t *
   (unit -> unit) Eliom_pervasives.client_value
 
-(** [make_hours ?h24 ()] produces a clock-style hour picker. If [h24]
-    is true, a 24-hour version is produced (i.e., 24 points in nested
-    circles). The first part of the output is the clock. The second
-    part of the output is a reactive signal for the hour that the user
-    picked. *)
-
-val make_hours :
-  ?h24 : bool ->
+(** Alias of [make]. Deprecated. *)
+val make_hours_minutes_seq :
+  ?action :
+    (int * int -> unit Lwt.t) Eliom_pervasives.client_value ->
+  ?init :
+    int * int ->
+  ?update :
+    (int * int) React.E.t Eliom_pervasives.client_value ->
+  ?round_5 :
+    bool ->
+  ?h24 :
+    bool ->
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
-  int Eliom_shared.React.S.t
-
-(** [make_minutes ?round_5 ()] produces a clock-style minute picker.
-    If [round_5] is true (default: false), the output is rounded to
-    multiples of 5. The first part of the output is the clock. The
-    second part of the output is a reactive signal for the minutes
-    that the user picked. *)
-
-val make_minutes :
-  ?round_5 : bool ->
-  unit ->
-  [> Html5_types.div] Eliom_content.Html5.D.elt *
-  int Eliom_shared.React.S.t
+  (int * int) Eliom_shared.React.S.t *
+  (unit -> unit) Eliom_pervasives.client_value

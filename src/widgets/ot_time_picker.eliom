@@ -45,11 +45,11 @@ let rec list_init ?acc:(acc = []) i f =
 
 (* http://stackoverflow.com/questions/30732709 *)
 
-let round_lb = -.(2. ** 52.)
+let%client round_lb = -.(2. ** 52.)
 
-let round_ub = 2. ** 52.
+let%client round_ub = 2. ** 52.
 
-let round x =
+let%client round x =
   if round_lb <= x && x <= round_ub then
     floor (x +. 0.49999999999999994)
   else
@@ -72,9 +72,9 @@ let polar_to_cartesian (r, h) =
   and y = center_y - int_of_float (r *. cos h) in
   x, y
 
-let pi = 3.14159
+let%client pi = 3.14159
 
-let cartesian_to_polar (x, y) =
+let%client cartesian_to_polar (x, y) =
   let x = float_of_int (x - center_x)
   and y = float_of_int (y - center_y) in
   let r = hypot x y |> round |> int_of_float
@@ -83,9 +83,6 @@ let cartesian_to_polar (x, y) =
     (e + 450) mod 360
   in
   r, e
-
-let cartesian_to_angle (x, y) =
-  cartesian_to_polar (x, y) |> snd
 
 let round_5_minutes ?round_5:(round_5 = false) m =
   if round_5 then
@@ -146,9 +143,6 @@ let angle_to_minutes ?round_5:(round_5 = false) e =
     angle_to_minutes_round e
   else
     angle_to_minutes e
-
-let cartesian_to_hours_minutes (x, y) =
-  cartesian_to_polar (x, y) |> snd |> angle_to_hours_minutes
 
 let cartesian_of_i ?radius:(radius = 40) de i =
   let e = i * de in
@@ -315,22 +309,6 @@ let%client delay f delay =
     f ();
     Lwt.return ())
 
-let make_hours_signal =
-  Eliom_shared.React.S.l2
-    [%shared fun h is_am -> angle_to_hours h |> convert_24h is_am ]
-
-let make_hm_signal ?round_5 =
-  Eliom_shared.React.S.l2 [%shared fun e is_am ->
-    let h, m = angle_to_hours_minutes ?round_5:~%round_5 e in
-    let h = convert_24h is_am h in
-    h, m
-  ]
-
-let make_minutes_signal ?round_5 =
-  Eliom_shared.React.S.map [%shared
-    angle_to_minutes ?round_5:~%round_5
-  ]
-
 let clock_html_wrap s (f : _ Eliom_lib.client_value) =
   let e =
     let a =
@@ -388,24 +366,9 @@ let clock_html_wrap_24h s f_e f_b =
 
 let container = D.(div ~a:[a_class ["ot-tp-container"]])
 
-let container_24h =
-  D.(div ~a:[a_class ["ot-tp-container"; "ot-tp-container-24h"]])
-
 let am_pm_toggle ?init_am:(init_am = true) ?update () =
   let init_up = init_am in
   Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ?update ()
-
-let angle_signal_of_hours =
-  Eliom_shared.React.S.map [%shared fun h ->
-    let h = if h >= 12 then h - 12 else h in
-    h * 30
-  ]
-
-let display_minutes m =
-  D.(div ~a:[a_class ["ot-tp-display"]] [pcdata (string_of_int m)])
-
-let angle_signal_of_minutes =
-  Eliom_shared.React.S.map [%shared ( * ) 6 ]
 
 let string_of_hours ?h24:(h24 = false) h =
   if h24 then
@@ -443,12 +406,6 @@ let display_hours_minutes_seq ?h24:(h24 = false) f (h, m) b =
     D.div ~a [h'; D.pcdata ":"; m;
               D.pcdata (if h < 12 then " AM" else " PM")]
 
-let angle_signal_of_hours_minutes =
-  Eliom_shared.React.S.map [%shared fun (h, m) ->
-    let h = if h >= 12 then h - 12 else h in
-    h * 30 + m / 2
-  ]
-
 let combine_inputs_hours_minutes ?round_5 =
   Eliom_shared.React.S.l3 [%shared fun e_h e_m is_am ->
     let h = angle_to_hours e_h |> convert_24h is_am
@@ -464,93 +421,24 @@ let angle_signal_of_hours' =
 let angle_signal_of_minutes' =
   Eliom_shared.React.S.map [%shared fun (_, m) -> m * 6 ]
 
-let display_hours h =
-  let a = [D.a_class ["ot-tp-display"]]
-  and s = h >|= [%shared (Printf.sprintf "%d:00" : int -> string) ] in
-  D.div ~a [R.pcdata s]
-
-let make_hours_12h () =
-  let e, f_e = Eliom_shared.React.S.create 0
-  and c, is_am = am_pm_toggle () in
-  let h = make_hours_signal e is_am in
-  let e = angle_signal_of_hours h in
-  let g =
-    let c = clock_svg ~zero_is_12:true e
-    and f_e = Eliom_shared.Value.client f_e in
-    clock_html_wrap c f_e
-  and d = display_hours h in
-  container [g; c; d], h
-
-let make_hours_24h () =
-  let e, f_e = Eliom_shared.React.S.create 0
-  and b, f_b = Eliom_shared.React.S.create true in
-  let h = make_hours_signal e b in
-  let e = angle_signal_of_hours h in
-  let g = clock_html_wrap_24h (clock_svg_24h b e) f_e f_b
-  and d = display_hours h in
-  container_24h [g; d], h
-
-let make_hours ?h24:(h24 = false) () =
-  if h24 then make_hours_24h () else make_hours_12h ()
-
-let display_minutes m =
-  let a = [D.a_class ["ot-tp-display"]]
-  and s = m >|= [%shared (string_of_int : int -> string) ] in
-  D.div ~a [R.pcdata s]
-
-let make_minutes ?round_5 () =
-  let e, f_e = Eliom_shared.React.S.create 0 in
-  let m = make_minutes_signal ?round_5 e in
-  let e = angle_signal_of_minutes m in
-  let g =
-    let c = clock_svg ~n:12 ~step:5 e
-    and f_e = Eliom_shared.Value.client f_e in
-    clock_html_wrap c f_e
-  and d = display_minutes m in
-  container [g; d], m
-
-let display_hours_minutes ?h24:(h24 = false) s =
-  let a = [D.a_class ["ot-tp-display"]] in
-  let s =
-    s >|= [%shared (fun (h, m) ->
-      let h24 = ~%h24 in
-      if h24 then
-        Printf.sprintf "%d:%02d" h m
-      else
-        Printf.sprintf "%s:%02d %s" (string_of_hours ~h24 h) m
-          (if h < 12 then "AM" else "PM") : int * int -> string)
-    ]
-  in
-  D.div ~a [R.pcdata s]
-
 let display_hours_minutes_seq ?h24 f =
   Eliom_shared.React.S.l2 [%shared
     display_hours_minutes_seq ?h24:~%h24 ~%f
   ]
 
-let make_hours_minutes ?round_5 () =
-  let e, f_e = Eliom_shared.React.S.create 0
-  and c, is_am = am_pm_toggle () in
-  let hm = make_hm_signal ?round_5 e is_am in
-  let e = angle_signal_of_hours_minutes hm in
-  let g =
-    let c = clock_svg ~zero_is_12:true e
-    and f_e = Eliom_shared.Value.client f_e in
-    clock_html_wrap c f_e
-  and d = display_hours_minutes ~h24:false hm in
-  container [g; c; d], hm
-
 let show_minutes_aux ?action hm f_e_m =
   let e_m = angle_signal_of_minutes' hm
-  and f =  [%client  fun ?step m ->
-    ~%f_e_m ?step m;
-    match ~%action with
-    | Some action ->
-      let v = React.S.value ~%hm in
-      Lwt.async (fun () -> action v)
-    | None ->
-      () ]
-  in
+  and f = [%client
+    ((fun ?step m ->
+       ~%f_e_m ?step m;
+       match ~%action with
+       | Some action ->
+         let v = React.S.value ~%hm in
+         Lwt.async (fun () -> action v)
+       | None ->
+         ())
+     : int rf)
+  ] in
   clock_html_wrap (clock_svg ~n:12 ~step:5 e_m) f
 
 let make_hours_minutes_seq_24h
@@ -641,3 +529,5 @@ let make_hours_minutes_seq
      make_hours_minutes_seq_24h
    else
      make_hours_minutes_seq) ?action ?init ?update ?round_5 ()
+
+let make = make_hours_minutes_seq
