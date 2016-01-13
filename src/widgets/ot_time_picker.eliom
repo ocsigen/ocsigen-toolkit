@@ -321,11 +321,15 @@ let%client delay f delay =
     f ();
     Lwt.return ())
 
-let clock_html_wrap s (f : (int * bool) rf Eliom_lib.client_value) =
+let clock_html_wrap ?(classes = [])
+    s (f : (int * bool) rf Eliom_lib.client_value) =
   let e =
     let a =
       let open Eliom_content.Svg.F in [
-        a_class ["ot-tp-clock"; "ot-tp-click-anywhere"];
+        a_class
+          ("ot-tp-clock"
+           :: "ot-tp-click-anywhere"
+           :: classes);
         a_viewbox ( 0. , 0. , 100. , 100. );
         a_onclick  [%client fun ev -> wrap_click ev ~%f ]
       ]
@@ -344,7 +348,7 @@ let clock_html_wrap s (f : (int * bool) rf Eliom_lib.client_value) =
   ] in
   e
 
-let clock_html_wrap_24h s f_e f_b =
+let clock_html_wrap_24h ?(classes = []) s f_e f_b =
   let e =
     let a =
       let f = [%client fun ev ->
@@ -355,11 +359,11 @@ let clock_html_wrap_24h s f_e f_b =
         React.Step.execute step'
       ] in
       let open Eliom_content.Svg.F in [
-        a_class [
-          "ot-tp-clock";
-          "ot-tp-clock-24h";
-          "ot-tp-click-anywhere"
-        ];
+        a_class
+          ("ot-tp-clock"
+           :: "ot-tp-clock-24h"
+           :: "ot-tp-click-anywhere"
+           :: classes);
         a_viewbox ( 0. , 0. , 100. , 100. );
         a_onclick f
       ]
@@ -449,7 +453,7 @@ let display_hours_minutes_seq ?h24 f =
   ]
 
 let show_minutes_aux ?action e_m hm f_e_m =
-  clock_html_wrap
+  clock_html_wrap ~classes:["ot-tp-clock-min"]
     (clock_svg ~n:12 ~step:5 e_m)
     [%client
       ((fun ?step m ->
@@ -518,7 +522,9 @@ let make_hours_minutes_seq_24h
            if b then delay (fun () -> ~%f_b false) 0.3
         ]
     in
-    clock_html_wrap_24h (clock_svg_24h is_am e_h') f_e_h f_is_am
+    clock_html_wrap_24h
+      ~classes:["ot-tp-clock-hr"]
+      (clock_svg_24h is_am e_h') f_e_h f_is_am
   in
   let g =
     let e_m = get_angle_signal ?round:round_5 e_m in
@@ -567,7 +573,9 @@ let make_hours_minutes_seq
       ~%f_e_h ?step p;
       if b then delay (fun () -> ~%f_b false) 0.3 ]
     in
-    clock_html_wrap (clock_svg ~zero_is_12:true e_h') f_e_h
+    clock_html_wrap
+      ~classes:["ot-tp-clock-hr"]
+      (clock_svg ~zero_is_12:true e_h') f_e_h
   in
   let g =
     let e_m = get_angle_signal ?round:round_5 e_m in
