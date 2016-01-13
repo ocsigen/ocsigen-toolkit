@@ -144,3 +144,15 @@ div.ot-tp-container div.ot-tp-display {
 th.ot-c-header {
     text-align:center;
 }
+
+@keyframes shake-animation {
+    0%   {transform: translateX(0)}
+    25%  {transform: translateX(-5px)}
+    75%  {transform: translateX(5px)}
+    100% {transform: translateX(0)}
+}
+
+.ot-tp-clock-min {
+    animation-name: shake-animation;
+    animation-duration: .1s;
+}

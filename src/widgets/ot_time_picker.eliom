@@ -315,12 +315,6 @@ let%client wrap_click ev (f : _ rf) =
 let%client wrap_click_24h ev f_e f_b =
   wrap_click_aux ev (fun (r, e) -> f_b r; f_e (e, true))
 
-let%client delay f delay =
-  Lwt.async (fun () ->
-    let%lwt () = Lwt_js.sleep delay in
-    f ();
-    Lwt.return ())
-
 let clock_html_wrap ?(classes = [])
     s (f : (int * bool) rf Eliom_lib.client_value) =
   let e =
@@ -519,7 +513,7 @@ let make_hours_minutes_seq_24h
         (Eliom_shared.Value.local f_e_h)
         [%client fun ?step ((x, b) as p) ->
            ~%f_e_h ?step p;
-           if b then delay (fun () -> ~%f_b false) 0.3
+           if b then ~%f_b false
         ]
     in
     clock_html_wrap_24h
@@ -571,7 +565,7 @@ let make_hours_minutes_seq
     let e_h' = Eliom_shared.React.S.map [%shared fst ] e_h
     and f_e_h = [%client fun ?step ((x, b) as p) ->
       ~%f_e_h ?step p;
-      if b then delay (fun () -> ~%f_b false) 0.3 ]
+      if b then ~%f_b false ]
     in
     clock_html_wrap
       ~classes:["ot-tp-clock-hr"]
