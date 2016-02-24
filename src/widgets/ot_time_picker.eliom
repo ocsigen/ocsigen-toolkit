@@ -324,7 +324,7 @@ let clock_html_wrap ?(classes = [])
           ("ot-tp-clock"
            :: "ot-tp-click-anywhere"
            :: classes);
-        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_viewBox ( 0. , 0. , 100. , 100. );
         a_onclick  [%client fun ev -> wrap_click ev ~%f ]
       ]
     in
@@ -358,7 +358,7 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
            :: "ot-tp-clock-24h"
            :: "ot-tp-click-anywhere"
            :: classes);
-        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_viewBox ( 0. , 0. , 100. , 100. );
         a_onclick f
       ]
     in
