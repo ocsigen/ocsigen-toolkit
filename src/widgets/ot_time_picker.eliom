@@ -28,7 +28,7 @@ type polar = int * int
 
 type cartesian = int * int
 
-type time_receiver = (int -> int -> unit) Eliom_lib.client_value
+type time_receiver = (int -> int -> unit) Eliom_client_common.client_value
 
 type 'a rf = ?step:React.step -> 'a -> unit
 
@@ -316,7 +316,7 @@ let%client wrap_click_24h ev f_e f_b =
   wrap_click_aux ev (fun (r, e) -> f_b r; f_e (e, true))
 
 let clock_html_wrap ?(classes = [])
-    s (f : (int * bool) rf Eliom_lib.client_value) =
+    s (f : (int * bool) rf Eliom_client_common.client_value) =
   let e =
     let a =
       let open Eliom_content.Svg.F in [
@@ -325,7 +325,8 @@ let clock_html_wrap ?(classes = [])
            :: "ot-tp-click-anywhere"
            :: classes);
         a_viewbox ( 0. , 0. , 100. , 100. );
-        a_onclick  [%client fun ev -> wrap_click ev ~%f ]
+        a_onclick ([%client fun ev -> wrap_click ev ~%f ]
+                   : _ Eliom_client_common.client_value)
       ]
     in
     Eliom_content.Html5.D.svg ~a [s]
@@ -345,13 +346,13 @@ let clock_html_wrap ?(classes = [])
 let clock_html_wrap_24h ?(classes = []) s f_e f_b =
   let e =
     let a =
-      let f = [%client fun ev ->
+      let f = ([%client fun ev ->
         let step' = React.Step.create () in
         let step =  Some step' in
         let f_b r = ~%f_b ?step (r <= 35, true) in
         wrap_click_24h ev (~%f_e ?step) f_b;
         React.Step.execute step'
-      ] in
+      ] : _ Eliom_client_common.client_value) in
       let open Eliom_content.Svg.F in [
         a_class
           ("ot-tp-clock"
@@ -404,14 +405,16 @@ let display_hours_minutes_seq ?h24:(h24 = false) f (h, m) b =
         [D.a_class ["ot-tp-hours"; "ot-tp-active"]]
       else
         [D.a_class ["ot-tp-hours"; "ot-tp-inactive"];
-         D.a_onclick  [%client  fun _ -> ~%f true ]]
+         D.a_onclick ([%client  fun _ -> ~%f true ]
+                      : _ Eliom_client_common.client_value)]
     and c = [string_of_hours ~h24 h |> D.pcdata] in
     D.span ~a c
   and m =
     let a =
       if b then
         D.[a_class ["ot-tp-minutes"; "ot-tp-inactive"];
-           a_onclick  [%client  fun _ -> ~%f false ]]
+           a_onclick ([%client  fun _ -> ~%f false ]
+                      : _ Eliom_client_common.client_value)]
       else
         [D.a_class ["ot-tp-minutes"; "ot-tp-active"]]
     and c = [Printf.sprintf "%02d" m |> D.pcdata] in
@@ -509,7 +512,7 @@ let make_hours_minutes_seq_24h
   let g_h =
     let e_h' = get_angle_signal ~round:true e_h
     and f_e_h =
-      Eliom_lib.create_shared_value
+      Eliom_client_common.create_shared_value
         (Eliom_shared.Value.local f_e_h)
         [%client fun ?step ((x, b) as p) ->
            ~%f_e_h ?step p;

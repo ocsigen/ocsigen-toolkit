@@ -39,12 +39,14 @@ let display_toggle
       [div ~a:[a_class ["ot-active"; "ot-up"]]
          [pcdata up_txt];
        div ~a:[a_class ["ot-inactive"; "ot-down"];
-               a_onclick [%client fun _ -> ~%f T_Down ]]
+               a_onclick ([%client (fun _ -> ~%f T_Down : _ -> _) ]
+                          : _ Eliom_client_common.client_value)]
          [pcdata down_txt]]
   | T_Down ->
     div ~a:[a_class ["ot-toggle"]]
       [div ~a:[a_class ["ot-inactive"; "ot-up"];
-               a_onclick [%client  fun _ -> ~%f T_Up ]]
+               a_onclick ([%client (fun _ -> ~%f T_Up : _ -> _) ]
+                          : _ Eliom_client_common.client_value)]
          [pcdata up_txt];
        div ~a:[a_class ["ot-active"; "ot-down"]]
          [pcdata down_txt]]

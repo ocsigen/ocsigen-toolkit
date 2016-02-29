@@ -46,13 +46,13 @@ type intl = {
 val make :
   ?init : (int * int * int) ->
   ?highlight :
-    (int -> int -> int list Lwt.t) Eliom_lib.client_value ->
+    (int -> int -> int list Lwt.t) Eliom_client_common.client_value ->
   ?click_non_highlighted :
     bool ->
   ?update :
-    (int * int * int) React.E.t Eliom_lib.client_value ->
+    (int * int * int) React.E.t Eliom_client_common.client_value ->
   ?action :
-    (int -> int -> int -> unit Lwt.t) Eliom_lib.client_value ->
+    (int -> int -> int -> unit Lwt.t) Eliom_client_common.client_value ->
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.elt
@@ -65,7 +65,7 @@ val make :
 val make_date_picker :
   ?init : (int * int * int) ->
   ?update :
-    (int * int * int) React.E.t Eliom_lib.client_value ->
+    (int * int * int) React.E.t Eliom_client_common.client_value ->
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] Eliom_content.Html5.F.elt *
