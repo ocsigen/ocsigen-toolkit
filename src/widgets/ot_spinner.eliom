@@ -26,7 +26,8 @@ let%shared default_fail e =
   Lwt.return [
     if Eliom_config.get_debugmode ()
     then em [ pcdata (Printexc.to_string e) ]
-    else em ~a:[ a_class ["ot-spn-error"] ] [ pcdata (Printexc.to_string e) ] ]
+    else em ~a:[ a_class ["ot-icon-question"] ]
+        [ pcdata (Printexc.to_string e) ] ]
 
 let%server with_spinner ?a ?(fail=default_fail) thread =
   let%lwt v = try%lwt
@@ -44,8 +45,9 @@ let%client with_spinner ?(a = []) ?(fail=default_fail) thread =
   match Lwt.state thread with
   | Lwt.Return v -> Lwt.return (D.div ~a v)
   | Lwt.Sleep ->
-    let loading = "ot-spn-spinning" in
-    let d = D.div ~a:(a_class [ loading ] :: a) [] in
+    let spinning = "ot-icon-animation-spinning" in
+    let spinner = "ot-icon-spinner" in
+    let d = D.div ~a:(a_class [ spinner ; spinning ] :: a) [] in
     Lwt.async
       (fun () ->
          let%lwt v = try%lwt
@@ -58,7 +60,8 @@ let%client with_spinner ?(a = []) ?(fail=default_fail) thread =
                (v :> Html5_types.div_content_fun F.elt list)
          in
          Manip.replaceChildren d v ;
-         Manip.Class.remove d loading ;
+         Manip.Class.remove d spinning ;
+         Manip.Class.remove d spinner ;
          Lwt.return () ) ;
     Lwt.return d
   | Lwt.Fail e -> let%lwt c = fail e in Lwt.return (D.div ~a c)
