@@ -129,89 +129,106 @@ let%shared cropper
        ~%set_left @@ max (React.S.value ~%left +. dx) 0. in
      let plus x : float = +. x in
      let minus x : float = -. x in
-     let move_listener =
-       Dom_html.handler (fun ev ->
-         let cx = float_of_int ev##.clientX in
-         let cy = float_of_int ev##.clientY in
-         let dx = (cx -. !x) /. React.S.value ~%img_w in
-         let dy = (cy -. !y) /. React.S.value ~%img_h in
-         let dx = if dx > 0.
-           then min (React.S.value ~%right) dx
-           else max (-. (React.S.value ~%left)) dx in
-         let dy = if dy > 0.
-           then min (React.S.value ~%bottom) dy
-           else max (-. (React.S.value ~%top)) dy in
-         update_right dx ;
-         update_left dx ;
-         update_top dy ;
-         update_bottom dy ;
-         x := cx ;
-         y := cy ;
-         Js.bool true) in
-     let mk_listener_ratio ?x_axis ?y_axis~dir ~ratio () =
-       Dom_html.handler (fun ev ->
-         let cx = match x_axis with None -> !x
-                                  | _ -> float_of_int ev##.clientX in
-         let cy = match y_axis with None -> !y
-                                  | _ -> float_of_int ev##.clientY in
-         let dx = (match x_axis with Some f -> f (cx -. !x)
-                                   | None -> cx -. !x)
-                  /. React.S.value ~%img_w in
-         let dy = (match y_axis with Some f -> f (cy -. !y)
-                                   | None -> cy -. !y)
-                  /. React.S.value ~%img_h in
-         let dx = if abs_float dx > abs_float dy then dx else dy in
-         let dy = dx *. ratio
-                  *. (React.S.value ~%img_w /. React.S.value ~%img_h) in
-         let (t, r, b, l) = match dir with
-           | `T  -> ( 1., 0.5,  0., 0.5)
-           | `TR -> ( 1.,  1.,  0.,  0.)
-           | `R  -> (0.5,  1., 0.5,  0.)
-           | `BR -> ( 0.,  1.,  1.,  0.)
-           | `B  -> ( 0., 0.5,  1., 0.5)
-           | `BL -> ( 0.,  0.,  1.,  1.)
-           | `L  -> (0.5,  0., 0.5,  1.)
-           | `TL -> ( 1.,  0.,  0.,  1.) in
-         if React.S.value ~%right >= r *. dx
-         && React.S.value ~%left >= l *. dx
-         && React.S.value ~%top >= t *. dy
-         && React.S.value ~%bottom >= b *. dy
-         then begin
-           update_top (-.t *. dy) ;
-           update_bottom (b *. dy) ;
-           update_left (-.l *. dx) ;
-           update_right (r *. dx) end ;
-         x := cx ;
-         y := cy ;
-         Js.bool true) in
-     let mk_listener ?move_x ?move_y () =
-       Dom_html.handler (fun ev ->
-         let (cx, move_x) = match move_x with
-           | Some f -> (float_of_int ev##.clientX, f)
-           | None   -> (!x, fun _ -> ()) in
-         let (cy, move_y) = match move_y with
-           | Some f -> (float_of_int ev##.clientY, f)
-           | None   -> (!y, fun _ -> ()) in
-         let dx = (cx -. !x) /. React.S.value ~%img_w in
-         let dy = (cy -. !y) /. React.S.value ~%img_h in
-         if dx <> 0. then begin move_x dx ; x := cx end ;
-         if dy <> 0. then begin move_y dy ; y := cy end ;
-         Js.bool true) in
-     List.iter (fun (dom, handler) ->
-       Lwt.async (fun () -> mousedowns (To_dom.of_element dom) (fun ev _ ->
-         Dom.preventDefault ev ;
-         Dom_html.stopPropagation ev ;
-         let () = x := float_of_int ev##.clientX in
-         let () = y := float_of_int ev##.clientY in
-         let x = Dom_html.addEventListener
-             Dom_html.document
-             Dom_html.Event.mousemove
-             handler
-             (Js.bool false) in
-         let%lwt _ = Lwt_js_events.mouseup Dom_html.document in
-         Dom_html.removeEventListener x ;
-         Lwt.return ()
-       ) ) ) (
+     let move_listener = fun cx cy ->
+       let dx = (cx -. !x) /. React.S.value ~%img_w in
+       let dy = (cy -. !y) /. React.S.value ~%img_h in
+       let dx = if dx > 0.
+         then min (React.S.value ~%right) dx
+         else max (-. (React.S.value ~%left)) dx in
+       let dy = if dy > 0.
+         then min (React.S.value ~%bottom) dy
+         else max (-. (React.S.value ~%top)) dy in
+       update_right dx ;
+       update_left dx ;
+       update_top dy ;
+       update_bottom dy ;
+       x := cx ;
+       y := cy ;
+       Js.bool true in
+     let mk_listener_ratio ?x_axis ?y_axis~dir ~ratio () cx cy =
+       let cx = match x_axis with None -> !x | _ -> cx in
+       let cy = match y_axis with None -> !y | _ -> cy in
+       let dx = (match x_axis with Some f -> f (cx -. !x)
+                                 | None -> cx -. !x)
+                /. React.S.value ~%img_w in
+       let dy = (match y_axis with Some f -> f (cy -. !y)
+                                 | None -> cy -. !y)
+                /. React.S.value ~%img_h in
+       let dx = if abs_float dx > abs_float dy then dx else dy in
+       let dy = dx *. ratio
+                *. (React.S.value ~%img_w /. React.S.value ~%img_h) in
+       let (t, r, b, l) = match dir with
+         | `T  -> ( 1., 0.5,  0., 0.5)
+         | `TR -> ( 1.,  1.,  0.,  0.)
+         | `R  -> (0.5,  1., 0.5,  0.)
+         | `BR -> ( 0.,  1.,  1.,  0.)
+         | `B  -> ( 0., 0.5,  1., 0.5)
+         | `BL -> ( 0.,  0.,  1.,  1.)
+         | `L  -> (0.5,  0., 0.5,  1.)
+         | `TL -> ( 1.,  0.,  0.,  1.) in
+       if React.S.value ~%right >= r *. dx
+       && React.S.value ~%left >= l *. dx
+       && React.S.value ~%top >= t *. dy
+       && React.S.value ~%bottom >= b *. dy
+       then begin
+         update_top (-.t *. dy) ;
+         update_bottom (b *. dy) ;
+         update_left (-.l *. dx) ;
+         update_right (r *. dx) end ;
+       x := cx ;
+       y := cy ;
+       Js.bool true in
+     let mk_listener = fun ?move_x ?move_y () cx cy ->
+       let (cx, move_x) = match move_x with
+         | Some f -> (cx, f)
+         | None   -> (!x, fun _ -> ()) in
+       let (cy, move_y) = match move_y with
+         | Some f -> (cy, f)
+         | None   -> (!y, fun _ -> ()) in
+       let dx = (cx -. !x) /. React.S.value ~%img_w in
+       let dy = (cy -. !y) /. React.S.value ~%img_h in
+       if dx <> 0. then begin move_x dx ; x := cx end ;
+       if dy <> 0. then begin move_y dy ; y := cy end ;
+       Js.bool true in
+     let bind_handler
+       = fun add_trigger event rm_trigger get_x get_y (dom, handler) ->
+         Lwt.async (fun () -> add_trigger (To_dom.of_element dom) (fun ev _ ->
+           Dom.preventDefault ev ;
+           Dom_html.stopPropagation ev ;
+           let () = x := get_x ev in
+           let () = y := get_y ev in
+           let x = Dom_html.addEventListener
+               Dom_html.document
+               event
+               (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)) )
+               (Js.bool false) in
+           let%lwt _ = rm_trigger Dom_html.document in
+           Dom_html.removeEventListener x ;
+           Lwt.return () ) )
+     in
+     List.iter (fun x ->
+       bind_handler
+         mousedowns
+         Dom_html.Event.mousemove
+         Lwt_js_events.mouseup
+         (fun ev -> float_of_int ev##.clientX )
+         (fun ev -> float_of_int ev##.clientY )
+         x ;
+       bind_handler
+         touchstarts
+         Dom_html.Event.touchmove
+         Lwt_js_events.touchend
+         (fun ev -> float_of_int @@
+           Js.Optdef.case
+             (ev##.touches##item 0)
+             (fun () -> assert false)
+             (fun x -> x##.clientX) )
+         (fun ev -> float_of_int @@
+           Js.Optdef.case
+             (ev##.touches##item 0)
+             (fun () -> assert false)
+             (fun x -> x##.clientY) )
+         x ) (
        (~%crop, move_listener)
        :: match ~%ratio with
        | Some ratio ->
@@ -220,17 +237,17 @@ let%shared cropper
          ; (~%tr_c, mk_listener_ratio ~dir:`TR
               ~x_axis:plus ~y_axis:minus ~ratio ())
          ; (~%r_c , mk_listener_ratio ~dir:`R
-            ~x_axis:plus ~ratio ())
+              ~x_axis:plus ~ratio ())
          ; (~%br_c, mk_listener_ratio ~dir:`BR
-            ~x_axis:plus ~y_axis:plus ~ratio ())
+              ~x_axis:plus ~y_axis:plus ~ratio ())
          ; (~%b_c , mk_listener_ratio ~dir:`B
-            ~y_axis:plus ~ratio ())
+              ~y_axis:plus ~ratio ())
          ; (~%bl_c, mk_listener_ratio ~dir:`BL
-            ~x_axis:minus ~y_axis:plus ~ratio ())
+              ~x_axis:minus ~y_axis:plus ~ratio ())
          ; (~%l_c , mk_listener_ratio ~dir:`L
-            ~x_axis:minus ~ratio ())
+              ~x_axis:minus ~ratio ())
          ; (~%tl_c, mk_listener_ratio ~dir:`TL
-            ~x_axis:minus ~y_axis:minus ~ratio ()) ]
+              ~x_axis:minus ~y_axis:minus ~ratio ()) ]
        | None ->
          [ (~%t_c , mk_listener ~move_y:update_top ())
          ; (~%tr_c, mk_listener ~move_x:update_right ~move_y:update_top ())
