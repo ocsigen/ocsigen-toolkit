@@ -33,7 +33,7 @@ let%client number_of_popups = ref 0
 
 let%client rec popup
     ?(a = [])
-    ?(closeable = true)
+    ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
     gen_content =
@@ -73,18 +73,13 @@ let%client rec popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
   let content = [c] in
-  let content = if closeable
-    then begin
-      let close_button =
-        D.Form.button_no_value
-          ~a:[ a_class ["ot-popup-close"] ] ~button_type:`Button [] in
-      Lwt_js_events.async (fun () ->
-        Lwt_js_events.clicks (To_dom.of_element close_button)
-          (fun _ _ -> close () ) ) ;
-      close_button :: content
-    end
-    else content
-  in
+  let content = match close_button with
+    | Some but ->
+        Form.button_no_value ~button_type:`Button
+          ~a:[ a_class ["ot-popup-close"]
+             ; a_onclick (fun ev -> Lwt.async (fun () -> close ())) ] but
+        :: content
+    | None -> content in
   let pop = D.div ~a:[a_class ["ot-popup"]] content in
   let box = D.div ~a:(a_class ["ot-popup-background"] :: a) [ pop ] in
   popup := Some box;
@@ -111,7 +106,6 @@ and ask_question
     let t, w = Lwt.wait () in
     let%lwt _ =
       popup ?a
-        ~closeable:false
         (fun do_close ->
            let answers =
              List.map (fun (content, action, btn_class) ->
