@@ -49,7 +49,7 @@ val hcf :
     parameter, and returning the popup content. *)
 val popup :
   ?a:[< div_attrib > `Class ] attrib list
-  -> ?closeable:bool
+  -> ?close_button:(Html5_types.button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
   -> ((unit -> unit Lwt.t)
