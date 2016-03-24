@@ -328,19 +328,20 @@ let%client do_submit input ?cropping ~service ~arg () =
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_common.client_value)
-    button ?cropping ~service ~arg ~close () =
+    button ?cropping ~service ~arg ~after_submit () =
   Lwt.async (fun () -> Lwt_js_events.clicks button (fun _ _ ->
     let%lwt () = do_submit input ?cropping ~service ~arg () in
-    close () ) )
+    after_submit () ) )
 
-let%client bind ?container ~input ~preview ?crop ~submit ~service ~arg ~close ()
+let%client bind
+    ?container ~input ~preview ?crop ~submit ~service ~arg ~after_submit ()
   =
   let (reset, cropping) = match crop with
     | Some (x,y) -> Some x, Some y
     | _          -> None, None in
   let () = bind_input input preview ?container ?reset () in
   let () = bind_submit
-      input submit ?cropping ~service ~arg ~close () in
+      input submit ?cropping ~service ~arg ~after_submit () in
   ()
 
 let%shared mk_service name arg_deriver =
@@ -354,7 +355,7 @@ let%shared mk_service name arg_deriver =
     ) ()
 
 let%shared mk_form
-    ?(close = fun () -> Lwt.return ())
+    ?(after_submit = fun () -> Lwt.return ())
     ?crop
     ?input:(input_content = [])
     ?submit:(submit_content = [])
@@ -385,6 +386,6 @@ let%shared mk_form
                       ~submit:(To_dom.of_button ~%submit)
                       ~service:~%service
                       ~arg:~%arg
-                      ~close:~%close
+                      ~after_submit:~%after_submit
                       () : unit) ] in
   Lwt.return form

@@ -82,18 +82,18 @@ val do_submit :
   -> unit
   -> unit Lwt.t
 
-(** [ bind_submit input button ?cropping ~service ~arg ~close () ]
+(** [ bind_submit input button ?cropping ~service ~arg ~after_submit () ]
     Make [ button ] action is to call [service] with
     [ (arg, (cropping, file)) ] parameters, [ file ] being the file select in
     [ input ].
-    [ close ] is called once [ service ] returned. *)
+    [ after_submit ] is called once [ service ] returned. *)
 val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_common.client_value
   -> #Dom_html.eventTarget Js.t Eliom_client_common.client_value
   -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
   -> service:'a service
   -> arg:'a
-  -> close:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
 
@@ -107,7 +107,7 @@ val bind :
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_common.client_value
   -> service:'b service
   -> arg:'b
-  -> close:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
 
@@ -137,7 +137,7 @@ val mk_service : string -> 'a Deriving_Json.t -> 'a service
     [input], the input button content, [submit], the submit button content.
     If [crop] is present, cropping is enable, with the optional ratio it is. *)
 val mk_form :
-  ?close:(unit -> unit Lwt.t)
+  ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
   -> ?input:[< Html5_types.label_content_fun > `Input ]
     Eliom_content.Html5.F.elt list
