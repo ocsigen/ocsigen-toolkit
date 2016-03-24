@@ -329,7 +329,9 @@ let%client do_submit input ?cropping ~service ~arg () =
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_common.client_value)
     button ?cropping ~service ~arg ~after_submit () =
-  Lwt.async (fun () -> Lwt_js_events.clicks button (fun _ _ ->
+  Lwt.async (fun () -> Lwt_js_events.clicks button (fun ev _ ->
+    Dom.preventDefault ev ;
+    Dom_html.stopPropagation ev ;
     let%lwt () = do_submit input ?cropping ~service ~arg () in
     after_submit () ) )
 
