@@ -30,7 +30,7 @@ val make :
   ?init_up   : bool ->
   ?up_txt   : string ->
   ?down_txt : string ->
-  ?update   : bool React.E.t Eliom_client_common.client_value ->
+  ?update   : bool React.E.t Eliom_client_value.t ->
   unit ->
   [> Html5_types.div ] Eliom_content.Html5.D.elt *
   bool Eliom_shared.React.S.t

@@ -33,11 +33,11 @@
     function that can be called to go back to hours selection. *)
 val make :
   ?action :
-    (int * int -> unit Lwt.t) Eliom_client_common.client_value ->
+    (int * int -> unit Lwt.t) Eliom_client_value.t ->
   ?init :
     int * int ->
   ?update :
-    (int * int) React.E.t Eliom_client_common.client_value ->
+    (int * int) React.E.t Eliom_client_value.t ->
   ?round_5 :
     bool ->
   ?h24 :
@@ -45,16 +45,16 @@ val make :
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
   (int * int) Eliom_shared.React.S.t *
-  (unit -> unit) Eliom_client_common.client_value
+  (unit -> unit) Eliom_client_value.t
 
 (** Alias of [make]. Deprecated. *)
 val make_hours_minutes_seq :
   ?action :
-    (int * int -> unit Lwt.t) Eliom_client_common.client_value ->
+    (int * int -> unit Lwt.t) Eliom_client_value.t ->
   ?init :
     int * int ->
   ?update :
-    (int * int) React.E.t Eliom_client_common.client_value ->
+    (int * int) React.E.t Eliom_client_value.t ->
   ?round_5 :
     bool ->
   ?h24 :
@@ -62,4 +62,4 @@ val make_hours_minutes_seq :
   unit ->
   [> Html5_types.div] Eliom_content.Html5.D.elt *
   (int * int) Eliom_shared.React.S.t *
-  (unit -> unit) Eliom_client_common.client_value
+  (unit -> unit) Eliom_client_value.t

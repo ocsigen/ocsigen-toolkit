@@ -53,13 +53,13 @@ let display
     e (v, f) =
   D.(div ~a:[a_class ["ot-range"]]
        [div ~a:[a_class ["ot-r-up"];
-                a_onclick ([%client (fun _ -> go_up ~%e ~%v ~%f : _ -> _) ]
-                           : _ Eliom_client_common.client_value)]
+                a_onclick
+                  [%client (fun _ -> go_up ~%e ~%v ~%f : _ -> _) ]]
           [pcdata txt_up];
         display_aux e v;
         div ~a:[a_class ["ot-r-down"];
-                a_onclick ([%client (fun _ -> go_down ~%e ~%v ~%f : _ -> _) ]
-                           : _ Eliom_client_common.client_value)]
+                a_onclick
+                  [%client (fun _ -> go_down ~%e ~%v ~%f : _ -> _) ]]
           [pcdata txt_down]])
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
