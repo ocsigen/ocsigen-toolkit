@@ -1,0 +1,6 @@
+.ot-spn-error,
+.ot-spn-spinning {
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
+}
