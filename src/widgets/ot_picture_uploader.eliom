@@ -62,7 +62,7 @@ let%client file_reader file callback =
   let () = reader##readAsDataURL file in ()
 
 let%shared cropper
-    ~(image : Dom_html.element Js.t Eliom_client_common.client_value )
+    ~(image : Dom_html.element Js.t Eliom_client_value.t )
     ?ratio () =
   let mk_controller style =
     D.div ~a:[ a_class [ "ot-pup-ctrl" ; "ot-pup-ctrl-" ^ style ] ] [] in
@@ -327,7 +327,7 @@ let%client do_submit input ?cropping ~service ~arg () =
       () (arg, (Eliom_lib.Option.map React.S.value cropping, file) ) )
 
 let%client bind_submit
-    (input : Dom_html.inputElement Js.t Eliom_client_common.client_value)
+    (input : Dom_html.inputElement Js.t Eliom_client_value.t)
     button ?cropping ~service ~arg ~after_submit () =
   Lwt.async (fun () -> Lwt_js_events.clicks button (fun ev _ ->
     Dom.preventDefault ev ;

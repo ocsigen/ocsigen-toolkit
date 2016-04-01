@@ -49,7 +49,7 @@ type 'a service =
     [ cropping ] are current cropping parameters
     [ cropper_dom ] is the div containing cropping controllers *)
 val cropper :
-  image:Dom_html.element Js.t Eliom_client_common.client_value
+  image:Dom_html.element Js.t Eliom_client_value.t
   -> ?ratio:float
   -> unit
   -> (unit -> unit)
@@ -62,9 +62,9 @@ val cropper :
     [?container] is used to toggle [ot-no-file] class.
     [?reset] is called when the [input] value changes. *)
 val bind_input :
-  Dom_html.inputElement Js.t Eliom_client_common.client_value
-  -> Dom_html.imageElement Js.t Eliom_client_common.client_value
-  -> ?container:Dom_html.element Js.t Eliom_client_common.client_value
+  Dom_html.inputElement Js.t Eliom_client_value.t
+  -> Dom_html.imageElement Js.t Eliom_client_value.t
+  -> ?container:Dom_html.element Js.t Eliom_client_value.t
   -> ?reset:(unit -> unit)
   -> unit
   -> unit
@@ -75,7 +75,7 @@ val bind_input :
     [service] service used for submission
     [arg] extra argument passed to [service] (as first argument) *)
 val do_submit :
-  Dom_html.inputElement Js.t Eliom_client_common.client_value
+  Dom_html.inputElement Js.t Eliom_client_value.t
   -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
   -> service:'a service
   -> arg:'a
@@ -88,8 +88,8 @@ val do_submit :
     [ input ].
     [ after_submit ] is called once [ service ] returned. *)
 val bind_submit :
-  Dom_html.inputElement Js.t Eliom_client_common.client_value
-  -> #Dom_html.eventTarget Js.t Eliom_client_common.client_value
+  Dom_html.inputElement Js.t Eliom_client_value.t
+  -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
   -> service:'a service
   -> arg:'a
@@ -99,12 +99,12 @@ val bind_submit :
 
 (** [bind] is a shortcut for [bind_input] and [bind_submit] actions *)
 val bind :
-  ?container:Dom_html.element Js.t Eliom_client_common.client_value
-  ->input:Dom_html.inputElement Js.t Eliom_client_common.client_value
+  ?container:Dom_html.element Js.t Eliom_client_value.t
+  ->input:Dom_html.inputElement Js.t Eliom_client_value.t
   -> preview:#Dom_html.imageElement Js.t
   -> ?crop:( (unit -> unit)
              * (float * float * float * float) Eliom_shared.React.S.t )
-  -> submit:#Dom_html.eventTarget Js.t Eliom_client_common.client_value
+  -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
   -> service:'b service
   -> arg:'b
   -> after_submit:(unit -> unit Lwt.t)
