@@ -81,6 +81,7 @@ div.ot-tp-container {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .ot-tp-text {
