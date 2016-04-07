@@ -74,14 +74,14 @@ val ask_question :
 
 (** Shortcut using [ask_question] for prompting the user with a question
     and returning a boolean.
-    [confirm ?yes_class ?no_class question yes no]
-    [yes_class] is a class list for yes button default is ["ot-popup-yes"]
-    [no_class] is a class list for no button default is ["ot-popup-no"]
+    [confirm ?a question yes no]
+    [a] is a traditional optional attributes to add to the popup
     [question] is the content of the popup header
     [yes] is the content of the 'yes' button (returning true)
     [no] is the content of the 'no' button (returning false) *)
 val confirm :
-  [< header_content_fun ] elt list
+  ?a:[< Html5_types.div_attrib > `Class ] attrib list
+  -> [< header_content_fun ] elt list
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
   -> bool Lwt.t

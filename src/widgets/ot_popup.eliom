@@ -122,9 +122,9 @@ and ask_question
            Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
     in t
 
-and confirm question yes no =
+and confirm ?(a = []) question yes no =
   ask_question
-    ~a:[ a_class [ "ot-popup-confirmation" ] ]
+    ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []

@@ -375,7 +375,7 @@ let%shared mk_form
       (Some (reset, cropping), [ cropper_dom ])
     | None -> (None, []) in
   let form =
-    D.form ~a:[ a_class ["ot-pup-form"] ]
+    D.form ~a:[ a_class [ "ot-pup-form" ; "ot-no-file" ] ]
       [ input_label
       ; div ~a:[ a_class [ "ot-pup-container" ] ] ( preview :: cropper_dom)
       ; submit ] in
