@@ -94,7 +94,7 @@ let%client rec popup
 
 and ask_question
   : 'a .
-      ?a:[< Html5_types.div_attrib > `Class ] attrib list
+      ?a:[< Html5_types.div_attrib ] attrib list
     -> ?a_hcf:[< Html5_types.div_attrib ] attrib list
     -> header:[< Html5_types.header_content ] elt list
   -> buttons:([< Html5_types.button_content_fun ] elt list
@@ -123,8 +123,19 @@ and ask_question
     in t
 
 and confirm ?(a = []) question yes no =
+  let a = (a :> Html5_types.div_attrib attrib list) in
   ask_question
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
+
+let%client popup ?a ?close_button ?confirmation_onclose ?onclose gen_content =
+  let a = (a :> Html5_types.div_attrib attrib list option) in
+  popup ?a ?close_button ?confirmation_onclose ?onclose
+    (gen_content :> (unit -> unit Lwt.t) ->
+                    Html5_types.div_content elt Lwt.t)
+
+let%client ask_question ?a ?a_hcf ~header ~buttons contents =
+  let a = (a :> Html5_types.div_attrib attrib list option) in
+  ask_question ?a ?a_hcf ~header ~buttons contents

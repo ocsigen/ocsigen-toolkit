@@ -32,7 +32,7 @@ val hcf :
   ?a:[< div_attrib ] attrib list ->
   ?header:[< header_content_fun ] elt list ->
   ?footer:[< footer_content_fun ] elt list ->
-  [< div_content_fun ] elt list ->
+  [< div_content ] elt list ->
   [> section ] elt
 
 [%%client.start]
@@ -48,12 +48,11 @@ val hcf :
     [gen_content] is a function taking the function closing the popup as
     parameter, and returning the popup content. *)
 val popup :
-  ?a:[< div_attrib > `Class ] attrib list
+  ?a:[< div_attrib ] attrib list
   -> ?close_button:(Html5_types.button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
-  -> ((unit -> unit Lwt.t)
-      -> [< div_content_fun > `Section ] elt Lwt.t) (* ??? *)
+  -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
 
 (** [ask_question ?a ?a_hcf question buttons]
@@ -63,13 +62,13 @@ val popup :
     of [(content, action, classes)]. [action ()] is called to return the
     value when the corresponding button is clicked. *)
 val ask_question :
-  ?a:[< div_attrib > `Class ] attrib list
+  ?a:[< div_attrib ] attrib list
   -> ?a_hcf:[< Html5_types.div_attrib ] attrib list
   -> header:[< Html5_types.header_content ] elt list
   -> buttons:([< Html5_types.button_content_fun ] elt list
               * (unit -> 'a Lwt.t)
               * string list) list
-  -> [< Html5_types.div_content_fun ] elt list
+  -> [< Html5_types.div_content ] elt list
   -> 'a Lwt.t
 
 (** Shortcut using [ask_question] for prompting the user with a question
@@ -80,7 +79,7 @@ val ask_question :
     [yes] is the content of the 'yes' button (returning true)
     [no] is the content of the 'no' button (returning false) *)
 val confirm :
-  ?a:[< Html5_types.div_attrib > `Class ] attrib list
+  ?a:[< Html5_types.div_attrib ] attrib list
   -> [< header_content_fun ] elt list
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
