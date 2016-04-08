@@ -31,12 +31,16 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
 
 let%client number_of_popups = ref 0
 
-let%client rec popup
+let%client popup
     ?(a = [])
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
     gen_content =
+  let a = (a :> Html5_types.div_attrib attrib list) in
+  let gen_content =
+    (gen_content :> (unit -> unit Lwt.t) -> Html5_types.div_content elt Lwt.t)
+  in
   let popup = ref None in
 
   (let cl = (Js.string "ot-popup") in
@@ -92,50 +96,30 @@ let%client rec popup
   (*   Js.string (Printf.sprintf "%dpx" (To_dom.of_element c)##offsetHeight) ; *)
   Lwt.return box
 
-and ask_question
-  : 'a .
-      ?a:[< Html5_types.div_attrib ] attrib list
-    -> ?a_hcf:[< Html5_types.div_attrib ] attrib list
-    -> header:[< Html5_types.header_content ] elt list
-  -> buttons:([< Html5_types.button_content_fun ] elt list
-              * (unit -> 'a Lwt.t)
-              * string list) list
-  -> [< Html5_types.div_content_fun ] elt list
-  -> 'a Lwt.t
-  = fun ?a ?a_hcf ~header ~buttons contents ->
-    let t, w = Lwt.wait () in
-    let%lwt _ =
-      popup ?a
-        (fun do_close ->
-           let answers =
-             List.map (fun (content, action, btn_class) ->
-               let btn = D.Raw.button ~a:[ a_class btn_class ] content in
-               (* Onlick, give t the selected value
-                  and close question popup. *)
-               Lwt.async (fun () ->
-                 Lwt_js_events.clicks (To_dom.of_element btn)
-                   (fun _ _ ->
-                      let%lwt r = action () in
-                      Lwt.wakeup w r ;
-                      do_close () ) )
-             ; btn ) buttons in
-           Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
-    in t
+let%client ask_question ?a ?a_hcf ~header ~buttons contents =
+  let t, w = Lwt.wait () in
+  let%lwt _ =
+    popup ?a
+      (fun do_close ->
+         let answers =
+           List.map (fun (content, action, btn_class) ->
+             let btn = D.Raw.button ~a:[ a_class btn_class ] content in
+             (* Onlick, give t the selected value
+                and close question popup. *)
+             Lwt.async (fun () ->
+               Lwt_js_events.clicks (To_dom.of_element btn)
+                 (fun _ _ ->
+                    let%lwt r = action () in
+                    Lwt.wakeup w r ;
+                    do_close () ) )
+           ; btn ) buttons in
+         Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
+  in t
 
-and confirm ?(a = []) question yes no =
+let%client confirm ?(a = []) question yes no =
   let a = (a :> Html5_types.div_attrib attrib list) in
   ask_question
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
-
-let%client popup ?a ?close_button ?confirmation_onclose ?onclose gen_content =
-  let a = (a :> Html5_types.div_attrib attrib list option) in
-  popup ?a ?close_button ?confirmation_onclose ?onclose
-    (gen_content :> (unit -> unit Lwt.t) ->
-                    Html5_types.div_content elt Lwt.t)
-
-let%client ask_question ?a ?a_hcf ~header ~buttons contents =
-  let a = (a :> Html5_types.div_attrib attrib list option) in
-  ask_question ?a ?a_hcf ~header ~buttons contents
