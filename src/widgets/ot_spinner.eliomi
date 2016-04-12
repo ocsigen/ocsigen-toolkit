@@ -21,14 +21,15 @@
 
 [%%shared.start]
 
+(** Spinner widget *)
+
 (** On client side, [with_spinner th] returns immediately a spinner
     while Lwt thread [th] is not finished, that will automatically
     be replaced by the result of [th] when finished.
     It has class "spinning" while the spinner is present.
 
-    On server side, it will wait for [th] to be finished before returning
-    its result (and never display a spinner).
-*)
+    On server side, it will wait for [th] to be finished before
+    returning its result (and never display a spinner). *)
 val with_spinner :
   ?a:[< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
   ?fail:(exn ->

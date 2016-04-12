@@ -20,6 +20,8 @@
 
 [%%shared.start]
 
+(** Calendar widget *)
+
 (** [intl] is the type of internationalization specifiers. [i_days]
     contains the names of the weekdays, starting with
     Sunday. [i_months] contains the names of the months, starting with

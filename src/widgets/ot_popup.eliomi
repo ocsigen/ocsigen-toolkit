@@ -20,6 +20,9 @@
 *)
 
 [%%shared.start]
+
+(** Popup widget *)
+
 open Eliom_content.Html5
 open Html5_types
 
