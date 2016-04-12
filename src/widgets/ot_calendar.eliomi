@@ -44,7 +44,6 @@ type intl = {
 
     If a client-side function [action] is provided, when the user
     clicks on the date [d]:[m]:[y], [action y m d] is called. *)
-
 val make :
   ?init : (int * int * int) ->
   ?highlight :
@@ -63,7 +62,6 @@ val make :
     [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
     clicks on. The optional parameter [init] provides an initial value
     for the signal. *)
-
 val make_date_picker :
   ?init : (int * int * int) ->
   ?update :
