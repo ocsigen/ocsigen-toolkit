@@ -54,7 +54,8 @@ let%client attach watched =
   if (Dom_html.window##getComputedStyle watched)##.position = Js.string "static"
   then watched##.style##.position := Js.string "relative" ;
   Dom.appendChild watched sensor ;
-  { watched ; grow ; grow_child ; shrink ; sensor
+  { watched = (watched :> Dom_html.element Js.t)
+  ; grow ; grow_child ; shrink ; sensor
   ; grow_listener_id = None ; shrink_listener_id = None }
 
 let%client detach
