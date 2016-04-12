@@ -98,7 +98,7 @@ let%shared make
     let update_size =
       React.S.map
         (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
-        (if vertical then Ow_size.height else Ow_size.width)
+        (if vertical then Ot_size.height else Ot_size.width)
     in
     Eliom_client.onunload
       (fun () -> React.S.stop ~strong:true update_size; None);
@@ -302,9 +302,9 @@ let%shared ribbon
       React.S.create container'##.offsetWidth in
     let curleft = ref 20 in
     Lwt.async (fun () ->
-      let%lwt () = Nodeready.nodeready container' in
+      let%lwt () = Ot_nodeready.nodeready container' in
       set_containerwidth container'##.offsetWidth ;
-      Noderesize.noderesize (Noderesize.attach container') (fun () ->
+      Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
         set_containerwidth container'##.offsetWidth
       ) ;
       ignore

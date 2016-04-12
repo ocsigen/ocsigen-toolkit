@@ -40,7 +40,7 @@ let%client unbind_click_outside, bind_click_outside =
   (fun elt close ->
      let th =
        let%lwt _ =
-         Bs_lib.click_outside ~use_capture:true (To_dom.of_element elt) in
+         Ot_lib.click_outside ~use_capture:true (To_dom.of_element elt) in
        close ();
        Lwt.return ()
      in
