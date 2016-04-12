@@ -35,6 +35,14 @@ let%client clY ev =
     (fun () -> 0)
     (fun a -> a##.clientY)
 
+let%client add_transition elt =
+  (Js.Unsafe.coerce (elt##.style))##.transition :=
+    Js.string "-webkit-transform .2s, transform .2s"
+
+let%client remove_transition elt =
+  (Js.Unsafe.coerce (elt##.style))##.transition :=
+    Js.string "-webkit-transform 0s, transform 0s"
+
 let%shared make
     ?(a = [])
     ?(vertical = false)
@@ -117,6 +125,16 @@ let%shared make
           if not !animation_frame_requested
           then begin
             animation_frame_requested := true;
+            (match !action with
+             | `Move _ -> ()
+             | _ ->
+               add_transition d2;
+               (* We remove transition
+                  to prevent it to happen when starting movement: *)
+               Lwt.async (fun () ->
+                 let%lwt () = Lwt_js.sleep 0.2 in
+                 remove_transition d2;
+                 Lwt.return ()));
             let%lwt () = Lwt_js_events.request_animation_frame () in
             animation_frame_requested := false;
             (match !action with
@@ -173,19 +191,10 @@ let%shared make
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
       status := `Start (clX ev, clY ev);
-      (Js.Unsafe.coerce (d2##.style))##.transition :=
-        Js.string "-webkit-transform 0s, transform 0s";
+      remove_transition d2;
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
-      (Js.Unsafe.coerce (d2##.style))##.transition :=
-        Js.string "-webkit-transform .2s, transform .2s";
-      (* We remove transition to prevent it to happen when starting movement: *)
-      Lwt.async (fun () ->
-        let%lwt () = Lwt_js.sleep 0.2 in
-        (Js.Unsafe.coerce (d2##.style))##.transition :=
-          Js.string "-webkit-transform 0s, transform 0s";
-        Lwt.return ());
       match !status with
       | `Start (startx, starty)
       | `Ongoing (startx, starty) ->
