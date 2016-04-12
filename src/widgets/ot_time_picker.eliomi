@@ -43,7 +43,7 @@ val make :
   ?h24 :
     bool ->
   unit ->
-  [> Html5_types.div] Eliom_content.Html5.D.elt *
+  [> `Div] Eliom_content.Html5.elt *
   (int * int) Eliom_shared.React.S.t *
   (unit -> unit) Eliom_client_value.t
 
@@ -60,6 +60,6 @@ val make_hours_minutes_seq :
   ?h24 :
     bool ->
   unit ->
-  [> Html5_types.div] Eliom_content.Html5.D.elt *
+  [> `Div] Eliom_content.Html5.elt *
   (int * int) Eliom_shared.React.S.t *
   (unit -> unit) Eliom_client_value.t

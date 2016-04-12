@@ -55,7 +55,7 @@ val make :
     (int -> int -> int -> unit Lwt.t) Eliom_client_value.t ->
   ?intl : intl ->
   unit ->
-  [> Html5_types.table ] Eliom_content.Html5.elt
+  [> `Table ] Eliom_content.Html5.elt
 
 (** [make_date_picker ?init ()] returns a client-side reactive signal
     [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
@@ -68,5 +68,5 @@ val make_date_picker :
     (int * int * int) React.E.t Eliom_client_value.t ->
   ?intl : intl ->
   unit ->
-  [> Html5_types.table ] Eliom_content.Html5.F.elt *
+  [> `Table ] Eliom_content.Html5.elt *
   (int * int * int) Eliom_shared.React.S.t

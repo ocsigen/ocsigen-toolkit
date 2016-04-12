@@ -54,7 +54,7 @@ val cropper :
   -> unit
   -> (unit -> unit)
      * (float * float * float * float) Eliom_shared.React.S.t
-     * [> Html5_types.div ] Eliom_content.Html5.D.elt
+     * [> `Div ] Eliom_content.Html5.elt
 
 (** [bind_input input preview ?container ?reset ()]
     Bind [input] and [preview] so the file selected in [input] is the
@@ -64,7 +64,7 @@ val cropper :
 val bind_input :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> Dom_html.imageElement Js.t Eliom_client_value.t
-  -> ?container:Dom_html.element Js.t Eliom_client_value.t
+  -> ?container:#Dom_html.element Js.t Eliom_client_value.t
   -> ?reset:(unit -> unit)
   -> unit
   -> unit
@@ -99,9 +99,9 @@ val bind_submit :
 
 (** [bind] is a shortcut for [bind_input] and [bind_submit] actions *)
 val bind :
-  ?container:Dom_html.element Js.t Eliom_client_value.t
+  ?container:#Dom_html.element Js.t Eliom_client_value.t
   ->input:Dom_html.inputElement Js.t Eliom_client_value.t
-  -> preview:#Dom_html.imageElement Js.t
+  -> preview:Dom_html.imageElement Js.t
   -> ?crop:( (unit -> unit)
              * (float * float * float * float) Eliom_shared.React.S.t )
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
@@ -117,17 +117,17 @@ val bind :
     and wrap it into a label.
     Return (input node, label node) *)
 val input :
-  [< Html5_types.label_content_fun > `Input ] Eliom_content.Html5.F.elt list
-  -> ([> Html5_types.input ] Eliom_content.Html5.D.elt
-      * [> Html5_types.label ] Eliom_content.Html5.D.elt)
+  [< Html5_types.label_content_fun ] Eliom_content.Html5.elt list
+  -> ([> `Input ] Eliom_content.Html5.elt
+      * [> `Label ] Eliom_content.Html5.elt)
 
 (** Create a img element with no src, no alt and [ot-pup-preview] class. *)
-val preview : unit -> [> Html5_types.img ] Eliom_content.Html5.D.elt
+val preview : unit -> [> `Img ] Eliom_content.Html5.elt
 
 (** Create a button with [ot-pup-sumit] clas *)
 val submit :
-  [< Html5_types.button_content ] Eliom_content.Html5.F.elt list
-  -> [> Html5_types.button ] Eliom_content.Html5.D.elt
+  [< Html5_types.button_content ] Eliom_content.Html5.elt list
+  -> [> `Button ] Eliom_content.Html5.elt
 
 (** [mk_service name arg_deriver]
     Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
@@ -139,11 +139,8 @@ val mk_service : string -> 'a Deriving_Json.t -> 'a service
 val mk_form :
   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
-  -> ?input:[< Html5_types.label_content_fun > `Input ]
-    Eliom_content.Html5.F.elt list
-  -> ?submit:[< Html5_types.button_content_fun ]
-    Eliom_content.Html5.D.Raw.elt
-    Eliom_content.Html5.D.Raw.list_wrap
+  -> ?input:[< Html5_types.label_content_fun ] Eliom_content.Html5.elt list
+  -> ?submit:[< Html5_types.button_content_fun ] Eliom_content.Html5.elt list
   -> 'a service
   -> 'a
-  -> [> Html5_types.form ] Eliom_content.Html5.D.elt Lwt.t
+  -> [> `Form ] Eliom_content.Html5.elt Lwt.t

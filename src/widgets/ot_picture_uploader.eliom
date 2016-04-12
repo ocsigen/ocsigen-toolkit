@@ -63,7 +63,7 @@ let%client file_reader file callback =
 
 let%shared cropper
     ~(image : Dom_html.element Js.t Eliom_client_value.t )
-    ?ratio () =
+    ?(ratio : float option) () =
   let mk_controller style =
     D.div ~a:[ a_class [ "ot-pup-ctrl" ; "ot-pup-ctrl-" ^ style ] ] [] in
   let t_c = mk_controller "t" in
@@ -97,24 +97,24 @@ let%shared cropper
      let r_f = To_dom.of_element ~%r_f in
      let x = ref 0. in
      let y = ref 0. in
-     React.S.map (fun x ->
+     ignore @@ React.S.map (fun x ->
        let top = Js.string (string_of_float x ^ "%") in
        let () = t_f##.style##.height := top in
        let () = l_f##.style##.top := top in
        let () = r_f##.style##.top := top in
        crop##.style##.top := top
      ) ~%top ;
-     React.S.map (fun x ->
+     ignore @@ React.S.map (fun x ->
        let bottom = Js.string (string_of_float x ^ "%") in
        let () = b_f##.style##.height := bottom in
        let () = l_f##.style##.bottom := bottom in
        let () = r_f##.style##.bottom := bottom in
        crop##.style##.bottom := bottom ) ~%bottom ;
-     React.S.map (fun x ->
+     ignore @@ React.S.map (fun x ->
        let right = Js.string (string_of_float x ^ "%") in
        let () = r_f##.style##.width := right in
        crop##.style##.right := right) ~%right ;
-     React.S.map (fun x ->
+     ignore @@ React.S.map (fun x ->
        let left = Js.string (string_of_float x ^ "%") in
        let () = l_f##.style##.width := left in
        crop##.style##.left := left) ~%left ;
@@ -281,6 +281,7 @@ let%shared cropper
       [ t_f ; r_f ; b_f ; l_f ; crop ] )
 
 let%shared input content =
+  let content = (content :> Html5_types.label_content_fun elt list) in
   let input = D.Raw.input ~a:[ a_class ["ot-pup-input"]
                              ; a_input_type `File
                              ; a_accept ["image/*"] ] () in
@@ -361,8 +362,8 @@ let%shared mk_form
     ?crop
     ?input:(input_content = [])
     ?submit:(submit_content = [])
-    service
-    arg =
+    (service : 'a service)
+    (arg : 'a) =
   let preview = preview () in
   let (input, input_label) = input input_content in
   let submit = submit submit_content in

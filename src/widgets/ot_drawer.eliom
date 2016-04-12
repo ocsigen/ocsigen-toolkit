@@ -64,8 +64,10 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   in
   let bckgrnd = D.div ~a:(a_class [ "dr-drawer-bckgrnd" ] :: a) [ d ] in
 
-  let bind_touch = [%client (ref (fun () -> failwith "bind_touch") : _ ref)] in
-  let touch_thread = [%client (ref (Lwt.return ()) : _ ref)] in
+  let bind_touch =
+    [%client
+      (ref (fun () -> failwith "bind_touch") : (unit -> unit) ref)] in
+  let touch_thread = [%client (ref (Lwt.return ()) : unit Lwt.t ref)] in
 
   let close = [%client
     ((fun () ->
@@ -176,8 +178,7 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
         let%lwt ev = Lwt_js_events.touchstart bckgrnd in
         onpanstart ev
       in
-      ~%touch_thread := t;
-      t);
+      ~%touch_thread := t);
     (* Hammer.bind_callback hammer "panstart" onpanstart; *)
     (* Hammer.bind_callback hammer "panmove" onpan; *)
     (* Hammer.bind_callback hammer "panend" onpanend; *)

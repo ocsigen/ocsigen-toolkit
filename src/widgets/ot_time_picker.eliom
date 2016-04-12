@@ -446,7 +446,9 @@ let display_hours_minutes_seq ?h24 f =
     display_hours_minutes_seq ?h24:~%h24 ~%f
   ]
 
-let show_minutes_aux ?action e_m hm f_e_m =
+let show_minutes_aux
+      ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+      e_m hm f_e_m =
   clock_html_wrap ~classes:["ot-tp-clock-min"]
     (clock_svg ~n:12 ~step:5 e_m)
     [%client
@@ -473,7 +475,9 @@ let get_angle_signal ?round =
     ]
 
 let make_hours_minutes_seq_24h
-    ?action ?init:(init = (0, 0)) ?update ?round_5 () =
+    ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+    ?init:(init = (0, 0))
+    ?(update : (int * int) React.E.t Eliom_client_value.t option) ?round_5 () =
   let i_h, i_m = init in
   let i_m = round_5_minutes ?round_5 i_m in
   let z_e_h = (i_h mod 12) * 30

@@ -29,7 +29,12 @@ let%shared default_fail e =
     else em ~a:[ a_class ["ot-icon-question"] ]
         [ pcdata (Printexc.to_string e) ] ]
 
-let%server with_spinner ?a ?(fail=default_fail) thread =
+let%server with_spinner ?a ?fail thread =
+  let fail =
+    match fail with
+      Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
+    | None      -> default_fail
+  in
   let%lwt v = try%lwt
       let%lwt v = thread in
       Lwt.return
@@ -41,7 +46,13 @@ let%server with_spinner ?a ?(fail=default_fail) thread =
   in
   Lwt.return (D.div ?a v)
 
-let%client with_spinner ?(a = []) ?(fail=default_fail) thread =
+let%client with_spinner ?(a = []) ?fail thread =
+  let a = (a :> Html5_types.div_attrib attrib list) in
+  let fail =
+    match fail with
+      Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
+    | None      -> default_fail
+  in
   match Lwt.state thread with
   | Lwt.Return v -> Lwt.return (D.div ~a v)
   | Lwt.Sleep ->

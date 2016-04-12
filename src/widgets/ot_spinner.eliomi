@@ -30,8 +30,8 @@
     its result (and never display a spinner).
 *)
 val with_spinner :
-  ?a:[< Html5_types.div_attrib > `Class ] Eliom_content.Html5.F.attrib list ->
-  ?fail:(exn -> [< Html5_types.div_content_fun > `Em `I ]
-           Eliom_content.Html5.F.elt list Lwt.t) ->
-  [< Html5_types.div_content_fun ] Eliom_content.Html5.F.elt list Lwt.t ->
-  [> Html5_types.div ] Eliom_content.Html5.F.elt Lwt.t
+  ?a:[< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
+  ?fail:(exn ->
+         [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t) ->
+  [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t ->
+  [> `Div ] Eliom_content.Html5.elt Lwt.t

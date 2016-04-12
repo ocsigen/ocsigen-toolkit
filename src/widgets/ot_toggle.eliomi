@@ -32,5 +32,4 @@ val make :
   ?down_txt : string ->
   ?update   : bool React.E.t Eliom_client_value.t ->
   unit ->
-  [> Html5_types.div ] Eliom_content.Html5.D.elt *
-  bool Eliom_shared.React.S.t
+  [> `Div ] Eliom_content.Html5.elt * bool Eliom_shared.React.S.t

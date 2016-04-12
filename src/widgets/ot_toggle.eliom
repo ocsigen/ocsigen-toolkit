@@ -49,7 +49,9 @@ let display_toggle
        div ~a:[a_class ["ot-active"; "ot-down"]]
          [pcdata down_txt]]
 
-let make ?init_up:(init_up = false) ?up_txt ?down_txt ?update () =
+let make
+      ?init_up:(init_up = false) ?up_txt ?down_txt
+      ?(update : bool React.E.t Eliom_client_value.t option) () =
   let e, f =
     Eliom_shared.React.S.create (if init_up then T_Up else T_Down)
   in
