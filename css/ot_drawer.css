@@ -1,0 +1,84 @@
+/* Generic drawer stylesheet. */
+
+/* .dr-container.open .dr-toggle-button { */
+/*     display: none; */
+/* } */
+
+/* @include media-screen-m-l { */
+/*     .dr-toggle-button { */
+/*         top: 1rem; */
+/*     } */
+/* }  */
+
+/* .dr-toggle-button::before { */
+/*     font-family: 'FontAwesome'; */
+/*     content: '\f0c9'; */
+/*     padding: 1rem; */
+/* } */
+
+/* .dr-toggle-button.login::before { */
+/*     font-family: 'Ubuntu'; */
+/*     content: 'login'; */
+/* } */
+
+/* $drawer-width: 22rem ; */
+
+.dr-drawer-bckgrnd.open {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 3;
+}
+
+.dr-drawer {
+
+    position: fixed;
+    top: 0;
+    height: 100%;
+    z-index: 3;
+
+    /* [ overflow: visible ; ] is needed for the button
+     * to be displayed
+     * if the drawer needs to be scrollable, you probably will want
+     * to wrap the content into a wrapper with overflow-y: auto ; */
+    overflow: visible ;
+
+    transform: translate3d(0, 0, 0);
+    transition: transform .2s;
+    width: 22rem ;
+
+    /* We set up drawer so that the default transform is the identity
+     * Otherwise, with Firefox, a transition is performed on page
+     * change. */
+}
+
+.dr-drawer.dr-left { left: -22rem ; }
+.dr-drawer.dr-right { right: -22rem ; }
+
+.dr-drawer > .dr-toggle-button {
+    position: absolute ;
+    top: 0 ;
+    cursor: pointer ;
+}
+
+.dr-drawer.dr-left > .dr-toggle-button { left: 100% ; }
+.dr-drawer.dr-right > .dr-toggle-button { right: 100% ; }
+
+
+.dr-drawer-bckgrnd.open .dr-drawer {
+    transition: -webkit-transform .2s;
+    transition: transform .2s;
+}
+
+.dr-drawer-bckgrnd.open .dr-drawer.dr-left  {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+}
+
+.dr-drawer-bckgrnd.open .dr-drawer.dr-right {
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+}
