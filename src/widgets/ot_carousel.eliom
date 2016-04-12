@@ -50,6 +50,7 @@ let%shared make
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     l =
+  let a = (a :> Html5_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
@@ -275,11 +276,12 @@ let%shared bullets
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
     ~pos ~length
     ?(size = Eliom_shared.React.S.const 1) () =
+  let a = (a :> Html5_types.ul_attrib attrib list) in
   let bullet i =
     let class_ = bullet_class i pos size in
     let a = match attributes with
       | None -> []
-      | Some l -> List.nth l i
+      | Some l -> (List.nth l i :> Html5_types.li_attrib attrib list)
     in
     li ~a:(a_class [ "bullet-nav-item" ]
            :: R.a_class class_
@@ -292,6 +294,7 @@ let%shared ribbon
     ?(a = [])
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
     ~pos ?(size = Eliom_shared.React.S.const 1) l =
+  let a = (a :> Html5_types.div_attrib attrib list) in
   let item i c =
     let class_ = bullet_class i pos size in
     D.li ~a:(a_class ["car-ribbon-list-item"]

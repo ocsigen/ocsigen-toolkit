@@ -23,4 +23,4 @@
 
 (** [click_outside e] returns when user clicks outside element [e]. *)
 val click_outside :
-  ?use_capture:bool -> Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t
+  ?use_capture:bool -> #Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t

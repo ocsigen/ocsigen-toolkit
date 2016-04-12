@@ -36,6 +36,6 @@ let%client rec click_outside ?use_capture elt =
   Js.Opt.case (ev##.target)
     (fun () -> click_outside ?use_capture elt)
     (fun target ->
-       if in_ancestors ~elt:target ~ancestor:elt
+       if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
        then click_outside ?use_capture elt
        else Lwt.return ev)

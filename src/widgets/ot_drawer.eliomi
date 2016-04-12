@@ -28,9 +28,9 @@
     and to swipe the menu to close it.
 *)
 val drawer :
-  ?a:Html5_types.div_attrib Eliom_content.Html5.attrib list ->
+  ?a:[< Html5_types.div_attrib] Eliom_content.Html5.attrib list ->
   ?position:[ `Left | `Right ] ->
-  Html5_types.div_content Eliom_content.Html5.elt list ->
+  [< Html5_types.div_content] Eliom_content.Html5.elt list ->
   [> `Div ] Eliom_content.Html5.elt *
   (unit -> unit) Eliom_client_value.t *
   (unit -> unit) Eliom_client_value.t
