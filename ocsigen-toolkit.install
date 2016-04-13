@@ -1,0 +1,9 @@
+share: [
+  "css/ot_carousel.css"         {"css/ot_carousel.css"}
+  "css/ot_spinner.css"          {"css/ot_spinner.css"}
+  "css/ot_popup.css"            {"css/ot_popup.css"}
+  "css/ot_defaults.css"         {"css/ot_defaults.css"}
+  "css/ot_picture_uploader.css" {"css/ot_picture_uploader.css"}
+  "css/ot_icons.css"            {"css/ot_icons.css"}
+  "css/ot_drawer.css"           {"css/ot_drawer.css"}
+]
