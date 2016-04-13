@@ -9,7 +9,7 @@ build: [ make ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "js_of_ocaml"
+  "js_of_ocaml" {> "2.7"}
   "eliom" {> "5.0"}
 ]
 available: [ ocaml-version >= "4.02" ]
