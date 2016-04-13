@@ -29,7 +29,7 @@ let%shared default_fail e =
     else em ~a:[ a_class ["ot-icon-question"] ]
         [ pcdata (Printexc.to_string e) ] ]
 
-let%server with_spinner ?a ?fail thread =
+let%server with_spinner ?(a = []) ?fail thread =
   let fail =
     match fail with
       Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
@@ -44,7 +44,7 @@ let%server with_spinner ?a ?fail thread =
       Lwt.return
         (v :> Html5_types.div_content_fun F.elt list)
   in
-  Lwt.return (D.div ?a v)
+  Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
 let%client with_spinner ?(a = []) ?fail thread =
   let a = (a :> Html5_types.div_attrib attrib list) in
@@ -54,11 +54,11 @@ let%client with_spinner ?(a = []) ?fail thread =
     | None      -> default_fail
   in
   match Lwt.state thread with
-  | Lwt.Return v -> Lwt.return (D.div ~a v)
+  | Lwt.Return v -> Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
   | Lwt.Sleep ->
     let spinning = "ot-icon-animation-spinning" in
     let spinner = "ot-icon-spinner" in
-    let d = D.div ~a:(a_class [ spinner ; spinning ] :: a) [] in
+    let d = D.div ~a:(a_class [ "ot-spinner" ; spinner ; spinning ] :: a) [] in
     Lwt.async
       (fun () ->
          let%lwt v = try%lwt
