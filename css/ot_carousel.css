@@ -85,8 +85,6 @@
 }
 
 .car-ribbon-list {
-
-    position: absolute;
     left: 20px;
 
     list-style-type: none ;
@@ -102,12 +100,11 @@
 
     display: inline-block;
     cursor: pointer;
-    color: #fefefe;
     padding: 0 1rem;
 }
 
 
-.car-ribbon-list-item.active { color: #228 ; }
+.car-ribbon-list-item.active { border-style: solid ; }
 
 .car-next.blurred::before,
 .car-prev.blurred::before {

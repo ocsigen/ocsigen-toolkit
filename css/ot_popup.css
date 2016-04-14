@@ -17,6 +17,7 @@
     min-height: 2em ; /* .ot-popup-close button */
     overflow: auto ;
     background-color: #FFFFFF ;
+    padding: .5em;
 }
 .ot-popup-close {
     position: absolute ;
@@ -26,7 +27,7 @@
     border: none ;
     cursor: pointer;
     z-index: 2 ;
-    padding: .5em ;
+    padding: 0 ;
 }
 .ot-popup-close::before { content: '✖' ; }
 .ot-popup-content {

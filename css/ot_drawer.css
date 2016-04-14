@@ -58,6 +58,8 @@
 .dr-drawer.dr-left { left: -22rem ; }
 .dr-drawer.dr-right { right: -22rem ; }
 
+.dr-toggle-button::before { content: "drawer"; }
+
 .dr-drawer > .dr-toggle-button {
     position: absolute ;
     top: 0 ;
