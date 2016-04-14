@@ -95,9 +95,13 @@
         set_wh (w, h);
         Lwt.return ()
       )));
-    wh,
-    (React.S.l1 fst) wh,
-    (React.S.l1 snd) wh
+    let w = React.S.l1 fst wh in
+    let h = React.S.l1 snd wh in
+    (* Make sure the signals are not destroyed indirectly
+       by a call to React.S.stop *)
+    ignore (React.S.map (fun _ -> ()) w);
+    ignore (React.S.map (fun _ -> ()) h);
+    (wh, w, h)
 
   let set_adaptative_width elt f =
     (*VVV Warning: it works only because we do not have weak pointers
