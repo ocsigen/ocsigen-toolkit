@@ -27,8 +27,8 @@
     cursor: pointer;
     z-index: 2 ;
     padding: .5em ;
-    &::before { content: '✖' ; }
 }
+.ot-popup-close::before { content: '✖' ; }
 .ot-popup-content {
     width: 100% ;
     flex: 1 1 auto ;
