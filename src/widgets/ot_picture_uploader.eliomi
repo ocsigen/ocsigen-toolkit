@@ -29,20 +29,20 @@
 [%%shared.start]
 type 'a service =
   (unit
-  , 'a * ( (float * float * float * float) Eliom_lib.Option.t
-           * Eliom_lib.file_info )
-  , Eliom_service.post_service_kind
-  , Eliom_service.non_attached_kind
-  , [ `NonattachedCoservice ]
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
   , [ `WithoutSuffix ]
   , unit
   , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
     * ([ `One of (float * float * float * float)
-             Eliom_lib.Option.t Eliom_parameter.ocaml ]
-         Eliom_parameter.param_name
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
        * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , [ `Registrable ]
-  , unit Eliom_service.ocaml_service) Eliom_service.service
+  , unit Eliom_service.ocaml) Eliom_service.t
 
 [%%client.start]
 

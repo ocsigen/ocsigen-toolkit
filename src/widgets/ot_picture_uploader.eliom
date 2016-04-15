@@ -24,20 +24,20 @@
 [%%shared
 type 'a service =
   (unit
-  , 'a * ( (float * float * float * float) Eliom_lib.Option.t
-           * Eliom_lib.file_info )
-  , Eliom_service.post_service_kind
-  , Eliom_service.non_attached_kind
-  , [ `NonattachedCoservice ]
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
   , [ `WithoutSuffix ]
   , unit
   , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
     * ([ `One of (float * float * float * float)
-             Eliom_lib.Option.t Eliom_parameter.ocaml ]
-         Eliom_parameter.param_name
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
        * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , [ `Registrable ]
-  , unit Eliom_service.ocaml_service) Eliom_service.service
+  , unit Eliom_service.ocaml) Eliom_service.t
 ]
 
 let%client process_file input callback =
@@ -348,14 +348,19 @@ let%client bind
   ()
 
 let%shared mk_service name arg_deriver =
-  Eliom_service.Ocaml.post_coservice'
+  Eliom_service.create
     ~name
-    ~post_params:Eliom_parameter.(
-      ocaml "service_arg" arg_deriver
-      **
-      ocaml "cropping" [%derive.json: (float * float * float * float) option ]
-      ** file "f"
-    ) ()
+    ~ret:Eliom_service.Ret.Ocaml
+    ~id:Eliom_service.Id.Global
+    ~meth:
+      (Eliom_service.Meth.Post
+         (Eliom_parameter.unit,
+          Eliom_parameter.(
+            ocaml "service_arg" arg_deriver **
+            ocaml "cropping"
+              [%derive.json: (float * float * float * float) option ]
+            ** file "f")))
+    ()
 
 let%shared mk_form
     ?(after_submit = fun () -> Lwt.return ())
