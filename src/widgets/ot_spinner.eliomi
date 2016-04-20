@@ -31,7 +31,7 @@
     On server side, it will wait for [th] to be finished before
     returning its result (and never display a spinner). *)
 val with_spinner :
-  ?a:[< Html5_types.div_attrib > `Class ] Eliom_content.Html5.attrib list ->
+  ?a:[< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
   ?fail:(exn ->
          [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t) ->
   [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t ->

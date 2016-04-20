@@ -30,6 +30,7 @@ let%shared default_fail e =
         [ pcdata (Printexc.to_string e) ] ]
 
 let%server with_spinner ?(a = []) ?fail thread =
+  let a = (a :> Html5_types.div_attrib attrib list) in
   let fail =
     match fail with
       Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
