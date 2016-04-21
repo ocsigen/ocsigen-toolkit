@@ -36,3 +36,15 @@ val with_spinner :
          [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t) ->
   [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t ->
   [> `Div ] Eliom_content.Html5.elt Lwt.t
+
+[%%client.start]
+
+(** Same as [with_spinner] but returns immediately.
+    Client only (as we must wait for the thread to terminate on server
+    before sending the page). *)
+val with_spinner_no_lwt :
+  ?a:[< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
+  ?fail:(exn ->
+         [< Html5_types.div_content ] Eliom_content.Html5.elt list) ->
+  [< Html5_types.div_content ] Eliom_content.Html5.elt list Lwt.t ->
+  [> `Div ] Eliom_content.Html5.elt

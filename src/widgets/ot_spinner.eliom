@@ -23,7 +23,7 @@
 [%%shared open Eliom_content.Html5.F ]
 
 let%shared default_fail e =
-  Lwt.return [
+  [
     if Eliom_config.get_debugmode ()
     then em [ pcdata (Printexc.to_string e) ]
     else em ~a:[ a_class ["ot-icon-question"] ]
@@ -32,9 +32,10 @@ let%shared default_fail e =
 let%server with_spinner ?(a = []) ?fail thread =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let fail =
-    match fail with
-      Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
-    | None      -> default_fail
+    ((match fail with
+       | Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
+       | None      -> (fun e -> Lwt.return (default_fail e)))
+     :> exn -> Html5_types.div_content elt list Lwt.t)
   in
   let%lwt v = try%lwt
       let%lwt v = thread in
@@ -47,33 +48,56 @@ let%server with_spinner ?(a = []) ?fail thread =
   in
   Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
-let%client with_spinner ?(a = []) ?fail thread =
-  let a = (a :> Html5_types.div_attrib attrib list) in
-  let fail =
-    match fail with
-      Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
-    | None      -> default_fail
-  in
-  match Lwt.state thread with
-  | Lwt.Return v -> Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
-  | Lwt.Sleep ->
-    let spinning = "ot-icon-animation-spinning" in
-    let spinner = "ot-icon-spinner" in
-    let d = D.div ~a:(a_class [ "ot-spinner" ; spinner ; spinning ] :: a) [] in
-    Lwt.async
-      (fun () ->
-         let%lwt v = try%lwt
-             let%lwt v = thread in
-             Lwt.return
-               (v :> Html5_types.div_content_fun F.elt list)
-           with e ->
-             let%lwt v = fail e in
-             Lwt.return
-               (v :> Html5_types.div_content_fun F.elt list)
-         in
-         Manip.replaceChildren d v ;
-         Manip.Class.remove d spinning ;
-         Manip.Class.remove d spinner ;
-         Lwt.return () ) ;
-    Lwt.return d
-  | Lwt.Fail e -> let%lwt c = fail e in Lwt.return (D.div ~a c)
+[%%client
+module Make(A : sig
+    type +'a t
+    val bind : 'a t -> ('a -> 'b t) -> 'b t
+    val bind2 : 'a t -> ('a -> 'b Lwt.t) -> 'b Lwt.t
+    val return : 'a -> 'a t
+  end) = struct
+
+  let with_spinner ?(a = []) ?fail thread =
+    let a = (a :> Html5_types.div_attrib attrib list) in
+    let fail =
+      match fail with
+      | Some fail -> (fail : exn -> [< Html5_types.div_content ] elt list A.t
+                      :> exn -> Html5_types.div_content elt list A.t)
+      | None      -> (fun e -> A.return (default_fail e))
+    in
+    match Lwt.state thread with
+    | Lwt.Return v -> A.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
+    | Lwt.Sleep ->
+      let spinning = "ot-icon-animation-spinning" in
+      let spinner = "ot-icon-spinner" in
+      let d = D.div ~a:(a_class [ "ot-spinner" ; spinner ; spinning ] :: a) []
+      in
+      Lwt.async
+        (fun () ->
+           let%lwt v = try%lwt
+               let%lwt v = thread in
+               Lwt.return
+                 (v :> Html5_types.div_content_fun F.elt list)
+             with e ->
+               A.bind2 (fail e) (fun v ->
+                 (Lwt.return (v :> Html5_types.div_content_fun F.elt list)))
+           in
+           Manip.replaceChildren d v ;
+           Manip.Class.remove d spinning ;
+           Manip.Class.remove d spinner ;
+           Lwt.return () ) ;
+      A.return d
+    | Lwt.Fail e -> A.bind (fail e) (fun c -> A.return (D.div ~a c))
+end
+
+module N = Make(struct
+    type +'a t = 'a
+    let bind a f = f a
+    let bind2 a f = f a
+    let return a = a
+  end)
+
+module L = Make(struct include Lwt let bind2 = bind end)
+
+let with_spinner_no_lwt = N.with_spinner
+let with_spinner = L.with_spinner
+]
