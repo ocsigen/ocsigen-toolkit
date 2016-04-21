@@ -348,12 +348,11 @@ let%client bind
   ()
 
 let%shared mk_service name arg_deriver =
-  Eliom_service.create
+  Eliom_service.create_ocaml
     ~name
-    ~ret:Eliom_service.Ret.Ocaml
-    ~id:Eliom_service.Id.Global
+    ~id:Eliom_service.Global
     ~meth:
-      (Eliom_service.Meth.Post
+      (Eliom_service.Post
          (Eliom_parameter.unit,
           Eliom_parameter.(
             ocaml "service_arg" arg_deriver **
