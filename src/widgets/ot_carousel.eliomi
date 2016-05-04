@@ -93,6 +93,7 @@ val bullets :
     parameter to [make].
     Optional parameter [size] is the number of elements visible at the same time
     in the carousel (return by function [make]).
+    Optional parameter [gap] is the default gap on the left, in pixels.
     The last argument is the list of titles, for each carousel page,
     that will be included in [<li>] tags.
  *)
@@ -101,6 +102,7 @@ val ribbon :
   change: ([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
   pos:int Eliom_shared.React.S.t ->
   ?size:int Eliom_shared.React.S.t ->
+  ?initial_gap:int ->
   [< Html5_types.li_content_fun ] Eliom_content.Html5.elt list list ->
   [> `Div ] Eliom_content.Html5.elt
 

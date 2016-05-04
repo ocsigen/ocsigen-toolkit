@@ -283,9 +283,9 @@ let%shared bullets
       | None -> []
       | Some l -> (List.nth l i :> Html5_types.li_attrib attrib list)
     in
-    li ~a:(a_class [ "bullet-nav-item" ]
-           :: R.a_class class_
-           :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]::a) []
+    li ~a:[ a_class [ "bullet-nav-item" ]
+          ; R.a_class class_
+          ; a_onclick [%client fun _ -> ~%change (`Goto ~%i)] ] []
   in
   let rec aux acc i = if i = 0 then acc else aux (bullet (i-1)::acc) (i-1) in
   ul ~a:(a_class ["bullet-nav"]::a) (aux [] length)
@@ -293,14 +293,17 @@ let%shared bullets
 let%shared ribbon
     ?(a = [])
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
-    ~pos ?(size = Eliom_shared.React.S.const 1) l =
+    ~pos
+    ?(size = Eliom_shared.React.S.const 1)
+    ?(initial_gap = 0) l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let item i c =
     let class_ = bullet_class i pos size in
-    D.li ~a:(a_class ["car-ribbon-list-item"]
-             :: R.a_class class_
-             :: a_onclick  [%client fun _ -> ~%change (`Goto ~%i)]
-             :: a) c
+    D.li ~a:[ a_class ["car-ribbon-list-item"]
+            ; R.a_class class_
+            ; a_onclick  [%client fun _ -> ~%change (`Goto ~%i)]
+            ]
+      c
   in
   let l = List.mapi item l in
   let the_ul = D.ul ~a:[a_class ["car-ribbon-list"]] l in
@@ -309,10 +312,11 @@ let%shared ribbon
     let the_ul = ~%the_ul in
     let container = ~%container in
     let container' = To_dom.of_element container in
+    let initial_gap = ~%initial_gap in
     let the_ul' = To_dom.of_element the_ul in
     let containerwidth, set_containerwidth =
       React.S.create container'##.offsetWidth in
-    let curleft = ref 20 in
+    let curleft = ref initial_gap in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready container' in
       set_containerwidth container'##.offsetWidth ;
@@ -341,10 +345,10 @@ let%shared ribbon
                    let ul_width = (To_dom.of_element the_ul)##.offsetWidth in
                    let newleft =
                      if newleft > 0
-                     then max 20 ((containerwidth - ul_width) / 2)
+                     then max initial_gap ((containerwidth - ul_width) / 2)
                      else if newleft + ul_width < containerwidth
                      then min
-                         (containerwidth - ul_width - 20)
+                         (containerwidth - ul_width - initial_gap)
                          ((containerwidth - ul_width) / 2)
                      else newleft
                    in
