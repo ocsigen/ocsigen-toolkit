@@ -44,15 +44,15 @@ let default_intl = {
 type button_labels = {
   b_prev_year  : string ;
   b_prev_month : string ;
-  b_next_month     : string ;
-  b_next_year      : string
+  b_next_month : string ;
+  b_next_year  : string
 }
 
 let default_button_labels = {
   b_prev_year  = "<<" ;
   b_prev_month = "<"  ;
-  b_next_month     = ">"  ;
-  b_next_year      = ">>"
+  b_next_month = ">"  ;
+  b_next_year  = ">>"
 }
 
 let calendarlib_of_dow = A.(function
@@ -147,9 +147,10 @@ let zeroth_displayed_day ~intl d =
     A.prev o `Week
 
 let rec build_calendar
+    ?prehilight
     ~button_labels:
     { b_prev_year ; b_prev_month ; b_next_month ; b_next_year }
-    ~intl ?class_for_day:(class_for_day = false) day =
+    ~intl day =
   let fst_dow = fst_dow ~intl day
   and zero = zeroth_displayed_day ~intl day
   and prev_button =
@@ -194,9 +195,10 @@ let rec build_calendar
             "ot-c-future"]
        in
        let classes =
-         if d = day && class_for_day then
+         match prehilight with
+         | Some d' when d = d' ->
            "ot-c-current" :: classes
-         else
+         | _ ->
            classes
        in
        [D.a_class classes],
@@ -255,7 +257,7 @@ let%client attach_events
       | Some action ->
         (fun _ r ->
            update_classes cal zero d;
-           action y m dom;
+           let%lwt _ = action y m dom in
            Lwt.return ())
       | None ->
         (fun _ r ->
@@ -294,8 +296,6 @@ let%client attach_behavior
        d cal highlight
    | None ->
      attach_events ?click_non_highlighted ?action ~intl d cal []);
-  (* FIXME: these may fail to go to the previous month, e.g., for May
-     31 (April and June have only 30) *)
   (To_dom.of_element prev)##.onclick :=
     Dom_html.handler (fun _ -> f_d (A.prev d `Month); Js._false);
   (To_dom.of_element next)##.onclick :=
@@ -304,7 +304,6 @@ let%client attach_behavior
     Dom_html.handler (fun _ -> f_d (A.prev d `Year); Js._false);
   (To_dom.of_element next_year)##.onclick :=
     Dom_html.handler (fun _ -> f_d (A.next d `Year); Js._false)
-
 
 let%client make :
   ?init : (int * int * int) ->
@@ -316,31 +315,36 @@ let%client make :
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
-  fun ?init ?highlight ?click_non_highlighted ?update ?action
+  fun
+    ?init ?highlight ?click_non_highlighted ?update ?action
     ?(button_labels = default_button_labels) ?(intl = default_intl)
     () ->
-    let init =
-      A.(match init with
-        | Some (y, m, d) ->
-          make y m d
+    let init, init_ym =
+      let y, m, d =
+        match init with
+        | Some x ->
+          x
         | None ->
-          today ())
+          let a = A.today () in
+          A.(year a, int_of_month (month a), day_of_month a)
+      in
+      A.(make y m d, make_year_month y m)
     in
     CalendarLib.Printer.month_name := name_of_calendarlib_month intl;
-    let d, f_d = React.S.create init in
-    let f d =
+    let d_ym, f_d_ym = React.S.create init_ym in
+    let f d_ym =
       let (cal, _, _, _, _) as c =
-        build_calendar ~intl ~button_labels ~class_for_day:true d
+        build_calendar ~intl ~button_labels ~prehilight:init d_ym
       in
       attach_behavior
         ?highlight ?click_non_highlighted ?action ~intl
-        d c f_d;
+        d_ym c f_d_ym;
       cal
     in
     (match update with
      | Some update ->
        let f (y, m, d) =
-         A.make y m d |> f_d;
+         A.make_year_month y m |> f_d_ym;
          (match action with
           | Some action ->
             Lwt.async (fun () -> action y m d)
@@ -350,7 +354,7 @@ let%client make :
        React.E.map f update |> ignore
      | None ->
        ());
-    React.S.map f d |> R.node
+    React.S.map f d_ym |> R.node
 
 let%server make :
   ?init : (int * int * int) ->
@@ -365,8 +369,7 @@ let%server make :
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
-  fun
-    ?init ?highlight ?click_non_highlighted ?update ?action
+  fun ?init ?highlight ?click_non_highlighted ?update ?action
     ?button_labels ?intl
     () ->
     C.node [%client
