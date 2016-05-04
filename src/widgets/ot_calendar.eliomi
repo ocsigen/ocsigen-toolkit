@@ -32,6 +32,15 @@ type intl = {
   i_start   : [ `Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat ]
 }
 
+(** An instance of [button_labels] is used to customize the button
+    labels. The defaults are "<<", "<", ">", and ">>". *)
+type button_labels = {
+  b_prev_year  : string ;
+  b_prev_month : string ;
+  b_next_month : string ;
+  b_next_year  : string
+}
+
 (** [make ?highlight ?click_any ?action] produces a calendar.
 
     If a client-side function [highlight] is provided, [highlight y m]
@@ -54,6 +63,7 @@ val make :
     (int * int * int) React.E.t Eliom_client_value.t ->
   ?action :
     (int -> int -> int -> unit Lwt.t) Eliom_client_value.t ->
+  ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
   [> `Table ] Eliom_content.Html5.elt
@@ -66,6 +76,7 @@ val make_date_picker :
   ?init : (int * int * int) ->
   ?update :
     (int * int * int) React.E.t Eliom_client_value.t ->
+  ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
   [> `Table ] Eliom_content.Html5.elt *

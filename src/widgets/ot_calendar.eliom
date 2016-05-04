@@ -41,6 +41,20 @@ let default_intl = {
   i_start = `Sun
 }
 
+type button_labels = {
+  b_prev_year  : string ;
+  b_prev_month : string ;
+  b_next_month     : string ;
+  b_next_year      : string
+}
+
+let default_button_labels = {
+  b_prev_year  = "<<" ;
+  b_prev_month = "<"  ;
+  b_next_month     = ">"  ;
+  b_next_year      = ">>"
+}
+
 let calendarlib_of_dow = A.(function
   | `Sun -> Sun
   | `Mon -> Mon
@@ -133,21 +147,33 @@ let zeroth_displayed_day ~intl d =
     A.prev o `Week
 
 let rec build_calendar
+    ~button_labels:
+    { b_prev_year ; b_prev_month ; b_next_month ; b_next_year }
     ~intl ?class_for_day:(class_for_day = false) day =
   let fst_dow = fst_dow ~intl day
   and zero = zeroth_displayed_day ~intl day
   and prev_button =
-    D.(span ~a:[a_class ["ot-c-prev-button"]] [pcdata "<"])
+    D.(span ~a:[a_class ["ot-c-prev-button"]]
+         [pcdata b_prev_month])
   and next_button =
-    D.(span ~a:[a_class ["ot-c-next-button"]] [pcdata ">"])
+    D.(span ~a:[a_class ["ot-c-next-button"]]
+         [pcdata b_next_month])
+  and prev_year_button =
+    D.(span ~a:[a_class ["ot-c-prev-month-button"]]
+         [pcdata b_prev_year])
+  and next_year_button =
+    D.(span ~a:[a_class ["ot-c-next-month-button"]]
+         [pcdata b_next_year])
   in
   let thead =
     D.(thead
          [tr [th ~a:[a_colspan 7; a_class ["ot-c-header"]]
-                [prev_button;
+                [prev_year_button;
+                 prev_button;
                  CalendarLib.Printer.Date.sprint "%B %Y" fst_dow |>
                  pcdata;
-                 next_button]];
+                 next_button;
+                 next_year_button]];
           tr (List.map
                 (fun d -> th [pcdata d])
                 (get_rotated_days intl))])
@@ -179,7 +205,7 @@ let rec build_calendar
       [], []
   and f_a_row i = [] in
   build_table 5 6 ~a:[D.a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row,
-  prev_button, next_button
+  prev_button, next_button, prev_year_button, next_year_button
 
 let%client update_classes cal zero d =
   let rows = (To_dom.of_table cal)##.rows in
@@ -261,7 +287,7 @@ let%client attach_events_lwt
 
 let%client attach_behavior
     ?highlight ?click_non_highlighted ?action ~intl
-    d (cal, prev, next) f_d =
+    d (cal, prev, next, prev_year, next_year) f_d =
   (match highlight with
    | Some highlight ->
      attach_events_lwt ?click_non_highlighted ?action ~intl
@@ -273,7 +299,12 @@ let%client attach_behavior
   (To_dom.of_element prev)##.onclick :=
     Dom_html.handler (fun _ -> f_d (A.prev d `Month); Js._false);
   (To_dom.of_element next)##.onclick :=
-    Dom_html.handler (fun _ -> f_d (A.next d `Month); Js._false)
+    Dom_html.handler (fun _ -> f_d (A.next d `Month); Js._false);
+  (To_dom.of_element prev_year)##.onclick :=
+    Dom_html.handler (fun _ -> f_d (A.prev d `Year); Js._false);
+  (To_dom.of_element next_year)##.onclick :=
+    Dom_html.handler (fun _ -> f_d (A.next d `Year); Js._false)
+
 
 let%client make :
   ?init : (int * int * int) ->
@@ -281,11 +312,12 @@ let%client make :
   ?click_non_highlighted : bool ->
   ?update : (int * int * int) React.E.t ->
   ?action : (int -> int -> int -> unit Lwt.t) ->
+  ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
   fun ?init ?highlight ?click_non_highlighted ?update ?action
-    ?(intl = default_intl)
+    ?(button_labels = default_button_labels) ?(intl = default_intl)
     () ->
     let init =
       A.(match init with
@@ -297,8 +329,8 @@ let%client make :
     CalendarLib.Printer.month_name := name_of_calendarlib_month intl;
     let d, f_d = React.S.create init in
     let f d =
-      let (cal, _, _) as c =
-        build_calendar ~intl ~class_for_day:true d
+      let (cal, _, _, _, _) as c =
+        build_calendar ~intl ~button_labels ~class_for_day:true d
       in
       attach_behavior
         ?highlight ?click_non_highlighted ?action ~intl
@@ -329,11 +361,13 @@ let%server make :
   (int * int * int) React.E.t Eliom_client_value.t ->
   ?action :
   (int -> int -> int -> unit Lwt.t) Eliom_client_value.t ->
+  ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
   [> Html5_types.table ] elt =
   fun
-    ?init ?highlight ?click_non_highlighted ?update ?action ?intl
+    ?init ?highlight ?click_non_highlighted ?update ?action
+    ?button_labels ?intl
     () ->
     C.node [%client
       (make
@@ -343,11 +377,12 @@ let%server make :
          ?update:~%update
          ?action:~%action
          ?intl:~%intl
+         ?button_labels:~%button_labels
          ()
        : [> Html5_types.table ] elt)
     ]
 
-let make_date_picker ?init ?update ?intl () =
+let make_date_picker ?init ?update ?button_labels ?intl () =
   let init =
     match init with
     | Some init ->
@@ -359,5 +394,9 @@ let make_date_picker ?init ?update ?intl () =
   let v, f =  Eliom_shared.React.S.create init in
   let action = [%client fun y m d -> ~%f (y, m, d); Lwt.return () ]
   and click_non_highlighted = true in
-  let d = make ~init ~click_non_highlighted ?update ?intl ~action () in
+  let d =
+    make
+      ~init ~click_non_highlighted ?update
+      ?button_labels ?intl ~action ()
+  in
   d, v
