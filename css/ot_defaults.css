@@ -137,6 +137,8 @@ div.ot-tp-container div.ot-tp-display {
     background-color: #990000;
     border-radius: 50%;
 }
+.ot-c-prev-year-button,
+.ot-c-next-year-button,
 .ot-c-prev-button,
 .ot-c-next-button {
     padding: 0 2rem;
