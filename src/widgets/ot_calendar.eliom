@@ -160,10 +160,10 @@ let rec build_calendar
     D.(span ~a:[a_class ["ot-c-next-button"]]
          [pcdata b_next_month])
   and prev_year_button =
-    D.(span ~a:[a_class ["ot-c-prev-month-button"]]
+    D.(span ~a:[a_class ["ot-c-prev-year-button"]]
          [pcdata b_prev_year])
   and next_year_button =
-    D.(span ~a:[a_class ["ot-c-next-month-button"]]
+    D.(span ~a:[a_class ["ot-c-next-year-button"]]
          [pcdata b_next_year])
   in
   let thead =
