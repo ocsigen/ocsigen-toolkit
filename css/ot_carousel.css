@@ -105,7 +105,8 @@
     display: inline-block;
     cursor: pointer;
     padding: 0 1rem;
-    flex: 1 0 0 ;
+    flex-grow: 1;
+    flex-shrink: 0;
     text-align: center;
 
 }
