@@ -342,7 +342,7 @@ let%shared ribbon
                    (* If there is space before but not after,
                       or vice-versa,
                       we prefer balancing the whole: *)
-                   let ul_width = (To_dom.of_element the_ul)##.offsetWidth in
+                   let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
                    let newleft =
                      if newleft > 0
                      then max initial_gap ((containerwidth - ul_width) / 2)
@@ -372,8 +372,14 @@ let%shared ribbon
       (match !start with
        | Some s ->
          let cw = React.S.value containerwidth in
-         curleft := max (- the_ul'##.offsetWidth + cw/2)
+         curleft := max (- the_ul'##.scrollWidth + cw/2)
              (min (cw / 2) (!curleft + clX ev - s));
+         let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+         (* Limit the movement
+            (make this configurable by optional parameter?): *)
+         curleft := min initial_gap !curleft;
+         curleft :=
+           max (React.S.value containerwidth - ul_width - initial_gap) !curleft;
          the_ul'##.style##.left := Js.string (string_of_int !curleft^"px");
          start := None
        | _ -> ());
@@ -383,7 +389,14 @@ let%shared ribbon
       Dom.preventDefault ev;
       (match !start with
        | Some start ->
+         let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
          let pos = !curleft + clX ev - start in
+         (* Limit the movement
+            (make this configurable by optional parameter?): *)
+         let pos = min initial_gap pos in
+         let pos =
+           max (React.S.value containerwidth - ul_width - initial_gap) pos
+         in
          the_ul'##.style##.left := Js.string (string_of_int pos^"px");
        | _ -> ());
       Lwt.return ()

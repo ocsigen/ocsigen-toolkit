@@ -85,7 +85,11 @@
 }
 
 .car-ribbon-list {
-    left: 20px;
+    position: relative;
+    width: 100% ;
+    display: flex ;
+    left: 0;
+    width: 100% ;
 
     list-style-type: none ;
 
@@ -101,6 +105,9 @@
     display: inline-block;
     cursor: pointer;
     padding: 0 1rem;
+    flex: 1 0 0 ;
+    text-align: center;
+
 }
 
 
