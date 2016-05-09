@@ -323,6 +323,13 @@ let%shared ribbon
       Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
         set_containerwidth container'##.offsetWidth
       ) ;
+      (* noderesize is not very reliable, for example if we remove the
+         node from page and put it back.
+         As a temporary workaround, a also update containerwidth
+         when the browser window's size changes: *)
+      ignore (React.S.map
+                (fun _ -> set_containerwidth container'##.offsetWidth)
+                Ot_size.width);
       ignore
            (React.S.l3
               (fun pos size containerwidth ->
