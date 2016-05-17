@@ -138,4 +138,20 @@
     int_of_float (Js.to_float elt##getBoundingClientRect##.left)
   let client_right elt =
     int_of_float (Js.to_float elt##getBoundingClientRect##.right)
+
+
+  let pageYOffset () = (* absolute vertical scroll position *)
+    let get_clientHeight () =
+      Dom_html.document##.documentElement##.clientHeight
+    in
+    (* on some browsers innerHeight is not available -> fall back to clientHeight *)
+    let get_innerHeight () =
+      try (Js.Unsafe.coerce Dom_html.window)##.innerHeight
+      with _ -> get_clientHeight ()
+    in
+    max 0 @@ (* overscroll at the top *)
+    min      (* overscroll at the bottom *)
+      (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
+      ((Js.Unsafe.coerce Dom_html.window)##.pageYOffset)
+
 ]

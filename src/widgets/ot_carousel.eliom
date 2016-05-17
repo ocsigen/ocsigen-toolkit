@@ -49,18 +49,19 @@ let%shared make
     ?(position = 0)
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
+    ?(full_height = `No)
     l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
-  let l = List.map (fun e -> div ~a:[a_class ["carpage"]] [e]) l in
-  let d2 = D.div ~a:[a_class ["car2"]] l in
+  let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
+  let d2 = D.div ~a:[a_class ["car2"]] pages in
   let d = D.div ~a:(a_class ["carousel";
                              if vertical then "vertical" else "horizontal"]::a)
       [d2]
   in
-  let max = List.length l - 1 in
+  let maxi = List.length pages - 1 in
   let nb_visible_elements, set_nb_visible_elements =
     Eliom_shared.React.S.create 1
   in
@@ -81,12 +82,62 @@ let%shared make
         truncate ((float width_carousel) /. (float width_element) +. 0.5)
     in
     ~%set_nb_visible_elements (comp_nb_visible_elements ());
-    let max () = ~%max - (React.S.value ~%nb_visible_elements) + 1 in
+    let maxi () = ~%maxi - (React.S.value ~%nb_visible_elements) + 1 in
     let pos_signal = ~%pos_signal in
     let pos_set = ~%pos_set in
     let action = ref (`Move 0) in
     let animation_frame_requested = ref false in
-    let set_position pos =
+    let set_top_margin () =
+      let dist = match ~%full_height with
+        (* In full height mode, during swipe,
+           we add margin on top of columns,
+           to adapt it to the current scroll position of page.
+        *)
+        | `No -> None
+        | `No_header -> Some 0
+        | `Header f -> Some (f ())
+      in
+      Eliom_lib.Option.iter
+        (fun dist ->
+           let delta = max 0 (dist - Ot_size.client_top d2) in
+           let pos = React.S.value pos_signal in
+           List.iteri
+             (fun i coli ->
+                if i <> pos
+                then
+                  let coli' = To_dom.of_element coli in
+                  coli'##.style##.marginTop :=
+                    Js.string (string_of_int delta ^ "px")
+             )
+             ~%pages)
+        dist
+    in
+    let unset_top_margin () =
+      (* In full height mode, we remove the margins and set the correct
+         scroll position for the page *)
+      let dist = match ~%full_height with
+        (* In full height mode, during swipe,
+           we add margin on top of columns,
+           to adapt it to the current scroll position of page.
+        *)
+        | `No -> None
+        | `No_header -> Some 0
+        | `Header f -> Some (f ())
+      in
+      Eliom_lib.Option.iter
+        (fun dist ->
+           let pos = React.S.value pos_signal in
+           let delta = - (max 0 (dist - Ot_size.client_top d2)) in
+           (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta;
+           List.iteri
+             (fun i coli ->
+                let coli' = To_dom.of_element coli in
+                coli'##.style##.marginTop := Js.string "0px"
+             )
+             ~%pages)
+        dist
+    in
+    let set_position ?transitionend pos =
       let s =
         Js.string @@
         if vertical
@@ -97,7 +148,14 @@ let%shared make
       in
       (Js.Unsafe.coerce (d2##.style))##.transform := s;
       (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
-      pos_set pos
+      pos_set pos;
+      Eliom_lib.Option.iter
+        (fun f ->
+           Lwt.async (fun () ->
+             let%lwt () = Lwt_js_events.transitionend d2 in
+             unset_top_margin ();
+             Lwt.return ()))
+        transitionend
     in
     set_position ~%position;
     (*VVV I recompute the size everytime we touch the carousel
@@ -155,7 +213,10 @@ let%shared make
                (Js.Unsafe.coerce (d2##.style))##.transform := s;
                (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
              | `Goback position
-             | `Change position -> action := `Move 0; set_position position);
+             | `Change position ->
+               set_top_margin ();
+               action := `Move 0;
+               set_position ~transitionend:unset_top_margin position);
             Lwt.return ()
           end
           else Lwt.return ()
@@ -165,6 +226,7 @@ let%shared make
     let onpan ev _ =
       (match !status with
        | `Start (startx, starty) ->
+         set_top_margin ();
          status :=
            if abs (if vertical
                    then clX ev - startx
@@ -212,7 +274,7 @@ let%shared make
           then
             if delta > 0
             then (if pos > 0 then pos - 1 else pos)
-            else (if pos < max () then pos + 1 else pos)
+            else (if pos < maxi () then pos + 1 else pos)
           else pos
         in
         if newpos <> pos
@@ -231,7 +293,7 @@ let%shared make
     (*   (if vertical then "swipeup" else "swipeleft") *)
     (*   (fun ev -> *)
     (*      let pos = Eliom_shared.React.S.value pos_signal in *)
-    (*      Lwt.async (fun () -> if pos < max () *)
+    (*      Lwt.async (fun () -> if pos < maxi () *)
     (*                  then perform_animation (`Change (pos + 1)) *)
     (*                  else perform_animation (`Goback pos)) *)
     (*   ); *)
@@ -244,16 +306,16 @@ let%shared make
       (Eliom_lib.Option.map
          (fun update ->
             React.E.map (fun v ->
-              let max = max () in
+              let maxi = maxi () in
               match v with
               | `Goto pos ->
                 let pos =
-                  if pos < 0 then 0 else if pos > max then max else pos
+                  if pos < 0 then 0 else if pos > maxi then maxi else pos
                 in
                 perform_animation (`Change pos)
               | `Next ->
                 let curpos = Eliom_shared.React.S.value pos_signal in
-                if curpos < max then perform_animation (`Change (curpos + 1))
+                if curpos < maxi then perform_animation (`Change (curpos + 1))
                 else Lwt.return ()
               | `Prev ->
                 let curpos = Eliom_shared.React.S.value pos_signal in
@@ -283,9 +345,11 @@ let%shared bullets
       | None -> []
       | Some l -> (List.nth l i :> Html5_types.li_attrib attrib list)
     in
-    li ~a:[ a_class [ "bullet-nav-item" ]
-          ; R.a_class class_
-          ; a_onclick [%client fun _ -> ~%change (`Goto ~%i)] ] []
+    li ~a:(a_class [ "bullet-nav-item" ]
+           :: R.a_class class_
+           :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]
+           :: a)
+      []
   in
   let rec aux acc i = if i = 0 then acc else aux (bullet (i-1)::acc) (i-1) in
   ul ~a:(a_class ["bullet-nav"]::a) (aux [] length)

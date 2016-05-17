@@ -47,6 +47,16 @@
     [?disabled] is always [false] by default. When [true], it is not possible
     to change carousel position.
 
+    Use optional parameter [?full_height]
+    if you don't want scroll bars in carousel
+    pages. Carousel will expand as necessary in the page, and swiping
+    to another page will automatically update the scroll position of the
+    whole page. Use this for example if you want a page with several tabs.
+    [`No_header] means that the top of the screen will be used for the
+    default position. Use [`Header f] if you want to add some extra space
+    for a header (for example a tabbar). [f] is the function which returns
+    the height of this header.
+
     Function returns the element, the current position (as a react signal),
     and the number of visible elements. It is more than 1 if element width
     ([div.car2]) is set, in CSS, to a value smaller than carousel width
@@ -58,8 +68,10 @@ val make :
   ?a: [< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
   ?vertical:bool ->
   ?position:int ->
-  ?update: [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+  ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
   ?disabled: bool Eliom_shared.React.S.t ->
+  ?full_height:[ `No | `No_header
+               | `Header of (unit -> int) Eliom_client_value.t ] ->
   [< Html5_types.div_content ] Eliom_content.Html5.elt list ->
   [> `Div ] Eliom_content.Html5.elt *
   int Eliom_shared.React.S.t *
@@ -86,7 +98,7 @@ val bullets :
   ?size:int Eliom_shared.React.S.t ->
   unit -> [> `Ul ] Eliom_content.Html5.elt
 
-(** Menu for carousel. Current page has class ["active"].
+(** Menu (or tabs) for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
     [change] is a function to change position of carousel.
     This is usually the function to trigger the event given as
