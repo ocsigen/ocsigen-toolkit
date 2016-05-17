@@ -327,9 +327,12 @@ let%shared ribbon
          node from page and put it back.
          As a temporary workaround, a also update containerwidth
          when the browser window's size changes: *)
-      ignore (React.S.map
-                (fun _ -> set_containerwidth container'##.offsetWidth)
-                Ot_size.width);
+      let watch_width =
+        React.S.map
+          (fun _ -> set_containerwidth container'##.offsetWidth)
+          Ot_size.width in
+      Eliom_client.onunload
+        (fun () -> React.S.stop ~strong:true watch_width; None);
       ignore
            (React.S.l3
               (fun pos size containerwidth ->
