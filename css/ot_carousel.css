@@ -119,3 +119,12 @@
 .car-prev.blurred::before {
     visibility: hidden;
 }
+
+.car-cursor {
+    box-sizing: border-box;
+    position: absolute;
+    height: 3px;
+    bottom: 0;
+    background-color: #66aaff;
+    transition: left .7s, right .7s;
+}

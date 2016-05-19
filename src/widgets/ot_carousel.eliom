@@ -179,9 +179,9 @@ let%shared make
       Eliom_lib.Option.iter
         (fun f ->
            Lwt.async (fun () ->
+             ~%swipe_pos_set 0.;
              let%lwt () = Lwt_js_events.transitionend d2 in
              unset_top_margin ();
-             ~%swipe_pos_set 0.;
              Lwt.return ()))
         transitionend
     in
@@ -228,7 +228,7 @@ let%shared make
              | `Move (delta, width_element) ->
                let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
-               ~%swipe_pos_set (float delta /. float width_element);
+               ~%swipe_pos_set (-. (float delta) /. float width_element);
                let s = Printf.sprintf
                    "translate3d(%scalc(%d%%%s%dpx), 0%s)"
                    (* "translate(%scalc(%d%%%s%dpx)%s)" *)
@@ -388,7 +388,9 @@ let%shared ribbon
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
     ~pos
     ?(size = Eliom_shared.React.S.const 1)
-    ?(initial_gap = 0) l =
+    ?(initial_gap = 0)
+    ?cursor
+    l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let item i c =
     let class_ = bullet_class i pos size in
@@ -399,10 +401,16 @@ let%shared ribbon
       c
   in
   let l = List.mapi item l in
+  let nb_pages = List.length l in
   let the_ul = D.ul ~a:[a_class ["car-ribbon-list"]] l in
-  let container = D.div ~a:(a_class ["car-ribbon"]::a) [the_ul] in
+  let cursor_elt =
+    Eliom_lib.Option.map (fun c -> D.div ~a:[a_class ["car-cursor"]] []) cursor
+  in
+  let cursor_l = match cursor_elt with None -> [] | Some c -> [ c ] in
+  let container = D.div ~a:(a_class ["car-ribbon"]::a) (the_ul::cursor_l) in
   ignore [%client (
     let the_ul = ~%the_ul in
+    let nb_pages = ~%nb_pages in
     let container = ~%container in
     let container' = To_dom.of_element container in
     let initial_gap = ~%initial_gap in
@@ -410,6 +418,74 @@ let%shared ribbon
     let containerwidth, set_containerwidth =
       React.S.create container'##.offsetWidth in
     let curleft = ref initial_gap in
+    (* Cursor: *)
+    (match ~%cursor_elt, ~%cursor with
+     | Some cursor_elt, Some cursor ->
+       ignore
+         (React.S.l3
+            (fun pos offset size ->
+               Printf.printf "%f\n" offset;
+               let firstselectedelt = Manip.nth the_ul pos in
+               let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+               let previouselt =
+                 if pos > 0 then Manip.nth the_ul (pos - 1) else None
+               in
+               let nextelt =
+                 if pos + size < nb_pages
+                 then Manip.nth the_ul (pos + size)
+                 else None
+               in
+               match firstselectedelt, lastselectedelt with
+               | Some firstselectedelt, Some lastselectedelt ->
+                 let firstselectedelt = To_dom.of_element firstselectedelt in
+                 let lastselectedelt = To_dom.of_element lastselectedelt in
+                 let left = firstselectedelt##.offsetLeft in
+                 let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+                 let right =
+                   ul_width -
+                   (lastselectedelt##.offsetLeft
+                    + lastselectedelt##.offsetWidth)
+                 in
+                 let offset_left =
+                   if offset >= 0.
+                   then int_of_float
+                       (offset *. float firstselectedelt##.offsetWidth)
+                   else
+                     match previouselt with
+                     | None -> 0
+                     | Some elt ->
+                       int_of_float
+                         (offset
+                          *. float (To_dom.of_element elt)##.offsetWidth)
+                 in
+                 let offset_right =
+                   if offset <= 0.
+                   then
+                     int_of_float
+                       (offset *. float lastselectedelt##.offsetWidth)
+                   else
+                     match nextelt with
+                     | None -> 0
+                     | Some elt ->
+                       int_of_float
+                         (offset
+                          *. float (To_dom.of_element elt)##.offsetWidth)
+                 in
+                 let left =
+                   Js.string (string_of_int (left + offset_left) ^ "px") in
+                 let right =
+                   Js.string (string_of_int (right - offset_right) ^ "px") in
+                 (To_dom.of_element cursor_elt)##.style##.left := left;
+                 (To_dom.of_element cursor_elt)##.style##.right := right
+               | _ -> ()
+            )
+            ~%pos
+            cursor
+            ~%size
+         )
+     | _ -> ()
+    );
+    (* Ribbon position: *)
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready container' in
       set_containerwidth container'##.offsetWidth ;
@@ -427,39 +503,39 @@ let%shared ribbon
       Eliom_client.onunload
         (fun () -> React.S.stop ~strong:true watch_width; None);
       ignore
-           (React.S.l3
-              (fun pos size containerwidth ->
-                 let firstelt = Manip.nth the_ul 0 in
-                 let firstselectedelt = Manip.nth the_ul pos in
-                 let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
-                 match firstelt, firstselectedelt, lastselectedelt with
-                 | Some _, Some firstselectedelt, Some lastselectedelt ->
-                   let firstselectedelt = To_dom.of_element firstselectedelt in
-                   let lastselectedelt = To_dom.of_element lastselectedelt in
-                   let left = firstselectedelt##.offsetLeft in
-                   let right =
-                     lastselectedelt##.offsetLeft + lastselectedelt##.offsetWidth
-                   in
-                   (* We try to center the active columns *)
-                   let newleft = -(left + right - containerwidth) / 2 in
-                   (* If there is space before but not after,
+        (React.S.l3
+           (fun pos size containerwidth ->
+              let firstelt = Manip.nth the_ul 0 in
+              let firstselectedelt = Manip.nth the_ul pos in
+              let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+              match firstelt, firstselectedelt, lastselectedelt with
+              | Some _, Some firstselectedelt, Some lastselectedelt ->
+                let firstselectedelt = To_dom.of_element firstselectedelt in
+                let lastselectedelt = To_dom.of_element lastselectedelt in
+                let left = firstselectedelt##.offsetLeft in
+                let right =
+                  lastselectedelt##.offsetLeft + lastselectedelt##.offsetWidth
+                in
+                (* We try to center the active columns *)
+                let newleft = -(left + right - containerwidth) / 2 in
+                (* If there is space before but not after,
                       or vice-versa,
                       we prefer balancing the whole: *)
-                   let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-                   let newleft =
-                     if newleft > 0
-                     then max initial_gap ((containerwidth - ul_width) / 2)
-                     else if newleft + ul_width < containerwidth
-                     then min
-                         (containerwidth - ul_width - initial_gap)
-                         ((containerwidth - ul_width) / 2)
-                     else newleft
-                   in
-                   curleft := newleft;
-                   the_ul'##.style##.left :=
-                     Js.string (string_of_int !curleft^"px")
-                 | _ -> ()
-              ) ~%pos ~%size containerwidth);
+                let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+                let newleft =
+                  if newleft > 0
+                  then max initial_gap ((containerwidth - ul_width) / 2)
+                  else if newleft + ul_width < containerwidth
+                  then min
+                      (containerwidth - ul_width - initial_gap)
+                      ((containerwidth - ul_width) / 2)
+                  else newleft
+                in
+                curleft := newleft;
+                the_ul'##.style##.left :=
+                  Js.string (string_of_int !curleft^"px")
+              | _ -> ()
+           ) ~%pos ~%size containerwidth);
       Lwt.return () ) ;
     let start = ref None in
     let old_transition = ref (Js.string "") in

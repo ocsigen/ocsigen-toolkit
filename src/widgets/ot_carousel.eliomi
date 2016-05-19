@@ -113,6 +113,10 @@ val bullets :
     Optional parameter [gap] is the default gap on the left, in pixels.
     The last argument is the list of titles, for each carousel page,
     that will be included in [<li>] tags.
+
+    If [cursor] is present, an element is added below the ribbon
+    to visualize the current position. It corresponds to the float
+    signal returned by [make].
  *)
 val ribbon :
   ?a:[< Html5_types.ul_attrib ] Eliom_content.Html5.attrib list ->
@@ -120,6 +124,7 @@ val ribbon :
   pos:int Eliom_shared.React.S.t ->
   ?size:int Eliom_shared.React.S.t ->
   ?initial_gap:int ->
+  ?cursor:float React.S.t Eliom_client_value.t ->
   [< Html5_types.li_content_fun ] Eliom_content.Html5.elt list list ->
   [> `Div ] Eliom_content.Html5.elt
 
