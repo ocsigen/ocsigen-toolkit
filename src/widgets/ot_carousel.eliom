@@ -37,7 +37,7 @@ let%client clY ev =
 
 let%client add_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transition :=
-    Js.string "-webkit-transform .2s, transform .2s"
+    Js.string "-webkit-transform .7s, transform .7s"
 
 let%client remove_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transition :=
@@ -50,7 +50,6 @@ let%shared make
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
-    ?(hide_non_visible_pages = true)
     l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -88,8 +87,11 @@ let%shared make
     let pos_set = ~%pos_set in
     let action = ref (`Move 0) in
     let animation_frame_requested = ref false in
+    (**********************
+       setting class active on visible pages (only)
+    *)
     let set_active () =
-      (* Adding class "active" to all visible tabs *)
+      (* Adding class "active" to all visible pages *)
         List.iteri (fun i page ->
           Manip.Class.remove page "active";
           let pos = React.S.value pos_signal in
@@ -97,26 +99,6 @@ let%shared make
           then (* Page is visible *) Manip.Class.add page "active";
         )
           ~%pages
-    in
-    (**********************
-       hide_non_visible_pages.
-       We keep the list of all pages, displayed or not, in a cupboard: *)
-    let page_cupboard = List.map (fun d -> match Manip.nth d 0 with
-                       | None -> div [] (* Should never happen *)
-                       | Some e -> e) ~%pages
-    in
-    let remove_invisible_pages delta =
-      if ~%hide_non_visible_pages
-      then
-        Ot_lib.List.iteri2 (fun i page saved ->
-          Manip.removeChildren page;
-          let pos = React.S.value pos_signal in
-          if i >= pos - delta
-          && i < pos + React.S.value ~%nb_visible_elements + delta
-          then (* Page is visible *) Manip.insertFirstChild page saved
-        )
-          ~%pages
-          page_cupboard
     in
     (********************** end *)
     (**********************
@@ -134,7 +116,6 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           remove_invisible_pages (React.S.value ~%nb_visible_elements);
            let delta = max 0 (dist - Ot_size.client_top d2) in
            let pos = React.S.value pos_signal in
            List.iteri
@@ -162,7 +143,6 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           remove_invisible_pages 0;
            let pos = React.S.value pos_signal in
            let delta = - (max 0 (dist - Ot_size.client_top d2)) in
            (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta;
@@ -191,7 +171,6 @@ let%shared make
       (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
       pos_set pos;
       set_active ();
-      remove_invisible_pages 0;
       Eliom_lib.Option.iter
         (fun f ->
            Lwt.async (fun () ->
@@ -252,7 +231,6 @@ let%shared make
                    (abs delta)
                    (if vertical then "" else ", 0")
                in
-               print_endline s;
                (Js.Unsafe.coerce (d2##.style))##.transform := s;
                (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
              | `Goback position

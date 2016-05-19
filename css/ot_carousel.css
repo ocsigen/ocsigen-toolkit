@@ -15,7 +15,8 @@
     flex-wrap: nowrap ;
 
     transform: translate(0,0);
-    transition: transform .2s;
+    transition: transform .7s;
+    transition-timing-function: ease-out;
 
     height: 100%;
     width: 100%;
