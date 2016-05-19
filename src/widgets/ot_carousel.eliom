@@ -53,6 +53,9 @@ let%shared make
     l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
+  let swipe_pos_sig = [%client (React.S.create 0. : _ * _) ] in
+  let swipe_pos = [%client (fst ~%swipe_pos_sig : _ React.S.t) ] in
+  let swipe_pos_set = [%client (snd ~%swipe_pos_sig : ?step:_ -> _ -> _) ] in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
   let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
@@ -69,10 +72,12 @@ let%shared make
     let vertical = ~%vertical in
     let d2 = To_dom.of_element ~%d2 in
     let d = To_dom.of_element ~%d in
+    let width_element () =
+      if vertical then d2##.offsetHeight else d2##.offsetWidth
+    in
     let comp_nb_visible_elements () =
       (* We suppose that all elements have the same width *)
-      let width_element =
-        if vertical then d2##.offsetHeight else d2##.offsetWidth in
+      let width_element = width_element () in
       if width_element = 0
       then 1
       else
@@ -85,7 +90,7 @@ let%shared make
     let maxi () = ~%maxi - (React.S.value ~%nb_visible_elements) + 1 in
     let pos_signal = ~%pos_signal in
     let pos_set = ~%pos_set in
-    let action = ref (`Move 0) in
+    let action = ref (`Move (0, 0)) in
     let animation_frame_requested = ref false in
     (**********************
        setting class active on visible pages (only)
@@ -176,6 +181,7 @@ let%shared make
            Lwt.async (fun () ->
              let%lwt () = Lwt_js_events.transitionend d2 in
              unset_top_margin ();
+             ~%swipe_pos_set 0.;
              Lwt.return ()))
         transitionend
     in
@@ -219,9 +225,10 @@ let%shared make
             let%lwt () = Lwt_js_events.request_animation_frame () in
             animation_frame_requested := false;
             (match !action with
-             | `Move delta ->
+             | `Move (delta, width_element) ->
                let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
+               ~%swipe_pos_set (float delta /. float width_element);
                let s = Printf.sprintf
                    "translate3d(%scalc(%d%%%s%dpx), 0%s)"
                    (* "translate(%scalc(%d%%%s%dpx)%s)" *)
@@ -236,7 +243,7 @@ let%shared make
              | `Goback position
              | `Change position ->
                set_top_margin ();
-               action := `Move 0;
+               action := `Move (0, 0);
                set_position ~transitionend:unset_top_margin position);
             Lwt.return ()
           end
@@ -257,18 +264,19 @@ let%shared make
              if abs (if not vertical
                      then clX ev - startx
                      else clY ev - starty) >= 10
-             then `Ongoing (startx, starty)
+             then `Ongoing (startx, starty, width_element ())
              else !status
        | _ -> ());
       (match !status with
-       | `Ongoing (startx, starty) ->
+       | `Ongoing (startx, starty, width_element) ->
          Dom.preventDefault ev;
          let delta =
            if vertical
            then clY ev - starty
            else clX ev - startx
          in
-         Lwt.async (fun () -> perform_animation (`Move delta))
+         Lwt.async
+           (fun () -> perform_animation (`Move (delta, width_element)))
        | _ -> ());
       Lwt.return ()
     in
@@ -281,7 +289,7 @@ let%shared make
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
       match !status with
       | `Start (startx, starty)
-      | `Ongoing (startx, starty) ->
+      | `Ongoing (startx, starty, _) ->
         let width, delta =
           if vertical
           then (To_dom.of_element ~%d2)##.offsetHeight,
@@ -346,7 +354,7 @@ let%shared make
        ~%update);
   : unit)]
   in
-  d, pos_signal, nb_visible_elements
+  d, pos_signal, nb_visible_elements, swipe_pos
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2

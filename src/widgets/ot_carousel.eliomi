@@ -57,12 +57,16 @@
     for a header (for example a tabbar). [f] is the function which returns
     the height of this header.
 
-    Function returns the element, the current position (as a react signal),
-    and the number of visible elements. It is more than 1 if element width
+    Function returns:
+    - the element,
+    - the current position (as a react signal),
+    - the number of visible elements. It is more than 1 if element width
     ([div.car2]) is set, in CSS, to a value smaller than carousel width
     (for example 50% or 33.33%).
     The width of all elements is supposed to be equal,
     and the size of carousel must be a multiple of the size of element.
+    - the current swipe position. Value -1.0 corresponds to previous page,
+    and +1.0 to next page.
 *)
 val make :
   ?a: [< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
@@ -75,7 +79,8 @@ val make :
   [< Html5_types.div_content ] Eliom_content.Html5.elt list ->
   [> `Div ] Eliom_content.Html5.elt *
   int Eliom_shared.React.S.t *
-  int Eliom_shared.React.S.t
+  int Eliom_shared.React.S.t *
+  float React.S.t Eliom_client_value.t
 
 (** List of bullets for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
