@@ -417,80 +417,10 @@ let%shared ribbon
     let the_ul' = To_dom.of_element the_ul in
     let containerwidth, set_containerwidth =
       React.S.create container'##.offsetWidth in
-    let curleft = ref initial_gap in
-    (* Cursor: *)
-    (match ~%cursor_elt, ~%cursor with
-     | Some cursor_elt, Some cursor ->
-       Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready the_ul' in
-         ignore
-           (React.S.l3
-              (fun pos offset size ->
-                 let firstselectedelt = Manip.nth the_ul pos in
-                 let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
-                 let previouselt =
-                   if pos > 0 then Manip.nth the_ul (pos - 1) else None
-                 in
-                 let nextelt =
-                   if pos + size < nb_pages
-                   then Manip.nth the_ul (pos + size)
-                   else None
-                 in
-                 match firstselectedelt, lastselectedelt with
-                 | Some firstselectedelt, Some lastselectedelt ->
-                   let firstselectedelt = To_dom.of_element firstselectedelt in
-                   let lastselectedelt = To_dom.of_element lastselectedelt in
-                   let left = firstselectedelt##.offsetLeft in
-                   let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-                   let right =
-                     ul_width -
-                     (lastselectedelt##.offsetLeft
-                      + lastselectedelt##.offsetWidth)
-                   in
-                   let offset_left =
-                     if offset >= 0.
-                     then int_of_float
-                         (offset *. float firstselectedelt##.offsetWidth)
-                     else
-                       match previouselt with
-                       | None -> 0
-                       | Some elt ->
-                         int_of_float
-                           (offset
-                            *. float (To_dom.of_element elt)##.offsetWidth)
-                   in
-                   let offset_right =
-                     if offset <= 0.
-                     then
-                       int_of_float
-                         (offset *. float lastselectedelt##.offsetWidth)
-                     else
-                       match nextelt with
-                       | None -> 0
-                       | Some elt ->
-                         int_of_float
-                           (offset
-                            *. float (To_dom.of_element elt)##.offsetWidth)
-                   in
-                   let left =
-                     Js.string (string_of_int (left + offset_left) ^ "px") in
-                   let right =
-                     Js.string (string_of_int (right - offset_right) ^ "px") in
-                   (To_dom.of_element cursor_elt)##.style##.left := left;
-                   (To_dom.of_element cursor_elt)##.style##.right := right
-                 | _ -> ()
-              )
-              ~%pos
-              cursor
-              ~%size
-           );
-         Lwt.return ()
-       )
-     | _ -> ()
-    );
-    (* Ribbon position: *)
+    let curleft, set_curleft = React.S.create initial_gap in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready container' in
+      (* Ribbon position: *)
       set_containerwidth container'##.offsetWidth ;
       Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
         set_containerwidth container'##.offsetWidth
@@ -534,12 +464,81 @@ let%shared ribbon
                       ((containerwidth - ul_width) / 2)
                   else newleft
                 in
-                curleft := newleft;
-                the_ul'##.style##.left :=
-                  Js.string (string_of_int !curleft^"px")
+                set_curleft newleft;
+                the_ul'##.style##.left := Js.string (string_of_int newleft^"px")
               | _ -> ()
            ) ~%pos ~%size containerwidth);
-      Lwt.return () ) ;
+      (* Cursor: *)
+      (match ~%cursor_elt, ~%cursor with
+       | Some cursor_elt, Some cursor ->
+         ignore
+           (React.S.l5
+              (fun pos offset size curleft _ ->
+                 let firstselectedelt = Manip.nth the_ul pos in
+                 let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+                 let previouselt =
+                   if pos > 0 then Manip.nth the_ul (pos - 1) else None
+                 in
+                 let nextelt =
+                   if pos + size < nb_pages
+                   then Manip.nth the_ul (pos + size)
+                   else None
+                 in
+                 match firstselectedelt, lastselectedelt with
+                 | Some firstselectedelt, Some lastselectedelt ->
+                   let firstselectedelt = To_dom.of_element firstselectedelt in
+                   let lastselectedelt = To_dom.of_element lastselectedelt in
+                   let left = firstselectedelt##.offsetLeft + curleft in
+                   let right =
+                     - lastselectedelt##.offsetLeft
+                     - lastselectedelt##.offsetWidth
+                     + the_ul'##.offsetWidth
+                     - curleft
+                   in
+                   let offset_left =
+                     if offset >= 0.
+                     then int_of_float
+                         (offset *. float firstselectedelt##.offsetWidth)
+                     else
+                       match previouselt with
+                       | None -> 0
+                       | Some elt ->
+                         int_of_float
+                           (offset
+                            *. float (To_dom.of_element elt)##.offsetWidth)
+                   in
+                   let offset_right =
+                     if offset <= 0.
+                     then
+                       int_of_float
+                         (offset *. float lastselectedelt##.offsetWidth)
+                     else
+                       match nextelt with
+                       | None -> 0
+                       | Some elt ->
+                         int_of_float
+                           (offset
+                            *. float (To_dom.of_element elt)##.offsetWidth)
+                   in
+                   let left =
+                     Js.string (string_of_int (left + offset_left) ^ "px") in
+                   let right =
+                     Js.string (string_of_int (right - offset_right) ^ "px") in
+                   (To_dom.of_element cursor_elt)##.style##.left := left;
+                   (To_dom.of_element cursor_elt)##.style##.right := right
+                 | _ -> ()
+              )
+              ~%pos
+              cursor
+              ~%size
+              curleft
+              containerwidth
+           );
+       | _ -> ()
+      );
+      Lwt.return ()
+    );
+    (***)
     let start = ref None in
     let old_transition = ref (Js.string "") in
     let fun_touchstart clX ev =
@@ -554,15 +553,17 @@ let%shared ribbon
       (match !start with
        | Some s ->
          let cw = React.S.value containerwidth in
-         curleft := max (- the_ul'##.scrollWidth + cw/2)
-             (min (cw / 2) (!curleft + clX ev - s));
+         let cl = (max (- the_ul'##.scrollWidth + cw/2)
+                     (min (cw / 2) (React.S.value curleft + clX ev - s)))
+         in
          let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
          (* Limit the movement
             (make this configurable by optional parameter?): *)
-         curleft := min initial_gap !curleft;
-         curleft :=
-           max (React.S.value containerwidth - ul_width - initial_gap) !curleft;
-         the_ul'##.style##.left := Js.string (string_of_int !curleft^"px");
+         let cl = min initial_gap cl in
+         set_curleft
+           (max (React.S.value containerwidth - ul_width - initial_gap) cl);
+         the_ul'##.style##.left :=
+           Js.string (string_of_int (React.S.value curleft)^"px");
          start := None
        | _ -> ());
       Lwt.return ()
@@ -572,7 +573,7 @@ let%shared ribbon
       (match !start with
        | Some start ->
          let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-         let pos = !curleft + clX ev - start in
+         let pos = React.S.value curleft + clX ev - start in
          (* Limit the movement
             (make this configurable by optional parameter?): *)
          let pos = min initial_gap pos in
