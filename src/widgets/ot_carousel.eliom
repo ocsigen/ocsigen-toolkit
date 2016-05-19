@@ -421,68 +421,71 @@ let%shared ribbon
     (* Cursor: *)
     (match ~%cursor_elt, ~%cursor with
      | Some cursor_elt, Some cursor ->
-       ignore
-         (React.S.l3
-            (fun pos offset size ->
-               Printf.printf "%f\n" offset;
-               let firstselectedelt = Manip.nth the_ul pos in
-               let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
-               let previouselt =
-                 if pos > 0 then Manip.nth the_ul (pos - 1) else None
-               in
-               let nextelt =
-                 if pos + size < nb_pages
-                 then Manip.nth the_ul (pos + size)
-                 else None
-               in
-               match firstselectedelt, lastselectedelt with
-               | Some firstselectedelt, Some lastselectedelt ->
-                 let firstselectedelt = To_dom.of_element firstselectedelt in
-                 let lastselectedelt = To_dom.of_element lastselectedelt in
-                 let left = firstselectedelt##.offsetLeft in
-                 let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-                 let right =
-                   ul_width -
-                   (lastselectedelt##.offsetLeft
-                    + lastselectedelt##.offsetWidth)
+       Lwt.async (fun () ->
+         let%lwt () = Ot_nodeready.nodeready the_ul' in
+         ignore
+           (React.S.l3
+              (fun pos offset size ->
+                 let firstselectedelt = Manip.nth the_ul pos in
+                 let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+                 let previouselt =
+                   if pos > 0 then Manip.nth the_ul (pos - 1) else None
                  in
-                 let offset_left =
-                   if offset >= 0.
-                   then int_of_float
-                       (offset *. float firstselectedelt##.offsetWidth)
-                   else
-                     match previouselt with
-                     | None -> 0
-                     | Some elt ->
+                 let nextelt =
+                   if pos + size < nb_pages
+                   then Manip.nth the_ul (pos + size)
+                   else None
+                 in
+                 match firstselectedelt, lastselectedelt with
+                 | Some firstselectedelt, Some lastselectedelt ->
+                   let firstselectedelt = To_dom.of_element firstselectedelt in
+                   let lastselectedelt = To_dom.of_element lastselectedelt in
+                   let left = firstselectedelt##.offsetLeft in
+                   let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+                   let right =
+                     ul_width -
+                     (lastselectedelt##.offsetLeft
+                      + lastselectedelt##.offsetWidth)
+                   in
+                   let offset_left =
+                     if offset >= 0.
+                     then int_of_float
+                         (offset *. float firstselectedelt##.offsetWidth)
+                     else
+                       match previouselt with
+                       | None -> 0
+                       | Some elt ->
+                         int_of_float
+                           (offset
+                            *. float (To_dom.of_element elt)##.offsetWidth)
+                   in
+                   let offset_right =
+                     if offset <= 0.
+                     then
                        int_of_float
-                         (offset
-                          *. float (To_dom.of_element elt)##.offsetWidth)
-                 in
-                 let offset_right =
-                   if offset <= 0.
-                   then
-                     int_of_float
-                       (offset *. float lastselectedelt##.offsetWidth)
-                   else
-                     match nextelt with
-                     | None -> 0
-                     | Some elt ->
-                       int_of_float
-                         (offset
-                          *. float (To_dom.of_element elt)##.offsetWidth)
-                 in
-                 let left =
-                   Js.string (string_of_int (left + offset_left) ^ "px") in
-                 let right =
-                   Js.string (string_of_int (right - offset_right) ^ "px") in
-                 (To_dom.of_element cursor_elt)##.style##.left := left;
-                 (To_dom.of_element cursor_elt)##.style##.right := right
-               | _ -> ()
-            )
-            ~%pos
-            cursor
-            ~%size
-         )
+                         (offset *. float lastselectedelt##.offsetWidth)
+                     else
+                       match nextelt with
+                       | None -> 0
+                       | Some elt ->
+                         int_of_float
+                           (offset
+                            *. float (To_dom.of_element elt)##.offsetWidth)
+                   in
+                   let left =
+                     Js.string (string_of_int (left + offset_left) ^ "px") in
+                   let right =
+                     Js.string (string_of_int (right - offset_right) ^ "px") in
+                   (To_dom.of_element cursor_elt)##.style##.left := left;
+                   (To_dom.of_element cursor_elt)##.style##.right := right
+                 | _ -> ()
+              )
+              ~%pos
+              cursor
+              ~%size
+           );
+         Lwt.return ()
+       )
      | _ -> ()
     );
     (* Ribbon position: *)
