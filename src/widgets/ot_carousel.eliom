@@ -179,10 +179,13 @@ let%shared make
       let s =
         Js.string @@
         if vertical
-(* then Printf.sprintf "translate3d(0, %.3f%%, 0)" (-. float pos *. 100.) *)
-(* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" (-. float pos *. 100.) *)
-        then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.)
-        else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.)
+        then Printf.sprintf "translate3d(0, %.3f%%, 0)" (-. float pos *. 100.)
+        else Printf.sprintf "translate3d(%.3f%%, 0, 0)" (-. float pos *. 100.)
+        (* then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.) *)
+        (* else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.) *)
+        (* translate3d possibly more efficient on some devices ... *)
+        (* If you switch back to translate,
+           please explain why in comments. *)
       in
       (Js.Unsafe.coerce (d2##.style))##.transform := s;
       (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
@@ -241,8 +244,8 @@ let%shared make
                let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
                let s = Printf.sprintf
-                   (* "translate3d(%scalc(%d%%%s%dpx), 0%s)" *)
-                   "translate(%scalc(%d%%%s%dpx)%s)"
+                   "translate3d(%scalc(%d%%%s%dpx), 0%s)"
+                   (* "translate(%scalc(%d%%%s%dpx)%s)" *)
                    (if vertical then "0, " else "")
                    (-pos * 100)
                    sign
