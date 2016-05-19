@@ -88,6 +88,16 @@ let%shared make
     let pos_set = ~%pos_set in
     let action = ref (`Move 0) in
     let animation_frame_requested = ref false in
+    let set_active () =
+      (* Adding class "active" to all visible tabs *)
+        List.iteri (fun i page ->
+          Manip.Class.remove page "active";
+          let pos = React.S.value pos_signal in
+          if i >= pos && i < pos + React.S.value ~%nb_visible_elements
+          then (* Page is visible *) Manip.Class.add page "active";
+        )
+          ~%pages
+    in
     (**********************
        hide_non_visible_pages.
        We keep the list of all pages, displayed or not, in a cupboard: *)
@@ -177,6 +187,7 @@ let%shared make
       (Js.Unsafe.coerce (d2##.style))##.transform := s;
       (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
       pos_set pos;
+      set_active ();
       remove_invisible_pages 0;
       Eliom_lib.Option.iter
         (fun f ->
