@@ -57,6 +57,11 @@
     for a header (for example a tabbar). [f] is the function which returns
     the height of this header.
 
+    By default, non-visible pages are removed from the page to increase
+    performances.
+    Setting [?hide_non_visible_pages] to [false] may decrease
+    performances (especially on mobile devices).
+
     Function returns the element, the current position (as a react signal),
     and the number of visible elements. It is more than 1 if element width
     ([div.car2]) is set, in CSS, to a value smaller than carousel width
@@ -72,6 +77,7 @@ val make :
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header
                | `Header of (unit -> int) Eliom_client_value.t ] ->
+  ?hide_non_visible_pages:bool ->
   [< Html5_types.div_content ] Eliom_content.Html5.elt list ->
   [> `Div ] Eliom_content.Html5.elt *
   int Eliom_shared.React.S.t *

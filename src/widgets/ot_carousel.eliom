@@ -50,6 +50,7 @@ let%shared make
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
+    ?(hide_non_visible_pages = true)
     l =
   let a = (a :> Html5_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -87,6 +88,30 @@ let%shared make
     let pos_set = ~%pos_set in
     let action = ref (`Move 0) in
     let animation_frame_requested = ref false in
+    (**********************
+       hide_non_visible_pages.
+       We keep the list of all pages, displayed or not, in a cupboard: *)
+    let page_cupboard = List.map (fun d -> match Manip.nth d 0 with
+                       | None -> div [] (* Should never happen *)
+                       | Some e -> e) ~%pages
+    in
+    let remove_invisible_pages delta =
+      if ~%hide_non_visible_pages
+      then
+        Ot_lib.List.iteri2 (fun i page saved ->
+          Manip.removeChildren page;
+          let pos = React.S.value pos_signal in
+          if i >= pos - delta
+          && i < pos + React.S.value ~%nb_visible_elements + delta
+          then (* Page is visible *) Manip.insertFirstChild page saved
+        )
+          ~%pages
+          page_cupboard
+    in
+    (********************** end *)
+    (**********************
+       full_height
+    *)
     let set_top_margin () =
       let dist = match ~%full_height with
         (* In full height mode, during swipe,
@@ -99,6 +124,7 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
+           remove_invisible_pages (React.S.value ~%nb_visible_elements);
            let delta = max 0 (dist - Ot_size.client_top d2) in
            let pos = React.S.value pos_signal in
            List.iteri
@@ -126,6 +152,7 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
+           remove_invisible_pages 0;
            let pos = React.S.value pos_signal in
            let delta = - (max 0 (dist - Ot_size.client_top d2)) in
            (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta;
@@ -137,6 +164,7 @@ let%shared make
              ~%pages)
         dist
     in
+    (********************** end *)
     let set_position ?transitionend pos =
       let s =
         Js.string @@
@@ -149,6 +177,7 @@ let%shared make
       (Js.Unsafe.coerce (d2##.style))##.transform := s;
       (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
       pos_set pos;
+      remove_invisible_pages 0;
       Eliom_lib.Option.iter
         (fun f ->
            Lwt.async (fun () ->

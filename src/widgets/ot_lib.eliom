@@ -39,3 +39,16 @@ let%client rec click_outside ?use_capture elt =
        if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
        then click_outside ?use_capture elt
        else Lwt.return ev)
+
+[%%shared
+module List = struct
+
+  let iteri2 f l1 l2 =
+    let rec aux i l1 l2 = match l1, l2 with
+      | a::ll1, b::ll2 -> f i a b; aux (i+1) ll1 ll2
+      | _ -> ()
+    in
+    aux 0 l1 l2
+
+end
+]

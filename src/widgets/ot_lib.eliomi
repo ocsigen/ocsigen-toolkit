@@ -24,3 +24,9 @@
 (** [click_outside e] returns when user clicks outside element [e]. *)
 val click_outside :
   ?use_capture:bool -> #Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t
+
+
+[%%shared.start]
+module List : sig
+  val iteri2 : (int -> 'a -> 'b -> unit) -> 'a list -> 'b list -> unit
+end
