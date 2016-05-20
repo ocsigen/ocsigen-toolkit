@@ -150,13 +150,13 @@ let%shared make
         (fun dist ->
            let pos = React.S.value pos_signal in
            let delta = - (max 0 (dist - Ot_size.client_top d2)) in
-           (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta;
            List.iteri
              (fun i coli ->
                 let coli' = To_dom.of_element coli in
                 coli'##.style##.marginTop := Js.string "0px"
              )
-             ~%pages)
+             ~%pages;
+           (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta)
         dist
     in
     (********************** end *)
