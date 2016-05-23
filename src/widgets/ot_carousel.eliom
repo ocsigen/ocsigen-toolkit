@@ -70,8 +70,11 @@ let%shared make
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
   let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
   let d2 = D.div ~a:[a_class ["car2"]] pages in
-  let d = D.div ~a:(a_class ["carousel";
-                             if vertical then "vertical" else "horizontal"]::a)
+  let d = D.div
+      ~a:(a_class ("carousel"
+                   :: (if vertical then "vertical" else "horizontal")
+                   :: if full_height = `No then [] else ["full-height"])
+          ::a)
       [d2]
   in
   let maxi = List.length pages - 1 in
@@ -80,10 +83,10 @@ let%shared make
   in
   let _ = [%client (
     let vertical = ~%vertical in
-    let d2 = To_dom.of_element ~%d2 in
+    let d2' = To_dom.of_element ~%d2 in
     let d = To_dom.of_element ~%d in
     let width_element () =
-      if vertical then d2##.offsetHeight else d2##.offsetWidth
+      if vertical then d2'##.offsetHeight else d2'##.offsetWidth
     in
     let comp_nb_visible_elements () =
       (* We suppose that all elements have the same width *)
@@ -131,7 +134,7 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           let delta = max 0 (dist - Ot_size.client_top d2) in
+           let delta = max 0 (dist - Ot_size.client_top d2') in
            let pos = React.S.value pos_signal in
            List.iteri
              (fun i coli ->
@@ -159,7 +162,7 @@ let%shared make
       Eliom_lib.Option.iter
         (fun dist ->
            let pos = React.S.value pos_signal in
-           let delta = - (max 0 (dist - Ot_size.client_top d2)) in
+           let delta = - (max 0 (dist - Ot_size.client_top d2')) in
            List.iteri
              (fun i coli ->
                 let coli' = To_dom.of_element coli in
@@ -182,18 +185,18 @@ let%shared make
         (* If you switch back to translate,
            please explain why in comments. *)
       in
-      (Js.Unsafe.coerce (d2##.style))##.transform := s;
-      (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
+      (Js.Unsafe.coerce (d2'##.style))##.transform := s;
+      (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
       pos_set pos;
       set_active ();
-      Eliom_lib.Option.iter
-        (fun f ->
-           Lwt.async (fun () ->
-             ~%swipe_pos_set 0.;
-             let%lwt () = Lwt_js_events.transitionend d2 in
-             unset_top_margin ();
-             Lwt.return ()))
-        transitionend
+      Lwt.async (fun () ->
+        ~%swipe_pos_set 0.;
+        let%lwt () = Lwt_js_events.transitionend d2' in
+        Eliom_lib.Option.iter (fun f -> f ()) transitionend;
+        Manip.Class.remove ~%d2 "swiping";
+        (* Remove swiping after calling f,
+           because f will possibly change the scrolling position of the page *)
+        Lwt.return ())
     in
     set_position ~%position;
     (*VVV I recompute the size everytime we touch the carousel
@@ -238,10 +241,11 @@ let%shared make
                    (abs delta)
                    (if vertical then "" else ", 0")
                in
-               (Js.Unsafe.coerce (d2##.style))##.transform := s;
-               (Js.Unsafe.coerce (d2##.style))##.webkitTransform := s;
+               (Js.Unsafe.coerce (d2'##.style))##.transform := s;
+               (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
              | `Goback position
              | `Change position ->
+               Manip.Class.add ~%d2 "swiping";
                set_top_margin ();
                action := `Move (0, 0);
                set_position ~transitionend:unset_top_margin position);
@@ -283,20 +287,19 @@ let%shared make
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
       status := `Start (clX ev, clY ev);
-      remove_transition d2;
+      Manip.Class.add ~%d2 "swiping";
+      remove_transition d2';
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
-      add_transition d2;
+      add_transition d2';
       match !status with
       | `Start (startx, starty)
       | `Ongoing (startx, starty, _) ->
         let width, delta =
           if vertical
-          then (To_dom.of_element ~%d2)##.offsetHeight,
-               (clY ev - starty)
-          else (To_dom.of_element ~%d2)##.offsetWidth,
-               (clX ev - startx)
+          then d2'##.offsetHeight, (clY ev - starty)
+          else d2'##.offsetWidth, (clX ev - startx)
         in
         let pos = Eliom_shared.React.S.value pos_signal in
         let newpos =

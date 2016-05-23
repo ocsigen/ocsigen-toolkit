@@ -126,3 +126,10 @@
     background-color: #66aaff;
     transition: left .7s, right .7s;
 }
+
+.carousel.full-height > .car2:not(.swiping) .carpage:not(.active) {
+    height: 100vh; // We limit the size of non visible columns to avoid
+                   // scolling too much in small columns
+                   // But NOT during swipe, as swiping might change the
+                   // scroll position in page.
+}
