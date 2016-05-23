@@ -212,16 +212,6 @@ let%shared make
           if not !animation_frame_requested
           then begin
             animation_frame_requested := true;
-            (match !action with
-             | `Move _ -> ()
-             | _ ->
-               add_transition d2;
-               (* We remove transition
-                  to prevent it to happen when starting movement: *)
-               Lwt.async (fun () ->
-                 let%lwt () = Lwt_js.sleep 0.2 in
-                 remove_transition d2;
-                 Lwt.return ()));
             let%lwt () = Lwt_js_events.request_animation_frame () in
             animation_frame_requested := false;
             (match !action with
@@ -287,6 +277,7 @@ let%shared make
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
+      add_transition d2;
       match !status with
       | `Start (startx, starty)
       | `Ongoing (startx, starty, _) ->
