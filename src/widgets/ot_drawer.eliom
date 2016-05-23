@@ -172,21 +172,19 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
       then perform_animation `Close
       else perform_animation `Open
     in
-    let onpanstart ev =
+    let onpanstart ev _ =
       Dom.preventDefault ev;
-      Dom_html.stopPropagation ev;
+      (* Dom_html.stopPropagation ev; *)
       (Js.Unsafe.coerce (dr##.style))##.transition :=
         Js.string "-webkit-transform 0s, transform 0s";
       start := clX ev;
       let%lwt () = onpan ev a in
       Lwt.pick [ Lwt_js_events.touchmoves bckgrnd onpan
-               ; Lwt_js_events.touchends bckgrnd onpanend ]
+               ; let%lwt ev = Lwt_js_events.touchend bckgrnd in
+                 onpanend ev () ]
     in
     ~%bind_touch := (fun () ->
-      let t =
-        let%lwt ev = Lwt_js_events.touchstart bckgrnd in
-        onpanstart ev
-      in
+      let t = Lwt_js_events.touchstarts bckgrnd onpanstart in
       ~%touch_thread := t);
     (* Hammer.bind_callback hammer "panstart" onpanstart; *)
     (* Hammer.bind_callback hammer "panmove" onpan; *)
