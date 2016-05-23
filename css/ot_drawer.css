@@ -25,7 +25,7 @@
 
 .dr-drawer-bckgrnd {
     background-color: rgba(0,0,0,0);
-    transition: background-color .5s;
+    transition: background-color .35s;
 }
 
 .dr-drawer-bckgrnd.closing,
