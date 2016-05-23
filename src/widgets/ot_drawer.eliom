@@ -164,7 +164,7 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
     in
     let onpanend ev _ =
       (Js.Unsafe.coerce (dr##.style))##.transition :=
-        Js.string "-webkit-transform .5s, transform .5s";
+        Js.string "-webkit-transform .35s, transform .35s";
       let width = dr##.offsetWidth in
       let delta = float_of_int (clX ev - !start) in
       if (~%position = `Left && delta < -0.3 *. float width)
@@ -173,8 +173,6 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
       else perform_animation `Open
     in
     let onpanstart ev _ =
-      Dom.preventDefault ev;
-      (* Dom_html.stopPropagation ev; *)
       (Js.Unsafe.coerce (dr##.style))##.transition :=
         Js.string "-webkit-transform 0s, transform 0s";
       start := clX ev;

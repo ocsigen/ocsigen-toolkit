@@ -57,8 +57,8 @@
     overflow: visible ;
 
     transform: translate3d(0, 0, 0);
-    transition: -webkit-transform .5s ease-out;
-    transition: transform .5s ease-out;
+    transition: -webkit-transform .35s ease-out;
+    transition: transform .35s ease-out;
     width: 22rem ;
 
     /* We set up drawer so that the default transform is the identity
