@@ -173,6 +173,8 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
       else perform_animation `Open
     in
     let onpanstart ev =
+      Dom.preventDefault ev;
+      Dom_html.stopPropagation ev;
       (Js.Unsafe.coerce (dr##.style))##.transition :=
         Js.string "-webkit-transform 0s, transform 0s";
       start := clX ev;
