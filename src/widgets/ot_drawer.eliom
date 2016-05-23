@@ -73,17 +73,29 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   let close = [%client
     ((fun () ->
        Manip.Class.remove ~%bckgrnd "open";
+       Manip.Class.add ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
-       unbind_click_outside ())
-  : unit -> unit)] in
+       unbind_click_outside ();
+       Lwt_js_events.async (fun () ->
+         let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+         Manip.Class.remove ~%bckgrnd "closing";
+         Lwt.return ()))
+     : unit -> unit)]
+  in
 
   let open_ = [%client
     ((fun () ->
        Manip.Class.add ~%bckgrnd "open";
+       Manip.Class.add ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
        !(~%bind_touch) ();
-       bind_click_outside ~%d ~%close)
-  : unit -> unit)] in
+       bind_click_outside ~%d ~%close;
+       Lwt_js_events.async (fun () ->
+         let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+         Manip.Class.remove ~%bckgrnd "opening";
+         Lwt.return ()))
+     : unit -> unit)]
+  in
 
   let _ = [%client
     (let toggle () =
@@ -152,13 +164,7 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
     in
     let onpanend ev _ =
       (Js.Unsafe.coerce (dr##.style))##.transition :=
-        Js.string "-webkit-transform .2s, transform .2s";
-      (* We remove transition to prevent it to happen when starting movement: *)
-      Lwt.async (fun () ->
-        let%lwt () = Lwt_js.sleep 0.2 in
-        (Js.Unsafe.coerce (dr##.style))##.transition :=
-          Js.string "-webkit-transform 0s, transform 0s";
-        Lwt.return ());
+        Js.string "-webkit-transform .5s, transform .5s";
       let width = dr##.offsetWidth in
       let delta = float_of_int (clX ev - !start) in
       if (~%position = `Left && delta < -0.3 *. float width)

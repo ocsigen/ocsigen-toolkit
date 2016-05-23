@@ -23,14 +23,24 @@
 
 /* $drawer-width: 22rem ; */
 
+.dr-drawer-bckgrnd {
+    background-color: rgba(0,0,0,0);
+    transition: background-color .5s;
+}
+
+.dr-drawer-bckgrnd.closing,
+.dr-drawer-bckgrnd.opening,
 .dr-drawer-bckgrnd.open {
     position: fixed;
     width: 100vw;
     height: 100vh;
     top: 0;
     left: 0;
-    background-color: rgba(0,0,0,0.5);
     z-index: 3;
+}
+
+.dr-drawer-bckgrnd.open {
+    background-color: rgba(0,0,0,0.5);
 }
 
 .dr-drawer {
@@ -47,7 +57,8 @@
     overflow: visible ;
 
     transform: translate3d(0, 0, 0);
-    transition: transform .2s;
+    transition: -webkit-transform .5s ease-out;
+    transition: transform .5s ease-out;
     width: 22rem ;
 
     /* We set up drawer so that the default transform is the identity
@@ -69,11 +80,6 @@
 .dr-drawer.dr-left > .dr-toggle-button { left: 100% ; }
 .dr-drawer.dr-right > .dr-toggle-button { right: 100% ; }
 
-
-.dr-drawer-bckgrnd.open .dr-drawer {
-    transition: -webkit-transform .2s;
-    transition: transform .2s;
-}
 
 .dr-drawer-bckgrnd.open .dr-drawer.dr-left  {
     -webkit-transform: translate3d(100%, 0, 0);
