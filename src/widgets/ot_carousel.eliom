@@ -182,8 +182,7 @@ let%shared make
         (* then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.) *)
         (* else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.) *)
         (* translate3d possibly more efficient on some devices ... *)
-        (* If you switch back to translate,
-           please explain why in comments. *)
+        (* If you switch back to translate, please explain why in comments. *)
       in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
@@ -198,7 +197,10 @@ let%shared make
            because f will possibly change the scrolling position of the page *)
         Lwt.return ())
     in
-    set_position ~%position;
+    Lwt.async (fun () ->
+      let%lwt () = Ot_nodeready.nodeready d2' in
+      set_position ~%position;
+      Lwt.return ());
     (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).
         Should be: every time the carousel size or content size changes
