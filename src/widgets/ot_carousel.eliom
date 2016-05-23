@@ -551,11 +551,10 @@ let%shared ribbon
       start := Some (clX ev);
       old_transition := (Js.Unsafe.coerce (the_ul'##.style))##.transition;
       (Js.Unsafe.coerce (the_ul'##.style))##.transition := Js.string "left 0s";
-      Lwt_js_events.request_animation_frame ()
+      Lwt.return ()
     in
     let fun_touchup clX ev =
       (Js.Unsafe.coerce (the_ul'##.style))##.transition := !old_transition;
-      let%lwt () = Lwt_js_events.request_animation_frame () in
       (match !start with
        | Some s ->
          let cw = React.S.value containerwidth in

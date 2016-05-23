@@ -97,7 +97,7 @@
 }
 
 
-.car-ribbon-list:not(.notransition) { transition: left .2s ; }
+.car-ribbon-list:not(.notransition) { transition: left .7s ; }
 
 .car-ribbon-list-item {
 
