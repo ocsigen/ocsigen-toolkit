@@ -19,6 +19,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(* TODO:
+
+ - Swiping: avoid small delay before starting transition (the movement seems
+   to stop and restart)
+ - Make transition duration depend on swiping speed
+
+ - full_height: restore position of each page
+
+*)
+
 
 [%%shared
 open Eliom_content.Html5
