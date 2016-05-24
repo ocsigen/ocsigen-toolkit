@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared open Eliom_content.Html5 ]
-[%%shared open Eliom_content.Html5.F ]
+[%%shared open Eliom_content.Html ]
+[%%shared open Eliom_content.Html.F ]
 
 let%shared default_fail e =
   [
@@ -30,21 +30,21 @@ let%shared default_fail e =
         [ pcdata (Printexc.to_string e) ] ]
 
 let%server with_spinner ?(a = []) ?fail thread =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   let fail =
     ((match fail with
-       | Some fail -> (fail :> exn -> Html5_types.div_content elt list Lwt.t)
+       | Some fail -> (fail :> exn -> Html_types.div_content elt list Lwt.t)
        | None      -> (fun e -> Lwt.return (default_fail e)))
-     :> exn -> Html5_types.div_content elt list Lwt.t)
+     :> exn -> Html_types.div_content elt list Lwt.t)
   in
   let%lwt v = try%lwt
       let%lwt v = thread in
       Lwt.return
-        (v :> Html5_types.div_content_fun F.elt list)
+        (v :> Html_types.div_content_fun F.elt list)
     with e ->
       let%lwt v = fail e in
       Lwt.return
-        (v :> Html5_types.div_content_fun F.elt list)
+        (v :> Html_types.div_content_fun F.elt list)
   in
   Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
@@ -57,11 +57,11 @@ module Make(A : sig
   end) = struct
 
   let with_spinner ?(a = []) ?fail thread =
-    let a = (a :> Html5_types.div_attrib attrib list) in
+    let a = (a :> Html_types.div_attrib attrib list) in
     let fail =
       match fail with
-      | Some fail -> (fail : exn -> [< Html5_types.div_content ] elt list A.t
-                      :> exn -> Html5_types.div_content elt list A.t)
+      | Some fail -> (fail : exn -> [< Html_types.div_content ] elt list A.t
+                      :> exn -> Html_types.div_content elt list A.t)
       | None      -> (fun e -> A.return (default_fail e))
     in
     match Lwt.state thread with
@@ -76,10 +76,10 @@ module Make(A : sig
            let%lwt v = try%lwt
                let%lwt v = thread in
                Lwt.return
-                 (v :> Html5_types.div_content_fun F.elt list)
+                 (v :> Html_types.div_content_fun F.elt list)
              with e ->
                A.bind2 (fail e) (fun v ->
-                 (Lwt.return (v :> Html5_types.div_content_fun F.elt list)))
+                 (Lwt.return (v :> Html_types.div_content_fun F.elt list)))
            in
            Manip.replaceChildren d v ;
            Manip.Class.remove d spinning ;

@@ -22,7 +22,7 @@
 
 open Eliom_shared.React.S.Infix
 
-open Eliom_content.Html5
+open Eliom_content.Html
 
 type polar = int * int
 
@@ -324,14 +324,14 @@ let clock_html_wrap ?(classes = [])
           ("ot-tp-clock"
            :: "ot-tp-click-anywhere"
            :: classes);
-        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_viewBox ( 0. , 0. , 100. , 100. );
         a_onclick [%client fun ev -> wrap_click ev ~%f ]
       ]
     in
-    Eliom_content.Html5.D.svg ~a [s]
+    Eliom_content.Html.D.svg ~a [s]
   in
   let _ = [%client
-    (let e = Eliom_content.Html5.To_dom.of_element ~%e in
+    (let e = Eliom_content.Html.To_dom.of_element ~%e in
      (Lwt.async @@ fun () ->
       Lwt_js_events.touchends e @@ fun ev _ ->
       Lwt.return (wrap_touch true ev ~%f));
@@ -358,11 +358,11 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
            :: "ot-tp-clock-24h"
            :: "ot-tp-click-anywhere"
            :: classes);
-        a_viewbox ( 0. , 0. , 100. , 100. );
+        a_viewBox ( 0. , 0. , 100. , 100. );
         a_onclick f
       ]
     in
-    Eliom_content.Html5.D.svg ~a [s]
+    Eliom_content.Html.D.svg ~a [s]
   in
   ignore @@ [%client
     ((let f ~ends ev =
@@ -370,7 +370,7 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
         let f_b (r, b) = ~%f_b ~step (r <= 35, b) in
         wrap_touch_24h ~ends ev (~%f_e ~step) f_b;
         React.Step.execute step
-      and e = Eliom_content.Html5.To_dom.of_element ~%e in
+      and e = Eliom_content.Html.To_dom.of_element ~%e in
       (Lwt.async @@ fun () ->
        Lwt_js_events.touchends e @@ fun ev _ ->
        Lwt.return (f true ev));

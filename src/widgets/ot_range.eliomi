@@ -32,4 +32,4 @@ val make :
   ?f : (int -> string) ->
   ?lb : int ->
   int ->
-  [> `Div ] Eliom_content.Html5.elt * int Eliom_shared.React.S.t
+  [> `Div ] Eliom_content.Html.elt * int Eliom_shared.React.S.t

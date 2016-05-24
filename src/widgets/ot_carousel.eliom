@@ -31,8 +31,8 @@
 
 
 [%%shared
-open Eliom_content.Html5
-open Eliom_content.Html5.F
+open Eliom_content.Html
+open Eliom_content.Html.F
 ]
 
 let%client clX ev =
@@ -61,7 +61,7 @@ let%shared make
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
     l =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
   let swipe_pos_sig = [%client (React.S.create 0. : _ * _) ] in
   let swipe_pos = [%client (fst ~%swipe_pos_sig : _ React.S.t) ] in
@@ -373,12 +373,12 @@ let%shared bullets
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
     ~pos ~length
     ?(size = Eliom_shared.React.S.const 1) () =
-  let a = (a :> Html5_types.ul_attrib attrib list) in
+  let a = (a :> Html_types.ul_attrib attrib list) in
   let bullet i =
     let class_ = bullet_class i pos size in
     let a = match attributes with
       | None -> []
-      | Some l -> (List.nth l i :> Html5_types.li_attrib attrib list)
+      | Some l -> (List.nth l i :> Html_types.li_attrib attrib list)
     in
     li ~a:(a_class [ "bullet-nav-item" ]
            :: R.a_class class_
@@ -397,7 +397,7 @@ let%shared ribbon
     ?(initial_gap = 0)
     ?cursor
     l =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   let item i c =
     let class_ = bullet_class i pos size in
     D.li ~a:[ a_class ["car-ribbon-list-item"]
@@ -617,8 +617,8 @@ let%shared previous ?(a = [])
     ~a:(R.a_class (Eliom_shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
         :: a_class ["car-prev"]
         :: a_onclick  [%client  fun _ -> ~%change `Prev ]
-        :: (a :> Html5_types.button_attrib
-                Eliom_content.Html5.attrib list) )
+        :: (a :> Html_types.button_attrib
+                Eliom_content.Html.attrib list) )
     content
 
 let%shared next ?(a = [])
@@ -630,8 +630,8 @@ let%shared next ?(a = [])
                      pos size)
         :: a_class ["car-next"]
         :: a_onclick  [%client  fun _ -> ~%change `Next ]
-        :: (a :> Html5_types.button_attrib
-                Eliom_content.Html5.attrib list) )
+        :: (a :> Html_types.button_attrib
+                Eliom_content.Html.attrib list) )
     content
 
 (* (\* Menu + prev/next buttons *\) *)

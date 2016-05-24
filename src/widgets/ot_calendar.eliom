@@ -20,7 +20,7 @@
 
 [%%shared.start] (* shared by default, override as necessary *)
 
-open Eliom_content.Html5
+open Eliom_content.Html
 
 module A = CalendarLib.Date
 
@@ -314,7 +314,7 @@ let%client make :
   ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
-  [> Html5_types.table ] elt =
+  [> Html_types.table ] elt =
   fun
     ?init ?highlight ?click_non_highlighted ?update ?action
     ?(button_labels = default_button_labels) ?(intl = default_intl)
@@ -368,7 +368,7 @@ let%server make :
   ?button_labels : button_labels ->
   ?intl : intl ->
   unit ->
-  [> Html5_types.table ] elt =
+  [> Html_types.table ] elt =
   fun ?init ?highlight ?click_non_highlighted ?update ?action
     ?button_labels ?intl
     () ->
@@ -382,7 +382,7 @@ let%server make :
          ?intl:~%intl
          ?button_labels:~%button_labels
          ()
-       : [> Html5_types.table ] elt)
+       : [> Html_types.table ] elt)
     ]
 
 let make_date_picker ?init ?update ?button_labels ?intl () =

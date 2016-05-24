@@ -69,15 +69,15 @@
     and +1.0 to next page.
 *)
 val make :
-  ?a: [< Html5_types.div_attrib ] Eliom_content.Html5.attrib list ->
+  ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
   ?vertical:bool ->
   ?position:int ->
   ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header
                | `Header of (unit -> int) Eliom_client_value.t ] ->
-  [< Html5_types.div_content ] Eliom_content.Html5.elt list ->
-  [> `Div ] Eliom_content.Html5.elt *
+  [< Html_types.div_content ] Eliom_content.Html.elt list ->
+  [> `Div ] Eliom_content.Html.elt *
   int Eliom_shared.React.S.t *
   int Eliom_shared.React.S.t *
   float React.S.t Eliom_client_value.t
@@ -94,14 +94,14 @@ val make :
     in the carousel (return by function [make]).
  *)
 val bullets :
-  ?a:[< Html5_types.ul_attrib ] Eliom_content.Html5.attrib list ->
+  ?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list ->
   ?attributes:
-    [< Html5_types.li_attrib ] Eliom_content.Html5.attrib list list ->
+    [< Html_types.li_attrib ] Eliom_content.Html.attrib list list ->
   change: ([`Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
   pos:int Eliom_shared.React.S.t ->
   length:int ->
   ?size:int Eliom_shared.React.S.t ->
-  unit -> [> `Ul ] Eliom_content.Html5.elt
+  unit -> [> `Ul ] Eliom_content.Html.elt
 
 (** Menu (or tabs) for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
@@ -119,40 +119,40 @@ val bullets :
     signal returned by [make].
  *)
 val ribbon :
-  ?a:[< Html5_types.ul_attrib ] Eliom_content.Html5.attrib list ->
+  ?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list ->
   change: ([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
   pos:int Eliom_shared.React.S.t ->
   ?size:int Eliom_shared.React.S.t ->
   ?initial_gap:int ->
   ?cursor:float React.S.t Eliom_client_value.t ->
-  [< Html5_types.li_content_fun ] Eliom_content.Html5.elt list list ->
-  [> `Div ] Eliom_content.Html5.elt
+  [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
+  [> `Div ] Eliom_content.Html.elt
 
 val previous :
-  ?a:[< Html5_types.button_attrib ] Eliom_content.Html5.attrib list
+  ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
   -> change: ([> `Prev ] -> unit) Eliom_client_value.t
   -> pos:int Eliom_shared.React.S.t
-  -> Html5_types.button_content Eliom_content.Html5.elt list
-  -> [> `Button ] Eliom_content.Html5.elt
+  -> Html_types.button_content Eliom_content.Html.elt list
+  -> [> `Button ] Eliom_content.Html.elt
 
 val next :
-    ?a:[< Html5_types.button_attrib ] Eliom_content.Html5.attrib list
+    ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
   -> change: ([> `Next ] -> unit) Eliom_client_value.t
   -> pos:int Eliom_shared.React.S.t
   -> size:int Eliom_shared.React.S.t
   -> length:int
-  -> Html5_types.button_content Eliom_content.Html5.elt list
-  -> [> `Button ] Eliom_content.Html5.elt
+  -> Html_types.button_content Eliom_content.Html.elt list
+  -> [> `Button ] Eliom_content.Html.elt
 
 (* (\** Menu + prev/next buttons *\) *)
 (* val nav : *)
-(*   ?a:[< Html5_types.ul_attrib > `Class `OnClick ] *)
-(*     Eliom_content.Html5.F.attrib list -> *)
+(*   ?a:[< Html_types.ul_attrib > `Class `OnClick ] *)
+(*     Eliom_content.Html.F.attrib list -> *)
 (*   change: ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t -> *)
 (*   pos:int Eliom_shared.React.S.t -> *)
 (*   ?size:int Eliom_shared.React.S.t -> *)
-(*   [< Html5_types.li_content_fun ] Eliom_content.Html5.F.elt list list -> *)
-(*   [> Html5_types.div ] Eliom_content.Html5.F.elt *)
+(*   [< Html_types.li_content_fun ] Eliom_content.Html.F.elt list list -> *)
+(*   [> Html_types.div ] Eliom_content.Html.F.elt *)
 
 
 [%%client.start]

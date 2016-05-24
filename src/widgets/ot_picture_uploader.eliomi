@@ -56,7 +56,7 @@ val cropper :
   -> unit
   -> (unit -> unit)
      * (float * float * float * float) Eliom_shared.React.S.t
-     * [> `Div ] Eliom_content.Html5.elt
+     * [> `Div ] Eliom_content.Html.elt
 
 (** [bind_input input preview ?container ?reset ()]
     Bind [input] and [preview] so the file selected in [input] is the
@@ -119,17 +119,17 @@ val bind :
     and wrap it into a label.
     Return (input node, label node) *)
 val input :
-  [< Html5_types.label_content_fun ] Eliom_content.Html5.elt list
-  -> ([> `Input ] Eliom_content.Html5.elt
-      * [> `Label ] Eliom_content.Html5.elt)
+  [< Html_types.label_content_fun ] Eliom_content.Html.elt list
+  -> ([> `Input ] Eliom_content.Html.elt
+      * [> `Label ] Eliom_content.Html.elt)
 
 (** Create a img element with no src, no alt and [ot-pup-preview] class. *)
-val preview : unit -> [> `Img ] Eliom_content.Html5.elt
+val preview : unit -> [> `Img ] Eliom_content.Html.elt
 
 (** Create a button with [ot-pup-sumit] clas *)
 val submit :
-  [< Html5_types.button_content ] Eliom_content.Html5.elt list
-  -> [> `Button ] Eliom_content.Html5.elt
+  [< Html_types.button_content ] Eliom_content.Html.elt list
+  -> [> `Button ] Eliom_content.Html.elt
 
 (** [mk_service name arg_deriver]
     Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
@@ -141,8 +141,8 @@ val mk_service : string -> 'a Deriving_Json.t -> 'a service
 val mk_form :
   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
-  -> ?input:[< Html5_types.label_content_fun ] Eliom_content.Html5.elt list
-  -> ?submit:[< Html5_types.button_content_fun ] Eliom_content.Html5.elt list
+  -> ?input:[< Html_types.label_content_fun ] Eliom_content.Html.elt list
+  -> ?submit:[< Html_types.button_content_fun ] Eliom_content.Html.elt list
   -> 'a service
   -> 'a
-  -> [> `Form ] Eliom_content.Html5.elt Lwt.t
+  -> [> `Form ] Eliom_content.Html.elt Lwt.t

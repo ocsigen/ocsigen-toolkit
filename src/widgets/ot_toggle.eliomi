@@ -33,4 +33,4 @@ val make :
   ?down_txt : string ->
   ?update   : bool React.E.t Eliom_client_value.t ->
   unit ->
-  [> `Div ] Eliom_content.Html5.elt * bool Eliom_shared.React.S.t
+  [> `Div ] Eliom_content.Html.elt * bool Eliom_shared.React.S.t

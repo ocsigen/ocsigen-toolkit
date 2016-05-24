@@ -23,8 +23,8 @@
 
 (** Popup widget *)
 
-open Eliom_content.Html5
-open Html5_types
+open Eliom_content.Html
+open Html_types
 
 (** Section with header, content and footer.
     [header] and [footer] are empty by default

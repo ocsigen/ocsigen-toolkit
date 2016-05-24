@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-[%%shared open Eliom_content.Html5 ]
-[%%shared open Eliom_content.Html5.F ]
+[%%shared open Eliom_content.Html ]
+[%%shared open Eliom_content.Html.F ]
 
 [%%shared
 type 'a service =
@@ -281,7 +281,7 @@ let%shared cropper
       [ t_f ; r_f ; b_f ; l_f ; crop ] )
 
 let%shared input content =
-  let content = (content :> Html5_types.label_content_fun elt list) in
+  let content = (content :> Html_types.label_content_fun elt list) in
   let input = D.Raw.input ~a:[ a_class ["ot-pup-input"]
                              ; a_input_type `File
                              ; a_accept ["image/*"] ] () in

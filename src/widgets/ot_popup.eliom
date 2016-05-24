@@ -19,12 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared open Eliom_content.Html5 ]
-[%%shared open Eliom_content.Html5.F ]
+[%%shared open Eliom_content.Html ]
+[%%shared open Eliom_content.Html.F ]
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
   D.section
-    ~a:(a_class ["ot-hcf"] :: (a :> Html5_types.div_attrib attrib list))
+    ~a:(a_class ["ot-hcf"] :: (a :> Html_types.div_attrib attrib list))
     [ F.header ~a:[ a_class ["ot-hcf-header"] ] header
     ; div ~a:[ a_class ["ot-hcf-content"] ] content
     ; F.footer ~a:[ a_class ["ot-hcf-footer"] ] footer ]
@@ -37,9 +37,9 @@ let%client popup
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
     gen_content =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
-    (gen_content :> (unit -> unit Lwt.t) -> Html5_types.div_content elt Lwt.t)
+    (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
   in
   let popup = ref None in
 
@@ -117,7 +117,7 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
   in t
 
 let%client confirm ?(a = []) question yes no =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   ask_question
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question

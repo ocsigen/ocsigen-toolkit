@@ -20,7 +20,7 @@
 
 [%%shared.start] (* shared by default, override as necessary *)
 
-open Eliom_content.Html5
+open Eliom_content.Html
 
 open Eliom_shared.React.S.Infix
 

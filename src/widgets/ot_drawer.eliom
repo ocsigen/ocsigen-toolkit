@@ -20,8 +20,8 @@
  *)
 
 [%%shared
-  open Eliom_content.Html5
-  open Eliom_content.Html5.F
+  open Eliom_content.Html
+  open Eliom_content.Html.F
 ]
 
 let%client clX ev =
@@ -51,7 +51,7 @@ let%client unbind_click_outside, bind_click_outside =
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
 let%shared drawer ?(a = []) ?(position = `Left) content =
-  let a = (a :> Html5_types.div_attrib attrib list) in
+  let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
       ~button_type:`Button ~a:[a_class ["dr-toggle-button"]]
@@ -61,7 +61,7 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
                             ; match position with
                             | `Left -> "dr-left"
                             | `Right -> "dr-right"]]
-      (toggle_button :: (content :> Html5_types.div_content elt list))
+      (toggle_button :: (content :> Html_types.div_content elt list))
   in
   let bckgrnd = D.div ~a:(a_class [ "dr-drawer-bckgrnd" ] :: a) [ d ] in
 
