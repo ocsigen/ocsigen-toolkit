@@ -52,6 +52,15 @@ let%client add_transition transition_duration =
 let%client remove_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transitionDuration := Js.string "0s"
 
+let%shared make_transform vertical pos =
+  if vertical
+  then Printf.sprintf "translate3d(0, %.3f%%, 0)" (-. float pos *. 100.)
+  else Printf.sprintf "translate3d(%.3f%%, 0, 0)" (-. float pos *. 100.)
+(* then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.) *)
+(* else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.) *)
+(* translate3d possibly more efficient on some devices ... *)
+(* If you switch back to translate, please explain why in comments. *)
+
 let%shared make
     ?(a = [])
     ?(vertical = false)
@@ -69,7 +78,12 @@ let%shared make
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
   let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
-  let d2 = D.div ~a:[a_class ["car2"]] pages in
+  let initial_translation =
+    if position = 0
+    then []
+    else [ a_style ("transform: "^make_transform vertical position) ]
+  in
+  let d2 = D.div ~a:(a_class ["car2"]::initial_translation) pages in
   let d = D.div
       ~a:(a_class ("carousel"
                    :: (if vertical then "vertical" else "horizontal")
@@ -175,16 +189,7 @@ let%shared make
     in
     (********************** end *)
     let set_position ?transitionend pos =
-      let s =
-        Js.string @@
-        if vertical
-        then Printf.sprintf "translate3d(0, %.3f%%, 0)" (-. float pos *. 100.)
-        else Printf.sprintf "translate3d(%.3f%%, 0, 0)" (-. float pos *. 100.)
-        (* then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.) *)
-        (* else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.) *)
-        (* translate3d possibly more efficient on some devices ... *)
-        (* If you switch back to translate, please explain why in comments. *)
-      in
+      let s = Js.string @@ make_transform vertical pos in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
       pos_set pos;
@@ -201,6 +206,7 @@ let%shared make
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready d2' in
       set_position ~%position;
+      add_transition d2';
       Lwt.return ());
     (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).

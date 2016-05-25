@@ -16,7 +16,6 @@
 
     transform: translate(0,0);
     transition-property: transform, -webkit-transform;
-    transition-duration: .6s;
     transition-timing-function: cubic-bezier(.03,.84,.56,1);
 
     height: 100%;
