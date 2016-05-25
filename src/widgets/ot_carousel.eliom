@@ -45,18 +45,18 @@ let%client clY ev =
     (fun () -> 0)
     (fun a -> a##.clientY)
 
-let%client add_transition elt =
-  (Js.Unsafe.coerce (elt##.style))##.transition :=
-    Js.string "-webkit-transform .7s, transform .7s"
+let%client add_transition transition_duration =
+  let s = Js.string (Printf.sprintf "%.2fs" transition_duration) in
+  fun elt -> (Js.Unsafe.coerce (elt##.style))##.transitionDuration := s
 
 let%client remove_transition elt =
-  (Js.Unsafe.coerce (elt##.style))##.transition :=
-    Js.string "-webkit-transform 0s, transform 0s"
+  (Js.Unsafe.coerce (elt##.style))##.transitionDuration := Js.string "0s"
 
 let%shared make
     ?(a = [])
     ?(vertical = false)
     ?(position = 0)
+    ?(transition_duration = 0.6)
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
@@ -82,6 +82,7 @@ let%shared make
     Eliom_shared.React.S.create 1
   in
   let _ = [%client (
+    let add_transition = add_transition ~%transition_duration in
     let vertical = ~%vertical in
     let d2' = To_dom.of_element ~%d2 in
     let d = To_dom.of_element ~%d in

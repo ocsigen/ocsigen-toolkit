@@ -46,6 +46,7 @@
     [?update] is a react event you can use to command the carousel from outside.
     [?disabled] is always [false] by default. When [true], it is not possible
     to change carousel position.
+    [?transition_duration] must match the values in CSS (default: 0.6s).
 
     Use optional parameter [?full_height]
     if you don't want scroll bars in carousel
@@ -72,6 +73,7 @@ val make :
   ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
   ?vertical:bool ->
   ?position:int ->
+  ?transition_duration:float ->
   ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header

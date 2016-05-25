@@ -15,8 +15,9 @@
     flex-wrap: nowrap ;
 
     transform: translate(0,0);
-    transition: transform .7s;
-    transition-timing-function: ease-out;
+    transition-property: transform, -webkit-transform;
+    transition-duration: .6s;
+    transition-timing-function: cubic-bezier(.03,.84,.56,1);
 
     height: 100%;
     width: 100%;
@@ -97,7 +98,7 @@
 }
 
 
-.car-ribbon-list:not(.notransition) { transition: left .7s ; }
+.car-ribbon-list:not(.notransition) { transition: left .6s ; }
 
 .car-ribbon-list-item {
 
@@ -124,7 +125,7 @@
     height: 3px;
     bottom: 0;
     background-color: #66aaff;
-    transition: left .7s, right .7s;
+    transition: left .6s, right .6s;
 }
 
 .carousel.full-height > .car2:not(.swiping) .carpage:not(.active) {
