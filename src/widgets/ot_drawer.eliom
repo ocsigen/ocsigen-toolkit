@@ -54,6 +54,7 @@ let%client remove_class elt str =
   let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.remove elt str;
   Manip.Class.remove body @@ "dr-drawer-" ^ str
+let%client body = Of_dom.of_body Dom_html.document##.body
 
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
