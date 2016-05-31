@@ -308,6 +308,8 @@ let%shared make
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
+      Dom_html.stopPropagation ev; (* in case there is a carousel
+                                      in a carousel, e.g. *)
       add_transition d2';
       match !status with
       | `Start (startx, starty)
