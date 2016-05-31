@@ -267,7 +267,6 @@ let%shared make
     let onpan ev _ =
       (match !status with
        | `Start (startx, starty) ->
-         set_top_margin ();
          status :=
            if abs (if vertical
                    then clX ev - startx
@@ -277,7 +276,12 @@ let%shared make
              if abs (if not vertical
                      then clX ev - startx
                      else clY ev - starty) >= 10
-             then `Ongoing (startx, starty, width_element ())
+             then begin
+               Manip.Class.add ~%d2 "swiping";
+               set_top_margin ();
+               remove_transition d2';
+               `Ongoing (startx, starty, width_element ())
+             end
              else !status
        | _ -> ());
       (match !status with
@@ -296,8 +300,6 @@ let%shared make
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
       status := `Start (clX ev, clY ev);
-      Manip.Class.add ~%d2 "swiping";
-      remove_transition d2';
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
