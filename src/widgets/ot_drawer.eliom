@@ -46,6 +46,8 @@ let%client unbind_click_outside, bind_click_outside =
      in
      r := th)
 
+let%client body = Of_dom.of_body Dom_html.document##.body
+
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
@@ -73,12 +75,15 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   let close = [%client
     ((fun () ->
        Manip.Class.remove ~%bckgrnd "open";
+       Manip.Class.remove body "dr-drawer-open";
        Manip.Class.add ~%bckgrnd "closing";
+       Manip.Class.add body "dr-drawer-closing";
        Lwt.cancel !(~%touch_thread);
        unbind_click_outside ();
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "closing";
+         Manip.Class.remove body "dr-drawer-closing";
          Lwt.return ()))
      : unit -> unit)]
   in
@@ -86,13 +91,16 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   let open_ = [%client
     ((fun () ->
        Manip.Class.add ~%bckgrnd "open";
+       Manip.Class.add body "dr-drawer-open";
        Manip.Class.add ~%bckgrnd "opening";
+       Manip.Class.add body "dr-drawer-opening";
        Lwt.cancel !(~%touch_thread);
        !(~%bind_touch) ();
        bind_click_outside ~%d ~%close;
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "opening";
+         Manip.Class.remove body "dr-drawer-opening";
          Lwt.return ()))
      : unit -> unit)]
   in
