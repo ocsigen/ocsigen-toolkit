@@ -278,6 +278,9 @@ let%shared make
                      else clY ev - starty) >= 10
              then begin
                Manip.Class.add ~%d2 "swiping";
+               Dom.preventDefault ev;
+               Dom_html.stopPropagation ev; (* in case there is a carousel
+                                               in a carousel, e.g. *)
                set_top_margin ();
                remove_transition d2';
                `Ongoing (startx, starty, width_element ())
@@ -287,6 +290,8 @@ let%shared make
       (match !status with
        | `Ongoing (startx, starty, width_element) ->
          Dom.preventDefault ev;
+         Dom_html.stopPropagation ev; (* in case there is a carousel
+                                               in a carousel, e.g. *)
          let delta =
            if vertical
            then clY ev - starty
