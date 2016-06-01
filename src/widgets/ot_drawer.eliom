@@ -124,6 +124,13 @@ let%shared drawer ?(a = []) ?(position = `Left)
      : unit -> unit)]
   in
 
+  let _ = [%client ((Eliom_client.onunload @@ fun () ->
+    html_ManipClass_remove "dr-drawer-opening";
+    html_ManipClass_remove "dr-drawer-open";
+    html_ManipClass_remove "dr-drawer-closing";
+    None
+  ):unit)] in
+
   let _ = [%client
     (let toggle () =
        if Manip.Class.contain ~%bckgrnd "open"

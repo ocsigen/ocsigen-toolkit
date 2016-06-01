@@ -86,6 +86,11 @@ let%client popup
     onclose ()
   in
 
+  begin Eliom_client.onunload @@ fun () ->
+    html_ManipClass_remove "ot-with-popup";
+    None
+  end;
+
   let close () =
     match confirmation_onclose with
     | None -> do_close ()
