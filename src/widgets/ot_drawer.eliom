@@ -115,7 +115,11 @@ let%shared drawer ?(a = []) ?(position = `Left)
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "opening";
-         html_ManipClass_remove "dr-drawer-opening";
+         if ~%ios_scroll_pos_fix then
+           let scrollpos = Dom_html.document##.body##.scrollTop in
+           html_ManipClass_remove "dr-drawer-open";
+           Dom_html.document##.body##.scrollTop := scrollpos
+         else html_ManipClass_remove "dr-drawer-open";
          Lwt.return ()))
      : unit -> unit)]
   in

@@ -77,7 +77,13 @@ let%client popup
 
   let do_close () =
     decr number_of_popups;
-    if !number_of_popups = 0 then html_ManipClass_remove "ot-with-popup";
+    if !number_of_popups = 0 then begin
+      if ios_scroll_pos_fix then
+        let scrollpos = Dom_html.document##.body##.scrollTop in
+        html_ManipClass_remove "ot-with-popup";
+        Dom_html.document##.body##.scrollTop := scrollpos
+      else html_ManipClass_remove "ot-with-popup"
+    end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
     onclose ()
   in
