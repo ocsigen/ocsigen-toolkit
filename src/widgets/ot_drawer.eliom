@@ -46,11 +46,26 @@ let%client unbind_click_outside, bind_click_outside =
      in
      r := th)
 
+let%client html () = Js.Opt.to_option @@
+  Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
+    Of_dom.of_html
+
+let%client html_ManipClass_add cl = match html () with
+  | Some html -> Manip.Class.add html cl
+  | None -> ()
+
+let%client html_ManipClass_remove cl = match html () with
+  | Some html -> Manip.Class.remove html cl
+  | None -> ()
+
+let%client scroll_pos = ref 0
+
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
-let%shared drawer ?(a = []) ?(position = `Left) content =
+let%shared drawer ?(a = []) ?(position = `Left)
+    ?(ios_scroll_pos_fix=true) content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
@@ -73,12 +88,17 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   let close = [%client
     ((fun () ->
        Manip.Class.remove ~%bckgrnd "open";
+       html_ManipClass_remove "dr-drawer-open";
+       if ~%ios_scroll_pos_fix then
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        Manip.Class.add ~%bckgrnd "closing";
+       html_ManipClass_add "dr-drawer-closing";
        Lwt.cancel !(~%touch_thread);
        unbind_click_outside ();
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "closing";
+         html_ManipClass_remove "dr-drawer-closing";
          Lwt.return ()))
      : unit -> unit)]
   in
@@ -86,16 +106,30 @@ let%shared drawer ?(a = []) ?(position = `Left) content =
   let open_ = [%client
     ((fun () ->
        Manip.Class.add ~%bckgrnd "open";
+       if ~%ios_scroll_pos_fix then
+         scroll_pos := Dom_html.document##.body##.scrollTop;
+       html_ManipClass_add "dr-drawer-open";
+       if ~%ios_scroll_pos_fix then
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        Manip.Class.add ~%bckgrnd "opening";
+       html_ManipClass_add "dr-drawer-opening";
        Lwt.cancel !(~%touch_thread);
        !(~%bind_touch) ();
        bind_click_outside ~%d ~%close;
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "opening";
+         html_ManipClass_remove "dr-drawer-opening";
          Lwt.return ()))
      : unit -> unit)]
   in
+
+  let _ = [%client ((Eliom_client.onunload @@ fun () ->
+    html_ManipClass_remove "dr-drawer-opening";
+    html_ManipClass_remove "dr-drawer-open";
+    html_ManipClass_remove "dr-drawer-closing";
+    None
+  ):unit)] in
 
   let _ = [%client
     (let toggle () =
