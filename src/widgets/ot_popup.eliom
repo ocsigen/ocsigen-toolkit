@@ -36,6 +36,7 @@ let%client popup
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
+    ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
@@ -54,12 +55,29 @@ let%client popup
 
   incr number_of_popups;
 
-  let body = (Of_dom.of_body (Dom_html.document##.body)) in
-  Manip.Class.add body "ot-with-popup";
+
+  let html = Js.Opt.to_option @@
+    Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
+      Of_dom.of_html
+  in
+  let html_ManipClass_add cl = match html with
+    | Some html -> Manip.Class.add html cl
+    | None -> ()
+  in
+  let html_ManipClass_remove cl = match html with
+    | Some html -> Manip.Class.remove html cl
+    | None -> ()
+  in
+
+  if ios_scroll_pos_fix then
+    let scrollpos = Dom_html.document##.body##.scrollTop in
+    html_ManipClass_add "ot-with-popup";
+    Dom_html.document##.body##.scrollTop := scrollpos
+  else html_ManipClass_add "ot-with-popup";
 
   let do_close () =
     decr number_of_popups;
-    if !number_of_popups = 0 then Manip.Class.remove body "ot-with-popup";
+    if !number_of_popups = 0 then html_ManipClass_remove "ot-with-popup";
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
     onclose ()
   in
