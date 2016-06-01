@@ -65,6 +65,8 @@ let%client remove_class elt str =
   Manip.Class.remove elt str;
   html_ManipClass_remove @@ "dr-drawer-" ^ str
 
+let%client scroll_pos = ref 0
+
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
@@ -95,7 +97,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
        if ~%ios_scroll_pos_fix then
          let scrollpos = Dom_html.document##.body##.scrollTop in
          remove_class ~%bckgrnd "open";
-         Dom_html.document##.body##.scrollTop := scrollpos
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        else remove_class ~%bckgrnd "open";
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
@@ -109,7 +111,11 @@ let%shared drawer ?(a = []) ?(position = `Left)
 
   let open_ = [%client
     ((fun () ->
+       if ~%ios_scroll_pos_fix then
+         scroll_pos := Dom_html.document##.body##.scrollTop;
        add_class ~%bckgrnd "open";
+       if ~%ios_scroll_pos_fix then
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        add_class ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
        !(~%bind_touch) ();
