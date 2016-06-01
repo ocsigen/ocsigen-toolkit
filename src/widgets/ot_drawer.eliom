@@ -63,7 +63,7 @@ let%client add_class elt str =
 let%client remove_class elt str =
   let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.remove elt str;
-  html_Manip_class_remove @@ "dr-drawer-" ^ str
+  html_ManipClass_remove @@ "dr-drawer-" ^ str
 
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
@@ -92,7 +92,11 @@ let%shared drawer ?(a = []) ?(position = `Left)
 
   let close = [%client
     ((fun () ->
-       remove_class ~%bckgrnd "open";
+       if ~%ios_scroll_pos_fix then
+         let scrollpos = Dom_html.document##.body##.scrollTop in
+         remove_class ~%bckgrnd "open";
+         Dom_html.document##.body##.scrollTop := scrollpos
+       else remove_class ~%bckgrnd "open";
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
        unbind_click_outside ();
@@ -117,7 +121,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
            let scrollpos = Dom_html.document##.body##.scrollTop in
            remove_class ~%bckgrnd "open";
            Dom_html.document##.body##.scrollTop := scrollpos
-         else remove_class ~%bckgrnd "dr-drawer-open";
+         else remove_class ~%bckgrnd "open";
          Lwt.return ()))
      : unit -> unit)]
   in
