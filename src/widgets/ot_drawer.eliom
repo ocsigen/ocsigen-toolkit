@@ -86,7 +86,11 @@ let%shared drawer ?(a = []) ?(position = `Left)
   let close = [%client
     ((fun () ->
        Manip.Class.remove ~%bckgrnd "open";
-       html_ManipClass_remove "dr-drawer-open";
+       if ~%ios_scroll_pos_fix then
+         let scrollpos = Dom_html.document##.body##.scrollTop in
+         html_ManipClass_remove "dr-drawer-open";
+         Dom_html.document##.body##.scrollTop := scrollpos
+       else html_ManipClass_remove "dr-drawer-open";
        Manip.Class.add ~%bckgrnd "closing";
        html_ManipClass_add "dr-drawer-closing";
        Lwt.cancel !(~%touch_thread);
@@ -115,11 +119,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          Manip.Class.remove ~%bckgrnd "opening";
-         if ~%ios_scroll_pos_fix then
-           let scrollpos = Dom_html.document##.body##.scrollTop in
-           html_ManipClass_remove "dr-drawer-open";
-           Dom_html.document##.body##.scrollTop := scrollpos
-         else html_ManipClass_remove "dr-drawer-open";
+         html_ManipClass_remove "dr-drawer-opening";
          Lwt.return ()))
      : unit -> unit)]
   in
