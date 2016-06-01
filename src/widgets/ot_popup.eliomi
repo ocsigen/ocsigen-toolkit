@@ -49,12 +49,14 @@ val hcf :
     [closeable].
     [onclose] is a hook called just after the popup has been actually closed.
     [gen_content] is a function taking the function closing the popup as
-    parameter, and returning the popup content. *)
+    parameter, and returning the popup content.
+    For [ios_scroll_pos_fix] see [Ot_drawer.drawer] *)
 val popup :
   ?a:[< div_attrib ] attrib list
   -> ?close_button:(button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
+  -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
 
