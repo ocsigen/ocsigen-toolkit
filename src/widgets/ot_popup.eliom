@@ -31,6 +31,8 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
 
 let%client number_of_popups = ref 0
 
+let%client scroll_pos = ref 0
+
 let%client popup
     ?(a = [])
     ?close_button
@@ -69,20 +71,16 @@ let%client popup
     | None -> ()
   in
 
-  if ios_scroll_pos_fix then
-    let scrollpos = Dom_html.document##.body##.scrollTop in
-    html_ManipClass_add "ot-with-popup";
-    Dom_html.document##.body##.scrollTop := scrollpos
-  else html_ManipClass_add "ot-with-popup";
+  if ios_scroll_pos_fix then scroll_pos := Dom_html.document##.body##.scrollTop;
+  html_ManipClass_add "ot-with-popup";
+  if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
   let do_close () =
     decr number_of_popups;
     if !number_of_popups = 0 then begin
+      html_ManipClass_remove "ot-with-popup";
       if ios_scroll_pos_fix then
-        let scrollpos = Dom_html.document##.body##.scrollTop in
-        html_ManipClass_remove "ot-with-popup";
-        Dom_html.document##.body##.scrollTop := scrollpos
-      else html_ManipClass_remove "ot-with-popup"
+        Dom_html.document##.body##.scrollTop := !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
     onclose ()

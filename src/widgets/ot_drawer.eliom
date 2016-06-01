@@ -58,6 +58,8 @@ let%client html_ManipClass_remove cl = match html () with
   | Some html -> Manip.Class.remove html cl
   | None -> ()
 
+let%client scroll_pos = ref 0
+
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
@@ -86,11 +88,9 @@ let%shared drawer ?(a = []) ?(position = `Left)
   let close = [%client
     ((fun () ->
        Manip.Class.remove ~%bckgrnd "open";
+       html_ManipClass_remove "dr-drawer-open";
        if ~%ios_scroll_pos_fix then
-         let scrollpos = Dom_html.document##.body##.scrollTop in
-         html_ManipClass_remove "dr-drawer-open";
-         Dom_html.document##.body##.scrollTop := scrollpos
-       else html_ManipClass_remove "dr-drawer-open";
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        Manip.Class.add ~%bckgrnd "closing";
        html_ManipClass_add "dr-drawer-closing";
        Lwt.cancel !(~%touch_thread);
@@ -107,10 +107,10 @@ let%shared drawer ?(a = []) ?(position = `Left)
     ((fun () ->
        Manip.Class.add ~%bckgrnd "open";
        if ~%ios_scroll_pos_fix then
-         let scrollpos = Dom_html.document##.body##.scrollTop in
-         html_ManipClass_add "dr-drawer-open";
-         Dom_html.document##.body##.scrollTop := scrollpos
-       else html_ManipClass_add "dr-drawer-open";
+         scroll_pos := Dom_html.document##.body##.scrollTop;
+       html_ManipClass_add "dr-drawer-open";
+       if ~%ios_scroll_pos_fix then
+         Dom_html.document##.body##.scrollTop := !scroll_pos;
        Manip.Class.add ~%bckgrnd "opening";
        html_ManipClass_add "dr-drawer-opening";
        Lwt.cancel !(~%touch_thread);
