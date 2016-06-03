@@ -46,11 +46,12 @@ let%client unbind_click_outside, bind_click_outside =
      in
      r := th)
 
-let%client body = Of_dom.of_body Dom_html.document##.body
 let%client add_class elt str =
+  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.add elt str;
   Manip.Class.add body @@ "dr-drawer-" ^ str
 let%client remove_class elt str =
+  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.remove elt str;
   Manip.Class.remove body @@ "dr-drawer-" ^ str
 
