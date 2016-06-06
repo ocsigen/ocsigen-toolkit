@@ -54,10 +54,9 @@
     ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
 
   val width_height : (int * int) React.signal
-
   val width : int React.signal
-
   val height : int React.signal
+  val update_width_height : unit -> unit
 
   (** [set_adaptative_width elt f] will make the width of the element
       recomputed using [f] everytime the width of the window changes. *)
