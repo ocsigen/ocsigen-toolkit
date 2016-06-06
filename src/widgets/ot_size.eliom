@@ -84,17 +84,20 @@
     + (ifdef with_border (int_of_pxstring (elt_style##.borderTopWidth)))
     + (ifdef with_border (int_of_pxstring (elt_style##.borderBottomWidth)))
 
-  let width_height, width, height =
+  let wh, set_wh =
     let page = Dom_html.document##.documentElement in
-    let wh, set_wh = React.S.create (page##.clientWidth, page##.clientHeight) in
-    Lwt_js_events.(async (fun () -> onresizes
-      (fun _ _ ->
-        let page = Dom_html.document##.documentElement in
-        let w = page##.clientWidth in
-        let h = page##.clientHeight in
-        set_wh (w, h);
-        Lwt.return ()
-      )));
+    React.S.create (page##.clientWidth, page##.clientHeight)
+
+  let update_width_height () =
+    let page = Dom_html.document##.documentElement in
+    let w = page##.clientWidth in
+    let h = page##.clientHeight in
+    set_wh (w, h)
+
+  let width_height, width, height =
+    (* TODO: MutationObserver? *)
+    Lwt_js_events.(async @@ fun () -> onresizes @@ fun _ _ ->
+      Lwt.return @@ update_width_height ());
     let w = React.S.l1 fst wh in
     let h = React.S.l1 snd wh in
     (* Make sure the signals are not destroyed indirectly
