@@ -97,7 +97,10 @@
 }
 
 
-.car-ribbon-list:not(.notransition) { transition: left .6s ; }
+.car-ribbon-list:not(.notransition) {
+    transition-property: left;
+    transition-timing-function: cubic-bezier(.03,.84,.56,1);
+}
 
 .car-ribbon-list-item {
 
@@ -124,7 +127,7 @@
     height: 3px;
     bottom: 0;
     background-color: #66aaff;
-    transition: left .6s, right .6s;
+    transition-property: left, right;
 }
 
 .carousel.full-height > .car2:not(.swiping) .carpage:not(.active) {

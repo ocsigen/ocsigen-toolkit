@@ -176,7 +176,6 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           let pos = React.S.value pos_signal in
            let delta = - (max 0 (dist - Ot_size.client_top d2')) in
            List.iteri
              (fun i coli ->
@@ -411,6 +410,7 @@ let%shared ribbon
     ~pos
     ?(size = Eliom_shared.React.S.const 1)
     ?(initial_gap = 0)
+    ?(transition_duration = 0.6)
     ?cursor
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -431,19 +431,24 @@ let%shared ribbon
   let cursor_l = match cursor_elt with None -> [] | Some c -> [ c ] in
   let container = D.div ~a:(a_class ["car-ribbon"]::a) (the_ul::cursor_l) in
   ignore [%client (
+    let add_transition = add_transition ~%transition_duration in
     let the_ul = ~%the_ul in
     let nb_pages = ~%nb_pages in
     let container = ~%container in
     let container' = To_dom.of_element container in
     let initial_gap = ~%initial_gap in
     let the_ul' = To_dom.of_element the_ul in
+    let cursor_elt' = Eliom_lib.Option.map To_dom.of_element ~%cursor_elt in
     let containerwidth, set_containerwidth =
       React.S.create container'##.offsetWidth in
     let curleft, set_curleft = React.S.create initial_gap in
+    let oldleft, set_oldleft = React.S.create initial_gap in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready container' in
       (* Ribbon position: *)
       set_containerwidth container'##.offsetWidth ;
+      add_transition the_ul';
+      Eliom_lib.Option.iter add_transition cursor_elt';
       Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
         set_containerwidth container'##.offsetWidth
       ) ;
@@ -457,6 +462,8 @@ let%shared ribbon
           Ot_size.width in
       Eliom_client.onunload
         (fun () -> React.S.stop ~strong:true watch_width; None);
+      (* Changing the position of the ribbon when the carousel position
+         changes or when the size of the window changes: *)
       ignore
         (React.S.l3
            (fun pos size containerwidth ->
@@ -487,15 +494,29 @@ let%shared ribbon
                   else newleft
                 in
                 set_curleft newleft;
+                set_oldleft newleft;
                 the_ul'##.style##.left := Js.string (string_of_int newleft^"px")
               | _ -> ()
            ) ~%pos ~%size containerwidth);
       (* Cursor: *)
       (match ~%cursor_elt, ~%cursor with
        | Some cursor_elt, Some cursor ->
+         let moving = ref false in
          ignore
            (React.S.l5
               (fun pos offset size curleft _ ->
+                 if not !moving && offset <> 0.
+                 then begin
+                   (* Carousel is being swiped.
+                      Removing transition on cursor. *)
+                   moving := true;
+                   Eliom_lib.Option.iter remove_transition cursor_elt';
+                 end;
+                 if offset = 0. && !moving
+                 then begin
+                   moving := false;
+                   Eliom_lib.Option.iter add_transition cursor_elt';
+                 end;
                  let firstselectedelt = Manip.nth the_ul pos in
                  let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
                  let previouselt =
@@ -560,31 +581,33 @@ let%shared ribbon
       );
       Lwt.return ()
     );
-    (***)
+    (* Moving the ribbon with fingers: *)
     let start = ref None in
-    let old_transition = ref (Js.string "") in
     let fun_touchstart clX ev =
       start := Some (clX ev);
-      old_transition := (Js.Unsafe.coerce (the_ul'##.style))##.transition;
-      (Js.Unsafe.coerce (the_ul'##.style))##.transition := Js.string "left 0s";
+      remove_transition the_ul';
+      Eliom_lib.Option.iter remove_transition cursor_elt';
       Lwt.return ()
     in
     let fun_touchup clX ev =
-      (Js.Unsafe.coerce (the_ul'##.style))##.transition := !old_transition;
+      add_transition the_ul';
+      Eliom_lib.Option.iter add_transition cursor_elt';
       (match !start with
        | Some s ->
          let cw = React.S.value containerwidth in
          let cl = (max (- the_ul'##.scrollWidth + cw/2)
-                     (min (cw / 2) (React.S.value curleft + clX ev - s)))
+                     (min (cw / 2) (React.S.value oldleft + clX ev - s)))
          in
          let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
          (* Limit the movement
             (make this configurable by optional parameter?): *)
          let cl = min initial_gap cl in
-         set_curleft
-           (max (React.S.value containerwidth - ul_width - initial_gap) cl);
-         the_ul'##.style##.left :=
-           Js.string (string_of_int (React.S.value curleft)^"px");
+         let newleft =
+           (max (React.S.value containerwidth - ul_width - initial_gap) cl)
+         in
+         set_curleft newleft;
+         set_oldleft newleft;
+         the_ul'##.style##.left := Js.string (string_of_int newleft^"px");
          start := None
        | _ -> ());
       Lwt.return ()
@@ -594,13 +617,14 @@ let%shared ribbon
       (match !start with
        | Some start ->
          let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-         let pos = React.S.value curleft + clX ev - start in
+         let pos = React.S.value oldleft + clX ev - start in
          (* Limit the movement
             (make this configurable by optional parameter?): *)
          let pos = min initial_gap pos in
          let pos =
            max (React.S.value containerwidth - ul_width - initial_gap) pos
          in
+         set_curleft pos;
          the_ul'##.style##.left := Js.string (string_of_int pos^"px");
        | _ -> ());
       Lwt.return ()

@@ -126,6 +126,7 @@ val ribbon :
   pos:int Eliom_shared.React.S.t ->
   ?size:int Eliom_shared.React.S.t ->
   ?initial_gap:int ->
+  ?transition_duration:float ->
   ?cursor:float React.S.t Eliom_client_value.t ->
   [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
   [> `Div ] Eliom_content.Html.elt
