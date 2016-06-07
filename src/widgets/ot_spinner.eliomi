@@ -48,3 +48,9 @@ val with_spinner_no_lwt :
          [< Html_types.div_content ] Eliom_content.Html.elt list) ->
   [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
   [> `Div ] Eliom_content.Html.elt
+
+(** the number of spinners currently spinning *)
+val num_active_spinners : int Eliom_shared.React.S.t
+(** [onloaded] is an event that fires when all spinners have finished loading.
+    This can occur multiple times. *)
+val onloaded : unit Eliom_shared.React.E.t
