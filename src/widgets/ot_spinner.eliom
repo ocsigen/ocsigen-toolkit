@@ -21,6 +21,7 @@
 
 [%%shared open Eliom_content.Html ]
 [%%shared open Eliom_content.Html.F ]
+[%%client open Eliom_shared ]
 
 let%shared default_fail e =
   [
@@ -49,6 +50,17 @@ let%server with_spinner ?(a = []) ?fail thread =
   Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
 [%%client
+
+let num_active_spinners, set_num_active_spinners = React.S.create 0
+let onloaded, set_onloaded = React.E.create ()
+let _ = Eliom_client.onload @@ fun () ->
+  if React.S.value num_active_spinners = 0 then set_onloaded ()
+let inc_active_spinners () =
+  set_num_active_spinners @@ React.S.value num_active_spinners + 1
+let dec_active_spinners () =
+  set_num_active_spinners @@ React.S.value num_active_spinners - 1;
+  if React.S.value num_active_spinners = 0 then set_onloaded ()
+
 module Make(A : sig
     type +'a t
     val bind : 'a t -> ('a -> 'b t) -> 'b t
@@ -69,6 +81,7 @@ module Make(A : sig
     | Lwt.Sleep ->
       let spinning = "ot-icon-animation-spinning" in
       let spinner = "ot-icon-spinner" in
+      inc_active_spinners ();
       let d = D.div ~a:(a_class [ "ot-spinner" ; spinner ; spinning ] :: a) []
       in
       Lwt.async
@@ -79,11 +92,13 @@ module Make(A : sig
                  (v :> Html_types.div_content_fun F.elt list)
              with e ->
                A.bind2 (fail e) (fun v ->
+                 dec_active_spinners ();
                  (Lwt.return (v :> Html_types.div_content_fun F.elt list)))
            in
            Manip.replaceChildren d v ;
            Manip.Class.remove d spinning ;
            Manip.Class.remove d spinner ;
+           dec_active_spinners ();
            Lwt.return () ) ;
       A.return d
     | Lwt.Fail e -> A.bind (fail e) (fun c -> A.return (D.div ~a c))
