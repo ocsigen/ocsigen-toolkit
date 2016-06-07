@@ -26,10 +26,17 @@
     Returns the DOM element, and functions to open and close the menu.
     It is also possible to open or close the menu by clicking on a button,
     and to swipe the menu to close it.
+    If [ios_scroll_pos_fix] is true (default) each time after the drawer is
+    opened, the scroll position of the document body is set to the value it
+    had just before opening the drawer. This is a workaround for a bug in iOS
+    mobile where if one prevents document scrolling by CSS (requires on iOS the
+    CSS code: html.dr-drawer-open, html.dr-drawer-open>body {overflow: hidden})
+    the document is scrolled to the top.
 *)
 val drawer :
   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list ->
   ?position:[ `Left | `Right ] ->
+  ?ios_scroll_pos_fix:bool ->
   [< Html_types.div_content] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
   (unit -> unit) Eliom_client_value.t *
