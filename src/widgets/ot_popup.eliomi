@@ -89,3 +89,110 @@ val confirm :
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
   -> bool Lwt.t
+
+val setup_form :
+  (< appendChild : Dom.node Js.t -> Dom.node Js.t Js.meth;
+     childNodes : Dom.node Dom.nodeList Js.t Js.prop;
+     cloneNode : bool Js.t -> Dom.node Js.t Js.meth;
+     compareDocumentPosition : Dom.node Js.t ->
+                               Dom.DocumentPosition.t Js.meth;
+     firstChild : Dom.node Js.t Js.opt Js.prop;
+     focus : 'jsoo_4beb75c4 Js.meth;
+     hasChildNodes : bool Js.t Js.meth;
+     insertBefore : Dom.node Js.t ->
+                    Dom.node Js.t Js.opt -> Dom.node Js.t Js.meth;
+     lastChild : Dom.node Js.t Js.opt Js.prop;
+     lookupNamespaceURI : Js.js_string Js.t ->
+                          Js.js_string Js.t Js.opt Js.meth;
+     lookupPrefix : Js.js_string Js.t ->
+                    Js.js_string Js.t Js.opt Js.meth;
+     namespaceURI : Js.js_string Js.t Js.opt Js.prop;
+     nextSibling : Dom.node Js.t Js.opt Js.prop;
+     nodeName : Js.js_string Js.t Js.readonly_prop;
+     nodeType : Dom.nodeType Js.readonly_prop;
+     nodeValue : Js.js_string Js.t Js.opt Js.readonly_prop;
+     onclick : ('a Js.t, Dom_html.mouseEvent Js.t)
+               Dom_html.event_listener Js.writeonly_prop;
+     ondblclick : ('a Js.t, Dom_html.mouseEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     ondrag : ('a Js.t, Dom_html.dragEvent Js.t)
+              Dom_html.event_listener Js.writeonly_prop;
+     ondragend : ('a Js.t, Dom_html.dragEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     ondragenter : ('a Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondragleave : ('a Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondragover : ('a Js.t, Dom_html.dragEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     ondragstart : ('a Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondrop : ('a Js.t, Dom_html.dragEvent Js.t)
+              Dom_html.event_listener Js.writeonly_prop;
+     onkeydown : ('a Js.t, Dom_html.keyboardEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     onkeypress : ('a Js.t, Dom_html.keyboardEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     onkeyup : ('a Js.t, Dom_html.keyboardEvent Js.t)
+               Dom_html.event_listener Js.writeonly_prop;
+     onmousedown : ('a Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmousemove : ('a Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmouseout : ('a Js.t, Dom_html.mouseEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     onmouseover : ('a Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmouseup : ('a Js.t, Dom_html.mouseEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     onscroll : ('a Js.t, Dom_html.event Js.t)
+                Dom_html.event_listener Js.writeonly_prop;
+     parentNode : Dom.node Js.t Js.opt Js.prop;
+     previousSibling : Dom.node Js.t Js.opt Js.prop;
+     removeChild : Dom.node Js.t -> Dom.node Js.t Js.meth;
+     replaceChild : Dom.node Js.t ->
+                    Dom.node Js.t -> Dom.node Js.t Js.meth;
+     tabIndex : < set : int -> unit; .. > Js.gen_prop; .. >
+   as 'a)
+  Js.t ->
+  < tabIndex : < set : int -> unit; .. > Js.gen_prop; .. > Js.t ->
+  < tabIndex : < set : int -> unit; .. > Js.gen_prop; .. > Js.t ->
+  (< onclick : ('b Js.t, Dom_html.mouseEvent Js.t)
+               Dom_html.event_listener Js.writeonly_prop;
+     ondblclick : ('b Js.t, Dom_html.mouseEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     ondrag : ('b Js.t, Dom_html.dragEvent Js.t)
+              Dom_html.event_listener Js.writeonly_prop;
+     ondragend : ('b Js.t, Dom_html.dragEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     ondragenter : ('b Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondragleave : ('b Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondragover : ('b Js.t, Dom_html.dragEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     ondragstart : ('b Js.t, Dom_html.dragEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     ondrop : ('b Js.t, Dom_html.dragEvent Js.t)
+              Dom_html.event_listener Js.writeonly_prop;
+     onkeydown : ('b Js.t, Dom_html.keyboardEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     onkeypress : ('b Js.t, Dom_html.keyboardEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     onkeyup : ('b Js.t, Dom_html.keyboardEvent Js.t)
+               Dom_html.event_listener Js.writeonly_prop;
+     onmousedown : ('b Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmousemove : ('b Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmouseout : ('b Js.t, Dom_html.mouseEvent Js.t)
+                  Dom_html.event_listener Js.writeonly_prop;
+     onmouseover : ('b Js.t, Dom_html.mouseEvent Js.t)
+                   Dom_html.event_listener Js.writeonly_prop;
+     onmouseup : ('b Js.t, Dom_html.mouseEvent Js.t)
+                 Dom_html.event_listener Js.writeonly_prop;
+     onscroll : ('b Js.t, Dom_html.event Js.t)
+                Dom_html.event_listener Js.writeonly_prop;
+     tabIndex : < set : int -> unit; .. > Js.gen_prop; .. >
+   as 'b)
+  Js.t -> unit

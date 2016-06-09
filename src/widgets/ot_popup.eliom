@@ -150,3 +150,34 @@ let%client confirm ?(a = []) question yes no =
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
+
+let%client setup_form first second next_to_last last =
+  begin Lwt.async @@ fun () ->
+    let%lwt _ = Ot_nodeready.nodeready first in
+    first##focus;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
+    last##.tabIndex := 1;
+    first##.tabIndex := 2;
+    second##.tabIndex := 3;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs first @@ fun _ _ ->
+    first##.tabIndex := 0;
+    second##.tabIndex := 0;
+    last##.tabIndex := 0;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses last @@ fun _ _ ->
+    next_to_last##.tabIndex := 1;
+    last##.tabIndex := 2;
+    first##.tabIndex := 3;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs last @@ fun _ _ ->
+    next_to_last##.tabIndex := 0;
+    last##.tabIndex := 0;
+    first##.tabIndex := 0;
+    Lwt.return ()
+  end
