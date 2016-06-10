@@ -151,6 +151,16 @@ let%client confirm ?(a = []) question yes no =
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
 
+
+[%%client
+class type form_element = object
+  inherit Dom_html.element
+  method tabIndex : int Js.prop
+  method focus : unit Js.meth
+end
+]
+
+
 let%client setup_form first second next_to_last last =
   begin Lwt.async @@ fun () ->
     let%lwt _ = Ot_nodeready.nodeready first in
