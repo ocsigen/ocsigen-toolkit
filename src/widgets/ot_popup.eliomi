@@ -89,3 +89,22 @@ val confirm :
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
   -> bool Lwt.t
+
+(** An element which is focussable and can be selected by pressing the tab key.
+    Required for [setup_form]. *)
+class type form_element = object
+  inherit Dom_html.element
+  method tabIndex : int Js.prop
+  method focus : unit Js.meth
+end
+
+(** [setup_form] make a form form in a popup more user-friendly, by focussing on
+    the first element of the form and forcing tab keys to cycle through the
+    elements of the form only (and not the elements of the page behind the
+    popup). As arguments in requires the first, the second, the next to last,
+    and the last element of the form. *)
+val setup_form :
+  #form_element Js.t ->
+  < tabIndex : int Js.prop; .. > Js.t ->
+  < tabIndex : int Js.prop; .. > Js.t ->
+  #form_element Js.t -> unit
