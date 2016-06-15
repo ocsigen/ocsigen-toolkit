@@ -22,6 +22,81 @@
 [%%shared open Eliom_content.Html ]
 [%%shared open Eliom_content.Html.F ]
 
+[%%client
+class type form_element = object
+  inherit Dom_html.element
+  method tabIndex : int Js.prop
+end
+]
+
+let%client try_focus x = match Dom_html.tagged x with
+  | Dom_html.A        x -> x##focus
+  | Dom_html.Input    x -> x##focus
+  | Dom_html.Textarea x -> x##focus
+  | Dom_html.Select   x -> x##focus
+  | _ -> ()
+
+let%client setup_form first second next_to_last last =
+  begin Lwt.async @@ fun () ->
+    let%lwt _ = Ot_nodeready.nodeready first in
+    try_focus first;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
+    last##.tabIndex := 1;
+    first##.tabIndex := 2;
+    second##.tabIndex := 3;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs first @@ fun _ _ ->
+    first##.tabIndex := 0;
+    second##.tabIndex := 0;
+    last##.tabIndex := 0;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses last @@ fun _ _ ->
+    next_to_last##.tabIndex := 1;
+    last##.tabIndex := 2;
+    first##.tabIndex := 3;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs last @@ fun _ _ ->
+    next_to_last##.tabIndex := 0;
+    last##.tabIndex := 0;
+    first##.tabIndex := 0;
+    Lwt.return ()
+  end
+
+let%client coerce_to_form_element x = let x = Dom_html.element x in
+  match Dom_html.tagged x with
+  | Dom_html.A        x -> Some (x :> form_element Js.t)
+  (* | Dom_html.Link     x -> Some (x :> form_element Js.t) *)
+  | Dom_html.Button   x -> Some (x :> form_element Js.t)
+  | Dom_html.Input    x -> Some (x :> form_element Js.t)
+  | Dom_html.Select   x -> Some (x :> form_element Js.t)
+  | Dom_html.Textarea x -> Some (x :> form_element Js.t)
+  (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
+  | _ -> None
+
+let%client rec find_first_form_element xs = match xs with
+  | [] -> failwith "could not find valid form element" (*TODO: exception*)
+  | x::xs -> match coerce_to_form_element x with
+    | None -> find_first_form_element xs
+    | Some x -> (x,xs)
+
+(* TODO: what if there are only one or two form elements? *)
+let%client setup_form_auto form =
+  let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
+
+  let (first, xs) = find_first_form_element xs in
+  let (second,xs) = find_first_form_element xs in
+  let xs = List.rev ((second :> Dom.element Js.t) :: xs) in
+  let (last,xs) = find_first_form_element xs in
+  let (next_to_last,_) = find_first_form_element xs in
+
+  setup_form first second next_to_last last
+
+
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
   D.section
     ~a:(a_class ["ot-hcf"] :: (a :> Html_types.div_attrib attrib list))
@@ -152,77 +227,3 @@ let%client confirm ?(a = []) question yes no =
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
 
-
-[%%client
-class type form_element = object
-  inherit Dom_html.element
-  method tabIndex : int Js.prop
-end
-]
-
-let%client try_focus x = match Dom_html.tagged x with
-  | Dom_html.A        x -> x##focus
-  | Dom_html.Input    x -> x##focus
-  | Dom_html.Textarea x -> x##focus
-  | Dom_html.Select   x -> x##focus
-  | _ -> ()
-
-let%client setup_form first second next_to_last last =
-  begin Lwt.async @@ fun () ->
-    let%lwt _ = Ot_nodeready.nodeready first in
-    try_focus first;
-    Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
-    last##.tabIndex := 1;
-    first##.tabIndex := 2;
-    second##.tabIndex := 3;
-    Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs first @@ fun _ _ ->
-    first##.tabIndex := 0;
-    second##.tabIndex := 0;
-    last##.tabIndex := 0;
-    Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses last @@ fun _ _ ->
-    next_to_last##.tabIndex := 1;
-    last##.tabIndex := 2;
-    first##.tabIndex := 3;
-    Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs last @@ fun _ _ ->
-    next_to_last##.tabIndex := 0;
-    last##.tabIndex := 0;
-    first##.tabIndex := 0;
-    Lwt.return ()
-  end
-
-let%client coerce_to_form_element x = let x = Dom_html.element x in
-  match Dom_html.tagged x with
-  | Dom_html.A        x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Link     x -> Some (x :> form_element Js.t) *)
-  | Dom_html.Button   x -> Some (x :> form_element Js.t)
-  | Dom_html.Input    x -> Some (x :> form_element Js.t)
-  | Dom_html.Select   x -> Some (x :> form_element Js.t)
-  | Dom_html.Textarea x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
-  | _ -> None
-
-let%client rec find_first_form_element xs = match xs with
-  | [] -> failwith "could not find valid form element" (*TODO: exception*)
-  | x::xs -> match coerce_to_form_element x with
-    | None -> find_first_form_element xs
-    | Some x -> (x,xs)
-
-(* TODO: what if there are only one or two form elements? *)
-let%client setup_form_auto form =
-  let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
-
-  let (first, xs) = find_first_form_element xs in
-  let (second,xs) = find_first_form_element xs in
-  let xs = List.rev ((second :> Dom.element Js.t) :: xs) in
-  let (last,xs) = find_first_form_element xs in
-  let (next_to_last,_) = find_first_form_element xs in
-
-  setup_form first second next_to_last last
