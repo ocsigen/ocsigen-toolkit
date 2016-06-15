@@ -79,13 +79,13 @@ let%client coerce_to_form_element x = let x = Dom_html.element x in
   | _ -> None
 
 let%client rec find_first_form_element xs = match xs with
-  | [] -> failwith "could not find valid form element" (*TODO: exception*)
+  | [] -> failwith "could not find valid form element"
   | x::xs -> match coerce_to_form_element x with
     | None -> find_first_form_element xs
     | Some x -> (x,xs)
 
 (* TODO: what if there are only one or two form elements? *)
-let%client setup_form_auto form =
+let%client setup_form_auto form = Lwt.async @@ fun () ->
   let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
 
   let (first, xs) = find_first_form_element xs in
@@ -94,7 +94,8 @@ let%client setup_form_auto form =
   let (last,xs) = find_first_form_element xs in
   let (next_to_last,_) = find_first_form_element xs in
 
-  setup_form first second next_to_last last
+  setup_form first second next_to_last last;
+  Lwt.return ()
 
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
@@ -180,7 +181,12 @@ let%client popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
 
-  begin if setup_form then setup_form_auto (To_dom.of_element c) end;
+  begin if setup_form then
+    match Dom.list_of_nodeList @@
+      (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
+    | [] -> ()
+    | (form::xs) -> setup_form_auto form
+  end;
 
   let content = [c] in
   let content = match close_button with

@@ -99,7 +99,7 @@ class type form_element = object
   method tabIndex : int Js.prop
 end
 
-(** [setup_form] make a form form in a popup more user-friendly, by focussing on
+(** [setup_form] makes a form in a popup more user-friendly, by focussing on
     the first element of the form and forcing tab keys to cycle through the
     elements of the form only (and not the elements of the page behind the
     popup). As arguments in requires the first, the second, the next to last,
