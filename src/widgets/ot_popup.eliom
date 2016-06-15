@@ -38,6 +38,7 @@ let%client popup
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
+    ?(setup_form=false) (*TODO*)
     ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -163,6 +164,7 @@ end
 
 let%client setup_form first second next_to_last last =
   begin Lwt.async @@ fun () ->
+    (*TODO: do it if possible, if not don't*)
     let%lwt _ = Ot_nodeready.nodeready first in
     first##focus;
     Lwt.return ()
@@ -191,3 +193,49 @@ let%client setup_form first second next_to_last last =
     first##.tabIndex := 0;
     Lwt.return ()
   end
+
+let%client coerce_to_form_element x = let x = Dom_html.element x in
+  match Js.to_string x##.tagName with
+  | "a"        -> (Dom_html.CoerceTo.a x :>        form_element Js.t Js.opt)
+  (* | "link"     -> (Dom_html.CoerceTo.link x :>     <tabIndex: int Js.prop> Js.t Js.opt) *)
+  (*TODO: buttons will work once we remove the focus requirement *)
+  (* | "button"   -> (Dom_html.CoerceTo.button x :>   form_element Js.t Js.opt) *)
+  | "input"    -> (Dom_html.CoerceTo.input x :>    form_element Js.t Js.opt)
+  | "select"   -> (Dom_html.CoerceTo.select x :>   form_element Js.t Js.opt)
+  | "textarea" -> (Dom_html.CoerceTo.textarea x :> form_element Js.t Js.opt)
+  (* | "menuitem" -> (Dom_html.CoerceTo.menuitem x :> <tabIndex: int Js.prop> Js.t Js.opt) *)
+  | _ -> Js.Opt.empty
+
+let%client coerce_to_tabIndexable x = let x = Dom_html.element x in
+  match Js.to_string x##.tagName with
+  | "a"        -> (Dom_html.CoerceTo.a x :>        <tabIndex: int Js.prop> Js.t Js.opt)
+  (* | "link"     -> (Dom_html.CoerceTo.link x :>     <tabIndex: int Js.prop> Js.t Js.opt) *)
+  | "button"   -> (Dom_html.CoerceTo.button x :>   <tabIndex: int Js.prop> Js.t Js.opt)
+  | "input"    -> (Dom_html.CoerceTo.input x :>    <tabIndex: int Js.prop> Js.t Js.opt)
+  | "select"   -> (Dom_html.CoerceTo.select x :>   <tabIndex: int Js.prop> Js.t Js.opt)
+  | "textarea" -> (Dom_html.CoerceTo.textarea x :> <tabIndex: int Js.prop> Js.t Js.opt)
+  (* | "menuitem" -> (Dom_html.CoerceTo.menuitem x :> <tabIndex: int Js.prop> Js.t Js.opt) *)
+  | _ -> Js.Opt.empty
+
+(* TODO: what if there are only one or two tabIndexable elements? *)
+let%client setup_form_auto form =
+  let descendants = ref @@
+    Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
+
+  let rec first_tabIndex_element xs = match xs with
+    | [] -> failwith "could not find valid form element" (*TODO: exception*)
+    | x::xs -> Js.Opt.case (coerce_to_tabIndexable x)
+                 (fun () -> first_tabIndex_element xs)
+                 (fun x -> x)
+  in
+
+  let first_form_element = failwith "muh" in
+    (*TODO: same but delete! *) 
+
+  let first = first_form_element !descendants in
+  let second = first_tabIndex_element !descendants in
+  descendants := List.rev !descendants;
+  let last = first_form_element !descendants in
+  let next_to_last = first_tabIndex_element !descendants in
+
+  setup_form first second next_to_last last

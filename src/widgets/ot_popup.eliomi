@@ -50,12 +50,15 @@ val hcf :
     [onclose] is a hook called just after the popup has been actually closed.
     [gen_content] is a function taking the function closing the popup as
     parameter, and returning the popup content.
-    For [ios_scroll_pos_fix] see [Ot_drawer.drawer] *)
+    For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
+    If [setup_form] (default: false) is true then the popup is scanned for a
+    form-element and [setup_form_auto] is applied. *)
 val popup :
   ?a:[< div_attrib ] attrib list
   -> ?close_button:(button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
+  -> ?setup_form:bool
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
@@ -95,7 +98,9 @@ val confirm :
 class type form_element = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
-  method focus : unit Js.meth
+  method focus : unit Js.meth (*TODO: remove this condition! so buttons are
+                                included! all the arguments will have the same
+                                type then! *)
 end
 
 (** [setup_form] make a form form in a popup more user-friendly, by focussing on
@@ -103,8 +108,14 @@ end
     elements of the form only (and not the elements of the page behind the
     popup). As arguments in requires the first, the second, the next to last,
     and the last element of the form. *)
+(*TODO: buttons are not form elements *)
 val setup_form :
   #form_element Js.t ->
   < tabIndex : int Js.prop; .. > Js.t ->
   < tabIndex : int Js.prop; .. > Js.t ->
   #form_element Js.t -> unit
+
+(** [setup_form_auto] scans an element for buttons and input elements and feeds
+    them to [setup_form] *)
+(*TODO: buttons are not form elements, what are? etc *)
+val setup_form_auto : Dom_html.element Js.t -> unit
