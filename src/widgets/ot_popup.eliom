@@ -209,25 +209,20 @@ let%client coerce_to_form_element x = let x = Dom_html.element x in
   (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
   | _ -> None
 
-(* TODO: what if there are only one or two tabIndexable elements? *)
+let%client rec find_first_form_element xs = match xs with
+  | [] -> failwith "could not find valid form element" (*TODO: exception*)
+  | x::xs -> match coerce_to_form_element x with
+    | None -> find_first_form_element xs
+    | Some x -> (x,xs)
+
+(* TODO: what if there are only one or two form elements? *)
 let%client setup_form_auto form =
-  let descendants = ref @@
-    Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
+  let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
 
-  let rec first_tabIndex_element xs = match xs with
-    | [] -> failwith "could not find valid form element" (*TODO: exception*)
-    | x::xs -> match coerce_to_form_element x with
-      | None -> first_tabIndex_element xs
-      | Some x -> x
-  in
-
-  let first_form_element = failwith "muh" in
-    (*TODO: same but delete! *) 
-
-  let first = first_form_element !descendants in
-  let second = first_tabIndex_element !descendants in
-  descendants := List.rev !descendants;
-  let last = first_form_element !descendants in
-  let next_to_last = first_tabIndex_element !descendants in
+  let (first, xs) = find_first_form_element xs in
+  let (second,xs) = find_first_form_element xs in
+  let xs = List.rev ((second :> Dom.element Js.t) :: xs) in
+  let (last,xs) = find_first_form_element xs in
+  let (next_to_last,_) = find_first_form_element xs in
 
   setup_form first second next_to_last last
