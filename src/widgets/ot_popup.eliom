@@ -113,7 +113,7 @@ let%client popup
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
-    ?(setup_form=false) (*TODO*)
+    ?(setup_form=false)
     ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -179,6 +179,9 @@ let%client popup
   let%lwt c = Ot_spinner.with_spinner ~a:[a_class ["ot-popup-content"]]
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
+
+  begin if setup_form then setup_form_auto (To_dom.of_element c) end;
+
   let content = [c] in
   let content = match close_button with
     | Some but ->
