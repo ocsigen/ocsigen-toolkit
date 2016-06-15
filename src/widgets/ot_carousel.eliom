@@ -72,9 +72,14 @@ let%shared make
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
-  let swipe_pos_sig = [%client (React.S.create 0. : _ * _) ] in
-  let swipe_pos = [%client (fst ~%swipe_pos_sig : _ React.S.t) ] in
-  let swipe_pos_set = [%client (snd ~%swipe_pos_sig : ?step:_ -> _ -> _) ] in
+  let swipe_pos_sig = [%client
+    (React.S.create 0.
+     : (float React.S.t * (?step:React.step -> float -> unit))) ]
+  in
+  let swipe_pos = [%client (fst ~%swipe_pos_sig : float React.S.t) ] in
+  let swipe_pos_set =
+    [%client (snd ~%swipe_pos_sig : ?step:React.step -> float -> unit) ]
+  in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
   let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
@@ -411,7 +416,7 @@ let%shared ribbon
     ?(size = Eliom_shared.React.S.const 1)
     ?(initial_gap = 0)
     ?(transition_duration = 0.6)
-    ?cursor
+    ?(cursor : float React.S.t Eliom_client_value.t option)
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let item i c =
