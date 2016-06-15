@@ -199,27 +199,15 @@ let%client setup_form first second next_to_last last =
   end
 
 let%client coerce_to_form_element x = let x = Dom_html.element x in
-  match Js.to_string x##.tagName with
-  | "a"        -> (Dom_html.CoerceTo.a x :>        form_element Js.t Js.opt)
-  (* | "link"     -> (Dom_html.CoerceTo.link x :>     <tabIndex: int Js.prop> Js.t Js.opt) *)
-  (*TODO: buttons will work once we remove the focus requirement *)
-  (* | "button"   -> (Dom_html.CoerceTo.button x :>   form_element Js.t Js.opt) *)
-  | "input"    -> (Dom_html.CoerceTo.input x :>    form_element Js.t Js.opt)
-  | "select"   -> (Dom_html.CoerceTo.select x :>   form_element Js.t Js.opt)
-  | "textarea" -> (Dom_html.CoerceTo.textarea x :> form_element Js.t Js.opt)
-  (* | "menuitem" -> (Dom_html.CoerceTo.menuitem x :> <tabIndex: int Js.prop> Js.t Js.opt) *)
-  | _ -> Js.Opt.empty
-
-let%client coerce_to_tabIndexable x = let x = Dom_html.element x in
-  match Js.to_string x##.tagName with
-  | "a"        -> (Dom_html.CoerceTo.a x :>        <tabIndex: int Js.prop> Js.t Js.opt)
-  (* | "link"     -> (Dom_html.CoerceTo.link x :>     <tabIndex: int Js.prop> Js.t Js.opt) *)
-  | "button"   -> (Dom_html.CoerceTo.button x :>   <tabIndex: int Js.prop> Js.t Js.opt)
-  | "input"    -> (Dom_html.CoerceTo.input x :>    <tabIndex: int Js.prop> Js.t Js.opt)
-  | "select"   -> (Dom_html.CoerceTo.select x :>   <tabIndex: int Js.prop> Js.t Js.opt)
-  | "textarea" -> (Dom_html.CoerceTo.textarea x :> <tabIndex: int Js.prop> Js.t Js.opt)
-  (* | "menuitem" -> (Dom_html.CoerceTo.menuitem x :> <tabIndex: int Js.prop> Js.t Js.opt) *)
-  | _ -> Js.Opt.empty
+  match Dom_html.tagged x with
+  | Dom_html.A        x -> Some (x :> form_element Js.t)
+  (* | Dom_html.Link     x -> Some (x :> form_element Js.t) *)
+  | Dom_html.Button   x -> Some (x :> form_element Js.t)
+  | Dom_html.Input    x -> Some (x :> form_element Js.t)
+  | Dom_html.Select   x -> Some (x :> form_element Js.t)
+  | Dom_html.Textarea x -> Some (x :> form_element Js.t)
+  (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
+  | _ -> None
 
 (* TODO: what if there are only one or two tabIndexable elements? *)
 let%client setup_form_auto form =
@@ -228,9 +216,9 @@ let%client setup_form_auto form =
 
   let rec first_tabIndex_element xs = match xs with
     | [] -> failwith "could not find valid form element" (*TODO: exception*)
-    | x::xs -> Js.Opt.case (coerce_to_tabIndexable x)
-                 (fun () -> first_tabIndex_element xs)
-                 (fun x -> x)
+    | x::xs -> match coerce_to_form_element x with
+      | None -> first_tabIndex_element xs
+      | Some x -> x
   in
 
   let first_form_element = failwith "muh" in
