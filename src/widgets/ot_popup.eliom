@@ -157,16 +157,20 @@ let%client confirm ?(a = []) question yes no =
 class type form_element = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
-  method focus : unit Js.meth
 end
 ]
 
+let%client try_focus x = match Dom_html.tagged x with
+  | Dom_html.A        x -> x##focus
+  | Dom_html.Input    x -> x##focus
+  | Dom_html.Textarea x -> x##focus
+  | Dom_html.Select   x -> x##focus
+  | _ -> ()
 
 let%client setup_form first second next_to_last last =
   begin Lwt.async @@ fun () ->
-    (*TODO: do it if possible, if not don't*)
     let%lwt _ = Ot_nodeready.nodeready first in
-    first##focus;
+    try_focus first;
     Lwt.return ()
   end;
   begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->

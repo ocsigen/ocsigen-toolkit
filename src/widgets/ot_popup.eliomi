@@ -93,14 +93,10 @@ val confirm :
   -> 'a elt list
   -> bool Lwt.t
 
-(** An element which is focussable and can be selected by pressing the tab key.
-    Required for [setup_form]. *)
+(** An HTML element which can be selected by pressing the tab key *)
 class type form_element = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
-  method focus : unit Js.meth (*TODO: remove this condition! so buttons are
-                                included! all the arguments will have the same
-                                type then! *)
 end
 
 (** [setup_form] make a form form in a popup more user-friendly, by focussing on
@@ -108,14 +104,13 @@ end
     elements of the form only (and not the elements of the page behind the
     popup). As arguments in requires the first, the second, the next to last,
     and the last element of the form. *)
-(*TODO: buttons are not form elements *)
 val setup_form :
   #form_element Js.t ->
-  < tabIndex : int Js.prop; .. > Js.t ->
-  < tabIndex : int Js.prop; .. > Js.t ->
-  #form_element Js.t -> unit
+  #form_element Js.t ->
+  #form_element Js.t ->
+  #form_element Js.t ->
+  unit
 
 (** [setup_form_auto] scans an element for buttons and input elements and feeds
     them to [setup_form] *)
-(*TODO: buttons are not form elements, what are? etc *)
 val setup_form_auto : Dom_html.element Js.t -> unit
