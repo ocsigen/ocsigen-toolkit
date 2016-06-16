@@ -35,15 +35,9 @@ open Eliom_content.Html
 open Eliom_content.Html.F
 ]
 
-let%client clX ev =
-  Js.Optdef.case ev##.changedTouches##(item (0))
-    (fun () -> 0)
-    (fun a -> a##.clientX)
+let%client clX = Ot_swipe.clX
 
-let%client clY ev =
-  Js.Optdef.case ev##.changedTouches##(item (0))
-    (fun () -> 0)
-    (fun a -> a##.clientY)
+let%client clY = Ot_swipe.clY
 
 let%client add_transition transition_duration =
   let s = Js.string (Printf.sprintf "%.2fs" transition_duration) in

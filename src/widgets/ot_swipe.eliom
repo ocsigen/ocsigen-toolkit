@@ -22,38 +22,44 @@ let%client add_transition transition_duration =
 let%client remove_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transitionDuration := Js.string "0s"
 
-let%client onpan start elt' ev _ =
-  elt'##.style##.left := px_of_int (clX ev - !start);
-  Dom_html.stopPropagation ev;
-  Lwt.return ()
-
 let%shared bind
     ?(transition_duration = 0.3)
+    ?(min : int option)
+    ?(max : int option)
     ~compute_final_pos
     elt =
   ignore [%client
     (let elt = ~%elt in
      let elt' = To_dom.of_element elt in
      let start = ref 0 in
-     Lwt.async (fun () -> Lwt_js_events.touchstarts elt' (fun ev _ ->
+     let onpanend ev _ =
+       let left = ~%compute_final_pos (clX ev - !start) in
+       Dom_html.stopPropagation ev;
+       add_transition ~%transition_duration elt';
+       elt'##.style##.left := px_of_int left;
+       start := left; (* when not swiping,
+                         start contains the left position of the block *)
+       Lwt.async (fun () ->
+         let%lwt () = Lwt_js_events.transitionend elt' in
+         remove_transition elt';
+         Manip.Class.remove elt "swiping";
+         Lwt.return ());
+       Lwt.return ()
+     in
+     let onpan ev aa =
+       let left = clX ev - !start in
+       elt'##.style##.left := px_of_int left;
+       Dom_html.stopPropagation ev;
+       Lwt.return ()
+     in
+     let onpanstart ev _ =
        start := clX ev - !start;
        Dom_html.stopPropagation ev;
        Manip.Class.add elt "swiping";
        Lwt.return ()
-     ));
-     Lwt.async (fun () -> Lwt_js_events.touchmoves elt' (onpan start elt'));
-     Lwt.async (fun () -> Lwt_js_events.touchends elt' (fun ev _ ->
-       Dom_html.stopPropagation ev;
-       add_transition ~%transition_duration elt';
-       let left = ~%compute_final_pos (clX ev - !start) in
-       elt'##.style##.left := px_of_int left;
-       start := left; (* when not swiping,
-                         start contains the left position of the block *)
-      Lwt.async (fun () ->
-        let%lwt () = Lwt_js_events.transitionend elt' in
-        remove_transition elt';
-        Manip.Class.remove elt "swiping";
-        Lwt.return ());
-       Lwt.return ()));
+    in
+     Lwt.async (fun () -> Lwt_js_events.touchstarts elt' onpanstart);
+     Lwt.async (fun () -> Lwt_js_events.touchmoves elt' onpan);
+     Lwt.async (fun () -> Lwt_js_events.touchends elt' onpanend);
      : unit)
   ]
