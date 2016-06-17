@@ -6,6 +6,8 @@
    of the element w.r.t. the position where it has been released (in pixels).
 
    Use [?min] and [?max] if you want to limit the displacement.
+   If outside range, events will be propagated to parent
+   (which makes it possible to have a swipeable element inside another one).
  *)
 val bind:
   ?transition_duration : float ->
