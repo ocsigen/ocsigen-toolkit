@@ -99,6 +99,8 @@ let%shared make
     let vertical = ~%vertical in
     let d2' = To_dom.of_element ~%d2 in
     let d = To_dom.of_element ~%d in
+    (* The scroll position of each page: *)
+    let scroll_pages = List.map (fun _ -> ref 0) ~%pages in
     let width_element () =
       if vertical then d2'##.offsetHeight else d2'##.offsetWidth
     in
@@ -138,31 +140,34 @@ let%shared make
     *)
     let set_top_margin () =
       let dist = match ~%full_height with
-        (* In full height mode, during swipe,
+        (* In full height mode, just before swiping,
            we add margin on top of columns,
            to adapt it to the current scroll position of page.
         *)
         | `No -> None
         | `No_header -> Some 0
-        | `Header f -> Some (f ())
+        | `Header (f : unit -> int) -> Some (f ())
       in
       Eliom_lib.Option.iter
         (fun dist ->
            let delta = max 0 (dist - Ot_size.client_top d2') in
            let pos = React.S.value pos_signal in
-           List.iteri
-             (fun i coli ->
+           Ot_lib.List.iteri2
+             (fun i coli scrolli ->
                 if i <> pos
                 then
                   let coli' = To_dom.of_element coli in
                   coli'##.style##.marginTop :=
-                    Js.string (string_of_int delta ^ "px")
+                    Js.string (string_of_int (delta - !scrolli) ^ "px")
+                else (* we save the scroll position of active column: *)
+                  scrolli := delta
              )
-             ~%pages)
+             ~%pages scroll_pages)
         dist
     in
     let unset_top_margin () =
-      (* In full height mode, we remove the margins and set the correct
+      (* In full height mode, after swiping,
+         we remove the margins and set the correct
          scroll position for the page *)
       let dist = match ~%full_height with
         (* In full height mode, during swipe,
@@ -171,18 +176,21 @@ let%shared make
         *)
         | `No -> None
         | `No_header -> Some 0
-        | `Header f -> Some (f ())
+        | `Header (f : unit -> int) -> Some (f ())
       in
       Eliom_lib.Option.iter
         (fun dist ->
            let delta = - (max 0 (dist - Ot_size.client_top d2')) in
-           List.iteri
-             (fun i coli ->
+           let pos = React.S.value pos_signal in
+           Ot_lib.List.iteri2
+             (fun i coli scrolli ->
                 let coli' = To_dom.of_element coli in
-                coli'##.style##.marginTop := Js.string "0px"
+                coli'##.style##.marginTop := Js.string "0px";
+                if i = pos
+                then (Js.Unsafe.coerce Dom_html.window)##scrollBy
+                    0 (!scrolli + delta)
              )
-             ~%pages;
-           (Js.Unsafe.coerce Dom_html.window)##scrollBy 0 delta)
+             ~%pages scroll_pages)
         dist
     in
     (********************** end *)
