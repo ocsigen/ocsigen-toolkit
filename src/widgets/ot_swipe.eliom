@@ -31,23 +31,41 @@ let%client dispatch_event ~ev elt name x y =
   Js.Opt.iter
     elt##.parentNode
     (fun target ->
-       let event = Js.Unsafe.global##.TouchEvent in
-       let touch = Js.Unsafe.global##.Touch in
-       let touch = new%js touch
-         (object%js
-           val identifier = identifier ev
-           val target = target
-           val clientX = x
-           val clientY = y
-         end)
+       let event = try
+           (* Better version, but unsupported on iOS and Android: *)
+           let touchevent = Js.Unsafe.global##.TouchEvent in
+           let touch = Js.Unsafe.global##.Touch in
+           let touch = new%js touch
+             (object%js
+               val identifier = identifier ev
+               val target = target
+               val clientX = x
+               val clientY = y
+             end)
+           in
+           let opt = object%js
+             val bubbles = Js._true
+             val changedTouches = Js.array [| touch |]
+           end
+           in
+           new%js touchevent (Js.string name) opt
+         with e ->
+           print_endline ("exn: "^Printexc.to_string e);
+           let event = (Js.Unsafe.coerce Dom_html.document)##createEvent
+               (Js.string "TouchEvent")
+           in
+           event##initTouchEvent(name, Js._true, Js._true);
+           let touch = object%js
+             val identifier = identifier ev
+             val target = target
+             val clientX = x
+             val clientY = y
+           end
+           in
+           (Js.Unsafe.coerce event)##.targetTouches := Js.array [| touch |];
+           event
        in
-       let opt = object%js
-         val bubbles = Js._true
-         val changedTouches = Js.array [| touch |]
-       end
-       in
-       let startevent = new%js event (Js.string name) opt in
-       (Js.Unsafe.coerce target)##dispatchEvent startevent
+       (Js.Unsafe.coerce target)##dispatchEvent event
     )
 
 let%shared bind
@@ -87,10 +105,8 @@ let%shared bind
      in
      let onpan ev aa =
        let left = clX ev - !start in
-       let do_pan () =
-         elt'##.style##.left := px_of_int left;
-         Dom_html.stopPropagation ev;
-         Lwt.return ()
+       let do_pan left =
+         elt'##.style##.left := px_of_int left
        in
        if !status = `In_progress
        then
@@ -100,6 +116,7 @@ let%shared bind
               We stop the movement of this element
               and dispatch it to the parent. *)
            status := `Below;
+           do_pan min;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (min + !start) (clY ev);
            (* We propagate *)
@@ -109,11 +126,15 @@ let%shared bind
               We stop the movement of this element
               and dispatch it to the parent. *)
            status := `Above;
+           do_pan max;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (max + !start) (clY ev);
            (* We propagate *)
            Lwt.return ()
-         | _ -> do_pan ()
+         | _ ->
+           Dom_html.stopPropagation ev;
+           do_pan left;
+           Lwt.return ()
        else begin (* Shall we restart swiping this element? *)
          let restart_pos = match !status, ~%min, ~%max with
            | `Below, Some min, _ when left >= min -> Some min
@@ -128,7 +149,9 @@ let%shared bind
               but no touchend because it would possibly trigger a transition. *)
            dispatch_event ~ev elt' "touchmove" (restart_pos + !start) (clY ev);
            onpanstart0 ((* restart_pos + !start *));
-           do_pan ()
+           Dom_html.stopPropagation ev;
+           do_pan left;
+           Lwt.return ()
          | None -> (* We propagate *) Lwt.return ()
        end
      in
