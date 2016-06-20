@@ -50,11 +50,14 @@ let%client dispatch_event ~ev elt name x y =
            in
            new%js touchevent (Js.string name) opt
          with e ->
-           print_endline ("exn: "^Printexc.to_string e);
-           let event = (Js.Unsafe.coerce Dom_html.document)##createEvent
-               (Js.string "TouchEvent")
+           print_endline ("exn: "^Printexc.to_string e^" - switching to workaround. ");
+           (* HACK *)
+           let customEvent = Js.Unsafe.global##.CustomEvent in
+           let opt = object%js
+             val bubbles = Js._true
+           end
            in
-           event##initTouchEvent(name, Js._true, Js._true);
+           let event = new%js customEvent (Js.string "touchstart") opt in
            let touch = object%js
              val identifier = identifier ev
              val target = target
@@ -62,9 +65,15 @@ let%client dispatch_event ~ev elt name x y =
              val clientY = y
            end
            in
-           (Js.Unsafe.coerce event)##.targetTouches := Js.array [| touch |];
+           let touches = object%js
+             val item = Js.wrap_callback (fun _ -> Js.def touch)
+           end
+           in
+           (Js.Unsafe.coerce event)##.changedTouches := touches;
+           (* END HACK *)
            event
        in
+       Firebug.console##log event;
        (Js.Unsafe.coerce target)##dispatchEvent event
     )
 
