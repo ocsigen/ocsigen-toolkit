@@ -8,12 +8,17 @@
    Use [?min] and [?max] if you want to limit the displacement.
    If outside range, events will be propagated to parent
    (which makes it possible to have a swipeable element inside another one).
+
+   [?onstart] and [?onend] can be used to execute some side effect when swipe
+   starts or ends.
  *)
 val bind:
   ?transition_duration : float ->
   ?min : int ->
   ?max : int ->
   compute_final_pos: (int -> int) Eliom_client_value.t ->
+  ?onstart: (unit -> unit) Eliom_client_value.t ->
+  ?onend: (unit -> unit) Eliom_client_value.t ->
   'a Eliom_content.Html.elt ->
   unit
 

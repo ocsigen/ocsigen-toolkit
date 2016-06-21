@@ -86,6 +86,8 @@ let%shared bind
     ?(min : int option)
     ?(max : int option)
     ~(compute_final_pos : (int -> int) Eliom_client_value.t)
+    ?onstart
+    ?onend
     (elt : _ elt) =
   ignore [%client
     (let elt = ~%elt in
@@ -106,6 +108,7 @@ let%shared bind
          Manip.Class.remove elt "swiping";
          Lwt.return ());
        end;
+       Eliom_lib.Option.iter (fun f -> f ()) ~%onend;
        status := `Stopped;
        Lwt.return ()
      in
@@ -131,6 +134,7 @@ let%shared bind
            then begin
              Manip.Class.add elt "swiping";
              remove_transition elt';
+             Eliom_lib.Option.iter (fun f -> f ()) ~%onstart;
              `In_progress
            end
            else !status;
