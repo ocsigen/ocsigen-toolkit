@@ -21,3 +21,4 @@ val bind:
 [%%client.start]
 val clX : Dom_html.touchEvent Js.t -> int
 val clY : Dom_html.touchEvent Js.t -> int
+val threshold : int

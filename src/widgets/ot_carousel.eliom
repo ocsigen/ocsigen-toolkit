@@ -276,12 +276,12 @@ let%shared make
          status :=
            if abs (if vertical
                    then clX ev - startx
-                   else clY ev - starty) >= 10 then
+                   else clY ev - starty) >= Ot_swipe.threshold then
              `Aborted
            else
              if abs (if not vertical
                      then clX ev - startx
-                     else clY ev - starty) >= 10
+                     else clY ev - starty) >= Ot_swipe.threshold
              then begin
                Manip.Class.add ~%d2 "swiping";
                Dom.preventDefault ev;

@@ -3,6 +3,9 @@
 [%%shared open Eliom_content.Html ]
 [%%shared open Eliom_content.Html.F ]
 
+(** sensibility for detecting swipe left/right or up/down *)
+let%client threshold = 5
+
 let%client px_of_int v = Js.string (string_of_int v^"px")
 
 let%client identifier ev =
@@ -50,7 +53,8 @@ let%client dispatch_event ~ev elt name x y =
            in
            new%js touchevent (Js.string name) opt
          with e ->
-           print_endline ("exn: "^Printexc.to_string e^" - switching to workaround. ");
+           Printf.eprintf "%s\n"
+             ("exn: "^Printexc.to_string e^" - switching to workaround. ");
            (* HACK *)
            let customEvent = Js.Unsafe.global##.CustomEvent in
            let opt = object%js
@@ -86,37 +90,51 @@ let%shared bind
   ignore [%client
     (let elt = ~%elt in
      let elt' = To_dom.of_element elt in
-     let start = ref 0 (* position when touch starts *) in
+     let startx = ref 0 (* position when touch starts *) in
+     let starty = ref 0 (* position when touch starts *) in
      let initial_left = ref 0 (* position before touch starts *) in
      let status = ref `Stopped in
      let onpanend ev aa =
-       status := `Stopped;
+       if !status <> `Aborted
+       then begin
        add_transition ~%transition_duration elt';
-       let left = ~%compute_final_pos (clX ev - !start) in
+       let left = ~%compute_final_pos (clX ev - !startx) in
        elt'##.style##.left := px_of_int left;
        initial_left := left;
        Lwt.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend elt' in
          Manip.Class.remove elt "swiping";
          Lwt.return ());
+       end;
+       status := `Stopped;
        Lwt.return ()
      in
      let onpanstart0 () =
-       status := `In_progress;
-       Manip.Class.add elt "swiping"
+       status := `Start;
      in
      let onpanstart ev _ =
-       Dom_html.stopPropagation ev;
-       remove_transition elt';
-       start := (clX ev) - !initial_left;
+       startx := clX ev - !initial_left;
+       starty := clY ev;
        onpanstart0 ();
        Lwt.return ()
      in
      let onpan ev aa =
-       let left = clX ev - !start in
+       let left = clX ev - !startx in
        let do_pan left =
          elt'##.style##.left := px_of_int left
        in
+       if !status = `Start
+       then begin
+         status := if abs (clY ev - !starty) >= threshold
+           then `Aborted
+           else if left >= threshold
+           then begin
+             Manip.Class.add elt "swiping";
+             remove_transition elt';
+             `In_progress
+           end
+           else !status;
+       end;
        if !status = `In_progress
        then
          match ~%min, ~%max with
@@ -127,7 +145,7 @@ let%shared bind
            status := `Below;
            do_pan min;
            (* We send a touchstart event to the parent *)
-           dispatch_event ~ev elt' "touchstart" (min + !start) (clY ev);
+           dispatch_event ~ev elt' "touchstart" (min + !startx) (clY ev);
            (* We propagate *)
            Lwt.return ()
          | _, Some max when left > max ->
@@ -137,11 +155,12 @@ let%shared bind
            status := `Above;
            do_pan max;
            (* We send a touchstart event to the parent *)
-           dispatch_event ~ev elt' "touchstart" (max + !start) (clY ev);
+           dispatch_event ~ev elt' "touchstart" (max + !startx) (clY ev);
            (* We propagate *)
            Lwt.return ()
          | _ ->
            Dom_html.stopPropagation ev;
+           Dom.preventDefault ev;
            do_pan left;
            Lwt.return ()
        else begin (* Shall we restart swiping this element? *)
@@ -156,8 +175,8 @@ let%shared bind
            (* We send a touchmove event to the parent to fix
               its position precisely,
               but no touchend because it would possibly trigger a transition. *)
-           dispatch_event ~ev elt' "touchmove" (restart_pos + !start) (clY ev);
-           onpanstart0 ((* restart_pos + !start *));
+           dispatch_event ~ev elt' "touchmove" (restart_pos + !startx) (clY ev);
+           onpanstart0 ((* restart_pos + !startx *));
            Dom_html.stopPropagation ev;
            do_pan left;
            Lwt.return ()
