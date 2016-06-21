@@ -6,4 +6,5 @@ share: [
   "css/ot_picture_uploader.css" {"css/ot_picture_uploader.css"}
   "css/ot_icons.css"            {"css/ot_icons.css"}
   "css/ot_drawer.css"           {"css/ot_drawer.css"}
+  "css/ot_buttons.css"          {"css/ot_buttons.css"}
 ]
