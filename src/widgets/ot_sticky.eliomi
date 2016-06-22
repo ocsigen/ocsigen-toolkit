@@ -22,6 +22,19 @@ val is_sticky : 'a elt -> bool
 *)
 type set_size = [ `Fix | `Leave | `Sync ]
 
+type glue = {
+  elt : div_content D.elt;
+  placeholder : div_content D.elt;
+  dir : [`Top | `Left];
+  pos: set_size;
+  placeholder_width: set_size;
+  placeholder_height: set_size;
+  elt_width: set_size;
+  elt_height: set_size;
+  scroll_thread: unit Lwt.t;
+  resize_thread: unit Lwt.t;
+}
+
 (** polyfill for the value "sticky" of the CSS position attribute which is not
     supported by Chrome. It functions by creating a clone ("placeholder") of the
     designated element and continuously (window scroll/resize) monitoring the
@@ -30,9 +43,6 @@ type set_size = [ `Fix | `Leave | `Sync ]
     determine the size of the placeholder and the element while the element is
     stuck; be careful not to create cycles (e.g. [`Fix] for both
     [placeholder_width] and [elt_width]).
-    Kill the returned thread to make the element not behave as position:fixed
-    anymore. TODO: this can result in an unclean state! implement unglue
-    function!
     Make sure to also apply the CSS code "position: sticky" to the element as
     this function has no effect if "position: sticky" is supported by the
     browser (TODO)
@@ -45,11 +55,18 @@ val make_sticky :
   ?elt_height:set_size ->
   ?pos:set_size ->
   ?ios_html_scroll_hack:bool ->
-  div_content elt -> unit Lwt.t
+  div_content elt -> glue option
+
+(** stop element from being sticky *)
+val dissolve : glue -> unit
+
+type leash = {thread: unit Lwt.t; glue: glue option}
 
 (** make sure an element gets never out of sight while scrolling by continuously
     (window scroll/resize) monitoring the position of the element and adjusting
     the top/left value. Calls [make_sticky]. Make sure to also apply the CSS
     code "position: sticky" to the element.
 *)
-val keep_in_sight : dir:[ `Left | `Top ] -> div_content elt -> unit Lwt.t
+val keep_in_sight : dir:[ `Left | `Top ] -> div_content elt -> leash option
+
+val release : leash -> unit
