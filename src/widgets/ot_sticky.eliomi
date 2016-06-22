@@ -70,4 +70,5 @@ type leash = {thread: unit Lwt.t; glue: glue option}
 *)
 val keep_in_sight : dir:[ `Left | `Top ] -> div_content elt -> leash option
 
+(** stop element from being in sight (and also sticky) *)
 val release : leash -> unit
