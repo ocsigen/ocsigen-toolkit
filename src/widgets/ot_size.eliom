@@ -143,6 +143,14 @@
     int_of_float (Js.to_float elt##getBoundingClientRect##.right)
 
 
+  let client_page_top elt = int_of_float @@
+    elt##getBoundingClientRect##.top -.
+    Dom_html.document##.body##getBoundingClientRect##.top
+
+  let client_page_left elt = int_of_float @@
+    elt##getBoundingClientRect##.left -.
+    Dom_html.document##.body##getBoundingClientRect##.left
+
   let pageYOffset () = (* absolute vertical scroll position *)
     let get_clientHeight () =
       Dom_html.document##.documentElement##.clientHeight
