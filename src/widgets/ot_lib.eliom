@@ -20,6 +20,16 @@
  *)
 
 
+let%client parse_px str =
+  let str = Js.to_string str in
+  let len = String.length str in
+  try
+    let num = String.sub str 0 (len - 2) in
+    match String.sub str (len - 2) 2 with
+    | "px" -> Some (float_of_string num)
+    | _ -> None
+  with Invalid_argument _ | Match_failure _ -> None
+
 let%client onresizes handler =
   let thread = Lwt_js_events.onresizes handler in
   Eliom_client.onunload (fun () -> Lwt.cancel thread; None);

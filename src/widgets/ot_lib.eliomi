@@ -21,6 +21,9 @@
 
 [%%client.start]
 
+(** [parse_px "118.64px" = Some 118.64] *)
+val parse_px : Js.js_string Js.t -> float option
+
 (** NOTE: be careful when using the functions [onresizes], [window_scroll], and
     [window_scrolls]. They may be called before the new document is displayed
     (and thus the new window is there) and therefore may be attached to the
