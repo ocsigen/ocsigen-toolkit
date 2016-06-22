@@ -20,6 +20,11 @@
  *)
 
 
+let%client onresizes handler =
+  let thread = Lwt_js_events.onresizes handler in
+  Eliom_client.onunload (fun () -> Lwt.cancel thread; None);
+  thread
+
 let%client window_scroll ?use_capture () =
   Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
 

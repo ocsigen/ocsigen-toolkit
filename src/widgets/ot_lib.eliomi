@@ -28,6 +28,7 @@
  * let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element some_elt in
  * TODO: document the ios_html_scroll_hack workaround
  *)
+val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
