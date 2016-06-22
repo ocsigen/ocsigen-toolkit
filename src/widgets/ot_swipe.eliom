@@ -94,7 +94,6 @@ let%shared bind
      let elt' = To_dom.of_element elt in
      let startx = ref 0 (* position when touch starts *) in
      let starty = ref 0 (* position when touch starts *) in
-     let initial_left = ref 0 (* position before touch starts *) in
      let status = ref `Stopped in
      let onpanend ev aa =
        if !status <> `Aborted
@@ -102,7 +101,6 @@ let%shared bind
        add_transition ~%transition_duration elt';
        let left = ~%compute_final_pos (clX ev - !startx) in
        elt'##.style##.left := px_of_int left;
-       initial_left := left;
        Lwt.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend elt' in
          Manip.Class.remove elt "swiping";
@@ -116,7 +114,7 @@ let%shared bind
        status := `Start;
      in
      let onpanstart ev _ =
-       startx := clX ev - !initial_left;
+       startx := clX ev - elt'##.offsetLeft;
        starty := clY ev;
        onpanstart0 ();
        Lwt.return ()
