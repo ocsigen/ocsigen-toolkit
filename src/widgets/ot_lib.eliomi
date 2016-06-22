@@ -21,15 +21,16 @@
 
 [%%client.start]
 
-(* NOTE: TODO: rework this doc: be careful when using the following three functions.
- * They may start before the new document is displayed (and thus the new window
- * is there) and therefore may be attached to the window that is about to be
- * replaced. In most use-cases you should have a line as follows before:
- * let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element some_elt in
- * TODO: document the ios_html_scroll_hack workaround
- *)
+(** NOTE: be careful when using the functions [onresizes], [window_scroll], and
+    [window_scrolls]. They may be called before the new document is displayed
+    (and thus the new window is there) and therefore may be attached to the
+    window that is about to be replaced. In most use-cases you should have a
+    line as follows before:
+    let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element some_elt in
+*)
 val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
+(* TODO: document the [ios_html_scroll_hack] workaround *)
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
