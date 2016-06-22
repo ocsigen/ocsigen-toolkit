@@ -5,25 +5,25 @@ open Html_types
 
 (* This is about the real "position: sticky" *)
 
-let has_position_sticky elt =
+let is_position_sticky elt =
   let pos = Js.to_string
       (Dom_html.window##getComputedStyle (To_dom.of_element elt))##.position
   in pos = "-webkit-sticky" || pos = "sticky"
 
 let set_position_sticky elt =
-  has_position_sticky elt || begin
+  is_position_sticky elt || begin
     let old_pos = Manip.Css.position elt in
     Manip.SetCss.position elt "-webkit-sticky";
-    has_position_sticky elt || begin
+    is_position_sticky elt || begin
       Manip.SetCss.position elt "sticky";
-      has_position_sticky elt || (Manip.SetCss.position elt old_pos; false)
+      is_position_sticky elt || (Manip.SetCss.position elt old_pos; false)
     end
   end
 
 
 (* This is about the "position: sticky" polyfill *)
 
-let is_sticky elt = has_position_sticky elt || Manip.Class.contain elt "ot-sticky"
+let is_sticky elt = is_position_sticky elt || Manip.Class.contain elt "ot-sticky"
 
 (*TODO: Everything with *Px is rounded to pixels. We don't want this*)
 
@@ -140,7 +140,7 @@ let make_sticky
     ?(elt_height = if dir = `Top then `Leave else `Sync)
     ?(pos = `Sync)
     ?(ios_html_scroll_hack = false)
-    elt = if has_position_sticky elt then Lwt.return () else
+    elt = if is_position_sticky elt then Lwt.return () else
   let placeholder = Js.Opt.case
       (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
     (fun () -> failwith "muh")
