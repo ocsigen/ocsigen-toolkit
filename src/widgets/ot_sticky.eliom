@@ -20,6 +20,11 @@ let set_position_sticky elt =
     end
   end
 
+let supports_position_sticky elt = 
+  let old_pos = Manip.Css.position elt in
+  let res = set_position_sticky elt in
+  Manip.SetCss.position elt old_pos;
+  res
 
 (* This is about the "position: sticky" polyfill *)
 
@@ -119,9 +124,6 @@ let update_state g =
       | Some left -> if pos < left then stick g else detach g
     end
 
-(*TODO: should have no effect if position:sticky is supported*)
-    (* because even if sticky is not set*)
-    (*TODO: doc: kill the thread to make it unsticky *)
 let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
@@ -131,7 +133,7 @@ let make_sticky
     ?(elt_height = if dir = `Top then `Leave else `Sync)
     ?(pos = `Sync)
     ?(ios_html_scroll_hack = false)
-    elt = if is_position_sticky elt then None else
+    elt = if supports_position_sticky elt then None else
   let placeholder = Js.Opt.case
       (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
     (fun () -> failwith "muh")

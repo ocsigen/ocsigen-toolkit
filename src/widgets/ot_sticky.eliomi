@@ -8,6 +8,7 @@ val is_position_sticky : 'a elt -> bool
 (** try to set CSS attribute "position" to "sticky". [false] if unsuccessful *)
 val set_position_sticky : 'a elt -> bool
 
+val supports_position_sticky : 'a elt -> bool
 
 (** whether element is sticky, either due to CSS attribute position:sticky or 
     due to position:sticky polyfill [make_sticky] *)
