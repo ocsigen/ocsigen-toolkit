@@ -69,13 +69,15 @@
   (** Compute the height of an element to the bottom of the page *)
   val height_to_bottom : int -> Dom_html.element Js.t -> int
 
+  (** position of an element relative to the inner window *)
   val client_top : Dom_html.element Js.t -> int
-
   val client_bottom : Dom_html.element Js.t -> int
-
   val client_left : Dom_html.element Js.t -> int
-
   val client_right : Dom_html.element Js.t -> int
+
+  (** position of an element relative to the document *)
+  val client_page_top : Dom_html.element Js.t -> int
+  val client_page_left : Dom_html.element Js.t -> int
 
   (** Current vertical scroll position of the page. *)
   val pageYOffset : unit -> int

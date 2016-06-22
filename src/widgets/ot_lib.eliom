@@ -20,6 +20,53 @@
  *)
 
 
+let%client parse_px str =
+  let str = Js.to_string str in
+  let len = String.length str in
+  try
+    let num = String.sub str 0 (len - 2) in
+    match String.sub str (len - 2) 2 with
+    | "px" -> Some (float_of_string num)
+    | _ -> None
+  with Invalid_argument _ | Match_failure _ -> None
+
+let%client onresizes handler =
+  let thread = Lwt_js_events.onresizes handler in
+  Eliom_client.onunload (fun () -> Lwt.cancel thread; None);
+  thread
+
+let%client window_scroll ?use_capture () =
+  Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
+
+let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
+  (*TODO: use ios_html_scroll_fix *)
+  let thread = if ios_html_scroll_hack
+    then begin
+      let i = ref 0 in
+      let rec loop () =
+        let%lwt e = Lwt.pick @@ List.map
+          (* We listen to several elements because scroll events are
+             not happening on the same element on every platform. *)
+          (fun element -> Lwt_js_events.scroll ?use_capture element)
+          [ (Dom_html.window :> Dom_html.eventTarget Js.t) ;
+            (Dom_html.document##.documentElement :> Dom_html.eventTarget Js.t) ;
+            (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ]
+        in
+        let continue = ref true in
+        let w =
+          try%lwt fst(Lwt.wait())
+          with _ -> continue := false; Lwt.return_unit in
+        let%lwt () = handler e w in
+        let continue = !continue in
+        Lwt.cancel w;
+        if continue then loop () else Lwt.return_unit
+      in loop ()
+    end
+    else Lwt_js_events.seq_loop window_scroll ?use_capture () handler
+  in
+  Eliom_client.onunload (fun () -> Lwt.cancel thread; None);
+  thread
+
 let%client rec in_ancestors ~elt ~ancestor =
   elt == (ancestor : Dom_html.element Js.t)
   || (not (elt == Dom_html.document##.body)
