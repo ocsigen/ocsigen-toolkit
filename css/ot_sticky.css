@@ -1,0 +1,7 @@
+.ot-sticky.ot-stuck {
+    position: fixed;
+}
+
+.ot-sticky-placeholder {
+    visibility: hidden;
+}
