@@ -106,22 +106,18 @@ end
 let update_state g =
   let pos_elt = To_dom.of_element @@
     if Manip.Class.contain g.elt "ot-stuck" then g.placeholder else g.elt in
-  let parse_margin str = match Ot_lib.parse_px str with | None -> 0.0 | Some n -> n in
+  let parse_margin str = match Ot_size.parse_px str with | None -> 0.0 | Some n -> n in
   let computed_style elt = Dom_html.window##getComputedStyle elt in
   match g.dir with
   | `Top ->
-    let marginTop = parse_margin @@ (computed_style pos_elt)##.marginTop in
-    let pos = pos_elt##getBoundingClientRect##.top -. marginTop in
-    begin match Ot_lib.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.top with
+    begin match Ot_size.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.top with
       | None -> detach g
-      | Some top -> if pos < top then stick g else detach g
+      | Some top -> if Ot_size.client_top pos_elt < top then stick g else detach g
     end
   | `Left ->
-    let marginLeft = parse_margin @@ (computed_style pos_elt)##.marginLeft in
-    let pos = pos_elt##getBoundingClientRect##.left -. marginLeft in
-    begin match Ot_lib.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.left with
+    begin match Ot_size.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.left with
       | None -> detach g
-      | Some left -> if pos < left then stick g else detach g
+      | Some left -> if Ot_size.client_left pos_elt < left then stick g else detach g
     end
 
 let make_sticky

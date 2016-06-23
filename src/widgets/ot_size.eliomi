@@ -24,60 +24,69 @@
 [%%client.start]
   (** {3 Size and orientation} *)
 
-  type orientation = Portrait | Landscape
+type orientation = Portrait | Landscape
 
-  val get_screen_size : unit -> int * int
+val get_screen_size : unit -> int * int
 
-  val get_screen_orientation : unit -> orientation
+val get_screen_orientation : unit -> orientation
 
-  val get_size :
-    < clientHeight : < get : int; .. > Js.gen_prop;
-      clientWidth : < get : int; .. > Js.gen_prop; .. > Js.t ->
-   int * int
+val get_size :
+  < clientHeight : < get : int; .. > Js.gen_prop;
+    clientWidth : < get : int; .. > Js.gen_prop; .. > Js.t ->
+ int * int
 
-  val get_document_size : unit -> int * int
+val get_document_size : unit -> int * int
 
-  (** Convert an int into "%i px". *)
-  val int_of_pxstring : Js.js_string Js.t -> int
+(** [parse_px "118.64px" = Some 118.64] *)
+val parse_px : Js.js_string Js.t -> float option
 
-  (** Extract an int from a string of the form "%i px". *)
-  val pxstring_of_int : int -> Js.js_string Js.t
 
-  val get_full_width :
-    ?with_width:bool ->
-    ?with_padding:bool ->
-    ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
+(** Convert an int into "%i px". *)
+val int_of_pxstring : Js.js_string Js.t -> int
 
-  val get_full_height :
-    ?with_height:bool ->
-    ?with_padding:bool ->
-    ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
+(** Extract an int from a string of the form "%i px". *)
+val pxstring_of_int : int -> Js.js_string Js.t
 
-  val width_height : (int * int) React.signal
-  val width : int React.signal
-  val height : int React.signal
-  val update_width_height : unit -> unit
+val width_height : (int * int) React.signal
+val width : int React.signal
+val height : int React.signal
+val update_width_height : unit -> unit
 
-  (** [set_adaptative_width elt f] will make the width of the element
-      recomputed using [f] everytime the width of the window changes. *)
-  val set_adaptative_width : Dom_html.element Js.t -> (int -> int) -> unit
+(** [set_adaptative_width elt f] will make the width of the element
+    recomputed using [f] everytime the width of the window changes. *)
+val set_adaptative_width : Dom_html.element Js.t -> (int -> int) -> unit
 
-  (** [set_adaptative_height elt f] will make the width of the element
-      recomputed using [f] everytime the height of the window changes. *)
-  val set_adaptative_height : Dom_html.element Js.t -> (int -> int) -> unit
+(** [set_adaptative_height elt f] will make the width of the element
+    recomputed using [f] everytime the height of the window changes. *)
+val set_adaptative_height : Dom_html.element Js.t -> (int -> int) -> unit
 
-  (** Compute the height of an element to the bottom of the page *)
-  val height_to_bottom : int -> Dom_html.element Js.t -> int
+(** Compute the height of an element to the bottom of the page *)
+val height_to_bottom : int -> Dom_html.element Js.t -> int
 
-  (** position of an element relative to the inner window *)
-  val client_top : Dom_html.element Js.t -> int
-  val client_bottom : Dom_html.element Js.t -> int
-  val client_left : Dom_html.element Js.t -> int
-  val client_right : Dom_html.element Js.t -> int
+val marginTop    : Dom_html.element Js.t -> float
+val marginBottom : Dom_html.element Js.t -> float
+val marginLeft   : Dom_html.element Js.t -> float
+val marginRight  : Dom_html.element Js.t -> float
 
-  (** position of an element relative to the document *)
-  val client_page_top : Dom_html.element Js.t -> int
-  val client_page_left : Dom_html.element Js.t -> int
+(** position of an element relative to the inner window *)
+val client_top    : ?with_border:bool -> Dom_html.element Js.t -> float
+val client_bottom : ?with_border:bool -> Dom_html.element Js.t -> float
+val client_left   : ?with_border:bool -> Dom_html.element Js.t -> float
+val client_right  : ?with_border:bool -> Dom_html.element Js.t -> float
 
-  (** Current vertical scroll position of the page. *)
-  val pageYOffset : unit -> int
+val get_full_width :
+  ?with_width:bool ->
+  ?with_padding:bool ->
+  ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
+
+val get_full_height :
+  ?with_height:bool ->
+  ?with_padding:bool ->
+  ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
+
+(** position of an element relative to the document *)
+val client_page_top : Dom_html.element Js.t -> int
+val client_page_left : Dom_html.element Js.t -> int
+
+(** Current vertical scroll position of the page. *)
+val pageYOffset : unit -> int

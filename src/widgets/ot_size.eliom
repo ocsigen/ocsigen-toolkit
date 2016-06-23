@@ -19,150 +19,174 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(*TODO: dedicated module around getComputedStyle*)
 
-[%%client
-  (* size and orientation *)
-  type orientation = Portrait | Landscape
+[%%client.start]
+(* size and orientation *)
+type orientation = Portrait | Landscape
 
-  let get_screen_size () =
-    let scr = Dom_html.window##.screen in
-    scr##.width, scr##.height
+let get_screen_size () =
+  let scr = Dom_html.window##.screen in
+  scr##.width, scr##.height
 
-  let get_screen_orientation () =
-    let width, height = get_screen_size () in
-    if (width <= height) then Portrait else Landscape
+let get_screen_orientation () =
+  let width, height = get_screen_size () in
+  if (width <= height) then Portrait else Landscape
 
-  let get_size dom_html =
-    dom_html##.clientWidth, dom_html##.clientHeight
+let get_size dom_html =
+  dom_html##.clientWidth, dom_html##.clientHeight
 
-  let get_document_size () =
-    get_size Dom_html.document##.documentElement
+let get_document_size () =
+  get_size Dom_html.document##.documentElement
 
-  (* No: this must be recomputed every time,
-     otherwise it won't work after a change page
-     -- Vincent
-  let page = Dom_html.document##documentElement
-  *)
+(* No: this must be recomputed every time,
+   otherwise it won't work after a change page
+   -- Vincent
+let page = Dom_html.document##documentElement
+*)
 
-  let subs_suffix s n =
-    String.sub s 0 ((String.length s) - n)
+let subs_suffix s n =
+  String.sub s 0 ((String.length s) - n)
 
-  let int_of_pxstring px =
-    if not (String.length (Js.to_string px) > 2) then 0
-    else
-      (match (Js.to_string px) with
-         | s when s = (subs_suffix s 2)^"px" ->
-             int_of_float (float_of_string (subs_suffix s 2))
-         | _ -> 0 (* raise exception ? *))
+let parse_px str =
+  let str = Js.to_string str in
+  let len = String.length str in
+  try
+    let num = String.sub str 0 (len - 2) in
+    match String.sub str (len - 2) 2 with
+    | "px" -> Some (float_of_string num)
+    | _ -> None
+  with Invalid_argument _ | Match_failure _ -> None
 
-  let pxstring_of_int px =
-    Js.string ((string_of_int px)^"px")
+let float_of_px str = match parse_px str with | None -> 0.0 | Some x -> x
 
-  let get_full_width
-        ?(with_width = true)
-        ?(with_padding = true)
-        ?(with_border = true)
-        (elt_style : Dom_html.cssStyleDeclaration Js.t)
-    =
-    let ifdef b v = if b then v else 0 in
-      (ifdef with_width (int_of_pxstring (elt_style##.width)))
-    + (ifdef with_padding (int_of_pxstring (elt_style##.paddingLeft)))
-    + (ifdef with_padding (int_of_pxstring (elt_style##.paddingRight)))
-    + (ifdef with_border (int_of_pxstring (elt_style##.borderLeftWidth)))
-    + (ifdef with_border (int_of_pxstring (elt_style##.borderRightWidth)))
+let int_of_pxstring px =
+  if not (String.length (Js.to_string px) > 2) then 0
+  else
+    (match (Js.to_string px) with
+       | s when s = (subs_suffix s 2)^"px" ->
+           int_of_float (float_of_string (subs_suffix s 2))
+       | _ -> 0 (* raise exception ? *))
 
-  let get_full_height
-        ?(with_height = true)
-        ?(with_padding = true)
-        ?(with_border = true)
-        (elt_style : Dom_html.cssStyleDeclaration Js.t)
-    =
-    let ifdef b v = if b then v else 0 in
-      (ifdef with_height (int_of_pxstring (elt_style##.height)))
-    + (ifdef with_padding (int_of_pxstring (elt_style##.paddingTop)))
-    + (ifdef with_padding (int_of_pxstring (elt_style##.paddingBottom)))
-    + (ifdef with_border (int_of_pxstring (elt_style##.borderTopWidth)))
-    + (ifdef with_border (int_of_pxstring (elt_style##.borderBottomWidth)))
+let pxstring_of_int px =
+  Js.string ((string_of_int px)^"px")
 
-  let wh, set_wh =
-    let page = Dom_html.document##.documentElement in
-    React.S.create (page##.clientWidth, page##.clientHeight)
+let wh, set_wh =
+  let page = Dom_html.document##.documentElement in
+  React.S.create (page##.clientWidth, page##.clientHeight)
 
-  let update_width_height () =
-    let page = Dom_html.document##.documentElement in
-    let w = page##.clientWidth in
-    let h = page##.clientHeight in
-    set_wh (w, h)
+let update_width_height () =
+  let page = Dom_html.document##.documentElement in
+  let w = page##.clientWidth in
+  let h = page##.clientHeight in
+  set_wh (w, h)
 
-  let width_height, width, height =
-    (* TODO: MutationObserver? *)
-    Lwt_js_events.(async @@ fun () -> onresizes @@ fun _ _ ->
-      Lwt.return @@ update_width_height ());
-    let w = React.S.l1 fst wh in
-    let h = React.S.l1 snd wh in
-    (* Make sure the signals are not destroyed indirectly
-       by a call to React.S.stop *)
-    ignore (React.S.map (fun _ -> ()) w);
-    ignore (React.S.map (fun _ -> ()) h);
-    (wh, w, h)
+let width_height, width, height =
+  (* TODO: MutationObserver? *)
+  Lwt_js_events.(async @@ fun () -> onresizes @@ fun _ _ ->
+    Lwt.return @@ update_width_height ());
+  let w = React.S.l1 fst wh in
+  let h = React.S.l1 snd wh in
+  (* Make sure the signals are not destroyed indirectly
+     by a call to React.S.stop *)
+  ignore (React.S.map (fun _ -> ()) w);
+  ignore (React.S.map (fun _ -> ()) h);
+  (wh, w, h)
 
-  let set_adaptative_width elt f =
-    (*VVV Warning: it works only because we do not have weak pointers
-      on client side, thus the signal is not garbage collected.
-      If Weak is implemented on client side, we must keep a pointer
-      on this signal in the element *)
-    ignore (React.S.map
-              (fun w -> elt##.style##.width :=
-                Js.string (string_of_int (f w)^"px")) height)
+let set_adaptative_width elt f =
+  (*VVV Warning: it works only because we do not have weak pointers
+    on client side, thus the signal is not garbage collected.
+    If Weak is implemented on client side, we must keep a pointer
+    on this signal in the element *)
+  ignore (React.S.map
+            (fun w -> elt##.style##.width :=
+              Js.string (string_of_int (f w)^"px")) height)
 
-  let set_adaptative_height elt f =
-    (*VVV see above *)
-    ignore
-      (React.S.map
-         (fun w -> elt##.style##.height :=
-           Js.string (string_of_int (f w)^"px")) height)
+let set_adaptative_height elt f =
+  (*VVV see above *)
+  ignore
+    (React.S.map
+       (fun w -> elt##.style##.height :=
+         Js.string (string_of_int (f w)^"px")) height)
 
-  let of_opt elt =
-    Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
+let of_opt elt =
+  Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
 
-  let height_to_bottom offset elt =
-    let page = Dom_html.document##.documentElement in
-    let h = page##.clientHeight in
-    try
-      let top = Js.to_float (of_opt (elt##getClientRects##(item (0))))##.top in
-      h - int_of_float top - offset
-    with Failure _ -> h - offset
-
-  let client_top elt =
-    int_of_float (Js.to_float elt##getBoundingClientRect##.top)
-  let client_bottom elt =
-    int_of_float (Js.to_float elt##getBoundingClientRect##.bottom)
-  let client_left elt =
-    int_of_float (Js.to_float elt##getBoundingClientRect##.left)
-  let client_right elt =
-    int_of_float (Js.to_float elt##getBoundingClientRect##.right)
+let height_to_bottom offset elt =
+  let page = Dom_html.document##.documentElement in
+  let h = page##.clientHeight in
+  try
+    let top = Js.to_float (of_opt (elt##getClientRects##(item (0))))##.top in
+    h - int_of_float top - offset
+  with Failure _ -> h - offset
 
 
-  let client_page_top elt = int_of_float @@
-    elt##getBoundingClientRect##.top -.
-    Dom_html.document##.body##getBoundingClientRect##.top
+let marginTop    e = float_of_px (Dom_html.window##getComputedStyle e)##.marginTop
+let marginBottom e = float_of_px (Dom_html.window##getComputedStyle e)##.marginBottom
+let marginLeft   e = float_of_px (Dom_html.window##getComputedStyle e)##.marginLeft
+let marginRight  e = float_of_px (Dom_html.window##getComputedStyle e)##.marginRight
 
-  let client_page_left elt = int_of_float @@
-    elt##getBoundingClientRect##.left -.
-    Dom_html.document##.body##getBoundingClientRect##.left
+let client_val ~with_border value border =
+  Js.to_float value +. if with_border then float_of_px border else 0.0
 
-  let pageYOffset () = (* absolute vertical scroll position *)
-    let get_clientHeight () =
-      Dom_html.document##.documentElement##.clientHeight
-    in
-    (* on some browsers innerHeight is not available -> fall back to clientHeight *)
-    let get_innerHeight () =
-      try (Js.Unsafe.coerce Dom_html.window)##.innerHeight
-      with _ -> get_clientHeight ()
-    in
-    max 0 @@ (* overscroll at the top *)
-    min      (* overscroll at the bottom *)
-      (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
-      ((Js.Unsafe.coerce Dom_html.window)##.pageYOffset)
+let client_top ?(with_border = true) elt =
+  Js.to_float elt##getBoundingClientRect##.top -.
+  if with_border then marginTop elt else 0.0
+let client_bottom ?(with_border = true) elt =
+  Js.to_float elt##getBoundingClientRect##.bottom -.
+  if with_border then marginBottom elt else 0.0
+let client_left ?(with_border = true) elt =
+  Js.to_float elt##getBoundingClientRect##.left -.
+  if with_border then marginLeft elt else 0.0
+let client_right ?(with_border = true) elt =
+  Js.to_float elt##getBoundingClientRect##.right -.
+  if with_border then marginRight elt else 0.0
 
-]
+let get_full_width
+      ?(with_width = true)
+      ?(with_padding = true)
+      ?(with_border = true)
+      (elt_style : Dom_html.cssStyleDeclaration Js.t)
+  =
+  let maybe b m = if b then match m with | None -> 0 | Some x -> x else 0 in
+  let ifdef b v = if b then v else 0 in
+    (ifdef with_width (int_of_pxstring (elt_style##.width)))
+  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingLeft)))
+  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingRight)))
+  + (ifdef with_border (int_of_pxstring (elt_style##.borderLeftWidth)))
+  + (ifdef with_border (int_of_pxstring (elt_style##.borderRightWidth)))
+
+let get_full_height
+      ?(with_height = true)
+      ?(with_padding = true)
+      ?(with_border = true)
+      (elt_style : Dom_html.cssStyleDeclaration Js.t)
+  =
+  let ifdef b v = if b then v else 0 in
+    (ifdef with_height (int_of_pxstring (elt_style##.height)))
+  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingTop)))
+  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingBottom)))
+  + (ifdef with_border (int_of_pxstring (elt_style##.borderTopWidth)))
+  + (ifdef with_border (int_of_pxstring (elt_style##.borderBottomWidth)))
+
+let client_page_top elt = int_of_float @@
+  elt##getBoundingClientRect##.top -.
+  Dom_html.document##.body##getBoundingClientRect##.top
+
+let client_page_left elt = int_of_float @@
+  elt##getBoundingClientRect##.left -.
+  Dom_html.document##.body##getBoundingClientRect##.left
+
+let pageYOffset () = (* absolute vertical scroll position *)
+  let get_clientHeight () =
+    Dom_html.document##.documentElement##.clientHeight
+  in
+  (* on some browsers innerHeight is not available -> fall back to clientHeight *)
+  let get_innerHeight () =
+    try (Js.Unsafe.coerce Dom_html.window)##.innerHeight
+    with _ -> get_clientHeight ()
+  in
+  max 0 @@ (* overscroll at the top *)
+  min      (* overscroll at the bottom *)
+    (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
+    ((Js.Unsafe.coerce Dom_html.window)##.pageYOffset)
