@@ -53,7 +53,10 @@ val set_adaptative_height : #Dom_html.element Js.t -> (int -> int) -> unit
 (** Compute the height of an element to the bottom of the page *)
 val height_to_bottom : int -> #Dom_html.element Js.t -> int
 
-(** position of an element relative to the inner window *)
+(** position of an element relative to the inner window;
+    getClientBoundingRect does not include borders by default, use [with_border]
+    to take them into account.
+*)
 val client_top    : ?with_border:bool -> #Dom_html.element Js.t -> float
 val client_bottom : ?with_border:bool -> #Dom_html.element Js.t -> float
 val client_left   : ?with_border:bool -> #Dom_html.element Js.t -> float
