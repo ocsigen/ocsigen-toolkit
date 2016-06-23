@@ -49,26 +49,26 @@ type glue = {
 
 let synchronise g = if Manip.Class.contain g.elt "ot-stuck" then begin
   if g.placeholder_width = `Sync then Ot_style.set_width g.placeholder @@
-    Ot_size.client_width ~with_border:false (To_dom.of_element g.elt);
+    Ot_size.client_width (To_dom.of_element g.elt);
   if g.placeholder_height = `Sync then Ot_style.set_height g.placeholder @@
-    Ot_size.client_height ~with_border:false (To_dom.of_element g.elt);
+    Ot_size.client_height (To_dom.of_element g.elt);
   if g.elt_width = `Sync then Ot_style.set_width g.elt @@
-    Ot_size.client_width ~with_border:false (To_dom.of_element g.placeholder);
+    Ot_size.client_width (To_dom.of_element g.placeholder);
   if g.elt_height = `Sync then Ot_style.set_height g.elt @@
-    Ot_size.client_height ~with_border:false (To_dom.of_element g.placeholder);
+    Ot_size.client_height (To_dom.of_element g.placeholder);
   if g.pos = `Sync then begin match g.dir with
     | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left
-        ~with_border:false (To_dom.of_element g.placeholder)
+        (To_dom.of_element g.placeholder)
     | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top
-        ~with_border:false (To_dom.of_element g.placeholder)
+        (To_dom.of_element g.placeholder)
   end
 end
 
 let stick g = if not @@ Manip.Class.contain g.elt "ot-stuck" then begin
   (*TODO: save/restore old top/position/height/width values*)
   let elt = To_dom.of_element g.elt in
-  let width  = Ot_size.client_width  ~with_border:false elt in
-  let height = Ot_size.client_height ~with_border:false elt in
+  let width  = Ot_size.client_width  elt in
+  let height = Ot_size.client_height elt in
   if g.placeholder_width  = `Fix then Ot_style.set_width  g.placeholder width;
   if g.placeholder_height = `Fix then Ot_style.set_height g.placeholder height;
   if g.elt_width  = `Fix then Ot_style.set_width  g.elt width;
