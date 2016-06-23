@@ -57,10 +57,10 @@ let synchronise g = if Manip.Class.contain g.elt "ot-stuck" then begin
   if g.elt_height = `Sync then
     Manip.SetCss.heightPx g.elt @@ Manip.Attr.offsetHeight g.placeholder;
   if g.pos = `Sync then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.placeholder)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.placeholder)
+    | `Top -> Manip.SetCss.left g.elt @@ Ot_style.px_of_float @@
+                Ot_size.client_page_left (To_dom.of_element g.placeholder)
+    | `Left -> Manip.SetCss.top g.elt @@ Ot_style.px_of_float @@
+                Ot_size.client_page_top (To_dom.of_element g.placeholder)
   end
 end
 
@@ -73,16 +73,16 @@ let stick g = if not @@ Manip.Class.contain g.elt "ot-stuck" then begin
   if g.elt_width = `Fix then Manip.SetCss.widthPx g.elt width;
   if g.elt_height = `Fix then Manip.SetCss.heightPx g.elt height;
   if g.pos = `Fix then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.elt)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.elt)
+    | `Top -> Manip.SetCss.left g.elt @@ Ot_style.px_of_float @@
+                Ot_size.client_page_left (To_dom.of_element g.elt)
+    | `Left -> Manip.SetCss.top g.elt @@ Ot_style.px_of_float @@
+                 Ot_size.client_page_top (To_dom.of_element g.elt)
   end;
   if g.pos = `Fix then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.elt)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.elt)
+    | `Top -> Manip.SetCss.left g.elt @@ Ot_style.px_of_float @@
+                Ot_size.client_page_left (To_dom.of_element g.elt)
+    | `Left -> Manip.SetCss.top g.elt @@ Ot_style.px_of_float @@
+                 Ot_size.client_page_top (To_dom.of_element g.elt)
   end;
   Manip.Class.add g.elt "ot-stuck";
   Manip.Class.add g.placeholder "ot-stuck";
@@ -185,11 +185,12 @@ let keep_in_sight ~dir elt =
       match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
       let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
       let compute_top win_height =
+        let win_height = float_of_int win_height in
         let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
-        let elt_height = Manip.Attr.clientHeight elt in
-        if elt_height > win_height - parent_top
-          then Manip.SetCss.topPx elt (win_height - elt_height)
-          else Manip.SetCss.topPx elt parent_top
+        let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+        if elt_height > win_height -. parent_top
+          then Manip.SetCss.top elt @@ Ot_style.px_of_float (win_height -. elt_height)
+          else Manip.SetCss.top elt @@ Ot_style.px_of_float parent_top
       in
       ignore @@ React.S.map compute_top Ot_size.height;
       ignore @@ React.E.map

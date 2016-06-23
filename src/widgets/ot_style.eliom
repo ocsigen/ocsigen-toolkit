@@ -19,8 +19,6 @@ val parse_px : Js.js_string Js.t -> float option
 
 open Eliom_content.Html
 
-let style elt = Dom_html.window##getComputedStyle elt
-
 let parse_px str =
   let str = Js.to_string str in
   let len = String.length str in
@@ -32,6 +30,9 @@ let parse_px str =
   with Invalid_argument _ | Match_failure _ -> None
 
 let float_of_px str = match parse_px str with | None -> 0.0 | Some x -> x
+let px_of_float px = string_of_float px ^ "px"
+
+let style elt = Dom_html.window##getComputedStyle elt
 
 let top    elt = parse_px (style elt)##.top
 let bottom elt = parse_px (style elt)##.bottom

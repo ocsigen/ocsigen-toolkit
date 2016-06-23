@@ -44,20 +44,6 @@ let get_document_size () =
 let page = Dom_html.document##documentElement
 *)
 
-let subs_suffix s n =
-  String.sub s 0 ((String.length s) - n)
-
-let int_of_pxstring px =
-  if not (String.length (Js.to_string px) > 2) then 0
-  else
-    (match (Js.to_string px) with
-       | s when s = (subs_suffix s 2)^"px" ->
-           int_of_float (float_of_string (subs_suffix s 2))
-       | _ -> 0 (* raise exception ? *))
-
-let pxstring_of_int px =
-  Js.string ((string_of_int px)^"px")
-
 let wh, set_wh =
   let page = Dom_html.document##.documentElement in
   React.S.create (page##.clientWidth, page##.clientHeight)
@@ -124,11 +110,11 @@ let client_height ?(with_border = true) elt =
 let client_width ?(with_border = true) elt =
   client_right ~with_border elt -. client_left ~with_border elt
 
-let client_page_top elt = int_of_float @@
+let client_page_top elt =
   elt##getBoundingClientRect##.top -. (*TODO: use the above functions*)
   Dom_html.document##.body##getBoundingClientRect##.top
 
-let client_page_left elt = int_of_float @@
+let client_page_left elt =
   elt##getBoundingClientRect##.left -.
   Dom_html.document##.body##getBoundingClientRect##.left
 
