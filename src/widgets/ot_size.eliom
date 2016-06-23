@@ -19,7 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(*TODO: dedicated module around getComputedStyle*)
 
 [%%client.start]
 (* size and orientation *)
@@ -47,18 +46,6 @@ let page = Dom_html.document##documentElement
 
 let subs_suffix s n =
   String.sub s 0 ((String.length s) - n)
-
-let parse_px str =
-  let str = Js.to_string str in
-  let len = String.length str in
-  try
-    let num = String.sub str 0 (len - 2) in
-    match String.sub str (len - 2) 2 with
-    | "px" -> Some (float_of_string num)
-    | _ -> None
-  with Invalid_argument _ | Match_failure _ -> None
-
-let float_of_px str = match parse_px str with | None -> 0.0 | Some x -> x
 
 let int_of_pxstring px =
   if not (String.length (Js.to_string px) > 2) then 0
@@ -120,57 +107,21 @@ let height_to_bottom offset elt =
     h - int_of_float top - offset
   with Failure _ -> h - offset
 
-
-let marginTop    e = float_of_px (Dom_html.window##getComputedStyle e)##.marginTop
-let marginBottom e = float_of_px (Dom_html.window##getComputedStyle e)##.marginBottom
-let marginLeft   e = float_of_px (Dom_html.window##getComputedStyle e)##.marginLeft
-let marginRight  e = float_of_px (Dom_html.window##getComputedStyle e)##.marginRight
-
-let client_val ~with_border value border =
-  Js.to_float value +. if with_border then float_of_px border else 0.0
-
 let client_top ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.top -.
-  if with_border then marginTop elt else 0.0
+  if with_border then Ot_style.marginTop elt else 0.0
 let client_bottom ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.bottom -.
-  if with_border then marginBottom elt else 0.0
+  if with_border then Ot_style.marginBottom elt else 0.0
 let client_left ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.left -.
-  if with_border then marginLeft elt else 0.0
+  if with_border then Ot_style.marginLeft elt else 0.0
 let client_right ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.right -.
-  if with_border then marginRight elt else 0.0
-
-let get_full_width
-      ?(with_width = true)
-      ?(with_padding = true)
-      ?(with_border = true)
-      (elt_style : Dom_html.cssStyleDeclaration Js.t)
-  =
-  let maybe b m = if b then match m with | None -> 0 | Some x -> x else 0 in
-  let ifdef b v = if b then v else 0 in
-    (ifdef with_width (int_of_pxstring (elt_style##.width)))
-  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingLeft)))
-  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingRight)))
-  + (ifdef with_border (int_of_pxstring (elt_style##.borderLeftWidth)))
-  + (ifdef with_border (int_of_pxstring (elt_style##.borderRightWidth)))
-
-let get_full_height
-      ?(with_height = true)
-      ?(with_padding = true)
-      ?(with_border = true)
-      (elt_style : Dom_html.cssStyleDeclaration Js.t)
-  =
-  let ifdef b v = if b then v else 0 in
-    (ifdef with_height (int_of_pxstring (elt_style##.height)))
-  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingTop)))
-  + (ifdef with_padding (int_of_pxstring (elt_style##.paddingBottom)))
-  + (ifdef with_border (int_of_pxstring (elt_style##.borderTopWidth)))
-  + (ifdef with_border (int_of_pxstring (elt_style##.borderBottomWidth)))
+  if with_border then Ot_style.marginRight elt else 0.0
 
 let client_page_top elt = int_of_float @@
-  elt##getBoundingClientRect##.top -.
+  elt##getBoundingClientRect##.top -. (*TODO: use the above functions*)
   Dom_html.document##.body##getBoundingClientRect##.top
 
 let client_page_left elt = int_of_float @@

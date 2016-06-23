@@ -37,16 +37,6 @@ val get_size :
 
 val get_document_size : unit -> int * int
 
-(** [parse_px "118.64px" = Some 118.64] *)
-val parse_px : Js.js_string Js.t -> float option
-
-
-(** Convert an int into "%i px". *)
-val int_of_pxstring : Js.js_string Js.t -> int
-
-(** Extract an int from a string of the form "%i px". *)
-val pxstring_of_int : int -> Js.js_string Js.t
-
 val width_height : (int * int) React.signal
 val width : int React.signal
 val height : int React.signal
@@ -63,26 +53,11 @@ val set_adaptative_height : Dom_html.element Js.t -> (int -> int) -> unit
 (** Compute the height of an element to the bottom of the page *)
 val height_to_bottom : int -> Dom_html.element Js.t -> int
 
-val marginTop    : Dom_html.element Js.t -> float
-val marginBottom : Dom_html.element Js.t -> float
-val marginLeft   : Dom_html.element Js.t -> float
-val marginRight  : Dom_html.element Js.t -> float
-
 (** position of an element relative to the inner window *)
 val client_top    : ?with_border:bool -> Dom_html.element Js.t -> float
 val client_bottom : ?with_border:bool -> Dom_html.element Js.t -> float
 val client_left   : ?with_border:bool -> Dom_html.element Js.t -> float
 val client_right  : ?with_border:bool -> Dom_html.element Js.t -> float
-
-val get_full_width :
-  ?with_width:bool ->
-  ?with_padding:bool ->
-  ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
-
-val get_full_height :
-  ?with_height:bool ->
-  ?with_padding:bool ->
-  ?with_border:bool -> Dom_html.cssStyleDeclaration Js.t -> int
 
 (** position of an element relative to the document *)
 val client_page_top : Dom_html.element Js.t -> int
