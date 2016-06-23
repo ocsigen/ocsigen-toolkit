@@ -93,6 +93,8 @@ let height_to_bottom offset elt =
     h - int_of_float top - offset
   with Failure _ -> h - offset
 
+(*TODO: with_border should be false by default, maybe*)
+
 let client_top ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.top -.
   if with_border then Ot_style.marginTop elt else 0.0
@@ -110,12 +112,12 @@ let client_height ?(with_border = true) elt =
 let client_width ?(with_border = true) elt =
   client_right ~with_border elt -. client_left ~with_border elt
 
-let client_page_top elt =
-  elt##getBoundingClientRect##.top -. (*TODO: use the above functions*)
+let client_page_top ?with_border elt =
+  client_top ?with_border elt -.
   Dom_html.document##.body##getBoundingClientRect##.top
 
-let client_page_left elt =
-  elt##getBoundingClientRect##.left -.
+let client_page_left ?with_border elt =
+  client_left elt ?with_border -.
   Dom_html.document##.body##getBoundingClientRect##.left
 
 let pageYOffset () = (* absolute vertical scroll position *)

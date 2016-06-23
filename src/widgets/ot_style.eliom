@@ -43,3 +43,10 @@ let marginTop    e = float_of_px (style e)##.marginTop
 let marginBottom e = float_of_px (style e)##.marginBottom
 let marginLeft   e = float_of_px (style e)##.marginLeft
 let marginRight  e = float_of_px (style e)##.marginRight
+
+let set_top    e v = Manip.SetCss.top    e @@ px_of_float v
+let set_bottom e v = Manip.SetCss.bottom e @@ px_of_float v
+let set_left   e v = Manip.SetCss.left   e @@ px_of_float v
+let set_right  e v = Manip.SetCss.right  e @@ px_of_float v
+let set_width  e v = Manip.SetCss.bottom e @@ px_of_float v
+let set_height e v = Manip.SetCss.bottom e @@ px_of_float v
