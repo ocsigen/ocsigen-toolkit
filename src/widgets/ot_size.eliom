@@ -119,6 +119,10 @@ let client_left ?(with_border = true) elt =
 let client_right ?(with_border = true) elt =
   Js.to_float elt##getBoundingClientRect##.right -.
   if with_border then Ot_style.marginRight elt else 0.0
+let client_height ?(with_border = true) elt =
+  client_bottom ~with_border elt -. client_top ~with_border elt
+let client_width ?(with_border = true) elt =
+  client_right ~with_border elt -. client_left ~with_border elt
 
 let client_page_top elt = int_of_float @@
   elt##getBoundingClientRect##.top -. (*TODO: use the above functions*)
