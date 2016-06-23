@@ -52,6 +52,8 @@ we may observe this:
   ON |   false | body
 -----------------------------------------------------
 (Also, note that pure JavaScript "onscroll" attribute might be broken when ON.)
+It's useful to listen on html even if it's only relevant when ON + capture=true,
+because we probably want, when capture=true, to capture the event as early as possible.
 *)
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
