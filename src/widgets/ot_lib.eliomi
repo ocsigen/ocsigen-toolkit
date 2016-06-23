@@ -33,7 +33,26 @@ val parse_px : Js.js_string Js.t -> float option
 *)
 val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
-(* TODO: document the [ios_html_scroll_hack] workaround *)
+
+(** If [ios_html_scroll_hack] then listen on window + html + body instead of only window.
+On iOS (8 and 9), in WkWebView and in Safari, some CSS properties
+ (e.g. html{overflow:scroll; -webkit-overflow-scrolling: touch;})
+may move the scroll event from window to html or to body.
+For instance, with (ON) or without (OFF) the following CSS:
+html{overflow:scroll;-webkit-overflow-scrolling: touch;}
+we may observe this:
+     | capture | elements receiving the scroll events
+-----+---------+-------------------------------------
+ OFF |    true | window
+-----+---------+-------------------------------------
+ OFF |   false | window
+-----+---------+-------------------------------------
+  ON |    true | window + html + body
+-----+---------+-------------------------------------
+  ON |   false | body
+-----------------------------------------------------
+(Also, note that pure JavaScript "onscroll" attribute might be broken when ON.)
+*)
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
