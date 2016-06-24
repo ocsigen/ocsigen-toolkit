@@ -45,7 +45,7 @@ SERVER_PACKAGES := calendar lwt.ppx js_of_ocaml.deriving.ppx
 CLIENT_PACKAGES := calendar js_of_ocaml.ppx lwt.ppx js_of_ocaml.deriving.ppx
 
 # Debug package (yes/no): Debugging info in compilation
-DEBUG := no
+DEBUG := yes
 
 # Native mode (yes/no): Compile also with native mode (it will always
 # compile with byte mode)
