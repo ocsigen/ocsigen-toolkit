@@ -48,41 +48,38 @@ type glue = {
 }
 
 let synchronise g = if Manip.Class.contain g.elt "ot-stuck" then begin
-  if g.placeholder_width = `Sync then
-    Manip.SetCss.widthPx g.placeholder @@ Manip.Attr.offsetWidth g.elt;
-  if g.placeholder_height = `Sync then
-    Manip.SetCss.heightPx g.placeholder @@ Manip.Attr.offsetHeight g.elt;
-  if g.elt_width = `Sync then
-    Manip.SetCss.widthPx g.elt @@ Manip.Attr.offsetWidth g.placeholder;
-  if g.elt_height = `Sync then
-    Manip.SetCss.heightPx g.elt @@ Manip.Attr.offsetHeight g.placeholder;
+  if g.placeholder_width = `Sync then Ot_style.set_width g.placeholder @@
+    Ot_size.client_width (To_dom.of_element g.elt);
+  if g.placeholder_height = `Sync then Ot_style.set_height g.placeholder @@
+    Ot_size.client_height (To_dom.of_element g.elt);
+  if g.elt_width = `Sync then Ot_style.set_width g.elt @@
+    Ot_size.client_width (To_dom.of_element g.placeholder);
+  if g.elt_height = `Sync then Ot_style.set_height g.elt @@
+    Ot_size.client_height (To_dom.of_element g.placeholder);
   if g.pos = `Sync then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
+    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left
         (To_dom.of_element g.placeholder)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
+    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top
         (To_dom.of_element g.placeholder)
   end
 end
 
 let stick g = if not @@ Manip.Class.contain g.elt "ot-stuck" then begin
   (*TODO: save/restore old top/position/height/width values*)
-  let height = Manip.Attr.offsetHeight g.elt in
-  let width = Manip.Attr.offsetWidth g.elt in
-  if g.placeholder_width = `Fix then Manip.SetCss.widthPx g.placeholder width;
-  if g.placeholder_height = `Fix then Manip.SetCss.heightPx g.placeholder height;
-  if g.elt_width = `Fix then Manip.SetCss.widthPx g.elt width;
-  if g.elt_height = `Fix then Manip.SetCss.heightPx g.elt height;
+  let elt = To_dom.of_element g.elt in
+  let width  = Ot_size.client_width  elt in
+  let height = Ot_size.client_height elt in
+  if g.placeholder_width  = `Fix then Ot_style.set_width  g.placeholder width;
+  if g.placeholder_height = `Fix then Ot_style.set_height g.placeholder height;
+  if g.elt_width  = `Fix then Ot_style.set_width  g.elt width;
+  if g.elt_height = `Fix then Ot_style.set_height g.elt height;
   if g.pos = `Fix then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.elt)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.elt)
+    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left elt
+    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top  elt
   end;
   if g.pos = `Fix then begin match g.dir with
-    | `Top -> Manip.SetCss.leftPx g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.elt)
-    | `Left -> Manip.SetCss.topPx g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.elt)
+    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left elt
+    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top  elt
   end;
   Manip.Class.add g.elt "ot-stuck";
   Manip.Class.add g.placeholder "ot-stuck";
@@ -106,22 +103,16 @@ end
 let update_state g =
   let pos_elt = To_dom.of_element @@
     if Manip.Class.contain g.elt "ot-stuck" then g.placeholder else g.elt in
-  let parse_margin str = match Ot_lib.parse_px str with | None -> 0.0 | Some n -> n in
-  let computed_style elt = Dom_html.window##getComputedStyle elt in
   match g.dir with
   | `Top ->
-    let marginTop = parse_margin @@ (computed_style pos_elt)##.marginTop in
-    let pos = pos_elt##getBoundingClientRect##.top -. marginTop in
-    begin match Ot_lib.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.top with
+    begin match Ot_style.top @@ To_dom.of_element g.elt with
       | None -> detach g
-      | Some top -> if pos < top then stick g else detach g
+      | Some top -> if Ot_size.client_top pos_elt < top then stick g else detach g
     end
   | `Left ->
-    let marginLeft = parse_margin @@ (computed_style pos_elt)##.marginLeft in
-    let pos = pos_elt##getBoundingClientRect##.left -. marginLeft in
-    begin match Ot_lib.parse_px @@ (computed_style @@ To_dom.of_element g.elt)##.left with
+    begin match Ot_style.left @@ To_dom.of_element g.elt with
       | None -> detach g
-      | Some left -> if pos < left then stick g else detach g
+      | Some left -> if Ot_size.client_left pos_elt < left then stick g else detach g
     end
 
 let make_sticky
@@ -191,11 +182,12 @@ let keep_in_sight ~dir elt =
       match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
       let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
       let compute_top win_height =
+        let win_height = float_of_int win_height in
         let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
-        let elt_height = Manip.Attr.clientHeight elt in
-        if elt_height > win_height - parent_top
-          then Manip.SetCss.topPx elt (win_height - elt_height)
-          else Manip.SetCss.topPx elt parent_top
+        let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+        if elt_height > win_height -. parent_top
+          then Ot_style.set_top elt (win_height -. elt_height)
+          else Ot_style.set_top elt parent_top
       in
       ignore @@ React.S.map compute_top Ot_size.height;
       ignore @@ React.E.map
