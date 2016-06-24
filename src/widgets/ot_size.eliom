@@ -97,13 +97,13 @@ let client_top ?(with_border = false) elt =
   Js.to_float elt##getBoundingClientRect##.top -.
   if with_border then Ot_style.marginTop elt else 0.0
 let client_bottom ?(with_border = false) elt =
-  Js.to_float elt##getBoundingClientRect##.bottom -.
+  Js.to_float elt##getBoundingClientRect##.bottom +.
   if with_border then Ot_style.marginBottom elt else 0.0
 let client_left ?(with_border = false) elt =
   Js.to_float elt##getBoundingClientRect##.left -.
   if with_border then Ot_style.marginLeft elt else 0.0
 let client_right ?(with_border = false) elt =
-  Js.to_float elt##getBoundingClientRect##.right -.
+  Js.to_float elt##getBoundingClientRect##.right +.
   if with_border then Ot_style.marginRight elt else 0.0
 let client_height ?(with_border = false) elt =
   client_bottom ~with_border elt -. client_top ~with_border elt
