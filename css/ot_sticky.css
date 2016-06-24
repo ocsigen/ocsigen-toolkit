@@ -1,7 +1,15 @@
-.ot-sticky.ot-stuck {
+.ot-sticky-fixed {
     position: fixed;
 }
-
-.ot-sticky-placeholder {
+.ot-sticky-fixed:not(.ot-stuck) {
     visibility: hidden;
 }
+
+.ot-sticky-inline.ot-stuck {
+    visibility: hidden;
+}
+
+// .ot-sticky-inline:not(.ot-stuck) {
+//     height: 0 !important;
+//     // display: none;
+// }
