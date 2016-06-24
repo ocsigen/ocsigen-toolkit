@@ -53,6 +53,9 @@ let%server with_spinner ?(a = []) ?fail thread =
 
 let num_active_spinners, set_num_active_spinners = React.S.create 0
 let onloaded, set_onloaded = React.E.create ()
+(* Make sure the signal is not destroyed indirectly
+   by a call to React.E.stop *)
+let _ = ignore (React.E.map (fun _ -> ()) onloaded)
 let _ = Eliom_client.onload @@ fun () ->
   if React.S.value num_active_spinners = 0 then set_onloaded ()
 let inc_active_spinners () =
