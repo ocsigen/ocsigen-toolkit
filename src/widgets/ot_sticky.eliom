@@ -79,23 +79,28 @@ let fix_size_pos g =
     | `Left -> Ot_style.set_top g.fixed @@ Ot_size.client_page_top  fixed
   end
 
-let stick g =
+let stick g = if not @@ Manip.Class.contain g.fixed "ot-stuck" then begin
   Manip.Class.add g.fixed "ot-stuck";
   Manip.Class.add g.inline "ot-stuck"
+end
 
-let detach g =
+let detach g = if Manip.Class.contain g.fixed "ot-stuck" then begin
   Manip.Class.remove g.fixed "ot-stuck";
   Manip.Class.remove g.inline "ot-stuck"
+end
 
 let update_state g =
   let fixed = To_dom.of_element g.fixed in
   let inline = To_dom.of_element g.inline in
   match g.dir with
-  | `Top -> if Ot_size.client_top fixed > Ot_size.client_top inline
+  | `Top ->
+    print_endline @@ string_of_float (Ot_size.client_top fixed) ^ " " ^ string_of_float (Ot_size.client_top inline);
+    if Ot_size.client_top fixed > Ot_size.client_top inline
               then stick g else detach g
   | `Left -> if Ot_size.client_left fixed > Ot_size.client_left inline
                then stick g else detach g
 
+(*TODO: doc: should be a D element*)
 let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
@@ -108,7 +113,7 @@ let make_sticky
     elt = if supports_position_sticky elt then None else
   let inline = Js.Opt.case
       (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._true)
-    (fun () -> failwith "muh")
+      (fun () -> failwith "could not clone element to make it sticky")
     (fun x -> x)
   in
   let inline = Of_dom.of_element @@ Dom_html.element inline in
