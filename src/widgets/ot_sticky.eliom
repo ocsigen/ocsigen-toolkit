@@ -47,7 +47,7 @@ type glue = {
   resize_thread: unit Lwt.t;
 }
 
-let synchronise g = if Manip.Class.contain g.fixed "ot-stuck" then begin
+let synchronise g =
   if g.inline_width = `Sync then Ot_style.set_width g.inline @@
     Ot_size.client_width (To_dom.of_element g.fixed);
   if g.inline_height = `Sync then Ot_style.set_height g.inline @@
@@ -56,16 +56,13 @@ let synchronise g = if Manip.Class.contain g.fixed "ot-stuck" then begin
     Ot_size.client_width (To_dom.of_element g.inline);
   if g.fixed_height = `Sync then Ot_style.set_height g.fixed @@
     Ot_size.client_height (To_dom.of_element g.inline);
-  if g.pos = `Sync then begin match g.dir with
+  if g.pos = `Sync then match g.dir with
     | `Top -> Ot_style.set_left g.fixed @@ Ot_size.client_page_left
         (To_dom.of_element g.inline)
     | `Left -> Ot_style.set_top g.fixed @@ Ot_size.client_page_top
         (To_dom.of_element g.inline)
-  end
-end
 
-let stick g = if not @@ Manip.Class.contain g.fixed "ot-stuck" then begin
-  (*TODO: save/restore old top/position/height/width values*)
+let fix_size_pos g =
   let fixed = To_dom.of_element g.fixed in
   let width  = Ot_size.client_width  fixed in
   let height = Ot_size.client_height fixed in
@@ -80,22 +77,15 @@ let stick g = if not @@ Manip.Class.contain g.fixed "ot-stuck" then begin
   if g.pos = `Fix then begin match g.dir with
     | `Top -> Ot_style.set_left g.fixed @@ Ot_size.client_page_left fixed
     | `Left -> Ot_style.set_top g.fixed @@ Ot_size.client_page_top  fixed
-  end;
-  Manip.Class.add g.fixed "ot-stuck";
-  Manip.Class.add g.inline "ot-stuck";
-end
+  end
 
-let detach g = if Manip.Class.contain g.fixed "ot-stuck" then begin
-  (*TODO: save/restore old top/position/height/width values*)
-  Manip.SetCss.height g.fixed "";
-  Manip.SetCss.width g.fixed "";
-  begin match g.dir with
-    | `Top -> Manip.SetCss.left g.fixed ""
-    | `Left -> Manip.SetCss.top g.fixed ""
-  end;
+let stick g =
+  Manip.Class.add g.fixed "ot-stuck";
+  Manip.Class.add g.inline "ot-stuck"
+
+let detach g =
   Manip.Class.remove g.fixed "ot-stuck";
   Manip.Class.remove g.inline "ot-stuck"
-end
 
 let update_state g =
   let fixed = To_dom.of_element g.fixed in
@@ -137,8 +127,13 @@ let make_sticky
     resize_thread = Lwt.return ();
     pos = pos
   } in
-  update_state glue;
-  synchronise glue;
+  Lwt.async (fun () ->
+    let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element glue.inline in
+    fix_size_pos glue;
+    synchronise glue;
+    update_state glue;
+    Lwt.return ()
+  );
   let scroll_thread = begin Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
     update_state glue;
     Lwt.return ()
@@ -146,18 +141,18 @@ let make_sticky
   let resize_thread = if List.exists (fun x -> x = `Sync)
              [inline_width; inline_height; fixed_width; fixed_height; pos]
     then Ot_lib.onresizes @@ fun _ _ ->
-      update_state glue;
       synchronise glue;
+      update_state glue;
       Lwt.return ()
     else Lwt.return ()
   in
   Some {glue with scroll_thread = scroll_thread; resize_thread = resize_thread}
 
-(*TODO: dissolve does not destroy the clone! implement: suspend*)
 let dissolve g =
   Lwt.cancel g.scroll_thread;
   Lwt.cancel g.resize_thread;
   detach g;
+  Manip.removeSelf g.inline;
   Manip.Class.remove g.fixed "ot-sticky-fixed"
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
