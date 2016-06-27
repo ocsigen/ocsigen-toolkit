@@ -21,17 +21,11 @@ val is_sticky : 'a elt -> bool
     derived from the inline other element, meaning from the inline for
     the element fixed, and from fixed for the inline.
 *)
-type set_size = [ `Fix | `Leave | `Sync ]
 
 type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
   dir : [`Top | `Left];
-  pos: set_size;
-  inline_width: set_size;
-  inline_height: set_size;
-  fixed_width: set_size;
-  fixed_height: set_size;
   scroll_thread: unit Lwt.t;
   resize_thread: unit Lwt.t;
 }
@@ -50,11 +44,6 @@ type glue = {
 *)
 val make_sticky :
   dir:[ `Left | `Top ] ->
-  ?inline_width:set_size ->
-  ?inline_height:set_size ->
-  ?fixed_width:set_size ->
-  ?fixed_height:set_size ->
-  ?pos:set_size ->
   ?ios_html_scroll_hack:bool ->
   div_content elt -> glue option
 
