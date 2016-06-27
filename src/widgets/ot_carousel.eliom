@@ -326,13 +326,16 @@ let%shared make
           else d2'##.offsetWidth, (clX ev - startx)
         in
         let pos = Eliom_shared.React.S.value pos_signal in
+        let rem = delta mod width in
+        let nbpages = - delta / width -
+                      if rem > 30 (* ?? *) then 1
+                      else if rem < -30 then -1
+                      else 0
+        in
+        let newpos = pos + nbpages in
         let newpos =
-          if float (abs delta) > 0.3 *. float width
-          then
-            if delta > 0
-            then (if pos > 0 then pos - 1 else pos)
-            else (if pos < maxi () then pos + 1 else pos)
-          else pos
+          let maxi = maxi () in
+          if newpos < 0 then 0 else if newpos > maxi then maxi else newpos
         in
         if newpos <> pos
         then perform_animation (`Change newpos)
