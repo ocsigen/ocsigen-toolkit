@@ -31,8 +31,6 @@ let supports_position_sticky elt =
 let is_sticky elt =
   is_position_sticky elt || Manip.Class.contain elt "ot-sticky-inline"
 
-(*TODO: Everything with *Px is rounded to pixels. We don't want this*)
-
 type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
@@ -97,7 +95,6 @@ let update_state ?force g =
   | `Left -> if Ot_size.client_left fixed > Ot_size.client_left inline
                then stick ?force g else unstick ?force g
 
-(*TODO: doc: should be a D element*)
 let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
@@ -148,9 +145,6 @@ let dissolve g =
 
 type leash = {thread: unit Lwt.t; glue: glue option}
 
-(** Make sure a sticky element never scrolls out of view by dynamically
-    modifying the CSS attribute "top" *)
-    (* TODO: doc: kill the thread to cancel the effects *)
 let keep_in_sight ~dir elt =
   let glue = make_sticky ~dir elt in
   let elt = match glue with

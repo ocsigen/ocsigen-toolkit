@@ -30,17 +30,13 @@ type glue = {
   resize_thread: unit Lwt.t;
 }
 
-(** polyfill for the value "sticky" of the CSS position attribute which is not
-    supported by Chrome. It functions by creating a clone ("inline") of the
-    designated element and continuously (window scroll/resize) monitoring the
-    position of the element and the inline.
-    [inline_width], [inline_height], [fixed_width], [fixed_height]
-    determine the size of the inline and the element while the element is
-    stuck; be careful not to create cycles (e.g. [`Fix] for both
-    [inline_width] and [fixed_width]).
-    Make sure to also apply the CSS code "position: sticky" to the element as
-    this function has no effect if "position: sticky" is supported by the
-    browser (TODO)
+(** position:sticky polyfill which is not supported by Chrome. It functions by
+    making a clone with position:fixed of the designated element and
+    continuously (window scroll/resize) monitoring the position of the element
+    and the clone. The contents of the element is shifted back and forth between
+    the two elements. Make sure to also apply the CSS code "position: sticky" to
+    the element as this function has no effect if "position: sticky" is
+    supported by the browser. The supplied element should be a D-element.
 *)
 val make_sticky :
   dir:[ `Left | `Top ] ->
