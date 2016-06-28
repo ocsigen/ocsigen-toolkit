@@ -41,7 +41,7 @@ type glue = {
 val make_sticky :
   dir:[ `Left | `Top ] ->
   ?ios_html_scroll_hack:bool ->
-  div_content elt -> glue option
+  div_content elt -> glue option Lwt.t
 
 (** stop element from being sticky *)
 val dissolve : glue -> unit
@@ -53,7 +53,7 @@ type leash = {thread: unit Lwt.t; glue: glue option}
     the top/left value. Calls [make_sticky]. Make sure to also apply the CSS
     code "position: sticky" to the element.
 *)
-val keep_in_sight : dir:[ `Left | `Top ] -> div_content elt -> leash option
+val keep_in_sight : dir:[`Left | `Top] -> div_content elt -> leash Lwt.t
 
-(** stop element from being in sight (and also sticky) *)
+(** stop element from being in sight (also stops the sticky polyfill) *)
 val release : leash -> unit
