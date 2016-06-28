@@ -148,8 +148,8 @@ let dissolve g =
 
 type leash = {thread: unit Lwt.t; glue: glue option}
 
-let keep_in_sight ~dir elt =
-  let%lwt glue = make_sticky ~dir elt in
+let keep_in_sight ~dir ?ios_html_scroll_hack elt =
+  let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with
     | None -> elt
     | Some g -> g.fixed
