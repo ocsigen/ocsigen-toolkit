@@ -336,6 +336,9 @@ let clock_html_wrap ?(classes = [])
       Lwt_js_events.touchends e @@ fun ev _ ->
       Lwt.return (wrap_touch true ev ~%f));
      (Lwt.async @@ fun () ->
+      Lwt_js_events.touchcancels e @@ fun ev _ ->
+      Lwt.return (wrap_touch true ev ~%f));
+     (Lwt.async @@ fun () ->
       Lwt_js_events.touchmoves e @@ fun ev _ ->
       Lwt.return (wrap_touch false ev ~%f))
      : unit)
@@ -373,6 +376,9 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
       and e = Eliom_content.Html.To_dom.of_element ~%e in
       (Lwt.async @@ fun () ->
        Lwt_js_events.touchends e @@ fun ev _ ->
+       Lwt.return (f true ev));
+      (Lwt.async @@ fun () ->
+       Lwt_js_events.touchcancels e @@ fun ev _ ->
        Lwt.return (f true ev));
       (Lwt.async @@ fun () ->
        Lwt_js_events.touchmoves e @@ fun ev _ ->

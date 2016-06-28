@@ -188,5 +188,6 @@ let%shared bind
      Lwt.async (fun () -> Lwt_js_events.touchstarts elt' onpanstart);
      Lwt.async (fun () -> Lwt_js_events.touchmoves elt' onpan);
      Lwt.async (fun () -> Lwt_js_events.touchends elt' onpanend);
+     Lwt.async (fun () -> Lwt_js_events.touchcancels elt' onpanend);
      : unit)
   ]
