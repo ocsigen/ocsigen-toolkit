@@ -61,7 +61,7 @@ let%client dispatch_event ~ev elt name x y =
              val bubbles = Js._true
            end
            in
-           let event = new%js customEvent (Js.string "touchstart") opt in
+           let event = new%js customEvent (Js.string name) opt in
            let touch = object%js
              val identifier = identifier ev
              val target = target
@@ -77,7 +77,6 @@ let%client dispatch_event ~ev elt name x y =
            (* END HACK *)
            event
        in
-       Firebug.console##log event;
        (Js.Unsafe.coerce target)##dispatchEvent event
     )
 
@@ -128,11 +127,11 @@ let%shared bind
            then `Aborted (* vertical scrolling *)
            else if abs left >= threshold
            then begin (* We decide to take the event *)
-             (* We send a touchcancel to the parent (who received the start) *)
-             dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
              Manip.Class.add elt "swiping";
              remove_transition elt';
              Eliom_lib.Option.iter (fun f -> f ()) ~%onstart;
+             (* We send a touchcancel to the parent (who received the start) *)
+             dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
              `In_progress
            end
            else !status;
