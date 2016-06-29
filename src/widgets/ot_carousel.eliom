@@ -313,7 +313,7 @@ let%shared make
       status := `Start (clX ev, clY ev);
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
-    Lwt.async (fun () -> Lwt_js_events.touchends d (fun ev _ ->
+    let touchendorcancel ev _ =
       Dom_html.stopPropagation ev; (* in case there is a carousel
                                       in a carousel, e.g. *)
       add_transition d2';
@@ -340,7 +340,9 @@ let%shared make
         if newpos <> pos
         then perform_animation (`Change newpos)
         else perform_animation (`Goback newpos)
-      | _ -> Lwt.return ()));
+      | _ -> Lwt.return () in
+    Lwt.async (fun () -> Lwt_js_events.touchends d touchendorcancel);
+    Lwt.async (fun () -> Lwt_js_events.touchcancels d touchendorcancel);
     (* Hammer.bind_callback hammer *)
     (*   (if vertical then "swipedown" else "swiperight") *)
     (*   (fun ev -> *)
@@ -652,6 +654,8 @@ let%shared ribbon
         let%lwt () = fun_touchstart clX ev in
         Lwt.pick
           [(let%lwt ev = Lwt_js_events.touchend Dom_html.document in
+            fun_touchup clX ev);
+           (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
             fun_touchup clX ev);
            Lwt_js_events.touchmoves Dom_html.document (fun_touchmoves clX)]));
     Lwt.return () : _)];

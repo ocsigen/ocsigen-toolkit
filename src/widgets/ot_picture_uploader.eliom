@@ -202,7 +202,9 @@ let%shared cropper
                event
                (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)) )
                (Js.bool false) in
-           let%lwt _ = rm_trigger Dom_html.document in
+           let%lwt _ =
+             Lwt.pick @@
+             List.map (fun e -> e Dom_html.document) rm_trigger in
            Dom_html.removeEventListener x ;
            Lwt.return () ) )
      in
@@ -210,14 +212,14 @@ let%shared cropper
        bind_handler
          mousedowns
          Dom_html.Event.mousemove
-         Lwt_js_events.mouseup
+         [Lwt_js_events.mouseup]
          (fun ev -> float_of_int ev##.clientX )
          (fun ev -> float_of_int ev##.clientY )
          x ;
        bind_handler
          touchstarts
          Dom_html.Event.touchmove
-         Lwt_js_events.touchend
+         [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
          (fun ev -> float_of_int @@
            Js.Optdef.case
              (ev##.touches##item 0)

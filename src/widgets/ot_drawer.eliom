@@ -214,6 +214,8 @@ let%shared drawer ?(a = []) ?(position = `Left)
       let%lwt () = onpan ev a in
       Lwt.pick [ Lwt_js_events.touchmoves bckgrnd onpan
                ; let%lwt ev = Lwt_js_events.touchend bckgrnd in
+                 onpanend ev ()
+               ; let%lwt ev = Lwt_js_events.touchcancel bckgrnd in
                  onpanend ev () ]
     in
     ~%bind_touch := (fun () ->
