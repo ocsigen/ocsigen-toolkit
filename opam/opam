@@ -5,7 +5,7 @@ homepage: "http://www.ocsigen.org"
 bug-reports: "https://github.com/ocsigen/ocsigen-toolkit/issues/"
 dev-repo: "https://github.com/ocsigen/ocsigen-toolkit.git"
 version: "dev"
-build: [ make ]
+build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [

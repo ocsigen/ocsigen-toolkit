@@ -28,177 +28,151 @@ let supports_position_sticky elt =
 
 (* This is about the "position: sticky" polyfill *)
 
-let is_sticky elt = is_position_sticky elt || Manip.Class.contain elt "ot-sticky"
-
-(*TODO: Everything with *Px is rounded to pixels. We don't want this*)
-
-type set_size = [`Fix | `Sync | `Leave]
+let is_sticky elt = is_position_sticky elt
+                    || Manip.Class.contain elt "ot-sticky-inline"
+                    || Manip.Class.contain elt "ot-sticky-fixed"
 
 type glue = {
-  elt : div_content D.elt;
-  placeholder : div_content D.elt;
+  fixed : div_content D.elt;
+  inline : div_content D.elt;
   dir : [`Top | `Left]; (*TODO: support `Bottom and `Right*)
-  pos: set_size;
-  placeholder_width: set_size;
-  placeholder_height: set_size;
-  elt_width: set_size;
-  elt_height: set_size;
   scroll_thread: unit Lwt.t;
   resize_thread: unit Lwt.t;
 }
 
-let synchronise g = if Manip.Class.contain g.elt "ot-stuck" then begin
-  if g.placeholder_width = `Sync then Ot_style.set_width g.placeholder @@
-    Ot_size.client_width (To_dom.of_element g.elt);
-  if g.placeholder_height = `Sync then Ot_style.set_height g.placeholder @@
-    Ot_size.client_height (To_dom.of_element g.elt);
-  if g.elt_width = `Sync then Ot_style.set_width g.elt @@
-    Ot_size.client_width (To_dom.of_element g.placeholder);
-  if g.elt_height = `Sync then Ot_style.set_height g.elt @@
-    Ot_size.client_height (To_dom.of_element g.placeholder);
-  if g.pos = `Sync then begin match g.dir with
-    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left
-        (To_dom.of_element g.placeholder)
-    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top
-        (To_dom.of_element g.placeholder)
+let move_content ~from to_elt =
+  if (Ot_style.style @@ To_dom.of_element to_elt)##.display <> Js.string "none" then begin
+    let children = Manip.children from in
+    Manip.removeChildren from;
+    Manip.appendChildren to_elt children
   end
-end
 
-let stick g = if not @@ Manip.Class.contain g.elt "ot-stuck" then begin
-  (*TODO: save/restore old top/position/height/width values*)
-  let elt = To_dom.of_element g.elt in
-  let width  = Ot_size.client_width  elt in
-  let height = Ot_size.client_height elt in
-  if g.placeholder_width  = `Fix then Ot_style.set_width  g.placeholder width;
-  if g.placeholder_height = `Fix then Ot_style.set_height g.placeholder height;
-  if g.elt_width  = `Fix then Ot_style.set_width  g.elt width;
-  if g.elt_height = `Fix then Ot_style.set_height g.elt height;
-  if g.pos = `Fix then begin match g.dir with
-    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left elt
-    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top  elt
-  end;
-  if g.pos = `Fix then begin match g.dir with
-    | `Top -> Ot_style.set_left g.elt @@ Ot_size.client_page_left elt
-    | `Left -> Ot_style.set_top g.elt @@ Ot_size.client_page_top  elt
-  end;
-  Manip.Class.add g.elt "ot-stuck";
-  Manip.Class.add g.placeholder "ot-stuck";
-  Manip.insertAfter ~after:g.elt g.placeholder;
-  synchronise g
-end
+let stick ?(force=false) g =
+  if force || not @@ Manip.Class.contain g.fixed "ot-stuck" then begin
+    Ot_style.set_width g.inline @@
+      Ot_size.client_width (To_dom.of_element g.inline);
+    Ot_style.set_height g.inline @@
+      Ot_size.client_height (To_dom.of_element g.inline);
+    move_content ~from:g.inline g.fixed;
+    Manip.Class.add g.fixed "ot-stuck";
+    Manip.Class.add g.inline "ot-stuck"
+  end
 
-let detach g = if Manip.Class.contain g.elt "ot-stuck" then begin
-  Manip.removeSelf g.placeholder;
-  (*TODO: save/restore old top/position/height/width values*)
-  Manip.SetCss.height g.elt "";
-  Manip.SetCss.width g.elt "";
-  begin match g.dir with
-    | `Top -> Manip.SetCss.left g.elt ""
-    | `Left -> Manip.SetCss.top g.elt ""
-  end;
-  Manip.Class.remove g.elt "ot-stuck";
-  Manip.Class.remove g.placeholder "ot-stuck"
-end
+let unstick ?(force=false) g =
+  if force || Manip.Class.contain g.fixed "ot-stuck" then begin
+    Manip.SetCss.width g.inline "";
+    Manip.SetCss.height g.inline "";
+    move_content ~from:g.fixed g.inline;
+    Manip.Class.remove g.fixed "ot-stuck";
+    Manip.Class.remove g.inline "ot-stuck"
+  end
 
-let update_state g =
-  let pos_elt = To_dom.of_element @@
-    if Manip.Class.contain g.elt "ot-stuck" then g.placeholder else g.elt in
+let synchronise g =
+  let sync_values () =
+    Ot_style.set_width g.fixed @@
+      Ot_size.client_width (To_dom.of_element g.inline);
+    Ot_style.set_height g.fixed @@
+      Ot_size.client_height (To_dom.of_element g.inline);
+    match g.dir with
+      | `Top -> Ot_style.set_left g.fixed @@ Ot_size.client_page_left
+          (To_dom.of_element g.inline)
+      | `Left -> Ot_style.set_top g.fixed @@ Ot_size.client_page_top
+          (To_dom.of_element g.inline)
+  in
+
+  if Manip.Class.contain g.fixed "ot-stuck" then begin
+    unstick g;
+    sync_values ();
+    stick g
+  end
+  else sync_values ()
+
+let update_state ?force g =
+  let fixed = To_dom.of_element g.fixed in
+  let inline = To_dom.of_element g.inline in
   match g.dir with
-  | `Top ->
-    begin match Ot_style.top @@ To_dom.of_element g.elt with
-      | None -> detach g
-      | Some top -> if Ot_size.client_top pos_elt < top then stick g else detach g
-    end
-  | `Left ->
-    begin match Ot_style.left @@ To_dom.of_element g.elt with
-      | None -> detach g
-      | Some left -> if Ot_size.client_left pos_elt < left then stick g else detach g
-    end
+  | `Top -> if Ot_size.client_top fixed > Ot_size.client_top inline
+              then stick ?force g else unstick ?force g
+  | `Left -> if Ot_size.client_left fixed > Ot_size.client_left inline
+               then stick ?force g else unstick ?force g
 
 let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
-    ?(placeholder_width = if dir = `Top then `Leave else `Sync)
-    ?(placeholder_height = if dir = `Top then `Sync else `Leave)
-    ?(elt_width = if dir = `Top then `Sync else `Leave)
-    ?(elt_height = if dir = `Top then `Leave else `Sync)
-    ?(pos = `Sync)
     ?(ios_html_scroll_hack = false)
-    elt = if supports_position_sticky elt then None else
-  let placeholder = Js.Opt.case
+    elt = if supports_position_sticky elt then Lwt.return None else begin
+
+  let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  let fixed_dom = Js.Opt.case
       (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
-    (fun () -> failwith "muh")
+      (fun () -> failwith "could not clone element to make it sticky")
     (fun x -> x)
   in
-  let placeholder = Of_dom.of_element @@ Dom_html.element placeholder in
-  Manip.Class.add elt "ot-sticky";
-  Manip.Class.add placeholder "ot-sticky-placeholder";
+  let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
+  Manip.insertBefore ~before:elt fixed;
+  let%lwt () = Ot_nodeready.nodeready fixed_dom in
+  Manip.Class.add fixed "ot-sticky-fixed";
+  Manip.Class.add elt "ot-sticky-inline";
   let glue = {
-    elt = elt;
-    placeholder = placeholder;
+    fixed = fixed;
+    inline = elt;
     dir = dir;
-    placeholder_width = placeholder_width;
-    placeholder_height = placeholder_height;
-    elt_width = elt_width;
-    elt_height = elt_height;
     scroll_thread = Lwt.return ();
     resize_thread = Lwt.return ();
-    pos = pos
   } in
-  let scroll_thread = begin Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
+  Lwt.async (fun () ->
+    synchronise glue;
+    update_state ~force:true glue;
+    Lwt.return ()
+  );
+  let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
     update_state glue;
     Lwt.return ()
-  end in
-  let resize_thread = if List.exists (fun x -> x = `Sync)
-             [placeholder_width; placeholder_height; elt_width; elt_height; pos]
-    then Ot_lib.onresizes @@ fun _ _ ->
-      update_state glue;
-      synchronise glue;
-      Lwt.return ()
-    else Lwt.return ()
   in
-  Some {glue with scroll_thread = scroll_thread; resize_thread = resize_thread}
+  let rt = Ot_lib.onresizes @@ fun _ _ ->
+    synchronise glue;
+    update_state glue;
+    Lwt.return ()
+  in
+  Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
+end
 
 let dissolve g =
   Lwt.cancel g.scroll_thread;
   Lwt.cancel g.resize_thread;
-  detach g;
-  Manip.Class.remove g.elt "ot-sticky"
+  unstick ~force:true g;
+  Manip.removeSelf g.fixed;
+  Manip.Class.remove g.inline "ot-sticky-inline"
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
 
 type leash = {thread: unit Lwt.t; glue: glue option}
 
-(** Make sure a sticky element never scrolls out of view by dynamically
-    modifying the CSS attribute "top" *)
-    (* TODO: doc: kill the thread to cancel the effects *)
-let keep_in_sight ~dir elt =
-  let glue = make_sticky ~dir elt in
-  if is_sticky elt
-  then begin
-    let sight_thread = match dir with
-    | `Top -> begin
-      let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
-      match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
-      let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
-      let compute_top win_height =
-        let win_height = float_of_int win_height in
-        let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
-        let elt_height = Ot_size.client_height (To_dom.of_element elt) in
-        if elt_height > win_height -. parent_top
-          then Ot_style.set_top elt (win_height -. elt_height)
-          else Ot_style.set_top elt parent_top
-      in
-      ignore @@ React.S.map compute_top Ot_size.height;
-      ignore @@ React.E.map
-        (fun () -> compute_top @@ React.S.value Ot_size.height)
-        Ot_spinner.onloaded;
-      Lwt.return ()
-    end
-    | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
-    in Some {thread = sight_thread; glue = glue}
+let keep_in_sight ~dir ?ios_html_scroll_hack elt =
+  let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
+  let elt = match glue with | None -> elt | Some g -> g.fixed in
+  let sight_thread = match dir with
+  | `Top -> begin
+    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+    match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
+    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+    let compute_top win_height =
+      let win_height = float_of_int win_height in
+      let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
+      let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+      if elt_height > win_height -. parent_top
+        then Ot_style.set_top elt (win_height -. elt_height)
+        else Ot_style.set_top elt parent_top
+    in
+    ignore @@ React.S.map compute_top Ot_size.height;
+    ignore @@ React.E.map
+      (fun () -> compute_top @@ React.S.value Ot_size.height)
+      Ot_spinner.onloaded;
+    compute_top @@ React.S.value Ot_size.height;
+    Lwt.return ()
   end
-  else None
+  | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
+  in Lwt.return {thread = sight_thread; glue = glue}
 
 let release leash =
   Lwt.cancel leash.thread;
