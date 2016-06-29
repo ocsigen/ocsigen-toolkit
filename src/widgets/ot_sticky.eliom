@@ -150,10 +150,7 @@ type leash = {thread: unit Lwt.t; glue: glue option}
 
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
-  let elt = match glue with
-    | None -> elt
-    | Some g -> g.fixed
-  in
+  let elt = match glue with | None -> elt | Some g -> g.fixed in
   let sight_thread = match dir with
   | `Top -> begin
     let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in

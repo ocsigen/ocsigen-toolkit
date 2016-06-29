@@ -30,7 +30,7 @@ let parse_px str =
   with Invalid_argument _ | Match_failure _ -> None
 
 let float_of_px str = match parse_px str with | None -> 0.0 | Some x -> x
-let px_of_float px = string_of_float px ^ "px"
+let px_of_float px = string_of_float px ^ "0px"
 
 let style elt = Dom_html.window##getComputedStyle elt
 
