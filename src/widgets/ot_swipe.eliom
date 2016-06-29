@@ -121,15 +121,15 @@ let%shared bind
      in
      let onpan ev aa =
        let left = clX ev - !startx in
-       let do_pan left =
-         elt'##.style##.left := px_of_int left
-       in
+       let do_pan left = elt'##.style##.left := px_of_int left in
        if !status = `Start
        then begin
          status := if abs (clY ev - !starty) >= threshold
-           then `Aborted
-           else if left >= threshold
-           then begin
+           then `Aborted (* vertical scrolling *)
+           else if abs left >= threshold
+           then begin (* We decide to take the event *)
+             (* We send a touchcancel to the parent (who received the start) *)
+             dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
              Manip.Class.add elt "swiping";
              remove_transition elt';
              Eliom_lib.Option.iter (fun f -> f ()) ~%onstart;

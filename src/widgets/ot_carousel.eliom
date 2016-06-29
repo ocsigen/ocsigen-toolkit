@@ -269,7 +269,7 @@ let%shared make
           else Lwt.return ()
       else Lwt.return ()
     in
-    let status = ref (`Start (0, 0)) in
+    let status = ref `Stopped in
     let onpan ev _ =
       (match !status with
        | `Start (startx, starty) ->
@@ -313,13 +313,14 @@ let%shared make
       status := `Start (clX ev, clY ev);
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
-    let touchendorcancel ev _ =
-      Dom_html.stopPropagation ev; (* in case there is a carousel
-                                      in a carousel, e.g. *)
-      add_transition d2';
+    let touchend ev _ =
       match !status with
       | `Start (startx, starty)
       | `Ongoing (startx, starty, _) ->
+        Dom_html.stopPropagation ev; (* in case there is a carousel
+                                        in a carousel, e.g. *)
+        add_transition d2';
+        status := `Stopped;
         let width, delta =
           if vertical
           then d2'##.offsetHeight, (clY ev - starty)
@@ -340,9 +341,20 @@ let%shared make
         if newpos <> pos
         then perform_animation (`Change newpos)
         else perform_animation (`Goback newpos)
-      | _ -> Lwt.return () in
-    Lwt.async (fun () -> Lwt_js_events.touchends d touchendorcancel);
-    Lwt.async (fun () -> Lwt_js_events.touchcancels d touchendorcancel);
+      | _ -> Lwt.return ()
+    in
+    let touchcancel ev _ =
+      match !status with
+      | `Start (startx, starty)
+      | `Ongoing (startx, starty, _) ->
+        add_transition d2';
+        status := `Stopped;
+        let pos = Eliom_shared.React.S.value pos_signal in
+        perform_animation (`Goback pos)
+      | _ -> Lwt.return ()
+    in
+    Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
+    Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel);
     (* Hammer.bind_callback hammer *)
     (*   (if vertical then "swipedown" else "swiperight") *)
     (*   (fun ev -> *)
