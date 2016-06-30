@@ -60,12 +60,18 @@ val to_string : t -> string
 
 val of_string : string -> t
 
+(** [extract ?fallback ?tbl docs]:
+    Extract social meta tags from docs, add them in [tbl] and return [tbl].
+    If [tbl] is not provided, it is created.
+    [fallback] is to be executed if a node not supported is matched. *)
 val extract
   : ?fallback:(Nethtml.document -> unit)
   -> ?tbl:(t, string) Hashtbl.t
   -> Nethtml.document list
   -> (t, string) Hashtbl.t
 
+(** Same as [extract],
+    but with a [string] instead of a [Nethtml.document list] *)
 val extract_from_string
   : ?fallback:(Nethtml.document -> unit)
   -> ?tbl:(t, string) Hashtbl.t
