@@ -11,6 +11,6 @@ remove: [ make "uninstall" ]
 depends: [
   "js_of_ocaml" {> "2.7"}
   "eliom" {> "5.0"}
-  "deriving"
+  "ppx_deriving"
 ]
 available: [ ocaml-version >= "4.02" ]
