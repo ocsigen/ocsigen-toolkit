@@ -212,11 +212,36 @@ let%shared drawer ?(a = []) ?(position = `Left)
         Js.string "-webkit-transform 0s, transform 0s";
       start := clX ev;
       let%lwt () = onpan ev a in
-      Lwt.pick [ Lwt_js_events.touchmoves bckgrnd onpan
-               ; let%lwt ev = Lwt_js_events.touchend bckgrnd in
-                 onpanend ev ()
-               ; let%lwt ev = Lwt_js_events.touchcancel bckgrnd in
-                 onpanend ev () ]
+      (* Lwt.pick and Lwt_js_events.touch*** are behaving oddly.
+           This wrapping is an attempt to understand why. *)
+      let a =
+        try%lwt
+              Lwt_js_events.touchmoves bckgrnd onpan
+        with Lwt.Canceled -> Lwt.return_unit
+           | e ->
+             let s = Printexc.to_string e in
+             Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
+             Lwt.fail e
+      and b =
+        try%lwt
+              (let%lwt ev = Lwt_js_events.touchend bckgrnd in
+               onpanend ev ())
+        with Lwt.Canceled -> Lwt.return_unit
+           | e ->
+             let s = Printexc.to_string e in
+             Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
+             Lwt.fail e
+      and c =
+        try%lwt
+              (let%lwt ev = Lwt_js_events.touchcancel bckgrnd in
+               onpanend ev ())
+        with Lwt.Canceled -> Lwt.return_unit
+           | e ->
+             let s = Printexc.to_string e in
+             Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
+             Lwt.fail e
+      in
+      Lwt.pick [ a; b; c ]
     in
     ~%bind_touch := (fun () ->
       let t = Lwt_js_events.touchstarts bckgrnd onpanstart in
