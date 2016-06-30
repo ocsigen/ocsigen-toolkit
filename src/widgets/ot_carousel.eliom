@@ -55,6 +55,13 @@ let%shared make_transform vertical pos =
 (* translate3d possibly more efficient on some devices ... *)
 (* If you switch back to translate, please explain why in comments. *)
 
+[%%client
+type status =
+  | Stopped
+  | Start of (int * int)
+  | Ongoing of (int * int * int)
+]
+
 let%shared make
     ?(a = [])
     ?(vertical = false)
@@ -269,35 +276,32 @@ let%shared make
           else Lwt.return ()
       else Lwt.return ()
     in
-    let status = ref `Stopped in
+    let status = ref Stopped in
     let onpan ev _ =
       (match !status with
-       | `Start (startx, starty) ->
+       | Start (startx, starty) ->
          status :=
            if abs (if vertical
                    then clX ev - startx
-                   else clY ev - starty) >= Ot_swipe.threshold then
-             `Aborted
+                   else clY ev - starty) >= Ot_swipe.threshold
+           then Stopped
            else
              if abs (if not vertical
                      then clX ev - startx
                      else clY ev - starty) >= Ot_swipe.threshold
              then begin
                Manip.Class.add ~%d2 "swiping";
-               Dom.preventDefault ev;
-               Dom_html.stopPropagation ev; (* in case there is a carousel
-                                               in a carousel, e.g. *)
                set_top_margin ();
                remove_transition d2';
-               `Ongoing (startx, starty, width_element ())
+               Ongoing (startx, starty, width_element ())
              end
              else !status
        | _ -> ());
       (match !status with
-       | `Ongoing (startx, starty, width_element) ->
+       | Ongoing (startx, starty, width_element) ->
          Dom.preventDefault ev;
          Dom_html.stopPropagation ev; (* in case there is a carousel
-                                               in a carousel, e.g. *)
+                                         in a carousel, e.g. *)
          let delta =
            if vertical
            then clY ev - starty
@@ -310,17 +314,17 @@ let%shared make
     in
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
-      status := `Start (clX ev, clY ev);
+      status := Start (clX ev, clY ev);
       onpan ev aa));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     let touchend ev _ =
       match !status with
-      | `Start (startx, starty)
-      | `Ongoing (startx, starty, _) ->
+      | Start (startx, starty)
+      | Ongoing (startx, starty, _) ->
         Dom_html.stopPropagation ev; (* in case there is a carousel
                                         in a carousel, e.g. *)
         add_transition d2';
-        status := `Stopped;
+        status := Stopped;
         let width, delta =
           if vertical
           then d2'##.offsetHeight, (clY ev - starty)
@@ -345,10 +349,10 @@ let%shared make
     in
     let touchcancel ev _ =
       match !status with
-      | `Start (startx, starty)
-      | `Ongoing (startx, starty, _) ->
+      | Start (startx, starty)
+      | Ongoing (startx, starty, _) ->
         add_transition d2';
-        status := `Stopped;
+        status := Stopped;
         let pos = Eliom_shared.React.S.value pos_signal in
         perform_animation (`Goback pos)
       | _ -> Lwt.return ()

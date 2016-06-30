@@ -30,6 +30,16 @@ let%client add_transition transition_duration =
 let%client remove_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transitionDuration := Js.string "0s"
 
+[%%client
+type status =
+  | Stopped
+  | Start
+  | Below
+  | Above
+  | Aborted
+  | In_progress
+]
+
 let%client dispatch_event ~ev elt name x y =
   Js.Opt.iter
     elt##.parentNode
@@ -93,24 +103,24 @@ let%shared bind
      let elt' = To_dom.of_element elt in
      let startx = ref 0 (* position when touch starts *) in
      let starty = ref 0 (* position when touch starts *) in
-     let status = ref `Stopped in
+     let status = ref Stopped in
      let onpanend ev aa =
-       if !status <> `Aborted
+       if !status = In_progress
        then begin
-       add_transition ~%transition_duration elt';
-       let left = ~%compute_final_pos (clX ev - !startx) in
-       elt'##.style##.left := px_of_int left;
-       Lwt.async (fun () ->
-         let%lwt () = Lwt_js_events.transitionend elt' in
-         Manip.Class.remove elt "swiping";
-         Lwt.return ());
+         add_transition ~%transition_duration elt';
+         let left = ~%compute_final_pos (clX ev - !startx) in
+         elt'##.style##.left := px_of_int left;
+         Lwt.async (fun () ->
+           let%lwt () = Lwt_js_events.transitionend elt' in
+           Manip.Class.remove elt "swiping";
+           Lwt.return ());
        end;
        Eliom_lib.Option.iter (fun f -> f ()) ~%onend;
-       status := `Stopped;
+       status := Stopped;
        Lwt.return ()
      in
      let onpanstart0 () =
-       status := `Start;
+       status := Start;
      in
      let onpanstart ev _ =
        startx := clX ev - elt'##.offsetLeft;
@@ -121,10 +131,10 @@ let%shared bind
      let onpan ev aa =
        let left = clX ev - !startx in
        let do_pan left = elt'##.style##.left := px_of_int left in
-       if !status = `Start
+       if !status = Start
        then begin
          status := if abs (clY ev - !starty) >= threshold
-           then `Aborted (* vertical scrolling *)
+           then Aborted (* vertical scrolling *)
            else if abs left >= threshold
            then begin (* We decide to take the event *)
              Manip.Class.add elt "swiping";
@@ -132,18 +142,18 @@ let%shared bind
              Eliom_lib.Option.iter (fun f -> f ()) ~%onstart;
              (* We send a touchcancel to the parent (who received the start) *)
              dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
-             `In_progress
+             In_progress
            end
            else !status;
        end;
-       if !status = `In_progress
+       if !status = In_progress
        then
          match ~%min, ~%max with
          | Some min, _ when left < min ->
            (* min reached.
               We stop the movement of this element
               and dispatch it to the parent. *)
-           status := `Below;
+           status := Below;
            do_pan min;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (min + !startx) (clY ev);
@@ -153,7 +163,7 @@ let%shared bind
            (* max reached.
               We stop the movement of this element
               and dispatch it to the parent. *)
-           status := `Above;
+           status := Above;
            do_pan max;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (max + !startx) (clY ev);
@@ -166,8 +176,8 @@ let%shared bind
            Lwt.return ()
        else begin (* Shall we restart swiping this element? *)
          let restart_pos = match !status, ~%min, ~%max with
-           | `Below, Some min, _ when left >= min -> Some min
-           | `Above, _, Some max when left <= max -> Some max
+           | Below, Some min, _ when left >= min -> Some min
+           | Above, _, Some max when left <= max -> Some max
            | _ -> None
          in
          match restart_pos with
