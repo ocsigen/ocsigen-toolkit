@@ -668,12 +668,36 @@ let%shared ribbon
     Lwt.async (fun () ->
       Lwt_js_events.touchstarts container' (fun ev _ ->
         let%lwt () = fun_touchstart clX ev in
-        Lwt.pick
-          [(let%lwt ev = Lwt_js_events.touchend Dom_html.document in
-            fun_touchup clX ev);
-           (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
-            fun_touchup clX ev);
-           Lwt_js_events.touchmoves Dom_html.document (fun_touchmoves clX)]));
+      (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
+           This wrapping is an attempt to understand why. *)
+        let a =
+          try%lwt
+            (let%lwt ev = Lwt_js_events.touchend Dom_html.document in
+             fun_touchup clX ev)
+          with Lwt.Canceled -> Lwt.return_unit
+             | e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
+               Lwt.fail e
+        and b =
+          try%lwt
+            (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
+             fun_touchup clX ev)
+          with Lwt.Canceled -> Lwt.return_unit
+             | e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
+               Lwt.fail e
+        and c =
+          try%lwt
+            Lwt_js_events.touchmoves Dom_html.document (fun_touchmoves clX)
+          with Lwt.Canceled -> Lwt.return_unit
+             | e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
+               Lwt.fail e
+        in
+        Lwt.pick [ a; b; c ]));
     Lwt.return () : _)];
   container
 
