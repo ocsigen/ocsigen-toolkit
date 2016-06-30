@@ -674,16 +674,20 @@ let%shared ribbon
           try%lwt
             (let%lwt ev = Lwt_js_events.touchend Dom_html.document in
              fun_touchup clX ev)
-          with Lwt.Canceled -> Lwt.return_unit
+          with Lwt.Canceled ->
+               Printf.printf "Ot_carousel>touchend>canceled\n%!";
+               Lwt.return_unit
              | e ->
                let s = Printexc.to_string e in
-               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
+               Printf.printf "Ot_carousel>touchend>exception: %s\n%!" s;
                Lwt.fail e
         and b =
           try%lwt
             (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
              fun_touchup clX ev)
-          with Lwt.Canceled -> Lwt.return_unit
+          with Lwt.Canceled ->
+               Printf.printf "Ot_carousel>touchcancel>canceled\n%!";
+               Lwt.return_unit
              | e ->
                let s = Printexc.to_string e in
                Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
@@ -691,10 +695,12 @@ let%shared ribbon
         and c =
           try%lwt
             Lwt_js_events.touchmoves Dom_html.document (fun_touchmoves clX)
-          with Lwt.Canceled -> Lwt.return_unit
+          with Lwt.Canceled ->
+               Printf.printf "Ot_carousel>touchmoves>canceled\n%!";
+               Lwt.return_unit
              | e ->
                let s = Printexc.to_string e in
-               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
+               Printf.printf "Ot_carousel>touchmoves>exception: %s\n%!" s;
                Lwt.fail e
         in
         Lwt.pick [ a; b; c ]));

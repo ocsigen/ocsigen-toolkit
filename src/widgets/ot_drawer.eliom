@@ -212,7 +212,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
         Js.string "-webkit-transform 0s, transform 0s";
       start := clX ev;
       let%lwt () = onpan ev a in
-      (* Lwt.pick and Lwt_js_events.touch*** are behaving oddly.
+      (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
            This wrapping is an attempt to understand why. *)
       let a =
         try%lwt
