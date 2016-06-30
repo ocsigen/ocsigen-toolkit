@@ -29,28 +29,31 @@ let%client window_scroll ?use_capture () =
   Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
 
 let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
-  (*TODO: use ios_html_scroll_fix *)
   let thread = if ios_html_scroll_hack
     then begin
-      let i = ref 0 in
       let rec loop () =
-        let%lwt e = Lwt.pick @@ List.map
-          (* We listen to several elements because scroll events are
-             not happening on the same element on every platform. *)
-          (fun element -> Lwt_js_events.scroll ?use_capture element)
-          [ (Dom_html.window :> Dom_html.eventTarget Js.t) ;
-            (Dom_html.document##.documentElement :> Dom_html.eventTarget Js.t) ;
-            (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ]
+        let%lwt e =
+          Lwt.pick (
+            List.map
+              (* We listen to several elements because scroll events are
+                 not happening on the same element on every platform. *)
+              (fun element -> Lwt_js_events.scroll ?use_capture element)
+              [ (Dom_html.window :> Dom_html.eventTarget Js.t) ;
+                (Dom_html.document##.documentElement :> Dom_html.eventTarget Js.t) ;
+                (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ]
+          )
         in
         let continue = ref true in
         let w =
-          try%lwt fst(Lwt.wait())
-          with _ -> continue := false; Lwt.return_unit in
+          try%lwt fst(Lwt.task())
+          with Lwt.Canceled -> continue := false; Lwt.return_unit in
         let%lwt () = handler e w in
-        let continue = !continue in
-        Lwt.cancel w;
-        if continue then loop () else Lwt.return_unit
-      in loop ()
+        if !continue then
+          loop ()
+        else
+          Lwt.return_unit
+      in
+      loop ()
     end
     else Lwt_js_events.seq_loop window_scroll ?use_capture () handler
   in
