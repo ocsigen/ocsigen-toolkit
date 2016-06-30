@@ -65,6 +65,8 @@ val keep_in_sight :
   (unit -> unit) Lwt.t
 
 (** Experimental: this function is not ready to be used yet! *)
+type leashes = {threads: unit Lwt.t; glues: glue list}
+
 val keep_in_sights :
   dir:[`Left | `Top] ->
   ?ios_html_scroll_hack:bool ->
