@@ -66,8 +66,10 @@ val client_height : ?with_border:bool -> #Dom_html.element Js.t -> float
 val client_width  : ?with_border:bool -> #Dom_html.element Js.t -> float
 
 (** position of an element relative to the document *)
-val client_page_top  : ?with_border:bool -> #Dom_html.element Js.t -> float
-val client_page_left : ?with_border:bool -> #Dom_html.element Js.t -> float
+val client_page_top    : ?with_border:bool -> #Dom_html.element Js.t -> float
+val client_page_left   : ?with_border:bool -> #Dom_html.element Js.t -> float
+val client_page_bottom : ?with_border:bool -> #Dom_html.element Js.t -> float
+val client_page_right  : ?with_border:bool -> #Dom_html.element Js.t -> float
 
 (** Current vertical scroll position of the page. *)
 val pageYOffset : unit -> int

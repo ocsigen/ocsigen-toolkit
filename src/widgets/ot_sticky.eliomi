@@ -64,5 +64,15 @@ val keep_in_sight :
   div_content elt ->
   leash Lwt.t
 
+type leashes = {threads: unit Lwt.t; glues: glue list}
+
+val keep_in_sights :
+  dir:[`Left | `Top] ->
+  ?ios_html_scroll_hack:bool ->
+  div_content elt list ->
+  leashes Lwt.t
+
 (** stop element from being in sight (also stops the sticky polyfill) *)
 val release : leash -> unit
+
+val releases : leashes -> unit

@@ -118,6 +118,14 @@ let client_page_left ?with_border elt =
   client_left elt ?with_border -.
   Dom_html.document##.body##getBoundingClientRect##.left
 
+let client_page_bottom ?with_border elt =
+  Dom_html.document##.body##getBoundingClientRect##.bottom
+  -. client_bottom ?with_border elt
+
+let client_page_right ?with_border elt =
+  Dom_html.document##.body##getBoundingClientRect##.left
+  -. client_right elt ?with_border
+
 let pageYOffset () = (* absolute vertical scroll position *)
   let get_clientHeight () =
     Dom_html.document##.documentElement##.clientHeight
