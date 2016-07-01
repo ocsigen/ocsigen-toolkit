@@ -52,7 +52,11 @@ type leash = {thread: unit Lwt.t; glue: glue option}
 (** make sure an element gets never out of sight while scrolling by continuously
     (window scroll/resize) monitoring the position of the element and adjusting
     the top/left value. Calls [make_sticky]. Make sure to also apply the CSS
-    code "position: sticky" to the element.
+    code "position: sticky" to the element. The element's absolute position is
+    determined by the parents position (which is not sticky but inline), so you
+    probably want to wrap your element in a dedicated div. (It has to be the
+    parent and not the element itself because when the element floats (is in its
+    fixed state) we can't use its position for computing the right values.
 *)
 val keep_in_sight :
   dir:[`Left | `Top] ->
@@ -60,5 +64,15 @@ val keep_in_sight :
   div_content elt ->
   leash Lwt.t
 
+type leashes = {threads: unit Lwt.t; glues: glue list}
+
+val keep_in_sights :
+  dir:[`Left | `Top] ->
+  ?ios_html_scroll_hack:bool ->
+  div_content elt list ->
+  leashes Lwt.t
+
 (** stop element from being in sight (also stops the sticky polyfill) *)
 val release : leash -> unit
+
+val releases : leashes -> unit
