@@ -100,42 +100,44 @@ let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
     ?(ios_html_scroll_hack = false)
-    elt = if supports_position_sticky elt then Lwt.return None else begin
+    elt =
 
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
-  let fixed_dom = Js.Opt.case
-      (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
-      (fun () -> failwith "could not clone element to make it sticky")
-    (fun x -> x)
-  in
-  let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
-  Manip.insertBefore ~before:elt fixed;
-  let%lwt () = Ot_nodeready.nodeready fixed_dom in
-  Manip.Class.add fixed "ot-sticky-fixed";
-  Manip.Class.add elt "ot-sticky-inline";
-  let glue = {
-    fixed = fixed;
-    inline = elt;
-    dir = dir;
-    scroll_thread = Lwt.return ();
-    resize_thread = Lwt.return ();
-  } in
-  Lwt.async (fun () ->
-    synchronise glue;
-    update_state ~force:true glue;
-    Lwt.return ()
-  );
-  let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
-    update_state glue;
-    Lwt.return ()
-  in
-  let rt = Ot_lib.onresizes @@ fun _ _ ->
-    synchronise glue;
-    update_state glue;
-    Lwt.return ()
-  in
-  Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
-end
+
+  if supports_position_sticky elt then Lwt.return None else begin
+    let fixed_dom = Js.Opt.case
+        (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
+        (fun () -> failwith "could not clone element to make it sticky")
+      (fun x -> x)
+    in
+    let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
+    Manip.insertBefore ~before:elt fixed;
+    let%lwt () = Ot_nodeready.nodeready fixed_dom in
+    Manip.Class.add fixed "ot-sticky-fixed";
+    Manip.Class.add elt "ot-sticky-inline";
+    let glue = {
+      fixed = fixed;
+      inline = elt;
+      dir = dir;
+      scroll_thread = Lwt.return ();
+      resize_thread = Lwt.return ();
+    } in
+    Lwt.async (fun () ->
+      synchronise glue;
+      update_state ~force:true glue;
+      Lwt.return ()
+    );
+    let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
+      update_state glue;
+      Lwt.return ()
+    in
+    let rt = Ot_lib.onresizes @@ fun _ _ ->
+      synchronise glue;
+      update_state glue;
+      Lwt.return ()
+    in
+    Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
+  end
 
 let dissolve g =
   Lwt.cancel g.scroll_thread;
@@ -149,11 +151,11 @@ let dissolve g =
 type leash = {thread: unit Lwt.t; glue: glue option}
 
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
+  let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with | None -> elt | Some g -> g.fixed in
   let sight_thread = match dir with
   | `Top -> begin
-    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
     match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
     let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
     let compute_top win_height =
@@ -197,6 +199,8 @@ let minimum = function
   | x::xs -> List.fold_left min x xs
 
 let keep_in_sights ~dir ?ios_html_scroll_hack elts =
+  let%lwt _ = lwt_sequence @@ List.map
+    (fun elt -> Ot_nodeready.nodeready @@ To_dom.of_element elt) elts in
   let%lwt elts_glues = lwt_sequence (elts |> List.map @@ fun elt ->
     let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
     let elt = match glue with | None -> elt | Some g -> g.fixed in
@@ -206,8 +210,6 @@ let keep_in_sights ~dir ?ios_html_scroll_hack elts =
   let glues = list_of_opts glues in
   let sight_thread = match dir with
   | `Top -> begin
-    let%lwt _ = lwt_sequence @@ List.map
-      (fun elt -> Ot_nodeready.nodeready @@ To_dom.of_element elt) elts in
     let%lwt elts_parents = lwt_sequence (elts |> List.map @@ fun elt ->
       match Manip.parentNode elt with
       | None -> failwith "Ot_sticky.keep_in_sights: elements need to have parents"
