@@ -675,38 +675,50 @@ let%shared ribbon
            Lwt_js_events.mousemoves Dom_html.document (fun_touchmoves clX')]));
     Lwt.async (fun () ->
       Lwt_js_events.touchstarts container' (fun ev _ ->
+        let stop = ref false in
         let%lwt () = fun_touchstart clX ev in
-      (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
+        (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
            This wrapping is an attempt to understand why. *)
         let a =
           try%lwt
             (let%lwt ev = Lwt_js_events.touchend Dom_html.document in
+             stop := true;
              fun_touchup clX ev)
           with Lwt.Canceled ->
+               stop := true;
                Printf.printf "Ot_carousel>touchend>canceled\n%!";
                Lwt.return_unit
              | e ->
+               stop := true;
                let s = Printexc.to_string e in
                Printf.printf "Ot_carousel>touchend>exception: %s\n%!" s;
                Lwt.fail e
         and b =
           try%lwt
             (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
+             stop := true;
              fun_touchup clX ev)
           with Lwt.Canceled ->
+               stop := true;
                Printf.printf "Ot_carousel>touchcancel>canceled\n%!";
                Lwt.return_unit
              | e ->
+               stop := true;
                let s = Printexc.to_string e in
                Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
                Lwt.fail e
         and c =
           try%lwt
-            Lwt_js_events.touchmoves Dom_html.document (fun_touchmoves clX)
+            Lwt_js_events.touchmoves Dom_html.document
+              (fun e t ->
+                 if !stop then (Lwt.cancel t; Lwt.return_unit)
+                 else fun_touchmoves clX e t)
           with Lwt.Canceled ->
+               stop := true;
                Printf.printf "Ot_carousel>touchmoves>canceled\n%!";
                Lwt.return_unit
              | e ->
+               stop := true;
                let s = Printexc.to_string e in
                Printf.printf "Ot_carousel>touchmoves>exception: %s\n%!" s;
                Lwt.fail e
