@@ -37,6 +37,15 @@ val with_spinner :
   [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
   [> `Div ] Eliom_content.Html.elt Lwt.t
 
+val with_spinner_client_thread :
+  ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
+  ?fail:(exn ->
+         [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t)
+    Eliom_client_value.t ->
+  [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t
+    Eliom_client_value.t ->
+  [> `Div ] Eliom_content.Html.elt
+
 [%%client.start]
 
 (** Same as [with_spinner] but returns immediately.

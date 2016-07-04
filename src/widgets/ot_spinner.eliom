@@ -49,20 +49,48 @@ let%server with_spinner ?(a = []) ?fail thread =
   in
   Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
-[%%client
-
-let num_active_spinners, set_num_active_spinners = React.S.create 0
-let onloaded, set_onloaded = React.E.create ()
+let%client num_active_spinners, set_num_active_spinners = React.S.create 0
+let%client onloaded, set_onloaded = React.E.create ()
 (* Make sure the signal is not destroyed indirectly
    by a call to React.E.stop *)
-let _ = ignore (React.E.map (fun _ -> ()) onloaded)
-let _ = Eliom_client.onload @@ fun () ->
+let%client _ = ignore (React.E.map (fun _ -> ()) onloaded)
+let%client _ = Eliom_client.onload @@ fun () ->
   if React.S.value num_active_spinners = 0 then set_onloaded ()
-let inc_active_spinners () =
+let%client inc_active_spinners () =
   set_num_active_spinners @@ React.S.value num_active_spinners + 1
-let dec_active_spinners () =
+let%client dec_active_spinners () =
   set_num_active_spinners @@ React.S.value num_active_spinners - 1;
   if React.S.value num_active_spinners = 0 then set_onloaded ()
+
+let%shared with_spinner_client_thread ?(a = []) ?fail thread =
+  let spinning = "ot-icon-animation-spinning" in
+  let spinner = "ot-icon-spinner" in
+  let d = D.div ~a:(a_class [ spinner ; spinning ] :: a) [] in
+  let _ = [%client (Lwt.async (fun () ->
+    let fail =
+      ((match ~%fail with
+         | Some fail ->
+           (fail :> exn -> Html_types.div_content elt list Lwt.t)
+         | None      -> (fun e -> Lwt.return (default_fail e)))
+       :> exn -> Html_types.div_content elt list Lwt.t) in
+    inc_active_spinners () ;
+    let load content =
+      Manip.Class.remove ~%d ~%spinning ;
+      Manip.Class.remove ~%d ~%spinner ;
+      Manip.replaceChildren ~%d content ;
+      dec_active_spinners () ;
+      Lwt.return () in
+    begin match Lwt.state ~%thread with
+      | Lwt.Return v -> load v
+      | Lwt.Fail e -> let%lwt v = fail e in load v
+      | Lwt.Sleep ->
+        try%lwt let%lwt v = ~%thread in load v
+        with e -> let%lwt v = fail e in load v end ;
+    dec_active_spinners () ;
+    Lwt.return_unit ) : _) ] in
+  d
+
+[%%client
 
 module Make(A : sig
     type +'a t
