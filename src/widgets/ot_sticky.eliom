@@ -122,20 +122,16 @@ let make_sticky
       scroll_thread = Lwt.return ();
       resize_thread = Lwt.return ();
     } in
-    Lwt.async (fun () ->
-      synchronise glue;
-      update_state ~force:true glue;
-      Lwt.return ()
+    ignore (Ot_spinner.onloaded |> React.E.map @@ fun () -> Lwt.async @@ fun () ->
+      synchronise glue; update_state ~force:true glue; Lwt.return ()
     );
     let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
-      update_state glue;
-      Lwt.return ()
+      update_state glue; Lwt.return ()
     in
     let rt = Ot_lib.onresizes @@ fun _ _ ->
-      synchronise glue;
-      update_state glue;
-      Lwt.return ()
+      synchronise glue; update_state glue; Lwt.return ()
     in
+    Eliom_client.onunload (fun () -> Lwt.cancel st; Lwt.cancel rt; None);
     Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
   end
 
@@ -152,28 +148,30 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with | None -> elt | Some g -> g.fixed in
-  let stop = match dir with
-    | `Top -> begin
-      match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
-      let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
-      let compute_top win_height =
-        let win_height = float_of_int win_height in
-        let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
-        let elt_height = Ot_size.client_height (To_dom.of_element elt) in
-        if elt_height > win_height -. parent_top
-        then Ot_style.set_top elt (win_height -. elt_height)
-        else Ot_style.set_top elt parent_top
-      in
-      let resize_thread = React.S.map compute_top Ot_size.height in
-      let onload_thread = React.E.map
-        (fun () -> compute_top @@ React.S.value Ot_size.height)
-        Ot_spinner.onloaded in
-      Lwt.return @@ fun () ->
-        React.E.stop onload_thread;
-        React.S.stop resize_thread;
-        match glue with | Some g -> dissolve g | None -> ()
-    end
+  match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
+  let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+  let compute_top_left win_height = Lwt.async @@ fun () ->
+    let%lwt _ = Lwt_js.sleep 0.01 in
+    match dir with
+    | `Top ->
+      (* sleep, as this should run after make_sticky's handlers *)
+      let win_height = float_of_int win_height in
+      let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
+      let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+      if elt_height > win_height -. parent_top
+      then Ot_style.set_top elt (win_height -. elt_height)
+      else Ot_style.set_top elt parent_top;
+      Lwt.return ()
     | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
+  in
+  let resize_thread = React.S.map compute_top_left Ot_size.height in
+  let onload_thread = Ot_spinner.onloaded |> React.E.map
+    (fun () -> compute_top_left @@ React.S.value Ot_size.height)
+  in
+  let stop = Lwt.return @@ fun () ->
+    React.E.stop onload_thread;
+    React.S.stop resize_thread;
+    match glue with | Some g -> dissolve g | None -> ()
   in
   Eliom_client.onunload (fun () ->
     Lwt.async (fun () -> let%lwt stop = stop in stop (); Lwt.return ());
