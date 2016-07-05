@@ -281,7 +281,6 @@ let%shared make
       (match !status with
        | Start (startx, starty) ->
          let move = if not vertical then clX ev - startx else clY ev - starty in
-         Printf.printf "%d %d\n" (clX ev - startx) (clY ev - starty);
          status :=
            if abs (if vertical
                    then clX ev - startx
@@ -470,7 +469,6 @@ let%shared ribbon
     let containerwidth, set_containerwidth =
       React.S.create container'##.offsetWidth in
     let curleft, set_curleft = React.S.create initial_gap in
-    let oldleft, set_oldleft = React.S.create initial_gap in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready container' in
       (* Ribbon position: *)
@@ -531,7 +529,6 @@ let%shared ribbon
                   else newleft
                 in
                 set_curleft newleft;
-                set_oldleft newleft;
                 the_ul'##.style##.left := Js.string (string_of_int newleft^"px")
               | _ -> ()
            ) ~%pos ~%size containerwidth);
@@ -619,112 +616,35 @@ let%shared ribbon
       Lwt.return ()
     );
     (* Moving the ribbon with fingers: *)
-    let start = ref None in
-    let fun_touchstart clX ev =
-      start := Some (clX ev);
-      remove_transition the_ul';
-      Eliom_lib.Option.iter remove_transition cursor_elt';
-      Lwt.return ()
+    let fmax () = initial_gap in
+    let fmin () =
+      let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+      React.S.value containerwidth - ul_width - initial_gap
     in
-    let fun_touchup clX ev =
-      add_transition the_ul';
-      Eliom_lib.Option.iter add_transition cursor_elt';
-      (match !start with
-       | Some s ->
-         let cw = React.S.value containerwidth in
-         let cl = (max (- the_ul'##.scrollWidth + cw/2)
-                     (min (cw / 2) (React.S.value oldleft + clX ev - s)))
-         in
-         let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-         (* Limit the movement
+    Ot_swipe.bind
+      ~min:fmin
+      ~max:fmax
+      ~compute_final_pos:(fun ev p ->
+        let cw = React.S.value containerwidth in
+        let pos = (max (- the_ul'##.scrollWidth + cw/2) (min (cw / 2) p)) in
+        (* Limit the movement
             (make this configurable by optional parameter?): *)
-         let cl = min initial_gap cl in
-         let newleft =
-           (max (React.S.value containerwidth - ul_width - initial_gap) cl)
-         in
-         set_curleft newleft;
-         set_oldleft newleft;
-         the_ul'##.style##.left := Js.string (string_of_int newleft^"px");
-         start := None
-       | _ -> ());
-      Lwt.return ()
-    in
-    let fun_touchmoves clX ev _ =
-      Dom.preventDefault ev;
-      (match !start with
-       | Some start ->
-         let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-         let pos = React.S.value oldleft + clX ev - start in
-         (* Limit the movement
+        let pos = min (fmax ()) pos in
+        let pos = max (fmin ()) pos in
+        set_curleft pos;
+        pos
+      )
+      ~onmove:(fun ev p ->
+        Dom.preventDefault ev;
+        let pos = p in
+        (* Limit the movement
             (make this configurable by optional parameter?): *)
-         let pos = min initial_gap pos in
-         let pos =
-           max (React.S.value containerwidth - ul_width - initial_gap) pos
-         in
-         set_curleft pos;
-         the_ul'##.style##.left := Js.string (string_of_int pos^"px");
-       | _ -> ());
-      Lwt.return ()
-    in
-    let clX' ev = ev##.clientX in
-    Lwt.async (fun () ->
-      Lwt_js_events.mousedowns container' (fun ev _ ->
-        let%lwt () = fun_touchstart clX' ev in
-        Lwt.pick
-          [(let%lwt ev = Lwt_js_events.mouseup Dom_html.document in
-            fun_touchup clX' ev);
-           Lwt_js_events.mousemoves Dom_html.document (fun_touchmoves clX')]));
-    Lwt.async (fun () ->
-      Lwt_js_events.touchstarts container' (fun ev _ ->
-        let stop = ref false in
-        let%lwt () = fun_touchstart clX ev in
-        (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
-           This wrapping is an attempt to understand why. *)
-        let a =
-          try%lwt
-            (let%lwt ev = Lwt_js_events.touchend Dom_html.document in
-             stop := true;
-             fun_touchup clX ev)
-          with Lwt.Canceled ->
-               stop := true;
-               Printf.printf "Ot_carousel>touchend>canceled\n%!";
-               Lwt.return_unit
-             | e ->
-               stop := true;
-               let s = Printexc.to_string e in
-               Printf.printf "Ot_carousel>touchend>exception: %s\n%!" s;
-               Lwt.fail e
-        and b =
-          try%lwt
-            (let%lwt ev = Lwt_js_events.touchcancel Dom_html.document in
-             stop := true;
-             fun_touchup clX ev)
-          with Lwt.Canceled ->
-               stop := true;
-               Printf.printf "Ot_carousel>touchcancel>canceled\n%!";
-               Lwt.return_unit
-             | e ->
-               stop := true;
-               let s = Printexc.to_string e in
-               Printf.printf "Ot_carousel>touchcancel>exception: %s\n%!" s;
-               Lwt.fail e
-        and c =
-          try%lwt
-            Lwt_js_events.touchmoves Dom_html.document
-              (fun e t ->
-                 if !stop then (Lwt.cancel t; Lwt.return_unit)
-                 else fun_touchmoves clX e t)
-          with Lwt.Canceled ->
-               stop := true;
-               Printf.printf "Ot_carousel>touchmoves>canceled\n%!";
-               Lwt.return_unit
-             | e ->
-               stop := true;
-               let s = Printexc.to_string e in
-               Printf.printf "Ot_carousel>touchmoves>exception: %s\n%!" s;
-               Lwt.fail e
-        in
-        Lwt.pick [ a; b; c ]));
+        let pos = min (fmax ()) pos in
+        let pos = max (fmin ()) pos in
+        set_curleft pos)
+      ~onstart:(fun _ _ -> Eliom_lib.Option.iter remove_transition cursor_elt')
+      ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
+      the_ul;
     Lwt.return () : _)];
   container
 

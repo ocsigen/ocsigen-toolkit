@@ -92,10 +92,12 @@ let%client dispatch_event ~ev elt name x y =
 
 let%shared bind
     ?(transition_duration = 0.3)
-    ?(min : int option)
-    ?(max : int option)
-    ~(compute_final_pos : (int -> int) Eliom_client_value.t)
+    ?(min : (unit -> int) Eliom_client_value.t option)
+    ?(max : (unit -> int) Eliom_client_value.t option)
+    ~(compute_final_pos
+      : (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t)
     ?onstart
+    ?onmove
     ?onend
     (elt : _ elt) =
   ignore [%client
@@ -105,17 +107,17 @@ let%shared bind
      let starty = ref 0 (* position when touch starts *) in
      let status = ref Stopped in
      let onpanend ev aa =
-       if !status = In_progress
+       if !status <> Start
        then begin
          add_transition ~%transition_duration elt';
-         let left = ~%compute_final_pos (clX ev - !startx) in
+         let left = ~%compute_final_pos ev (clX ev - !startx) in
          elt'##.style##.left := px_of_int left;
+         Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
          Lwt.async (fun () ->
            let%lwt () = Lwt_js_events.transitionend elt' in
            Manip.Class.remove elt "swiping";
            Lwt.return ());
        end;
-       Eliom_lib.Option.iter (fun f -> f ()) ~%onend;
        status := Stopped;
        Lwt.return ()
      in
@@ -139,21 +141,24 @@ let%shared bind
            then begin (* We decide to take the event *)
              Manip.Class.add elt "swiping";
              remove_transition elt';
-             Eliom_lib.Option.iter (fun f -> f ()) ~%onstart;
+             Eliom_lib.Option.iter (fun f -> f ev left) ~%onstart;
              (* We send a touchcancel to the parent (who received the start) *)
              dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
              In_progress
            end
            else !status;
        end;
+       let min = Eliom_lib.Option.map (fun f -> f ()) ~%min in
+       let max = Eliom_lib.Option.map (fun f -> f ()) ~%max in
        if !status = In_progress
        then
-         match ~%min, ~%max with
+         match min, max with
          | Some min, _ when left < min ->
            (* min reached.
               We stop the movement of this element
               and dispatch it to the parent. *)
            status := Below;
+           Eliom_lib.Option.iter (fun f -> f ev min) ~%onmove;
            do_pan min;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (min + !startx) (clY ev);
@@ -164,6 +169,7 @@ let%shared bind
               We stop the movement of this element
               and dispatch it to the parent. *)
            status := Above;
+           Eliom_lib.Option.iter (fun f -> f ev max) ~%onmove;
            do_pan max;
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (max + !startx) (clY ev);
@@ -172,10 +178,11 @@ let%shared bind
          | _ ->
            Dom_html.stopPropagation ev;
            Dom.preventDefault ev;
+           Eliom_lib.Option.iter (fun f -> f ev left) ~%onmove;
            do_pan left;
            Lwt.return ()
        else begin (* Shall we restart swiping this element? *)
-         let restart_pos = match !status, ~%min, ~%max with
+         let restart_pos = match !status, min, max with
            | Below, Some min, _ when left >= min -> Some min
            | Above, _, Some max when left <= max -> Some max
            | _ -> None
@@ -199,4 +206,5 @@ let%shared bind
      Lwt.async (fun () -> Lwt_js_events.touchends elt' onpanend);
      Lwt.async (fun () -> Lwt_js_events.touchcancels elt' onpanend);
      : unit)
+
   ]

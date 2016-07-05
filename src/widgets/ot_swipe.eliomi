@@ -5,20 +5,22 @@
    [compute_final_pos] is a function that will compute the final position
    of the element w.r.t. the position where it has been released (in pixels).
 
-   Use [?min] and [?max] if you want to limit the displacement.
+   Use [?min] and [?max] if you want to limit the move.
    If outside range, events will be propagated to parent
    (which makes it possible to have a swipeable element inside another one).
 
-   [?onstart] and [?onend] can be used to execute some side effect when swipe
-   starts or ends.
+   [?onstart] and [?onmove] and [?onend]
+   can be used to execute some side effect on touch start, touch move and
+   touch end. The second parameter is the current move.
  *)
 val bind:
   ?transition_duration : float ->
-  ?min : int ->
-  ?max : int ->
-  compute_final_pos: (int -> int) Eliom_client_value.t ->
-  ?onstart: (unit -> unit) Eliom_client_value.t ->
-  ?onend: (unit -> unit) Eliom_client_value.t ->
+  ?min : (unit -> int) Eliom_client_value.t ->
+  ?max : (unit -> int) Eliom_client_value.t ->
+  compute_final_pos: (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t ->
+  ?onstart: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
+  ?onmove: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
+  ?onend: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
   'a Eliom_content.Html.elt ->
   unit
 
