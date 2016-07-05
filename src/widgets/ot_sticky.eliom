@@ -20,7 +20,7 @@ let set_position_sticky elt =
     end
   end
 
-let supports_position_sticky elt = 
+let supports_position_sticky elt =
   let old_pos = Manip.Css.position elt in
   let res = set_position_sticky elt in
   Manip.SetCss.position elt old_pos;
@@ -166,11 +166,14 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         then Ot_style.set_top elt (win_height -. elt_height)
         else Ot_style.set_top elt parent_top
     in
-    ignore @@ React.S.map compute_top Ot_size.height;
-    ignore @@ React.E.map
+    let s = React.S.map compute_top Ot_size.height in
+    let e = React.E.map
       (fun () -> compute_top @@ React.S.value Ot_size.height)
-      Ot_spinner.onloaded;
+      Ot_spinner.onloaded in
     compute_top @@ React.S.value Ot_size.height;
+    Eliom_client.onunload
+      (fun () ->
+         React.S.stop ~strong:true s; React.E.stop ~strong:true e; None);
     Lwt.return ()
   end
   | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
