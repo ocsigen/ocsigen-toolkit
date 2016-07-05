@@ -485,16 +485,17 @@ let%shared ribbon
          As a temporary workaround, a also update containerwidth
          when the browser window's size changes: *)
       let watch_width = Ot_size.width |> React.S.map @@ fun _ ->
-         (* This delay is a hack to make the ribbon work when it is inside of a
-            container that is sticky due to [Ot_sticky.make_sticky]. The problem
-            is that Ot_sticky functions by moving around the contents of the
-            container in the DOM when the window is resized. This destroys the
-            noderesize but there is also a race condition with this code here
-            that runs on window resizing. So we make sure the ribbon code runs
-            AFTER it has been placed into the fixed container by Ot_sticky. *)
-         let%lwt _ = Lwt_js.sleep 0.05 in
-         set_containerwidth container'##.offsetWidth;
-         Lwt.return ()
+        (* This delay is a hack to make the ribbon work when it is inside of a
+           container that is sticky due to [Ot_sticky.make_sticky]. The problem
+           is that Ot_sticky functions by moving around the contents of the
+           container in the DOM when the window is resized. This destroys the
+           noderesize but there is also a race condition with this code here
+           that runs on window resizing. So we make sure the ribbon code runs
+           AFTER it has been placed into the fixed container by Ot_sticky. *)
+        Lwt.async @@ fun () ->
+          let%lwt _ = Lwt_js.sleep 0.05 in
+          set_containerwidth container'##.offsetWidth;
+          Lwt.return ()
       in
       Eliom_client.onunload
         (fun () -> React.S.stop ~strong:true watch_width; None);
