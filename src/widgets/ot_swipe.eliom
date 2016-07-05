@@ -4,7 +4,7 @@
 [%%shared open Eliom_content.Html.F ]
 
 (** sensibility for detecting swipe left/right or up/down *)
-let%client threshold = 5
+let%client threshold = 0
 
 let%client px_of_int v = Js.string (string_of_int v^"px")
 
@@ -133,9 +133,9 @@ let%shared bind
        let do_pan left = elt'##.style##.left := px_of_int left in
        if !status = Start
        then begin
-         status := if abs (clY ev - !starty) >= threshold
+         status := if abs (clY ev - !starty) >= abs left
            then Aborted (* vertical scrolling *)
-           else if abs left >= threshold
+           else if abs left > threshold
            then begin (* We decide to take the event *)
              Manip.Class.add elt "swiping";
              remove_transition elt';

@@ -280,15 +280,15 @@ let%shared make
     let onpan ev _ =
       (match !status with
        | Start (startx, starty) ->
+         let move = if not vertical then clX ev - startx else clY ev - starty in
+         Printf.printf "%d %d\n" (clX ev - startx) (clY ev - starty);
          status :=
            if abs (if vertical
                    then clX ev - startx
-                   else clY ev - starty) >= Ot_swipe.threshold
-           then Stopped
+                   else clY ev - starty) >= abs move
+           then Stopped (* swiping in wrong direction (vertical/horizontal) *)
            else
-             if abs (if not vertical
-                     then clX ev - startx
-                     else clY ev - starty) >= Ot_swipe.threshold
+             if abs move > Ot_swipe.threshold
              then begin
                Manip.Class.add ~%d2 "swiping";
                set_top_margin ();
@@ -315,7 +315,7 @@ let%shared make
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
       status := Start (clX ev, clY ev);
-      onpan ev aa));
+      Lwt.return ()));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     let touchend ev _ =
       match !status with
