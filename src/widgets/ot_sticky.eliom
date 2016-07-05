@@ -148,33 +148,35 @@ let dissolve g =
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
 
-type leash = {thread: unit Lwt.t; glue: glue option}
-
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with | None -> elt | Some g -> g.fixed in
-  let sight_thread = match dir with
-  | `Top -> begin
-    match Manip.parentNode elt with | None -> Lwt.return () | Some parent ->
-    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
-    let compute_top win_height =
-      let win_height = float_of_int win_height in
-      let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
-      let elt_height = Ot_size.client_height (To_dom.of_element elt) in
-      if elt_height > win_height -. parent_top
-        then Ot_style.set_top elt (win_height -. elt_height)
-        else Ot_style.set_top elt parent_top
-    in
-    let s = React.S.map compute_top Ot_size.height in
-    let e = React.E.map
-      (fun () -> compute_top @@ React.S.value Ot_size.height)
-      Ot_spinner.onloaded in
-    compute_top @@ React.S.value Ot_size.height;
-    Eliom_client.onunload
-      (fun () ->
-         React.S.stop ~strong:true s; React.E.stop ~strong:true e; None);
-    Lwt.return ()
-  end
-  | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
-  in Lwt.return {thread = sight_thread; glue = glue}
+  let stop = match dir with
+    | `Top -> begin
+      match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
+      let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+      let compute_top win_height =
+        let win_height = float_of_int win_height in
+        let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
+        let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+        if elt_height > win_height -. parent_top
+        then (print_endline (string_of_float @@ win_height -. elt_height); Ot_style.set_top elt (win_height -. elt_height))
+          else (print_endline (string_of_float parent_top); Ot_style.set_top elt parent_top)
+      in
+      let resize_thread = React.S.map compute_top Ot_size.height in
+      let onload_thread = React.E.map
+        (fun () -> compute_top @@ React.S.value Ot_size.height)
+        Ot_spinner.onloaded in
+      Lwt.return @@ fun () ->
+        React.E.stop onload_thread;
+        React.S.stop resize_thread;
+        match glue with | Some g -> dissolve g | None -> ()
+    end
+    | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
+  in
+  Eliom_client.onunload (fun () ->
+    Lwt.async (fun () -> let%lwt stop = stop in stop (); Lwt.return ());
+    None
+  );
+  stop
