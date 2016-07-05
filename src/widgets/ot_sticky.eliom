@@ -239,11 +239,14 @@ let keep_in_sights ~dir ?ios_html_scroll_hack elts =
           Ot_style.set_top elt (Ot_size.client_page_top parent));
       ()
     in
-    ignore @@ React.S.map compute_top Ot_size.height;
-    ignore @@ React.E.map
+    let s = React.S.map compute_top Ot_size.height in
+    let e = React.E.map
       (fun () -> compute_top @@ React.S.value Ot_size.height)
-      Ot_spinner.onloaded;
+      Ot_spinner.onloaded in
     compute_top @@ React.S.value Ot_size.height;
+    Eliom_client.onunload
+      (fun () ->
+         React.S.stop ~strong:true s; React.E.stop ~strong:true e; None);
     Lwt.return ()
   end
   | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
