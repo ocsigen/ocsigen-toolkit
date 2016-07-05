@@ -157,12 +157,13 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
       match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
       let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
       let compute_top win_height =
+        print_endline "compute_top";
         let win_height = float_of_int win_height in
         let parent_top = Ot_size.client_page_top (To_dom.of_element parent) in
         let elt_height = Ot_size.client_height (To_dom.of_element elt) in
         if elt_height > win_height -. parent_top
-        then (print_endline (string_of_float @@ win_height -. elt_height); Ot_style.set_top elt (win_height -. elt_height))
-          else (print_endline (string_of_float parent_top); Ot_style.set_top elt parent_top)
+        then Ot_style.set_top elt (win_height -. elt_height)
+        else Ot_style.set_top elt parent_top
       in
       let resize_thread = React.S.map compute_top Ot_size.height in
       let onload_thread = React.E.map
