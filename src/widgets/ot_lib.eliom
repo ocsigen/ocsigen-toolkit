@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+let%client onloads handler =
+  let rec loop () = Eliom_client.onload @@ fun () -> handler (); loop () in loop ()
 
 let%client onresizes handler =
   let thread = Lwt_js_events.onresizes handler in

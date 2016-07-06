@@ -36,8 +36,7 @@ type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
   dir : [`Top | `Left]; (*TODO: support `Bottom and `Right*)
-  scroll_thread: unit Lwt.t;
-  resize_thread: unit Lwt.t;
+  dissolve : unit -> unit
 }
 
 let move_content ~from to_elt =
@@ -119,30 +118,28 @@ let make_sticky
       fixed = fixed;
       inline = elt;
       dir = dir;
-      scroll_thread = Lwt.return ();
-      resize_thread = Lwt.return ();
+      dissolve = fun () -> failwith "undefined"
     } in
-    let lt =
-      Ot_spinner.onloaded |> React.E.map @@ fun () -> Lwt.async @@ fun () ->
-        synchronise glue; update_state ~force:true glue; Lwt.return ()
-    in
-    let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
+    let init () = unstick ~force:true glue; synchronise glue; update_state glue in
+    init ();
+    let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
+    let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
-    let rt = Ot_lib.onresizes @@ fun _ _ ->
+    let resize_thread = Ot_lib.onresizes @@ fun _ _ ->
       synchronise glue; update_state glue; Lwt.return ()
     in
-    Eliom_client.onunload (fun () ->
-      Lwt.cancel st; Lwt.cancel rt; React.E.stop ~strong:true lt; None);
-    Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
+    let dissolve () =
+      Lwt.cancel scroll_thread;
+      Lwt.cancel resize_thread;
+      React.E.stop onloaded_thread;
+      unstick ~force:true glue;
+      Manip.removeSelf glue.fixed;
+      Manip.Class.remove glue.inline "ot-sticky-inline"
+    in
+    Eliom_client.onunload (fun () -> dissolve (); None);
+    Lwt.return @@ Some {glue with dissolve = dissolve}
   end
-
-let dissolve g =
-  Lwt.cancel g.scroll_thread;
-  Lwt.cancel g.resize_thread;
-  unstick ~force:true g;
-  Manip.removeSelf g.fixed;
-  Manip.Class.remove g.inline "ot-sticky-inline"
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
 
@@ -167,16 +164,13 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
     | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
   in
   let resize_thread = React.S.map compute_top_left Ot_size.height in
-  let onload_thread = Ot_spinner.onloaded |> React.E.map
-    (fun () -> compute_top_left @@ React.S.value Ot_size.height)
+  let onload_thread = Ot_spinner.onloaded |> React.E.map @@
+    fun () -> compute_top_left @@ React.S.value Ot_size.height
   in
-  let stop = Lwt.return @@ fun () ->
-    React.E.stop ~strong:true onload_thread;
-    React.S.stop ~strong:true resize_thread;
-    match glue with | Some g -> dissolve g | None -> ()
+  let stop () =
+    React.E.stop onload_thread;
+    React.S.stop resize_thread;
+    match glue with | Some g -> g.dissolve () | None -> ()
   in
-  Eliom_client.onunload (fun () ->
-    Lwt.async (fun () -> let%lwt stop = stop in stop (); Lwt.return ());
-    None
-  );
-  stop
+  Eliom_client.onunload (fun () -> stop (); None);
+  Lwt.return stop

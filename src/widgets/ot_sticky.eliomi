@@ -26,8 +26,7 @@ type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
   dir : [`Top | `Left];
-  scroll_thread: unit Lwt.t;
-  resize_thread: unit Lwt.t;
+  dissolve : unit -> unit
 }
 
 (** position:sticky polyfill which is not supported by Chrome. It functions by
@@ -43,9 +42,6 @@ val make_sticky :
   ?ios_html_scroll_hack:bool ->
   div_content elt ->
   glue option Lwt.t
-
-(** stop element from being sticky *)
-val dissolve : glue -> unit
 
 (** make sure an element gets never out of sight while scrolling by continuously
     (window scroll/resize) monitoring the position of the element and adjusting
