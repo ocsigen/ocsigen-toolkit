@@ -37,6 +37,8 @@ val get_size :
 
 val get_document_size : unit -> int * int
 
+(** NOTE: mind to stop any signals derived from the following signals (using
+    [React.S.stop]) on unload. *)
 val width_height : (int * int) React.signal
 val width : int React.signal
 val height : int React.signal
