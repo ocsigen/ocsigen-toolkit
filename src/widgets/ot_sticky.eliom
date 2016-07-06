@@ -122,16 +122,18 @@ let make_sticky
       scroll_thread = Lwt.return ();
       resize_thread = Lwt.return ();
     } in
-    ignore (Ot_spinner.onloaded |> React.E.map @@ fun () -> Lwt.async @@ fun () ->
-      synchronise glue; update_state ~force:true glue; Lwt.return ()
-    );
+    let lt =
+      Ot_spinner.onloaded |> React.E.map @@ fun () -> Lwt.async @@ fun () ->
+        synchronise glue; update_state ~force:true glue; Lwt.return ()
+    in
     let st = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
     let rt = Ot_lib.onresizes @@ fun _ _ ->
       synchronise glue; update_state glue; Lwt.return ()
     in
-    Eliom_client.onunload (fun () -> Lwt.cancel st; Lwt.cancel rt; None);
+    Eliom_client.onunload (fun () ->
+      Lwt.cancel st; Lwt.cancel rt; React.E.stop ~strong:true lt; None);
     Lwt.return @@ Some {glue with scroll_thread = st; resize_thread = rt}
   end
 
@@ -169,8 +171,8 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
     (fun () -> compute_top_left @@ React.S.value Ot_size.height)
   in
   let stop = Lwt.return @@ fun () ->
-    React.E.stop onload_thread;
-    React.S.stop resize_thread;
+    React.E.stop ~strong:true onload_thread;
+    React.S.stop ~strong:true resize_thread;
     match glue with | Some g -> dissolve g | None -> ()
   in
   Eliom_client.onunload (fun () ->
