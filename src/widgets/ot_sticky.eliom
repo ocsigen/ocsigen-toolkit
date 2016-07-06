@@ -120,9 +120,9 @@ let make_sticky
       dir = dir;
       dissolve = fun () -> failwith "undefined"
     } in
-    let onloaded_thread = Ot_spinner.onloaded |> React.E.map @@
-      fun () -> unstick ~force:true glue; synchronise glue; update_state glue
-    in
+    let init () = unstick ~force:true glue; synchronise glue; update_state glue in
+    init ();
+    let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
