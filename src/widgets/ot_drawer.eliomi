@@ -32,11 +32,16 @@
     mobile where if one prevents document scrolling by CSS (requires on iOS the
     CSS code: html.dr-drawer-open, html.dr-drawer-open>body {overflow: hidden})
     the document is scrolled to the top.
+
+    If present, function [onclose] is called just after the drawer is closed,
+    and function [onopen] just before it starts opening.
 *)
 val drawer :
   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list ->
   ?position:[ `Left | `Right ] ->
   ?ios_scroll_pos_fix:bool ->
+  ?onclose:(unit -> unit) Eliom_client_value.t ->
+  ?onopen:(unit -> unit) Eliom_client_value.t ->
   [< Html_types.div_content] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
   (unit -> unit) Eliom_client_value.t *

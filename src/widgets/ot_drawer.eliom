@@ -72,7 +72,7 @@ let%client scroll_pos = ref 0
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
 let%shared drawer ?(a = []) ?(position = `Left)
-    ?(ios_scroll_pos_fix=true) content =
+    ?(ios_scroll_pos_fix=true) ?onclose ?onopen content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
@@ -103,6 +103,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "closing";
+         Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
          Lwt.return ()))
      : unit -> unit)]
   in
@@ -112,6 +113,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
        if ~%ios_scroll_pos_fix then
          scroll_pos := Dom_html.document##.body##.scrollTop;
        add_class ~%bckgrnd "open";
+       Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
        if ~%ios_scroll_pos_fix then
          Dom_html.document##.body##.scrollTop := !scroll_pos;
        add_class ~%bckgrnd "opening";
