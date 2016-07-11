@@ -36,6 +36,8 @@ type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
   dir : [`Top | `Left]; (*TODO: support `Bottom and `Right*)
+  scroll_thread : unit Lwt.t;
+  resize_thread : int React.S.t;
   dissolve : unit -> unit
 }
 
@@ -118,6 +120,8 @@ let make_sticky
       fixed = fixed;
       inline = elt;
       dir = dir;
+      scroll_thread = Lwt.return (); (* updated below *)
+      resize_thread = React.S.const 0; (* updated below *)
       dissolve = fun () -> failwith "undefined"
     } in
     let init () = unstick ~force:true glue; synchronise glue; update_state glue in
@@ -126,19 +130,21 @@ let make_sticky
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
-    let resize_thread = Ot_lib.onresizes @@ fun _ _ ->
-      synchronise glue; update_state glue; Lwt.return ()
+    let resize_thread = Ot_size.height |> React.S.map @@ fun height ->
+      synchronise glue; update_state glue; height
     in
     let dissolve () =
       Lwt.cancel scroll_thread;
-      Lwt.cancel resize_thread;
+      React.S.stop resize_thread;
       React.E.stop onloaded_thread;
       unstick ~force:true glue;
       Manip.removeSelf glue.fixed;
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
     Eliom_client.onunload (fun () -> dissolve (); None);
-    Lwt.return @@ Some {glue with dissolve = dissolve}
+    Lwt.return @@ Some {glue with scroll_thread = scroll_thread;
+                                  resize_thread = resize_thread;
+                                  dissolve = dissolve}
   end
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
@@ -149,9 +155,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let elt = match glue with | None -> elt | Some g -> g.fixed in
   match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
-  let compute_top_left win_height = Lwt.async @@ fun () ->
-    let%lwt _ = Lwt_js.sleep 0.01 in
-    match dir with
+  let compute_top_left win_height = match dir with
     | `Top ->
       (* sleep, as this should run after make_sticky's handlers *)
       let win_height = float_of_int win_height in
@@ -163,7 +167,10 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
       Lwt.return ()
     | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
   in
-  let resize_thread = React.S.map compute_top_left Ot_size.height in
+  let resize_thread = React.S.map compute_top_left @@ match glue with
+    | None -> Ot_size.height
+    | Some glue -> glue.resize_thread
+  in
   let onload_thread = Ot_spinner.onloaded |> React.E.map @@
     fun () -> compute_top_left @@ React.S.value Ot_size.height
   in
