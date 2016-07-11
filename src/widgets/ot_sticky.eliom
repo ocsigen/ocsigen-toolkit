@@ -163,17 +163,22 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
       let elt_height = Ot_size.client_height (To_dom.of_element elt) in
       if elt_height > win_height -. parent_top
       then Ot_style.set_top elt (win_height -. elt_height)
-      else Ot_style.set_top elt parent_top;
-      Lwt.return ()
+      else Ot_style.set_top elt parent_top
     | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
   in
   let resize_thread = React.S.map compute_top_left @@ match glue with
     | None -> Ot_size.height
     | Some glue -> glue.resize_thread
   in
-  let onload_thread = Ot_spinner.onloaded |> React.E.map @@
-    fun () -> compute_top_left @@ React.S.value Ot_size.height
+  let init () =
+    let doIt () = compute_top_left @@ React.S.value Ot_size.height in
+    (* the additional initialisation after some delay is due to the inexplicable
+       behaviour on Chrome where the initialisation happens too early. *)
+    Lwt.async (fun () -> let%lwt _ = Lwt_js.sleep 0.5 in Lwt.return @@ doIt ());
+    doIt ()
   in
+  init ();
+  let onload_thread = React.E.map init Ot_spinner.onloaded in
   let stop () =
     React.E.stop onload_thread;
     React.S.stop resize_thread;
