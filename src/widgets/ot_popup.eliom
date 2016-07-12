@@ -36,12 +36,13 @@ let%client try_focus x = match Dom_html.tagged x with
   | Dom_html.Select   x -> x##focus
   | _ -> ()
 
+let%client focus elt = Lwt.async @@ fun () ->
+  let%lwt _ = Ot_nodeready.nodeready elt in
+  try_focus elt;
+  Lwt.return ()
+
 let%client setup_form first second next_to_last last =
-  begin Lwt.async @@ fun () ->
-    let%lwt _ = Ot_nodeready.nodeready first in
-    try_focus first;
-    Lwt.return ()
-  end;
+  focus first;
   begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
     first##.tabIndex := 2;
@@ -67,6 +68,21 @@ let%client setup_form first second next_to_last last =
     Lwt.return ()
   end
 
+let%client setup_form_elts elts =
+  match elts with
+  | [] -> ()
+  | [one] -> focus one
+  | [one;two] -> (* We can't have a proper tab cycle with just two elements *)
+    one##.tabIndex := 1;
+    two##.tabIndex := 2;
+    focus one
+  | one :: two :: xs ->
+    let last, next_to_last = match List.rev @@ two :: xs with
+      | last :: next_to_last :: _ -> last, next_to_last
+      | _ -> failwith "Ot_popup.setup_form_elts: can't happen"
+    in
+    setup_form one two next_to_last last
+
 let%client coerce_to_form_element x = let x = Dom_html.element x in
   match Dom_html.tagged x with
   | Dom_html.A        x -> Some (x :> form_element Js.t)
@@ -78,23 +94,15 @@ let%client coerce_to_form_element x = let x = Dom_html.element x in
   (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
   | _ -> None
 
-let%client rec find_first_form_element xs = match xs with
-  | [] -> failwith "could not find valid form element"
-  | x::xs -> match coerce_to_form_element x with
-    | None -> find_first_form_element xs
-    | Some x -> (x,xs)
+let%shared rec list_of_opts = function
+  | [] -> []
+  | None :: xs -> list_of_opts xs
+  | Some x :: xs -> x :: list_of_opts xs
 
 (* TODO: what if there are only one or two form elements? *)
 let%client setup_form_auto form = Lwt.async @@ fun () ->
   let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
-
-  let (first, xs) = find_first_form_element xs in
-  let (second,xs) = find_first_form_element xs in
-  let xs = List.rev ((second :> Dom.element Js.t) :: xs) in
-  let (last,xs) = find_first_form_element xs in
-  let (next_to_last,_) = find_first_form_element xs in
-
-  setup_form first second next_to_last last;
+  setup_form_elts @@ list_of_opts @@ List.map coerce_to_form_element xs;
   Lwt.return ()
 
 
@@ -184,8 +192,8 @@ let%client popup
   begin if setup_form then
     match Dom.list_of_nodeList @@
       (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
-    | [] -> ()
-    | (form::xs) -> setup_form_auto form
+    | [] -> setup_form_auto @@ To_dom.of_element c
+    | form :: _ -> setup_form_auto form
   end;
 
   let content = [c] in
