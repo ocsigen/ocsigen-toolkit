@@ -26,6 +26,8 @@ type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
   dir : [`Top | `Left];
+  scroll_thread : unit Lwt.t;
+  resize_thread : int React.S.t;
   dissolve : unit -> unit
 }
 
