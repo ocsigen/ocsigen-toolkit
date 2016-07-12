@@ -103,25 +103,11 @@ end
 (** [setup_form] makes a form in a popup more user-friendly, by focussing on
     the first element of the form and forcing tab keys to cycle through the
     elements of the form only (and not the elements of the page behind the
-    popup). As arguments it requires the first, the second, the next to last,
-    and the last element of the form. The second and the next to last element
-    can be the same, so it works for three or more elements. *)
-val setup_form :
-  #form_element Js.t ->
-  #form_element Js.t ->
-  #form_element Js.t ->
-  #form_element Js.t ->
-  unit
-
-(** an alternative interface to [setup_form] that can work with an arbitrary
-    number of elements. Note: you get proper tab cycles only for three or more
-    elements! The list does not need to be complete, as only the first, the
-    second, the next to last, and the last element matter. *)
-val setup_form_elts : form_element Js.t list -> unit
+    popup). Note: you get proper tab cycles only for three or more elements! The
+    list does not need to be complete, as only the first, the second, the next
+    to last, and the last element matter. *)
+val setup_form : #form_element Js.t list -> unit
 
 (** [setup_form_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_form] *)
 val setup_form_auto : Dom_html.element Js.t -> unit
-
-(** focuses on the specified element if it is focussable; otherwise do nowt *)
-val try_focus : Dom_html.element Js.t -> unit

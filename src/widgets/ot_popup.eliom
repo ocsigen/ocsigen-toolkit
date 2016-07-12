@@ -29,19 +29,8 @@ class type form_element = object
 end
 ]
 
-let%client try_focus x = match Dom_html.tagged x with
-  | Dom_html.A        x -> x##focus
-  | Dom_html.Input    x -> x##focus
-  | Dom_html.Textarea x -> x##focus
-  | Dom_html.Select   x -> x##focus
-  | _ -> ()
-
-let%client focus elt = Lwt.async @@ fun () ->
-  let%lwt _ = Ot_nodeready.nodeready elt in
-  try_focus elt;
-  Lwt.return ()
-
-let%client setup_form first second next_to_last last =
+(* makes sense starting with 3 elements (second = next_to_last) *)
+let%client setup_tabcycle first second next_to_last last =
   begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
     first##.tabIndex := 2;
@@ -65,23 +54,45 @@ let%client setup_form first second next_to_last last =
     last##.tabIndex := 0;
     first##.tabIndex := 0;
     Lwt.return ()
-  end;
-  focus first
+  end
 
-let%client setup_form_elts elts =
-  match elts with
-  | [] -> ()
-  | [one] -> focus one
-  | [one;two] -> (* We can't have a proper tab cycle with just two elements *)
-    one##.tabIndex := 1;
-    two##.tabIndex := 2;
-    focus one
+(* focussable elements are a real subset of form elements (no buttons) *)
+let%client focussable x =
+  let do_it elt focus = Some (fun () -> Lwt.async @@ fun () ->
+    let%lwt _ = Ot_nodeready.nodeready elt in
+    focus ();
+    Lwt.return ())
+  in
+  match Dom_html.tagged x with
+  | Dom_html.A        x -> do_it x @@ fun () -> x##focus
+  | Dom_html.Input    x -> do_it x @@ fun () -> x##focus
+  | Dom_html.Textarea x -> do_it x @@ fun () -> x##focus
+  | Dom_html.Select   x -> do_it x @@ fun () -> x##focus
+  | _ -> None
+
+let%client try_focus elt = match focussable elt with
+  | None -> ()
+  | Some focus -> focus ()
+
+let%shared rec list_of_opts = function
+  | [] -> []
+  | None :: xs -> list_of_opts xs
+  | Some x :: xs -> x :: list_of_opts xs
+
+let%client setup_form elts =
+  begin match elts with
   | one :: two :: xs ->
     let last, next_to_last = match List.rev @@ two :: xs with
       | last :: next_to_last :: _ -> last, next_to_last
       | _ -> failwith "Ot_popup.setup_form_elts: can't happen"
     in
-    setup_form one two next_to_last last
+    setup_tabcycle one two next_to_last last
+  | _ -> () (* We can't have a proper tab cycle with just two elements *)
+  end;
+  match list_of_opts @@ List.map focussable elts with
+  | focus :: _ -> focus ()
+  | [] -> ()
+
 
 let%client coerce_to_form_element x = let x = Dom_html.element x in
   match Dom_html.tagged x with
@@ -94,15 +105,10 @@ let%client coerce_to_form_element x = let x = Dom_html.element x in
   (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
   | _ -> None
 
-let%shared rec list_of_opts = function
-  | [] -> []
-  | None :: xs -> list_of_opts xs
-  | Some x :: xs -> x :: list_of_opts xs
-
 (* TODO: what if there are only one or two form elements? *)
 let%client setup_form_auto form = Lwt.async @@ fun () ->
   let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
-  setup_form_elts @@ list_of_opts @@ List.map coerce_to_form_element xs;
+  setup_form @@ list_of_opts @@ List.map coerce_to_form_element xs;
   Lwt.return ()
 
 
