@@ -42,7 +42,6 @@ let%client focus elt = Lwt.async @@ fun () ->
   Lwt.return ()
 
 let%client setup_form first second next_to_last last =
-  focus first;
   begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
     first##.tabIndex := 2;
@@ -66,7 +65,8 @@ let%client setup_form first second next_to_last last =
     last##.tabIndex := 0;
     first##.tabIndex := 0;
     Lwt.return ()
-  end
+  end;
+  focus first
 
 let%client setup_form_elts elts =
   match elts with

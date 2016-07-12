@@ -122,3 +122,6 @@ val setup_form_elts : form_element Js.t list -> unit
 (** [setup_form_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_form] *)
 val setup_form_auto : Dom_html.element Js.t -> unit
+
+(** focuses on the specified element if it is focussable; otherwise do nowt *)
+val try_focus : Dom_html.element Js.t -> unit
