@@ -52,7 +52,8 @@ val hcf :
     parameter, and returning the popup content.
     For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
     If [setup_form] (default: false) is true then the popup is scanned for a
-    form-element and [setup_form_auto] is applied. *)
+    form element and [setup_form_auto] is applied. If no form element is found,
+    the whole popup is scanned for form elements. *)
 val popup :
   ?a:[< div_attrib ] attrib list
   -> ?close_button:(button_content elt list)
@@ -102,8 +103,9 @@ end
 (** [setup_form] makes a form in a popup more user-friendly, by focussing on
     the first element of the form and forcing tab keys to cycle through the
     elements of the form only (and not the elements of the page behind the
-    popup). As arguments in requires the first, the second, the next to last,
-    and the last element of the form. *)
+    popup). As arguments it requires the first, the second, the next to last,
+    and the last element of the form. The second and the next to last element
+    can be the same, so it works for three or more elements. *)
 val setup_form :
   #form_element Js.t ->
   #form_element Js.t ->
@@ -111,6 +113,12 @@ val setup_form :
   #form_element Js.t ->
   unit
 
-(** [setup_form_auto] scans an element for buttons and input elements and feeds
-    them to [setup_form] *)
+(** an alternative interface to [setup_form] that can work with an arbitrary
+    number of elements. Note: you get proper tab cycles only for three or more
+    elements! The list does not need to be complete, as only the first, the
+    second, the next to last, and the last element matter. *)
+val setup_form_elts : form_element Js.t list -> unit
+
+(** [setup_form_auto] scans an element for tabbable elements (buttons, inputs)
+    and feeds them to [setup_form] *)
 val setup_form_auto : Dom_html.element Js.t -> unit
