@@ -195,7 +195,7 @@ let%client popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
 
-  begin if setup_form then
+  begin Ot_spinner.when_loaded @@ fun () -> if setup_form then
     match Dom.list_of_nodeList @@
       (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
     | [] -> setup_form_auto @@ To_dom.of_element c
