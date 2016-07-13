@@ -1,5 +1,7 @@
 [%%client.start]
 
+(** This module is an interface to getComputedStyle *)
+
 open Eliom_content.Html
 
 val parse_px : Js.js_string Js.t -> float option
@@ -11,6 +13,7 @@ val style : #Dom_html.element Js.t -> Dom_html.cssStyleDeclaration Js.t
 val display : #Dom_html.element Js.t -> string
 val visibility : #Dom_html.element Js.t -> string
 
+(** whether an element is currently invisible in the DOM (not the screen) *)
 val invisible : #Dom_html.element Js.t -> bool
 
 val top    : #Dom_html.element Js.t -> float option

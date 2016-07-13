@@ -111,7 +111,8 @@ let%client focus_first_focussable elts =
   | [] -> ()
 
 let%client setup_tabcycle elts =
-  (*TODO: set all tabindexes to 0; to neutralise earlier runs*)
+  (*TODO: stop the listeners!*)
+  List.iter (fun elt -> elt##.tabIndex := 0) elts;
   begin match elts with
     | [one; two] -> (* We can't have a proper tab cycle with just two elements
                        but we can at least make TAB work (but not shift-TAB) *)
@@ -244,9 +245,12 @@ let%client popup
     in
 
     if setup_form then begin Ot_spinner.when_loaded @@ fun () ->
-      let form_elements = tabbable_elts_of form_container in
-      setup_tabcycle form_elements;
-      focus_first_focussable form_elements
+      Lwt.async @@ fun () ->
+        let%lwt _ = Ot_nodeready.nodeready form_container in
+        let form_elements = tabbable_elts_of form_container in
+        setup_tabcycle form_elements;
+        focus_first_focussable form_elements;
+        Lwt.return ()
     end;
 
     if disable_background then begin

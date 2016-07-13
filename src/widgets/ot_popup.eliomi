@@ -52,8 +52,8 @@ val hcf :
     parameter, and returning the popup content.
     For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
     If [setup_form] (default: false) is true then the popup is scanned for a
-    form element and [setup_form_auto] is applied. If no form element is found,
-    the whole popup is scanned for form elements. *)
+    form element and [setup_tabcycle_auto] is applied. If no form element is
+    found, the whole popup is scanned for form elements. *)
 val popup :
   ?a:[< div_attrib ] attrib list
   -> ?close_button:(button_content elt list)
