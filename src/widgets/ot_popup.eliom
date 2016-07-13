@@ -29,7 +29,28 @@ class type tabbable = object
 end
 ]
 
-(* makes sense starting with 3 elements (second = next_to_last) *)
+let%client setup_tabswitch one two =
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses one @@ fun _ _ ->
+    one##.tabIndex := 1;
+    two##.tabIndex := 2;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs one @@ fun _ _ ->
+    one##.tabIndex := 0;
+    two##.tabIndex := 0;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.focuses two @@ fun _ _ ->
+    one##.tabIndex := 2;
+    two##.tabIndex := 1;
+    Lwt.return ()
+  end;
+  begin Lwt.async @@ fun () -> Lwt_js_events.blurs two @@ fun _ _ ->
+    one##.tabIndex := 0;
+    two##.tabIndex := 0;
+    Lwt.return ()
+  end
+
 let%client setup_tabcycle first second next_to_last last =
   begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
@@ -84,14 +105,16 @@ let%client focus_first_focussable elts =
 
 let%client setup_tabcycle elts =
   begin match elts with
-  | one :: two :: three :: xs ->
-    let last, next_to_last = match List.rev @@ two :: three :: xs with
-      | last :: next_to_last :: _ -> last, next_to_last
-      | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
-    in
-    setup_tabcycle one two next_to_last last
-  | _ -> () (* We can't have a proper tab cycle with just two elements *)
-         (* TODO: but we can make TAB work (not shift-TAB though)*)
+    | [one; two] -> (* We can't have a proper tab cycle with just two elements
+                       but we can at least make TAB work (but not shift-TAB) *)
+      setup_tabswitch one two
+    | one :: two :: three :: xs ->
+      let last, next_to_last = match List.rev @@ two :: three :: xs with
+        | last :: next_to_last :: _ -> last, next_to_last
+        | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
+      in
+      setup_tabcycle one two next_to_last last
+    | _ -> ()
   end;
   focus_first_focussable elts
 
