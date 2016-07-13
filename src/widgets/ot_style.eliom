@@ -34,6 +34,17 @@ let px_of_float px = string_of_float px ^ "0px"
 
 let style elt = Dom_html.window##getComputedStyle elt
 
+(*TODO: constructors instead of strings?*)
+let display elt = Js.to_string (style elt)##.display
+let visibility elt = Js.to_string (style elt)##.visibility
+
+(*TODO: not well-tested! does this work on all browsers? *)
+let invisible elt =
+  (*https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent*)
+  elt##.offsetParent = Js.null ||
+  display elt = "none" ||
+  visibility elt = "hidden"
+
 let top    elt = parse_px (style elt)##.top
 let bottom elt = parse_px (style elt)##.bottom
 let left   elt = parse_px (style elt)##.left

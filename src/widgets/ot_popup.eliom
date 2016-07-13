@@ -77,8 +77,13 @@ let%client setup_tabcycle first second next_to_last last =
     Lwt.return ()
   end
 
-let%client only_if_not_disabled elt value =
-  if elt##.disabled <> Js._true then Some value else None
+(*TODO: eliminate this code duplication*)
+let%client only_if_active' elt value =
+  if Ot_style.invisible elt then None else Some value
+
+(*TODO: eliminate this code duplication*)
+let%client only_if_active elt value =
+  if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some value
 
 let%client focussable x =
   let do_it elt focus = fun () -> Lwt.async @@ fun () ->
@@ -87,12 +92,12 @@ let%client focussable x =
     Lwt.return ()
   in
   match Dom_html.tagged x with
-  | Dom_html.A        x -> Some (do_it x @@ fun () -> x##focus)
-  | Dom_html.Input    x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
-  | Dom_html.Textarea x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
-  | Dom_html.Select   x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
+  | Dom_html.A        x -> only_if_active' x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Input    x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Textarea x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Select   x -> only_if_active x (do_it x @@ fun () -> x##focus)
   (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
-  | Dom_html.Button   x -> only_if_not_disabled x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
+  | Dom_html.Button   x -> only_if_active x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
   | _ -> None
 
 let%shared rec list_of_opts = function
@@ -106,6 +111,7 @@ let%client focus_first_focussable elts =
   | [] -> ()
 
 let%client setup_tabcycle elts =
+  (*TODO: set all tabindexes to 0; to neutralise earlier runs*)
   begin match elts with
     | [one; two] -> (* We can't have a proper tab cycle with just two elements
                        but we can at least make TAB work (but not shift-TAB) *)
@@ -117,18 +123,17 @@ let%client setup_tabcycle elts =
       in
       setup_tabcycle one two next_to_last last
     | _ -> ()
-  end;
-  focus_first_focussable elts
+  end
 
 
 let%client coerce_to_tabbable x = let x = Dom_html.element x in
   match Dom_html.tagged x with
-  | Dom_html.A        x -> Some (x :> tabbable Js.t)
+  | Dom_html.A        x -> only_if_active' x (x :> tabbable Js.t)
   (* | Dom_html.Link     x -> Some (x :> tabbable Js.t) *)
-  | Dom_html.Button   x -> only_if_not_disabled x (x :> tabbable Js.t)
-  | Dom_html.Input    x -> only_if_not_disabled x (x :> tabbable Js.t)
-  | Dom_html.Select   x -> only_if_not_disabled x (x :> tabbable Js.t)
-  | Dom_html.Textarea x -> only_if_not_disabled x (x :> tabbable Js.t)
+  | Dom_html.Button   x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Input    x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Select   x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Textarea x -> only_if_active x (x :> tabbable Js.t)
   (* | Dom_html.Menuitem x -> Some (x :> tabbable Js.t) *)
   | _ -> None
 
@@ -239,7 +244,9 @@ let%client popup
     in
 
     if setup_form then begin Ot_spinner.when_loaded @@ fun () ->
-      setup_tabcycle @@ tabbable_elts_of form_container
+      let form_elements = tabbable_elts_of form_container in
+      setup_tabcycle form_elements;
+      focus_first_focussable form_elements
     end;
 
     if disable_background then begin

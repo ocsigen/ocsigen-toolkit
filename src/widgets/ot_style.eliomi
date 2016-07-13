@@ -8,6 +8,11 @@ val px_of_float : float -> string
 
 val style : #Dom_html.element Js.t -> Dom_html.cssStyleDeclaration Js.t
 
+val display : #Dom_html.element Js.t -> string
+val visibility : #Dom_html.element Js.t -> string
+
+val invisible : #Dom_html.element Js.t -> bool
+
 val top    : #Dom_html.element Js.t -> float option
 val bottom : #Dom_html.element Js.t -> float option
 val left   : #Dom_html.element Js.t -> float option
