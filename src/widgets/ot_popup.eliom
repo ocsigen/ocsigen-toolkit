@@ -81,8 +81,8 @@ let%shared rec list_of_opts = function
 
 let%client setup_tabcycle elts =
   begin match elts with
-  | one :: two :: xs ->
-    let last, next_to_last = match List.rev @@ two :: xs with
+  | one :: two :: three :: xs ->
+    let last, next_to_last = match List.rev @@ two :: three :: xs with
       | last :: next_to_last :: _ -> last, next_to_last
       | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
     in
