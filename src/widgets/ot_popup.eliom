@@ -77,20 +77,22 @@ let%client setup_tabcycle first second next_to_last last =
     Lwt.return ()
   end
 
-(* focussable elements are a real subset of form elements (no buttons) *)
+let%client only_if_not_disabled elt value =
+  if elt##.disabled <> Js._true then Some value else None
+
 let%client focussable x =
-  let do_it elt focus = Some (fun () -> Lwt.async @@ fun () ->
+  let do_it elt focus = fun () -> Lwt.async @@ fun () ->
     let%lwt _ = Ot_nodeready.nodeready elt in
     focus ();
-    Lwt.return ())
+    Lwt.return ()
   in
   match Dom_html.tagged x with
-  | Dom_html.A        x -> do_it x @@ fun () -> x##focus
-  | Dom_html.Input    x -> do_it x @@ fun () -> x##focus
-  | Dom_html.Textarea x -> do_it x @@ fun () -> x##focus
-  | Dom_html.Select   x -> do_it x @@ fun () -> x##focus
+  | Dom_html.A        x -> Some (do_it x @@ fun () -> x##focus)
+  | Dom_html.Input    x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Textarea x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Select   x -> only_if_not_disabled x (do_it x @@ fun () -> x##focus)
   (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
-  | Dom_html.Button   x -> do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus
+  | Dom_html.Button   x -> only_if_not_disabled x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
   | _ -> None
 
 let%shared rec list_of_opts = function
@@ -123,10 +125,10 @@ let%client coerce_to_tabbable x = let x = Dom_html.element x in
   match Dom_html.tagged x with
   | Dom_html.A        x -> Some (x :> tabbable Js.t)
   (* | Dom_html.Link     x -> Some (x :> tabbable Js.t) *)
-  | Dom_html.Button   x -> Some (x :> tabbable Js.t)
-  | Dom_html.Input    x -> Some (x :> tabbable Js.t)
-  | Dom_html.Select   x -> Some (x :> tabbable Js.t)
-  | Dom_html.Textarea x -> Some (x :> tabbable Js.t)
+  | Dom_html.Button   x -> only_if_not_disabled x (x :> tabbable Js.t)
+  | Dom_html.Input    x -> only_if_not_disabled x (x :> tabbable Js.t)
+  | Dom_html.Select   x -> only_if_not_disabled x (x :> tabbable Js.t)
+  | Dom_html.Textarea x -> only_if_not_disabled x (x :> tabbable Js.t)
   (* | Dom_html.Menuitem x -> Some (x :> tabbable Js.t) *)
   | _ -> None
 
