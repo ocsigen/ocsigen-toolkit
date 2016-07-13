@@ -59,6 +59,7 @@ val popup :
   -> ?close_button:(button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
+  -> ?disable_background:bool
   -> ?setup_form:bool
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
@@ -95,19 +96,19 @@ val confirm :
   -> bool Lwt.t
 
 (** An HTML element which can be selected by pressing the tab key *)
-class type form_element = object
+class type tabbable = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
 end
 
-(** [setup_form] makes a form in a popup more user-friendly, by focussing on
+(** [setup_tabcycle] makes a form in a popup more user-friendly, by focussing on
     the first element of the form and forcing tab keys to cycle through the
     elements of the form only (and not the elements of the page behind the
     popup). Note: you get proper tab cycles only for three or more elements! The
     list does not need to be complete, as only the first, the second, the next
     to last, and the last element matter. *)
-val setup_form : #form_element Js.t list -> unit
+val setup_tabcycle : #tabbable Js.t list -> unit
 
-(** [setup_form_auto] scans an element for tabbable elements (buttons, inputs)
-    and feeds them to [setup_form] *)
-val setup_form_auto : Dom_html.element Js.t -> unit
+(** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
+    and feeds them to [setup_tabcycle] *)
+val setup_tabcycle_auto : Dom_html.element Js.t -> unit

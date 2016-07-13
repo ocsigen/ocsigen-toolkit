@@ -23,7 +23,7 @@
 [%%shared open Eliom_content.Html.F ]
 
 [%%client
-class type form_element = object
+class type tabbable = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
 end
@@ -79,38 +79,39 @@ let%shared rec list_of_opts = function
   | None :: xs -> list_of_opts xs
   | Some x :: xs -> x :: list_of_opts xs
 
-let%client setup_form elts =
+let%client setup_tabcycle elts =
   begin match elts with
   | one :: two :: xs ->
     let last, next_to_last = match List.rev @@ two :: xs with
       | last :: next_to_last :: _ -> last, next_to_last
-      | _ -> failwith "Ot_popup.setup_form_elts: can't happen"
+      | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
     in
     setup_tabcycle one two next_to_last last
   | _ -> () (* We can't have a proper tab cycle with just two elements *)
   end;
+  (* focus first focussable element *)
   match list_of_opts @@ List.map focussable elts with
   | focus :: _ -> focus ()
   | [] -> ()
 
 
-let%client coerce_to_form_element x = let x = Dom_html.element x in
+let%client coerce_to_tabbable x = let x = Dom_html.element x in
   match Dom_html.tagged x with
-  | Dom_html.A        x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Link     x -> Some (x :> form_element Js.t) *)
-  | Dom_html.Button   x -> Some (x :> form_element Js.t)
-  | Dom_html.Input    x -> Some (x :> form_element Js.t)
-  | Dom_html.Select   x -> Some (x :> form_element Js.t)
-  | Dom_html.Textarea x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
+  | Dom_html.A        x -> Some (x :> tabbable Js.t)
+  (* | Dom_html.Link     x -> Some (x :> tabbable Js.t) *)
+  | Dom_html.Button   x -> Some (x :> tabbable Js.t)
+  | Dom_html.Input    x -> Some (x :> tabbable Js.t)
+  | Dom_html.Select   x -> Some (x :> tabbable Js.t)
+  | Dom_html.Textarea x -> Some (x :> tabbable Js.t)
+  (* | Dom_html.Menuitem x -> Some (x :> tabbable Js.t) *)
   | _ -> None
 
-(* TODO: what if there are only one or two form elements? *)
-let%client setup_form_auto form = Lwt.async @@ fun () ->
-  let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
-  setup_form @@ list_of_opts @@ List.map coerce_to_form_element xs;
-  Lwt.return ()
+let%client tabbable_elts_of elt = list_of_opts @@ List.map coerce_to_tabbable @@
+  Dom.list_of_nodeList @@ elt##getElementsByTagName (Js.string "*")
 
+(* TODO: what if there are only one or two form elements? *)
+let%client setup_tabcycle_auto form = Lwt.async @@ fun () ->
+  Lwt.return @@ setup_tabcycle @@ tabbable_elts_of form
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
   D.section
@@ -128,6 +129,7 @@ let%client popup
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
+    ?(disable_background=true)
     ?(setup_form=false)
     ?(ios_scroll_pos_fix=true)
     gen_content =
@@ -166,6 +168,13 @@ let%client popup
   html_ManipClass_add "ot-with-popup";
   if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
+  let background_tabIndices = ref None in
+  let maybe_restore_tabIndices () = match !background_tabIndices with
+    | None -> ()
+    | Some indices ->
+      ignore @@ List.map (fun (elt, i) -> elt##.tabIndex := i) indices
+  in
+
   let do_close () =
     decr number_of_popups;
     if !number_of_popups = 0 then begin
@@ -174,6 +183,7 @@ let%client popup
         Dom_html.document##.body##.scrollTop := !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
+    maybe_restore_tabIndices ();
     onclose ()
   in
 
@@ -195,11 +205,32 @@ let%client popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
 
-  begin Ot_spinner.when_loaded @@ fun () -> if setup_form then
-    match Dom.list_of_nodeList @@
-      (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
-    | [] -> setup_form_auto @@ To_dom.of_element c
-    | form :: _ -> setup_form_auto form
+  if disable_background || setup_form then begin
+    let form_container = match Dom.list_of_nodeList @@
+             (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
+    | [form] -> form
+    | _ -> (To_dom.of_element c :> Dom.element Js.t)
+    in
+
+    if setup_form then begin Ot_spinner.when_loaded @@ fun () ->
+      setup_tabcycle @@ tabbable_elts_of form_container
+    end;
+
+    if disable_background then begin
+      let all_tabbable_elts = tabbable_elts_of Dom_html.document in
+      let not_in_form elt = not @@ Ot_lib.in_ancestors
+          ~elt:(elt :> Dom_html.element Js.t)
+          ~ancestor:(Dom_html.element form_container) in
+      let background_elts = List.filter not_in_form all_tabbable_elts in
+      let save_tabindex_and_disable_elt elt =
+        let old_tabIndex = elt##.tabIndex in
+        elt##.tabIndex := -1;
+        (* Dom_html.document##.body##.tabIndex := -1; *)
+        (elt, old_tabIndex)
+      in
+      background_tabIndices := Some
+          (List.map save_tabindex_and_disable_elt background_elts)
+    end
   end;
 
   let content = [c] in

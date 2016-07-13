@@ -21,6 +21,8 @@
 
 [%%client.start]
 
+val in_ancestors : elt:Dom_html.element Js.t -> ancestor:Dom_html.element Js.t -> bool
+
 val onloads : (unit -> unit) -> unit
 (** NOTE: be careful when using the functions [onresizes], [window_scroll], and
     [window_scrolls]. They may be called before the new document is displayed
