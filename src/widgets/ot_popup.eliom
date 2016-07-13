@@ -88,6 +88,7 @@ let%client setup_tabcycle elts =
     in
     setup_tabcycle one two next_to_last last
   | _ -> () (* We can't have a proper tab cycle with just two elements *)
+         (* TODO: but we can make TAB work (not shift-TAB though)*)
   end;
   (* focus first focussable element *)
   match list_of_opts @@ List.map focussable elts with
@@ -267,8 +268,10 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
                Lwt_js_events.clicks (To_dom.of_element btn)
                  (fun _ _ ->
                     let%lwt r = action () in
-                    Lwt.wakeup w r ;
-                    do_close () ) )
+                    let%lwt result = do_close () in
+                    Lwt.wakeup w r;
+                    Lwt.return result
+                    ) )
            ; btn ) buttons in
          Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
   in t
