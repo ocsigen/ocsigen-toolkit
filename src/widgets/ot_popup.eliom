@@ -68,16 +68,19 @@ let%client focussable x =
   | Dom_html.Input    x -> do_it x @@ fun () -> x##focus
   | Dom_html.Textarea x -> do_it x @@ fun () -> x##focus
   | Dom_html.Select   x -> do_it x @@ fun () -> x##focus
+  (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
+  | Dom_html.Button   x -> do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus
   | _ -> None
-
-let%client try_focus elt = match focussable elt with
-  | None -> ()
-  | Some focus -> focus ()
 
 let%shared rec list_of_opts = function
   | [] -> []
   | None :: xs -> list_of_opts xs
   | Some x :: xs -> x :: list_of_opts xs
+
+let%client focus_first_focussable elts =
+  match list_of_opts @@ List.map focussable elts with
+  | focus :: _ -> focus ()
+  | [] -> ()
 
 let%client setup_tabcycle elts =
   begin match elts with
@@ -90,10 +93,7 @@ let%client setup_tabcycle elts =
   | _ -> () (* We can't have a proper tab cycle with just two elements *)
          (* TODO: but we can make TAB work (not shift-TAB though)*)
   end;
-  (* focus first focussable element *)
-  match list_of_opts @@ List.map focussable elts with
-  | focus :: _ -> focus ()
-  | [] -> ()
+  focus_first_focussable elts
 
 
 let%client coerce_to_tabbable x = let x = Dom_html.element x in
