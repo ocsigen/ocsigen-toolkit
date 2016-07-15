@@ -70,6 +70,9 @@ val popup :
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
 
+val resetup_form_signal :
+  unit -> [> `OnSignal of bool React.S.t] * (unit -> unit Lwt.t)
+
 (** [ask_question ?a ?a_hcf question buttons]
     Prompt a user, wait for its response and return the selected value.
     [question] is the content of the popup header

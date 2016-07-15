@@ -313,6 +313,16 @@ let%client popup
   (*   Js.string (Printf.sprintf "%dpx" (To_dom.of_element c)##offsetHeight) ; *)
   Lwt.return box
 
+let%client resetup_form_signal () =
+  let signal, set_signal = React.S.create true in
+  let resetup_form () =
+    let%lwt _ = Lwt_js.sleep 0.1 in (* wait until formular has been updated *)
+    set_signal false;
+    set_signal true;
+    Lwt.return ()
+  in
+  (`OnSignal signal, resetup_form)
+
 let%client ask_question ?a ?a_hcf ~header ~buttons contents =
   let t, w = Lwt.wait () in
   let%lwt _ =
