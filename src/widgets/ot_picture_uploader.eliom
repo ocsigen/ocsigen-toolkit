@@ -282,20 +282,20 @@ let%shared cropper
   , div ~a:[ a_class [ "ot-pup-crop-container" ] ]
       [ t_f ; r_f ; b_f ; l_f ; crop ] )
 
-let%shared input content =
+let%shared input ?(a = []) content =
   let content = (content :> Html_types.label_content_fun elt list) in
   let input = D.Raw.input ~a:[ a_class ["ot-pup-input"]
                              ; a_input_type `File
-                             ; a_accept ["image/*"] ] () in
-  (input, label ~a:[ a_class ["ot-pup-input-label"] ] (input :: content))
+                             ; a_accept ["image/*"] ]() in
+  (input, label ~a:(a_class ["ot-pup-input-label"] :: a) (input :: content))
 
-let%shared preview () =
-  D.img ~a:[ a_class [ "ot-pup-preview"] ]
+let%shared preview ?(a = []) () =
+  D.img ~a:(a_class [ "ot-pup-preview"] :: a)
     ~src:(Xml.uri_of_string "")
     ~alt:"" ()
 
-let%shared submit content =
-  D.Raw.button ~a:[ a_class ["ot-pup-submit"] ]
+let%shared submit ?(a = []) content =
+  D.Raw.button ~a:(a_class ["ot-pup-submit"] :: a)
     content
 
 (* FIXME: To be put in Lwt_js_events *)
@@ -366,13 +366,13 @@ let%shared mk_service name arg_deriver =
 let%shared mk_form
     ?(after_submit = fun () -> Lwt.return ())
     ?crop
-    ?input:(input_content = [])
-    ?submit:(submit_content = [])
+    ?input:(input_a, input_content = [], [])
+    ?submit:(submit_a, submit_content = [], [])
     (service : 'a service)
     (arg : 'a) =
   let preview = preview () in
-  let (input, input_label) = input input_content in
-  let submit = submit submit_content in
+  let (input, input_label) = input ~a:input_a input_content in
+  let submit = submit ~a:submit_a submit_content in
   let (crop, cropper_dom) = match crop with
     | Some ratio ->
       let (reset, cropping, cropper_dom) =
