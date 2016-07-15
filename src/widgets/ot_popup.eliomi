@@ -82,6 +82,8 @@ val resetup_form_signal :
 val ask_question :
   ?a:[< div_attrib ] attrib list
   -> ?a_hcf:[< div_attrib ] attrib list
+  -> ?disable_background:bool
+  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> header:[< header_content ] elt list
   -> buttons:([< button_content_fun ] elt list
               * (unit -> 'a Lwt.t)
@@ -98,6 +100,8 @@ val ask_question :
     [no] is the content of the 'no' button (returning false) *)
 val confirm :
   ?a:[< div_attrib ] attrib list
+  -> ?disable_background:bool
+  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> [< header_content_fun ] elt list
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list

@@ -323,10 +323,11 @@ let%client resetup_form_signal () =
   in
   (`OnSignal signal, resetup_form)
 
-let%client ask_question ?a ?a_hcf ~header ~buttons contents =
+let%client ask_question ?a ?a_hcf ?disable_background
+                        ?setup_form ~header ~buttons contents =
   let t, w = Lwt.wait () in
   let%lwt _ =
-    popup ?a
+    popup ?a ?disable_background ?setup_form
       (fun do_close ->
          let answers =
            List.map (fun (content, action, btn_class) ->
@@ -345,9 +346,10 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
          Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
   in t
 
-let%client confirm ?(a = []) question yes no =
+let%client confirm ?(a = []) ?disable_background
+                   ?setup_form question yes no =
   let a = (a :> Html_types.div_attrib attrib list) in
-  ask_question
+  ask_question ?disable_background ?setup_form
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
