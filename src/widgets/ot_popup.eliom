@@ -93,7 +93,6 @@ let%shared rec list_of_opts = function
   | Some x :: xs -> x :: list_of_opts xs
 
 let%client setup_tabcycle elts =
-  List.iter (fun elt -> elt##.tabIndex := 0) elts;
   begin match elts with
     | [one; two] -> (* We can't have a proper tab cycle with just two elements
                        but we can at least make TAB work (but not shift-TAB) *)
@@ -250,12 +249,13 @@ let%client popup
     | Some setup_form -> begin Ot_spinner.when_loaded @@ fun () ->
       Lwt.async @@ fun () ->
         let%lwt _ = Ot_nodeready.nodeready form_container in
-        let form_elements () = tabbable_elts_of form_container in
+        let form_elements = ref [] in
+        let find_form_elements () = form_elements := tabbable_elts_of form_container in
+        find_form_elements ();
         begin match setup_form with
           | `OnPopup ->
-            let form_elements = form_elements () in
-            Lwt.async (fun () -> setup_tabcycle form_elements);
-            focus_first_focussable form_elements;
+            ignore @@ setup_tabcycle !form_elements;
+            focus_first_focussable !form_elements
           | `OnSignal s ->
             let thread = ref None in
             let cancel () = match !thread with
@@ -263,12 +263,17 @@ let%client popup
               | Some t -> Lwt.cancel t
             in
             let stopper = s |> React.S.map @@ fun s -> if s
-              then
-                let form_elements = form_elements () in
-                thread := Some (setup_tabcycle form_elements)
-              else cancel ()
+              then begin
+                find_form_elements ();
+                thread := Some (setup_tabcycle !form_elements)
+              end
+              else begin
+                cancel ();
+                List.iter (fun elt -> elt##.tabIndex := 0) !form_elements;
+                form_elements := []
+              end
             in
-            focus_first_focussable @@ form_elements ();
+            focus_first_focussable !form_elements;
             Eliom_client.onunload @@ fun () ->
               cancel ();
               React.S.stop stopper;
