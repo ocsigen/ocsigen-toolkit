@@ -80,12 +80,12 @@ let%client tabcycle first second next_to_last last =
   Lwt.join [focuses_first; blurs_first; focuses_last; blurs_last]
 
 (*TODO: eliminate this code duplication*)
-let%client only_if_active' elt value =
-  if Ot_style.invisible elt then None else Some value
+let%client only_if_active' elt v =
+  if Ot_style.invisible elt then None else Some v
 
 (*TODO: eliminate this code duplication*)
-let%client only_if_active elt value =
-  if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some value
+let%client only_if_active elt v =
+  if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some v
 
 let%shared rec list_of_opts = function
   | [] -> []
