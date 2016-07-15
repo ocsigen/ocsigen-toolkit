@@ -51,6 +51,11 @@ val hcf :
     [gen_content] is a function taking the function closing the popup as
     parameter, and returning the popup content.
     For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
+    If [disable_background] (default: true) is true then the tabIndex of all
+    the elements not in the popup are set to -1 with the effect that they can
+    not be selected using the TAB key. When the popup is closed their old
+    tabIndex value is restored. Note, that some elements that are tabbable in
+    some browsers but not by specification (scrollable div's) are not affected.
     If [setup_form] (default: false) is true then the popup is scanned for a
     form element and [setup_tabcycle_auto] is applied. If no form element is
     found, the whole popup is scanned for form elements. *)
@@ -60,7 +65,7 @@ val popup :
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
   -> ?disable_background:bool
-  -> ?setup_form:bool
+  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
@@ -107,8 +112,8 @@ end
     popup). Note: you get proper tab cycles only for three or more elements! The
     list does not need to be complete, as only the first, the second, the next
     to last, and the last element matter. *)
-val setup_tabcycle : #tabbable Js.t list -> unit
+val setup_tabcycle : #tabbable Js.t list -> unit Lwt.t
 
 (** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_tabcycle] *)
-val setup_tabcycle_auto : Dom_html.element Js.t -> unit
+val setup_tabcycle_auto : Dom_html.element Js.t -> unit Lwt.t

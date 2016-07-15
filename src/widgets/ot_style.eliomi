@@ -13,7 +13,8 @@ val style : #Dom_html.element Js.t -> Dom_html.cssStyleDeclaration Js.t
 val display : #Dom_html.element Js.t -> string
 val visibility : #Dom_html.element Js.t -> string
 
-(** whether an element is currently invisible in the DOM (not the screen) *)
+(** whether an element is currently invisible in the DOM (not the screen);
+    you might want to do a [Ot_nodeready.nodeready] before. *)
 val invisible : #Dom_html.element Js.t -> bool
 
 val top    : #Dom_html.element Js.t -> float option

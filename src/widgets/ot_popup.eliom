@@ -29,53 +29,55 @@ class type tabbable = object
 end
 ]
 
-let%client setup_tabswitch one two =
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses one @@ fun _ _ ->
+let%client tabswitch one two =
+  let focuses_one = begin Lwt_js_events.focuses one @@ fun _ _ ->
     one##.tabIndex := 1;
     two##.tabIndex := 2;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs one @@ fun _ _ ->
+  end in
+  let blurs_one = begin Lwt_js_events.blurs one @@ fun _ _ ->
     one##.tabIndex := 0;
     two##.tabIndex := 0;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses two @@ fun _ _ ->
+  end in
+  let focuses_two = begin Lwt_js_events.focuses two @@ fun _ _ ->
     one##.tabIndex := 2;
     two##.tabIndex := 1;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs two @@ fun _ _ ->
+  end in
+  let blurs_two = begin Lwt_js_events.blurs two @@ fun _ _ ->
     one##.tabIndex := 0;
     two##.tabIndex := 0;
     Lwt.return ()
-  end
+  end in
+  Lwt.join [focuses_one; blurs_one; focuses_two; blurs_two]
 
-let%client setup_tabcycle first second next_to_last last =
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
+let%client tabcycle first second next_to_last last =
+  let focuses_first = begin Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
     first##.tabIndex := 2;
     second##.tabIndex := 3;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs first @@ fun _ _ ->
+  end in
+  let blurs_first = begin Lwt_js_events.blurs first @@ fun _ _ ->
     first##.tabIndex := 0;
     second##.tabIndex := 0;
     last##.tabIndex := 0;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses last @@ fun _ _ ->
+  end in
+  let focuses_last = begin Lwt_js_events.focuses last @@ fun _ _ ->
     next_to_last##.tabIndex := 1;
     last##.tabIndex := 2;
     first##.tabIndex := 3;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs last @@ fun _ _ ->
+  end in
+  let blurs_last = begin Lwt_js_events.blurs last @@ fun _ _ ->
     next_to_last##.tabIndex := 0;
     last##.tabIndex := 0;
     first##.tabIndex := 0;
     Lwt.return ()
-  end
+  end in
+  Lwt.join [focuses_first; blurs_first; focuses_last; blurs_last]
 
 (*TODO: eliminate this code duplication*)
 let%client only_if_active' elt value =
@@ -85,45 +87,24 @@ let%client only_if_active' elt value =
 let%client only_if_active elt value =
   if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some value
 
-let%client focussable x =
-  let do_it elt focus = fun () -> Lwt.async @@ fun () ->
-    let%lwt _ = Ot_nodeready.nodeready elt in
-    focus ();
-    Lwt.return ()
-  in
-  match Dom_html.tagged x with
-  | Dom_html.A        x -> only_if_active' x (do_it x @@ fun () -> x##focus)
-  | Dom_html.Input    x -> only_if_active x (do_it x @@ fun () -> x##focus)
-  | Dom_html.Textarea x -> only_if_active x (do_it x @@ fun () -> x##focus)
-  | Dom_html.Select   x -> only_if_active x (do_it x @@ fun () -> x##focus)
-  (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
-  | Dom_html.Button   x -> only_if_active x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
-  | _ -> None
-
 let%shared rec list_of_opts = function
   | [] -> []
   | None :: xs -> list_of_opts xs
   | Some x :: xs -> x :: list_of_opts xs
 
-let%client focus_first_focussable elts =
-  match list_of_opts @@ List.map focussable elts with
-  | focus :: _ -> focus ()
-  | [] -> ()
-
 let%client setup_tabcycle elts =
-  (*TODO: stop the listeners!*)
   List.iter (fun elt -> elt##.tabIndex := 0) elts;
   begin match elts with
     | [one; two] -> (* We can't have a proper tab cycle with just two elements
                        but we can at least make TAB work (but not shift-TAB) *)
-      setup_tabswitch one two
+      tabswitch one two
     | one :: two :: three :: xs ->
       let last, next_to_last = match List.rev @@ two :: three :: xs with
         | last :: next_to_last :: _ -> last, next_to_last
         | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
       in
-      setup_tabcycle one two next_to_last last
-    | _ -> ()
+      tabcycle one two next_to_last last
+    | _ -> Lwt.return ()
   end
 
 
@@ -142,8 +123,28 @@ let%client tabbable_elts_of elt = list_of_opts @@ List.map coerce_to_tabbable @@
   Dom.list_of_nodeList @@ elt##getElementsByTagName (Js.string "*")
 
 (* TODO: what if there are only one or two form elements? *)
-let%client setup_tabcycle_auto form = Lwt.async @@ fun () ->
-  Lwt.return @@ setup_tabcycle @@ tabbable_elts_of form
+let%client setup_tabcycle_auto form = setup_tabcycle @@ tabbable_elts_of form
+
+let%client focussable x =
+  let do_it elt focus = fun () -> Lwt.async @@ fun () ->
+    let%lwt _ = Ot_nodeready.nodeready elt in
+    focus ();
+    Lwt.return ()
+  in
+  match Dom_html.tagged x with
+  | Dom_html.A        x -> only_if_active' x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Input    x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Textarea x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Select   x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
+  | Dom_html.Button   x -> only_if_active x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
+  | _ -> None
+
+let%client focus_first_focussable elts =
+  match list_of_opts @@ List.map focussable elts with
+  | focus :: _ -> focus ()
+  | [] -> ()
+
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
   D.section
@@ -162,7 +163,7 @@ let%client popup
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
     ?(disable_background=true)
-    ?(setup_form=false)
+    ?setup_form
     ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -237,19 +238,42 @@ let%client popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
 
-  if disable_background || setup_form then begin
+  if disable_background || setup_form <> None then begin
     let form_container = match Dom.list_of_nodeList @@
              (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
     | [form] -> form
     | _ -> (To_dom.of_element c :> Dom.element Js.t)
     in
 
-    if setup_form then begin Ot_spinner.when_loaded @@ fun () ->
+    match setup_form with
+    | None -> ()
+    | Some setup_form -> begin Ot_spinner.when_loaded @@ fun () ->
       Lwt.async @@ fun () ->
         let%lwt _ = Ot_nodeready.nodeready form_container in
-        let form_elements = tabbable_elts_of form_container in
-        setup_tabcycle form_elements;
-        focus_first_focussable form_elements;
+        let form_elements () = tabbable_elts_of form_container in
+        begin match setup_form with
+          | `OnPopup ->
+            let form_elements = form_elements () in
+            Lwt.async (fun () -> setup_tabcycle form_elements);
+            focus_first_focussable form_elements;
+          | `OnSignal s ->
+            let thread = ref None in
+            let cancel () = match !thread with
+              | None -> ()
+              | Some t -> Lwt.cancel t
+            in
+            let stopper = s |> React.S.map @@ fun s -> if s
+              then
+                let form_elements = form_elements () in
+                thread := Some (setup_tabcycle form_elements)
+              else cancel ()
+            in
+            focus_first_focussable @@ form_elements ();
+            Eliom_client.onunload @@ fun () ->
+              cancel ();
+              React.S.stop stopper;
+              None
+        end;
         Lwt.return ()
     end;
 
