@@ -200,11 +200,9 @@ let%client popup
   html_ManipClass_add "ot-with-popup";
   if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
-  let background_tabIndices = ref None in
-  let maybe_restore_tabIndices () = match !background_tabIndices with
-    | None -> ()
-    | Some indices ->
-      ignore @@ List.map (fun (elt, i) -> elt##.tabIndex := i) indices
+  let bg_tabIndices = ref [] in
+  let restore_tabIndices () =
+    List.iter (fun (elt, i) -> elt##.tabIndex := i) !bg_tabIndices
   in
 
   let do_close () =
@@ -215,7 +213,7 @@ let%client popup
         Dom_html.document##.body##.scrollTop := !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
-    maybe_restore_tabIndices ();
+    restore_tabIndices ();
     onclose ()
   in
 
@@ -249,13 +247,13 @@ let%client popup
     | Some setup_form -> begin Ot_spinner.when_loaded @@ fun () ->
       Lwt.async @@ fun () ->
         let%lwt _ = Ot_nodeready.nodeready form_container in
-        let form_elements = ref [] in
-        let find_form_elements () = form_elements := tabbable_elts_of form_container in
-        find_form_elements ();
+        let form_elts = ref [] in
+        let find_form_elts () = form_elts := tabbable_elts_of form_container in
+        find_form_elts ();
         begin match setup_form with
           | `OnPopup ->
-            ignore @@ setup_tabcycle !form_elements;
-            focus_first_focussable !form_elements
+            ignore @@ setup_tabcycle !form_elts;
+            focus_first_focussable !form_elts
           | `OnSignal s ->
             let thread = ref None in
             let cancel () = match !thread with
@@ -264,16 +262,16 @@ let%client popup
             in
             let stopper = s |> React.S.map @@ fun s -> if s
               then begin
-                find_form_elements ();
-                thread := Some (setup_tabcycle !form_elements)
+                find_form_elts ();
+                thread := Some (setup_tabcycle !form_elts)
               end
               else begin
                 cancel ();
-                List.iter (fun elt -> elt##.tabIndex := 0) !form_elements;
-                form_elements := []
+                List.iter (fun elt -> elt##.tabIndex := 0) !form_elts;
+                form_elts := []
               end
             in
-            focus_first_focussable !form_elements;
+            focus_first_focussable !form_elts;
             Eliom_client.onunload @@ fun () ->
               cancel ();
               React.S.stop stopper;
@@ -287,15 +285,14 @@ let%client popup
       let not_in_form elt = not @@ Ot_lib.in_ancestors
           ~elt:(elt :> Dom_html.element Js.t)
           ~ancestor:(Dom_html.element form_container) in
-      let background_elts = List.filter not_in_form all_tabbable_elts in
+      let bg_elts = List.filter not_in_form all_tabbable_elts in
       let save_tabindex_and_disable_elt elt =
         let old_tabIndex = elt##.tabIndex in
         elt##.tabIndex := -1;
         (* Dom_html.document##.body##.tabIndex := -1; *)
         (elt, old_tabIndex)
       in
-      background_tabIndices := Some
-          (List.map save_tabindex_and_disable_elt background_elts)
+      bg_tabIndices := List.map save_tabindex_and_disable_elt bg_elts
     end
   end;
 
