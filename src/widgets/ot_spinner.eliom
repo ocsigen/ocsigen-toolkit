@@ -58,6 +58,9 @@ let onloaded, set_onloaded = React.E.create ()
 let _ = ignore (React.E.map (fun _ -> ()) onloaded)
 let _ = Ot_lib.onloads @@ fun () ->
   if React.S.value num_active_spinners = 0 then set_onloaded ()
+let when_loaded action = if React.S.value num_active_spinners = 0
+  then ignore @@ action ()
+  else ignore @@ React.E.once @@ React.E.map action onloaded
 let inc_active_spinners () =
   set_num_active_spinners @@ React.S.value num_active_spinners + 1
 let dec_active_spinners () =

@@ -54,3 +54,5 @@ val num_active_spinners : int Eliom_shared.React.S.t
 (** [onloaded] is an event that fires when all spinners have finished loading.
     This can occur multiple times. *)
 val onloaded : unit Eliom_shared.React.E.t
+(** do an action once no spinners are spinning (could be right away) *)
+val when_loaded : (unit -> unit) -> unit

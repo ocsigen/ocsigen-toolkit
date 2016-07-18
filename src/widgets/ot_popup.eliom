@@ -23,79 +23,123 @@
 [%%shared open Eliom_content.Html.F ]
 
 [%%client
-class type form_element = object
+class type tabbable = object
   inherit Dom_html.element
   method tabIndex : int Js.prop
 end
 ]
 
-let%client try_focus x = match Dom_html.tagged x with
-  | Dom_html.A        x -> x##focus
-  | Dom_html.Input    x -> x##focus
-  | Dom_html.Textarea x -> x##focus
-  | Dom_html.Select   x -> x##focus
-  | _ -> ()
-
-let%client setup_form first second next_to_last last =
-  begin Lwt.async @@ fun () ->
-    let%lwt _ = Ot_nodeready.nodeready first in
-    try_focus first;
+let%client tabswitch one two =
+  let focuses_one = begin Lwt_js_events.focuses one @@ fun _ _ ->
+    one##.tabIndex := 1;
+    two##.tabIndex := 2;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses first @@ fun _ _ ->
+  end in
+  let blurs_one = begin Lwt_js_events.blurs one @@ fun _ _ ->
+    one##.tabIndex := 0;
+    two##.tabIndex := 0;
+    Lwt.return ()
+  end in
+  let focuses_two = begin Lwt_js_events.focuses two @@ fun _ _ ->
+    one##.tabIndex := 2;
+    two##.tabIndex := 1;
+    Lwt.return ()
+  end in
+  let blurs_two = begin Lwt_js_events.blurs two @@ fun _ _ ->
+    one##.tabIndex := 0;
+    two##.tabIndex := 0;
+    Lwt.return ()
+  end in
+  Lwt.join [focuses_one; blurs_one; focuses_two; blurs_two]
+
+let%client tabcycle first second next_to_last last =
+  let focuses_first = begin Lwt_js_events.focuses first @@ fun _ _ ->
     last##.tabIndex := 1;
     first##.tabIndex := 2;
     second##.tabIndex := 3;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs first @@ fun _ _ ->
+  end in
+  let blurs_first = begin Lwt_js_events.blurs first @@ fun _ _ ->
     first##.tabIndex := 0;
     second##.tabIndex := 0;
     last##.tabIndex := 0;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.focuses last @@ fun _ _ ->
+  end in
+  let focuses_last = begin Lwt_js_events.focuses last @@ fun _ _ ->
     next_to_last##.tabIndex := 1;
     last##.tabIndex := 2;
     first##.tabIndex := 3;
     Lwt.return ()
-  end;
-  begin Lwt.async @@ fun () -> Lwt_js_events.blurs last @@ fun _ _ ->
+  end in
+  let blurs_last = begin Lwt_js_events.blurs last @@ fun _ _ ->
     next_to_last##.tabIndex := 0;
     last##.tabIndex := 0;
     first##.tabIndex := 0;
     Lwt.return ()
+  end in
+  Lwt.join [focuses_first; blurs_first; focuses_last; blurs_last]
+
+let%client only_if_active' elt v =
+  if Ot_style.invisible elt then None else Some v
+let%client only_if_active elt v =
+  if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some v
+
+let%shared rec list_of_opts = function
+  | [] -> []
+  | None :: xs -> list_of_opts xs
+  | Some x :: xs -> x :: list_of_opts xs
+
+let%client setup_tabcycle elts =
+  begin match elts with
+    | [one; two] -> (* We can't have a proper tab cycle with just two elements
+                       but we can at least make TAB work (but not shift-TAB) *)
+      tabswitch one two
+    | one :: two :: three :: xs ->
+      let last, next_to_last = match List.rev @@ two :: three :: xs with
+        | last :: next_to_last :: _ -> last, next_to_last
+        | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
+      in
+      tabcycle one two next_to_last last
+    | _ -> Lwt.return ()
   end
 
-let%client coerce_to_form_element x = let x = Dom_html.element x in
+
+let%client coerce_to_tabbable x = let x = Dom_html.element x in
   match Dom_html.tagged x with
-  | Dom_html.A        x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Link     x -> Some (x :> form_element Js.t) *)
-  | Dom_html.Button   x -> Some (x :> form_element Js.t)
-  | Dom_html.Input    x -> Some (x :> form_element Js.t)
-  | Dom_html.Select   x -> Some (x :> form_element Js.t)
-  | Dom_html.Textarea x -> Some (x :> form_element Js.t)
-  (* | Dom_html.Menuitem x -> Some (x :> form_element Js.t) *)
+  | Dom_html.A        x -> only_if_active' x (x :> tabbable Js.t)
+  (* | Dom_html.Link     x -> Some (x :> tabbable Js.t) *)
+  | Dom_html.Button   x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Input    x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Select   x -> only_if_active x (x :> tabbable Js.t)
+  | Dom_html.Textarea x -> only_if_active x (x :> tabbable Js.t)
+  (* | Dom_html.Menuitem x -> Some (x :> tabbable Js.t) *)
   | _ -> None
 
-let%client rec find_first_form_element xs = match xs with
-  | [] -> failwith "could not find valid form element"
-  | x::xs -> match coerce_to_form_element x with
-    | None -> find_first_form_element xs
-    | Some x -> (x,xs)
+let%client tabbable_elts_of elt = list_of_opts @@ List.map coerce_to_tabbable @@
+  Dom.list_of_nodeList @@ elt##getElementsByTagName (Js.string "*")
 
 (* TODO: what if there are only one or two form elements? *)
-let%client setup_form_auto form = Lwt.async @@ fun () ->
-  let xs = Dom.list_of_nodeList @@ form##getElementsByTagName (Js.string "*") in
+let%client setup_tabcycle_auto form = setup_tabcycle @@ tabbable_elts_of form
 
-  let (first, xs) = find_first_form_element xs in
-  let (second,xs) = find_first_form_element xs in
-  let xs = List.rev ((second :> Dom.element Js.t) :: xs) in
-  let (last,xs) = find_first_form_element xs in
-  let (next_to_last,_) = find_first_form_element xs in
+let%client focussable x =
+  let do_it elt focus = fun () -> Lwt.async @@ fun () ->
+    let%lwt _ = Ot_nodeready.nodeready elt in
+    focus ();
+    Lwt.return ()
+  in
+  match Dom_html.tagged x with
+  | Dom_html.A        x -> only_if_active' x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Input    x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Textarea x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  | Dom_html.Select   x -> only_if_active x (do_it x @@ fun () -> x##focus)
+  (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
+  | Dom_html.Button   x -> only_if_active x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
+  | _ -> None
 
-  setup_form first second next_to_last last;
-  Lwt.return ()
+let%client focus_first_focussable elts =
+  match list_of_opts @@ List.map focussable elts with
+  | focus :: _ -> focus ()
+  | [] -> ()
 
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
@@ -114,7 +158,8 @@ let%client popup
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
-    ?(setup_form=false)
+    ?(disable_background=true)
+    ?setup_form
     ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -152,6 +197,11 @@ let%client popup
   html_ManipClass_add "ot-with-popup";
   if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
+  let bg_tabIndices = ref [] in
+  let restore_tabIndices () =
+    List.iter (fun (elt, i) -> elt##.tabIndex := i) !bg_tabIndices
+  in
+
   let do_close () =
     decr number_of_popups;
     if !number_of_popups = 0 then begin
@@ -160,6 +210,7 @@ let%client popup
         Dom_html.document##.body##.scrollTop := !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
+    restore_tabIndices ();
     onclose ()
   in
 
@@ -181,11 +232,65 @@ let%client popup
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
 
-  begin if setup_form then
-    match Dom.list_of_nodeList @@
-      (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
-    | [] -> ()
-    | (form::xs) -> setup_form_auto form
+  if disable_background || setup_form <> None then begin
+    let form_container = match Dom.list_of_nodeList @@
+             (To_dom.of_element c)##getElementsByTagName (Js.string "form") with
+    | [form] -> form
+    | _ -> (To_dom.of_element c :> Dom.element Js.t)
+    in
+
+    match setup_form with
+    | None -> ()
+    | Some setup_form -> begin Ot_spinner.when_loaded @@ fun () ->
+      Lwt.async @@ fun () ->
+        let%lwt _ = Ot_nodeready.nodeready form_container in
+        let form_elts = ref [] in
+        let find_form_elts () = form_elts := tabbable_elts_of form_container in
+        find_form_elts ();
+        begin match setup_form with
+          | `OnPopup ->
+            ignore @@ setup_tabcycle !form_elts;
+            focus_first_focussable !form_elts
+          | `OnSignal s ->
+            let thread = ref None in
+            let cancel () = match !thread with
+              | None -> ()
+              | Some t -> Lwt.cancel t
+            in
+            let stopper = s |> React.S.map @@ fun s -> if s
+              then begin
+                find_form_elts ();
+                thread := Some (setup_tabcycle !form_elts)
+              end
+              else begin
+                cancel ();
+                List.iter (fun elt -> elt##.tabIndex := 0) !form_elts;
+                form_elts := []
+              end
+            in
+            focus_first_focussable !form_elts;
+            Eliom_client.onunload @@ fun () ->
+              cancel ();
+              React.S.stop stopper;
+              None
+        end;
+        Lwt.return ()
+    end;
+
+    if disable_background then begin
+      let all_tabbable_elts = tabbable_elts_of Dom_html.document in
+      let not_in_form elt = not @@ Ot_lib.in_ancestors
+          ~elt:(elt :> Dom_html.element Js.t)
+          ~ancestor:(Dom_html.element form_container) in
+      let bg_elts = List.filter not_in_form all_tabbable_elts in
+      let save_tabindex_and_disable_elt elt =
+        let old_tabIndex = elt##.tabIndex in
+        elt##.tabIndex := -1;
+        (* Dom_html.document##.body##.tabIndex := -1; *)
+        (elt, old_tabIndex)
+      in
+      bg_tabIndices := List.map save_tabindex_and_disable_elt bg_elts
+    end
   end;
 
   let content = [c] in
@@ -208,10 +313,21 @@ let%client popup
   (*   Js.string (Printf.sprintf "%dpx" (To_dom.of_element c)##offsetHeight) ; *)
   Lwt.return box
 
-let%client ask_question ?a ?a_hcf ~header ~buttons contents =
+let%client resetup_form_signal () =
+  let signal, set_signal = React.S.create true in
+  let resetup_form () =
+    let%lwt _ = Lwt_js.sleep 0.1 in (* wait until formular has been updated *)
+    set_signal false;
+    set_signal true;
+    Lwt.return ()
+  in
+  (`OnSignal signal, resetup_form)
+
+let%client ask_question ?a ?a_hcf ?disable_background
+                        ?setup_form ~header ~buttons contents =
   let t, w = Lwt.wait () in
   let%lwt _ =
-    popup ?a
+    popup ?a ?disable_background ?setup_form
       (fun do_close ->
          let answers =
            List.map (fun (content, action, btn_class) ->
@@ -222,15 +338,18 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
                Lwt_js_events.clicks (To_dom.of_element btn)
                  (fun _ _ ->
                     let%lwt r = action () in
-                    Lwt.wakeup w r ;
-                    do_close () ) )
+                    let%lwt result = do_close () in
+                    Lwt.wakeup w r;
+                    Lwt.return result
+                    ) )
            ; btn ) buttons in
          Lwt.return ( hcf ?a:a_hcf ~header ~footer:answers contents ) )
   in t
 
-let%client confirm ?(a = []) question yes no =
+let%client confirm ?(a = []) ?disable_background
+                   ?setup_form question yes no =
   let a = (a :> Html_types.div_attrib attrib list) in
-  ask_question
+  ask_question ?disable_background ?setup_form
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
