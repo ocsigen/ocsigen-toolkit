@@ -102,7 +102,7 @@ val bind_submit :
 (** [bind] is a shortcut for [bind_input] and [bind_submit] actions *)
 val bind :
   ?container:#Dom_html.element Js.t Eliom_client_value.t
-  ->input:Dom_html.inputElement Js.t Eliom_client_value.t
+  -> input:Dom_html.inputElement Js.t Eliom_client_value.t
   -> preview:Dom_html.imageElement Js.t
   -> ?crop:( (unit -> unit)
              * (float * float * float * float) Eliom_shared.React.S.t )
@@ -119,16 +119,20 @@ val bind :
     and wrap it into a label.
     Return (input node, label node) *)
 val input :
-  [< Html_types.label_content_fun ] Eliom_content.Html.elt list
+  ?a:[< Html_types.label_attrib > `Class ] Eliom_content.Html.attrib list
+  -> [< Html_types.label_content_fun ] Eliom_content.Html.elt list
   -> ([> `Input ] Eliom_content.Html.elt
       * [> `Label ] Eliom_content.Html.elt)
 
 (** Create a img element with no src, no alt and [ot-pup-preview] class. *)
-val preview : unit -> [> `Img ] Eliom_content.Html.elt
+val preview :
+  ?a:[< Html_types.img_attrib > `Class ] Eliom_content.Html.attrib list
+  -> unit -> [> `Img ] Eliom_content.Html.elt
 
 (** Create a button with [ot-pup-sumit] clas *)
 val submit :
-  [< Html_types.button_content ] Eliom_content.Html.elt list
+  ?a:[< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
+  -> [< Html_types.button_content ] Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
 (** [mk_service name arg_deriver]
@@ -141,8 +145,10 @@ val mk_service : string -> 'a Deriving_Json.t -> 'a service
 val mk_form :
   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
-  -> ?input:[< Html_types.label_content_fun ] Eliom_content.Html.elt list
-  -> ?submit:[< Html_types.button_content_fun ] Eliom_content.Html.elt list
+  -> ?input:([< Html_types.label_attrib > `Class ] Eliom_content.Html.attrib list
+             * [< Html_types.label_content_fun ] Eliom_content.Html.elt list)
+  -> ?submit:([< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
+              * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
   -> 'a service
   -> 'a
   -> [> `Form ] Eliom_content.Html.elt Lwt.t
