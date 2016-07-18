@@ -74,14 +74,18 @@ let%shared cropper
   let bl_c = mk_controller "bl" in
   let l_c = mk_controller "l" in
   let tl_c = mk_controller "tl" in
-  let crop = D.div ~a:[ a_class [ "ot-pup-ctrls" ] ]
-      [ t_c ; tr_c ; r_c ; br_c ; b_c ; bl_c ; l_c ; tl_c ] in
   let mk_filter style =
     D.div ~a:[ a_class [ "ot-pup-fltr" ; "ot-pup-fltr-" ^ style ] ] [] in
   let t_f = mk_filter "t" in
-  let b_f = mk_filter "b" in
-  let l_f = mk_filter "l" in
+  let tr_f = mk_filter "tr" in
   let r_f = mk_filter "r" in
+  let br_f = mk_filter "br" in
+  let b_f = mk_filter "b" in
+  let bl_f = mk_filter "bl" in
+  let l_f = mk_filter "l" in
+  let tl_f = mk_filter "tl" in
+  let crop = D.div ~a:[ a_class [ "ot-pup-ctrls" ] ]
+      [ t_c ; tr_c ; r_c ; br_c ; b_c ; bl_c ; l_c ; tl_c ] in
   let left, set_left = Eliom_shared.React.S.create 0. in
   let right, set_right = Eliom_shared.React.S.create 0. in
   let top, set_top = Eliom_shared.React.S.create 0. in
@@ -92,14 +96,25 @@ let%shared cropper
     (let open Lwt_js_events in
      let crop = To_dom.of_element ~%crop in
      let t_f = To_dom.of_element ~%t_f in
-     let b_f = To_dom.of_element ~%b_f in
-     let l_f = To_dom.of_element ~%l_f in
+     let tr_f = To_dom.of_element ~%tr_f in
      let r_f = To_dom.of_element ~%r_f in
+     let br_f = To_dom.of_element ~%br_f in
+     let b_f = To_dom.of_element ~%b_f in
+     let bl_f = To_dom.of_element ~%bl_f in
+     let l_f = To_dom.of_element ~%l_f in
+     let tl_f = To_dom.of_element ~%tl_f in
+
+     (* let t_c = To_dom.of_element ~%t_c in *)
+     (* let b_c = To_dom.of_element ~%b_c in *)
+     (* let l_c = To_dom.of_element ~%l_c in *)
+     (* let r_c = To_dom.of_element ~%r_c in *)
      let x = ref 0. in
      let y = ref 0. in
      ignore @@ React.S.map (fun x ->
        let top = Js.string (string_of_float x ^ "%") in
        let () = t_f##.style##.height := top in
+       let () = tr_f##.style##.height := top in
+       let () = tl_f##.style##.height := top in
        let () = l_f##.style##.top := top in
        let () = r_f##.style##.top := top in
        crop##.style##.top := top
@@ -107,26 +122,43 @@ let%shared cropper
      ignore @@ React.S.map (fun x ->
        let bottom = Js.string (string_of_float x ^ "%") in
        let () = b_f##.style##.height := bottom in
+       let () = br_f##.style##.height := bottom in
+       let () = bl_f##.style##.height := bottom in
        let () = l_f##.style##.bottom := bottom in
        let () = r_f##.style##.bottom := bottom in
        crop##.style##.bottom := bottom ) ~%bottom ;
      ignore @@ React.S.map (fun x ->
        let right = Js.string (string_of_float x ^ "%") in
        let () = r_f##.style##.width := right in
+       let () = tr_f##.style##.width := right in
+       let () = br_f##.style##.width := right in
+       let () = t_f##.style##.right := right in
+       let () = b_f##.style##.right := right in
        crop##.style##.right := right) ~%right ;
      ignore @@ React.S.map (fun x ->
        let left = Js.string (string_of_float x ^ "%") in
        let () = l_f##.style##.width := left in
+       let () = tl_f##.style##.width := left in
+       let () = bl_f##.style##.width := left in
+       let () = t_f##.style##.left := left in
+       let () = b_f##.style##.left := left in
        crop##.style##.left := left) ~%left ;
-     (* FIXME: should prevent overlapping *)
      let update_top dy =
-       ~%set_top @@ max (React.S.value ~%top +. dy) 0. in
+       ~%set_top @@
+       min (100. -. React.S.value ~%bottom) @@
+       max (React.S.value ~%top +. dy) 0. in
      let update_bottom dy =
-       ~%set_bottom @@ max (React.S.value ~%bottom -. dy) 0. in
+       ~%set_bottom @@
+       min (100. -. React.S.value ~%top) @@
+       max (React.S.value ~%bottom -. dy) 0. in
      let update_right dx =
-       ~%set_right @@ max (React.S.value ~%right -. dx) 0. in
+       ~%set_right @@
+       min (100. -. React.S.value ~%left) @@
+       max (React.S.value ~%right -. dx) 0. in
      let update_left dx =
-       ~%set_left @@ max (React.S.value ~%left +. dx) 0. in
+       ~%set_left @@
+       min (100. -. React.S.value ~%right) @@
+       max (React.S.value ~%left +. dx) 0. in
      let plus x : float = +. x in
      let minus x : float = -. x in
      let move_listener = fun cx cy ->
@@ -208,14 +240,14 @@ let%shared cropper
            Dom_html.removeEventListener x ;
            Lwt.return () ) )
      in
-     List.iter (fun x ->
+     List.iter (fun (x, y) -> List.iter (fun x ->
        bind_handler
          mousedowns
          Dom_html.Event.mousemove
          [Lwt_js_events.mouseup]
          (fun ev -> float_of_int ev##.clientX )
          (fun ev -> float_of_int ev##.clientY )
-         x ;
+         (x, y) ;
        bind_handler
          touchstarts
          Dom_html.Event.touchmove
@@ -230,57 +262,57 @@ let%shared cropper
              (ev##.touches##item 0)
              (fun () -> assert false)
              (fun x -> x##.clientY) )
-         x ) (
-       (~%crop, move_listener)
+         (x, y) ) x) (
+       ([~%crop], move_listener)
        :: match ~%ratio with
        | Some ratio ->
-         [ (~%t_c , mk_listener_ratio ~dir:`T
+         [ ([~%t_f;~%t_c] , mk_listener_ratio ~dir:`T
               ~y_axis:minus ~ratio ())
-         ; (~%tr_c, mk_listener_ratio ~dir:`TR
+         ; ([~%tr_f;~%tr_c], mk_listener_ratio ~dir:`TR
               ~x_axis:plus ~y_axis:minus ~ratio ())
-         ; (~%r_c , mk_listener_ratio ~dir:`R
+         ; ([~%r_f;~%r_c] , mk_listener_ratio ~dir:`R
               ~x_axis:plus ~ratio ())
-         ; (~%br_c, mk_listener_ratio ~dir:`BR
+         ; ([~%br_f;~%br_c], mk_listener_ratio ~dir:`BR
               ~x_axis:plus ~y_axis:plus ~ratio ())
-         ; (~%b_c , mk_listener_ratio ~dir:`B
+         ; ([~%b_f;~%b_c] , mk_listener_ratio ~dir:`B
               ~y_axis:plus ~ratio ())
-         ; (~%bl_c, mk_listener_ratio ~dir:`BL
+         ; ([~%bl_f;~%bl_c], mk_listener_ratio ~dir:`BL
               ~x_axis:minus ~y_axis:plus ~ratio ())
-         ; (~%l_c , mk_listener_ratio ~dir:`L
+         ; ([~%l_f;~%l_c] , mk_listener_ratio ~dir:`L
               ~x_axis:minus ~ratio ())
-         ; (~%tl_c, mk_listener_ratio ~dir:`TL
+         ; ([~%tl_f;~%tl_c], mk_listener_ratio ~dir:`TL
               ~x_axis:minus ~y_axis:minus ~ratio ()) ]
        | None ->
-         [ (~%t_c , mk_listener ~move_y:update_top ())
-         ; (~%tr_c, mk_listener ~move_x:update_right ~move_y:update_top ())
-         ; (~%r_c , mk_listener ~move_x:update_right ())
-         ; (~%br_c, mk_listener ~move_x:update_right ~move_y:update_bottom ())
-         ; (~%b_c , mk_listener ~move_y:update_bottom ())
-         ; (~%bl_c, mk_listener ~move_x:update_left ~move_y:update_bottom ())
-         ; (~%l_c , mk_listener ~move_x:update_left ())
-         ; (~%tl_c, mk_listener ~move_x:update_left ~move_y:update_top ()) ] )
+         [ ([~%t_f;~%t_c] , mk_listener ~move_y:update_top ())
+         ; ([~%tr_f;~%tr_c], mk_listener ~move_x:update_right ~move_y:update_top ())
+         ; ([~%r_f;~%r_c] , mk_listener ~move_x:update_right ())
+         ; ([~%br_f;~%br_c], mk_listener ~move_x:update_right ~move_y:update_bottom ())
+         ; ([~%b_f;~%b_c] , mk_listener ~move_y:update_bottom ())
+         ; ([~%bl_f;~%bl_c], mk_listener ~move_x:update_left ~move_y:update_bottom ())
+         ; ([~%l_f;~%l_c] , mk_listener ~move_x:update_left ())
+         ; ([~%tl_f;~%tl_c], mk_listener ~move_x:update_left ~move_y:update_top ()) ] )
      : unit) ] in
   let reset  = [%client (fun () ->
-       let bb = ~%image##getBoundingClientRect in
-       let bb_w = (bb##.right -. bb##.left) in
-       let bb_h = (bb##.bottom -. bb##.top) in
-       let (w, h) = match ~%ratio with
-         | Some ratio ->
-           if ratio *. bb_w <= bb_h then (bb_w, ratio *. bb_w)
-           else (bb_h /. ratio, bb_h)
-         | None -> (bb_w, bb_h) in
-       ~%set_img_w (bb_w /. 100.) ;
-       ~%set_img_h (bb_h /. 100.) ;
-       ~%set_top 0. ;
-       ~%set_right ((bb_w -. w) /. (bb_w /. 100.)) ;
-       ~%set_bottom ((bb_h -. h) /. (bb_h /. 100.)) ;
-       ~%set_left 0.
-       : unit -> unit ) ] in
+    let bb = ~%image##getBoundingClientRect in
+    let bb_w = (bb##.right -. bb##.left) in
+    let bb_h = (bb##.bottom -. bb##.top) in
+    let (w, h) = match ~%ratio with
+      | Some ratio ->
+        if ratio *. bb_w <= bb_h then (bb_w, ratio *. bb_w)
+        else (bb_h /. ratio, bb_h)
+      | None -> (bb_w, bb_h) in
+    ~%set_img_w (bb_w /. 100.) ;
+    ~%set_img_h (bb_h /. 100.) ;
+    ~%set_top 0. ;
+    ~%set_right ((bb_w -. w) /. (bb_w /. 100.)) ;
+    ~%set_bottom ((bb_h -. h) /. (bb_h /. 100.)) ;
+    ~%set_left 0.
+    : unit -> unit ) ] in
   ( reset
   , Eliom_shared.React.S.l4
       [%shared fun x y w h -> (x, y, w, h) ] top right bottom left
   , div ~a:[ a_class [ "ot-pup-crop-container" ] ]
-      [ t_f ; r_f ; b_f ; l_f ; crop ] )
+      [ t_f ; tr_f ; r_f ; br_f ; b_f ; bl_f ; l_f ; t_f ; tl_f ; crop ] )
 
 let%shared input ?(a = []) content =
   let content = (content :> Html_types.label_content_fun elt list) in

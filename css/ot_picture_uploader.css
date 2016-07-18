@@ -7,6 +7,7 @@
     bottom: 0px ;
     cursor: move ;
 }
+
 .ot-pup-ctrl { position: absolute ; }
 .ot-pup-ctrl-t {
     top: 0px ;
@@ -64,30 +65,20 @@
     height: 10px ;
     cursor: nw-resize ;
 }
+
 .ot-pup-fltr {
     background-color: rgba(255, 255, 255, .5) ;
     position: absolute ;
 }
-.ot-pup-fltr-t {
-    top: 0px ;
-    right: 0px ;
-    left: 0px ;
-}
-.ot-pup-fltr-b {
-    bottom: 0px ;
-    right: 0px ;
-    left: 0px ;
-}
-.ot-pup-fltr-l {
-    left: 0px ;
-    top: 0px ;
-    bottom: 0px ;
-}
-.ot-pup-fltr-r {
-    right: 0px ;
-    top:0px ;
-    bottom: 0px ;
-}
+.ot-pup-fltr-t { top: 0px ; cursor: n-resize ; }
+.ot-pup-fltr-tr { top: 0px ; right: 0px ; cursor: ne-resize ; }
+.ot-pup-fltr-tl { top: 0px ; left: 0px ; cursor: nw-resize ; }
+.ot-pup-fltr-b { bottom: 0px ; cursor: s-resize ; }
+.ot-pup-fltr-br { bottom: 0px ; right: 0px ; cursor: se-resize ; }
+.ot-pup-fltr-bl { bottom: 0px ; left: 0px ; cursor: sw-resize ; }
+.ot-pup-fltr-l { left: 0px ; cursor: w-resize ; }
+.ot-pup-fltr-r { right: 0px ; cursor: e-resize ; }
+
 .ot-pup-crop-container {
     position: absolute ;
     top:0px ;
@@ -95,12 +86,13 @@
     right:0px ;
     bottom:0px ;
 }
+
 .ot-pup-preview {
     width: 100% ;
     display: block ;
 }
+
 .ot-pup-container {
     position: relative ;
     width: 100% ;
 }
-.ot-no-file .ot-pup-container { display: none ; }
