@@ -157,7 +157,7 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           let delta = max 0 (dist - int_of_float (Ot_size.client_top d2')) in
+           let delta = max 0 (dist - int_of_float (Ot_size.client_top d)) in
            let pos = React.S.value pos_signal in
            Ot_lib.List.iteri2
              (fun i coli scrolli ->
@@ -187,7 +187,7 @@ let%shared make
       in
       Eliom_lib.Option.iter
         (fun dist ->
-           let delta = - max 0 (dist - int_of_float (Ot_size.client_top d2')) in
+           let delta = - max 0 (dist - int_of_float (Ot_size.client_top d)) in
            let pos = React.S.value pos_signal in
            Ot_lib.List.iteri2
              (fun i coli scrolli ->
