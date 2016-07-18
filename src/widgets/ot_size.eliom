@@ -93,38 +93,38 @@ let height_to_bottom offset elt =
     h - int_of_float top - offset
   with Failure _ -> h - offset
 
-let client_top ?(with_border = false) elt =
+let client_top ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.top -.
-  if with_border then Ot_style.marginTop elt else 0.0
-let client_bottom ?(with_border = false) elt =
+  if with_margin then Ot_style.marginTop elt else 0.0
+let client_bottom ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.bottom +.
-  if with_border then Ot_style.marginBottom elt else 0.0
-let client_left ?(with_border = false) elt =
+  if with_margin then Ot_style.marginBottom elt else 0.0
+let client_left ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.left -.
-  if with_border then Ot_style.marginLeft elt else 0.0
-let client_right ?(with_border = false) elt =
+  if with_margin then Ot_style.marginLeft elt else 0.0
+let client_right ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.right +.
-  if with_border then Ot_style.marginRight elt else 0.0
-let client_height ?(with_border = false) elt =
-  client_bottom ~with_border elt -. client_top ~with_border elt
-let client_width ?(with_border = false) elt =
-  client_right ~with_border elt -. client_left ~with_border elt
+  if with_margin then Ot_style.marginRight elt else 0.0
+let client_height ?(with_margin = false) elt =
+  client_bottom ~with_margin elt -. client_top ~with_margin elt
+let client_width ?(with_margin = false) elt =
+  client_right ~with_margin elt -. client_left ~with_margin elt
 
-let client_page_top ?with_border elt =
-  client_top ?with_border elt -.
+let client_page_top ?with_margin elt =
+  client_top ?with_margin elt -.
   Dom_html.document##.body##getBoundingClientRect##.top
 
-let client_page_left ?with_border elt =
-  client_left elt ?with_border -.
+let client_page_left ?with_margin elt =
+  client_left elt ?with_margin -.
   Dom_html.document##.body##getBoundingClientRect##.left
 
-let client_page_bottom ?with_border elt =
+let client_page_bottom ?with_margin elt =
   Dom_html.document##.body##getBoundingClientRect##.bottom
-  -. client_bottom ?with_border elt
+  -. client_bottom ?with_margin elt
 
-let client_page_right ?with_border elt =
+let client_page_right ?with_margin elt =
   Dom_html.document##.body##getBoundingClientRect##.left
-  -. client_right elt ?with_border
+  -. client_right elt ?with_margin
 
 let pageYOffset () = (* absolute vertical scroll position *)
   let get_clientHeight () =
