@@ -216,11 +216,6 @@ let%shared make
            because f will possibly change the scrolling position of the page *)
         Lwt.return ())
     in
-    Lwt.async (fun () ->
-      let%lwt () = Ot_nodeready.nodeready d2' in
-      set_position ~%position;
-      add_transition d2';
-      Lwt.return ());
     (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).
         Should be: every time the carousel size or content size changes
@@ -230,8 +225,13 @@ let%shared make
         (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
         (if vertical then Ot_size.height else Ot_size.width)
     in
-    Eliom_client.onunload
-      (fun () -> React.S.stop ~strong:true update_size; None);
+    Lwt.async (fun () ->
+      let%lwt () = Ot_nodeready.nodeready d2' in
+      set_position ~%position;
+      add_transition d2';
+      Eliom_client.onunload
+        (fun () -> React.S.stop ~strong:true update_size; None);
+      Lwt.return ());
     let perform_animation a =
       ~%set_nb_visible_elements (comp_nb_visible_elements ());
       if not (React.S.value ~%disabled)

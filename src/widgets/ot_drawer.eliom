@@ -127,12 +127,15 @@ let%shared drawer ?(a = []) ?(position = `Left)
      : unit -> unit)]
   in
 
-  let _ = [%client ((Eliom_client.onunload @@ fun () ->
+  let _ = [%client (
+    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%d) in
+    (Eliom_client.onunload @@ fun () ->
     html_ManipClass_remove "dr-drawer-opening";
     html_ManipClass_remove "dr-drawer-open";
     html_ManipClass_remove "dr-drawer-closing";
-    None
-  ):unit)] in
+    None);
+    Lwt.return ()
+  :unit Lwt.t)] in
 
   let _ = [%client
     (let toggle () =
