@@ -37,7 +37,7 @@ type glue = {
   inline : div_content D.elt;
   dir : [`Top | `Left]; (*TODO: support `Bottom and `Right*)
   scroll_thread : unit Lwt.t;
-  resize_thread : int React.S.t;
+  resize_thread : (int * int) React.S.t;
   dissolve : unit -> unit
 }
 
@@ -121,7 +121,7 @@ let make_sticky
       inline = elt;
       dir = dir;
       scroll_thread = Lwt.return (); (* updated below *)
-      resize_thread = React.S.const 0; (* updated below *)
+      resize_thread = React.S.const (0,0); (* updated below *)
       dissolve = fun () -> failwith "undefined"
     } in
     let init () = unstick ~force:true glue; synchronise glue; update_state glue in
@@ -130,8 +130,8 @@ let make_sticky
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
-    let resize_thread = Ot_size.width_height |> React.S.map @@ fun (_, height) ->
-      synchronise glue; update_state glue; height
+    let resize_thread = Ot_size.width_height |> React.S.map @@
+      fun (width, height) -> synchronise glue; update_state glue; (width, height)
     in
     let dissolve () =
       Lwt.cancel scroll_thread;
@@ -155,7 +155,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let elt = match glue with | None -> elt | Some g -> g.fixed in
   match Manip.parentNode elt with | None -> Lwt.return (fun () -> ()) | Some parent ->
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
-  let compute_top_left win_height = match dir with
+  let compute_top_left (_, win_height) = match dir with
     | `Top ->
       (* sleep, as this should run after make_sticky's handlers *)
       let win_height = float_of_int win_height in
@@ -167,11 +167,11 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
     | _ -> failwith "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
   in
   let resize_thread = React.S.map compute_top_left @@ match glue with
-    | None -> Ot_size.height
+    | None -> Ot_size.width_height
     | Some glue -> glue.resize_thread
   in
   let init () =
-    let doIt () = compute_top_left @@ React.S.value Ot_size.height in
+    let doIt () = compute_top_left @@ React.S.value Ot_size.width_height in
     (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
     Lwt.async (fun () -> let%lwt _ = Lwt_js.sleep 0.5 in Lwt.return @@ doIt ());
