@@ -103,11 +103,6 @@ let%shared cropper
      let bl_f = To_dom.of_element ~%bl_f in
      let l_f = To_dom.of_element ~%l_f in
      let tl_f = To_dom.of_element ~%tl_f in
-
-     (* let t_c = To_dom.of_element ~%t_c in *)
-     (* let b_c = To_dom.of_element ~%b_c in *)
-     (* let l_c = To_dom.of_element ~%l_c in *)
-     (* let r_c = To_dom.of_element ~%r_c in *)
      let x = ref 0. in
      let y = ref 0. in
      ignore @@ React.S.map (fun x ->
@@ -240,57 +235,65 @@ let%shared cropper
            Dom_html.removeEventListener x ;
            Lwt.return () ) )
      in
-     List.iter (fun (x, y) -> List.iter (fun x ->
+     let listeners = match ~%ratio with
+       | Some ratio ->
+         [ move_listener
+         ; mk_listener_ratio ~dir:`T ~y_axis:minus ~ratio ()
+         ; mk_listener_ratio ~dir:`TR ~x_axis:plus ~y_axis:minus ~ratio ()
+         ; mk_listener_ratio ~dir:`R ~x_axis:plus ~ratio ()
+         ; mk_listener_ratio ~dir:`BR ~x_axis:plus ~y_axis:plus ~ratio ()
+         ; mk_listener_ratio ~dir:`B ~y_axis:plus ~ratio ()
+         ; mk_listener_ratio ~dir:`BL ~x_axis:minus ~y_axis:plus ~ratio ()
+         ; mk_listener_ratio ~dir:`L ~x_axis:minus ~ratio ()
+         ; mk_listener_ratio ~dir:`TL ~x_axis:minus ~y_axis:minus ~ratio () ]
+       | None ->
+         [ move_listener
+         ; mk_listener ~move_y:update_top ()
+         ; mk_listener ~move_x:update_right ~move_y:update_top ()
+         ; mk_listener ~move_x:update_right ()
+         ; mk_listener ~move_x:update_right ~move_y:update_bottom ()
+         ; mk_listener ~move_y:update_bottom ()
+         ; mk_listener ~move_x:update_left ~move_y:update_bottom ()
+         ; mk_listener ~move_x:update_left ()
+         ; mk_listener ~move_x:update_left ~move_y:update_top () ] in
+     List.iter2 (fun x y ->
        bind_handler
          mousedowns
          Dom_html.Event.mousemove
          [Lwt_js_events.mouseup]
          (fun ev -> float_of_int ev##.clientX )
          (fun ev -> float_of_int ev##.clientY )
-         (x, y) ;
-       bind_handler
-         touchstarts
-         Dom_html.Event.touchmove
-         [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
-         (fun ev -> float_of_int @@
-           Js.Optdef.case
-             (ev##.touches##item 0)
-             (fun () -> assert false)
-             (fun x -> x##.clientX) )
-         (fun ev -> float_of_int @@
-           Js.Optdef.case
-             (ev##.touches##item 0)
-             (fun () -> assert false)
-             (fun x -> x##.clientY) )
-         (x, y) ) x) (
-       ([~%crop], move_listener)
-       :: match ~%ratio with
-       | Some ratio ->
-         [ ([~%t_f;~%t_c] , mk_listener_ratio ~dir:`T
-              ~y_axis:minus ~ratio ())
-         ; ([~%tr_f;~%tr_c], mk_listener_ratio ~dir:`TR
-              ~x_axis:plus ~y_axis:minus ~ratio ())
-         ; ([~%r_f;~%r_c] , mk_listener_ratio ~dir:`R
-              ~x_axis:plus ~ratio ())
-         ; ([~%br_f;~%br_c], mk_listener_ratio ~dir:`BR
-              ~x_axis:plus ~y_axis:plus ~ratio ())
-         ; ([~%b_f;~%b_c] , mk_listener_ratio ~dir:`B
-              ~y_axis:plus ~ratio ())
-         ; ([~%bl_f;~%bl_c], mk_listener_ratio ~dir:`BL
-              ~x_axis:minus ~y_axis:plus ~ratio ())
-         ; ([~%l_f;~%l_c] , mk_listener_ratio ~dir:`L
-              ~x_axis:minus ~ratio ())
-         ; ([~%tl_f;~%tl_c], mk_listener_ratio ~dir:`TL
-              ~x_axis:minus ~y_axis:minus ~ratio ()) ]
-       | None ->
-         [ ([~%t_f;~%t_c] , mk_listener ~move_y:update_top ())
-         ; ([~%tr_f;~%tr_c], mk_listener ~move_x:update_right ~move_y:update_top ())
-         ; ([~%r_f;~%r_c] , mk_listener ~move_x:update_right ())
-         ; ([~%br_f;~%br_c], mk_listener ~move_x:update_right ~move_y:update_bottom ())
-         ; ([~%b_f;~%b_c] , mk_listener ~move_y:update_bottom ())
-         ; ([~%bl_f;~%bl_c], mk_listener ~move_x:update_left ~move_y:update_bottom ())
-         ; ([~%l_f;~%l_c] , mk_listener ~move_x:update_left ())
-         ; ([~%tl_f;~%tl_c], mk_listener ~move_x:update_left ~move_y:update_top ()) ] )
+         (x, y) )
+       [ ~%crop ; ~%t_c ; ~%tr_c ; ~%r_c ; ~%br_c
+       ; ~%b_c ; ~%bl_c ; ~%l_c ; ~%tl_c ]
+       listeners ;
+     List.iter2 (fun x y ->
+       List.iter (fun x ->
+         bind_handler
+           touchstarts
+           Dom_html.Event.touchmove
+           [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
+           (fun ev -> float_of_int @@
+             Js.Optdef.case
+               (ev##.touches##item 0)
+               (fun () -> assert false)
+               (fun x -> x##.clientX) )
+           (fun ev -> float_of_int @@
+             Js.Optdef.case
+               (ev##.touches##item 0)
+               (fun () -> assert false)
+               (fun x -> x##.clientY) )
+           (x, y) ) x)
+       [ [~%crop]
+       ; [~%t_f;~%t_c]
+       ; [~%tr_f;~%tr_c]
+       ; [~%r_f;~%r_c]
+       ; [~%br_f;~%br_c]
+       ; [~%b_f;~%b_c]
+       ; [~%bl_f;~%bl_c]
+       ; [~%l_f;~%l_c]
+       ; [~%tl_f;~%tl_c] ]
+       listeners
      : unit) ] in
   let reset  = [%client (fun () ->
     let bb = ~%image##getBoundingClientRect in
