@@ -130,7 +130,7 @@ let make_sticky
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return ()
     in
-    let resize_thread = Ot_size.height |> React.S.map @@ fun height ->
+    let resize_thread = Ot_size.width_height |> React.S.map @@ fun (_, height) ->
       synchronise glue; update_state glue; height
     in
     let dissolve () =
