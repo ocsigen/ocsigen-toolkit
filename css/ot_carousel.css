@@ -56,7 +56,6 @@
 
 .bullet-nav-item {
 
-    display: inline-block;
     flex: 1 1 0 ;
     cursor: pointer;
     /* width: $carousel-bullet-size ; */
