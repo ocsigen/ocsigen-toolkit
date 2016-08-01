@@ -132,8 +132,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
     (Eliom_client.onunload @@ fun () ->
     html_ManipClass_remove "dr-drawer-opening";
     html_ManipClass_remove "dr-drawer-open";
-    html_ManipClass_remove "dr-drawer-closing";
-    None);
+    html_ManipClass_remove "dr-drawer-closing");
     Lwt.return ()
   :unit Lwt.t)] in
 

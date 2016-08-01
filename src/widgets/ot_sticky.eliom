@@ -141,7 +141,7 @@ let make_sticky
       Manip.removeSelf glue.fixed;
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
-    Eliom_client.onunload (fun () -> dissolve (); None);
+    Eliom_client.onunload (fun () -> dissolve ());
     Lwt.return @@ Some {glue with scroll_thread = scroll_thread;
                                   resize_thread = resize_thread;
                                   dissolve = dissolve}
@@ -184,5 +184,5 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
     React.S.stop resize_thread;
     match glue with | Some g -> g.dissolve () | None -> ()
   in
-  Eliom_client.onunload (fun () -> stop (); None);
+  Eliom_client.onunload (fun () -> stop ());
   Lwt.return stop
