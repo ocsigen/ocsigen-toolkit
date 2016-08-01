@@ -24,7 +24,7 @@ let%client onloads handler =
 
 let%client onresizes handler =
   let thread = Lwt_js_events.onresizes handler in
-  Eliom_client.onunload (fun () -> Lwt.cancel thread; None);
+  Eliom_client.onunload (fun () -> Lwt.cancel thread);
   thread
 
 let%client window_scroll ?use_capture () =
@@ -59,7 +59,7 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
     end
     else Lwt_js_events.seq_loop window_scroll ?use_capture () handler
   in
-  Eliom_client.onunload (fun () -> Lwt.cancel thread; None);
+  Eliom_client.onunload (fun () -> Lwt.cancel thread);
   thread
 
 let%client rec in_ancestors ~elt ~ancestor =

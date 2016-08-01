@@ -132,7 +132,7 @@ let%client focussable x =
   | Dom_html.Input    x -> only_if_active x (do_it x @@ fun () -> x##focus)
   | Dom_html.Textarea x -> only_if_active x (do_it x @@ fun () -> x##focus)
   | Dom_html.Select   x -> only_if_active x (do_it x @@ fun () -> x##focus)
-  (* NOTE: buttons are focussable in most browser; but not in the specs! *) 
+  (* NOTE: buttons are focussable in most browser; but not in the specs! *)
   | Dom_html.Button   x -> only_if_active x (do_it x @@ fun () -> (Js.Unsafe.coerce x)##focus)
   | _ -> None
 
@@ -214,10 +214,7 @@ let%client popup
     onclose ()
   in
 
-  begin Eliom_client.onunload @@ fun () ->
-    html_ManipClass_remove "ot-with-popup";
-    None
-  end;
+  Eliom_client.onunload (fun () -> html_ManipClass_remove "ot-with-popup");
 
   let close () =
     match confirmation_onclose with
@@ -271,8 +268,7 @@ let%client popup
             focus_first_focussable !form_elts;
             Eliom_client.onunload @@ fun () ->
               cancel ();
-              React.S.stop stopper;
-              None
+              React.S.stop stopper
         end;
         Lwt.return ()
     end;
@@ -354,4 +350,3 @@ let%client confirm ?(a = []) ?disable_background
     ~header:question
     ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
-

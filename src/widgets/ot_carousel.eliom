@@ -229,8 +229,7 @@ let%shared make
       let%lwt () = Ot_nodeready.nodeready d2' in
       set_position ~%position;
       add_transition d2';
-      Eliom_client.onunload
-        (fun () -> React.S.stop ~strong:true update_size; None);
+      Eliom_client.onunload (fun () -> React.S.stop ~strong:true update_size);
       Lwt.return ());
     let perform_animation a =
       ~%set_nb_visible_elements (comp_nb_visible_elements ());
@@ -495,8 +494,7 @@ let%shared ribbon
           set_containerwidth container'##.offsetWidth;
           Lwt.return ()
       in
-      Eliom_client.onunload
-        (fun () -> React.S.stop ~strong:true watch_width; None);
+      Eliom_client.onunload (fun () -> React.S.stop ~strong:true watch_width);
       (* Changing the position of the ribbon when the carousel position
          changes or when the size of the window changes: *)
       ignore
