@@ -135,6 +135,7 @@ ${ELIOM_CLIENT_DIR}/%.cmi: %.eliomi
 CLIENT_CMO=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmo,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
 CLIENT_CMI=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmi,$(addprefix $(ELIOM_CLIENT_DIR)/,$(CLIENT_DIRS))))
 SERVER_CMI=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmi,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
+SERVER_CMX=$(wildcard $(addsuffix /$(MODULE_PREFIX)*.cmx,$(addprefix $(ELIOM_SERVER_DIR)/,$(SERVER_DIRS))))
 
 basename_for_each = $(shell echo $(foreach f,$(1),$(shell basename $(f))))
 CLIENT_CMO_META=$(call basename_for_each, $(call depsort,$(ELIOM_CLIENT_DIR),cmo,-client,$(CLIENT_INC),$(CLIENT_FILES)))
@@ -158,6 +159,7 @@ install: all META
 	cp $(CLIENT_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/client
 	cp $(CLIENT_CMO) `$(OCAMLFIND) query $(PKG_NAME)`/client
 	cp $(SERVER_CMI) `$(OCAMLFIND) query $(PKG_NAME)`/server
+	cp $(SERVER_CMX) `$(OCAMLFIND) query $(PKG_NAME)`/server
 	cp $(LIBDIR)/$(PKG_NAME).server.cm* `$(OCAMLFIND) query $(PKG_NAME)`/server
 
 uninstall:
