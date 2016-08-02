@@ -27,22 +27,7 @@
     side by a service. *)
 
 [%%shared.start]
-type 'a service =
-  (unit
-  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-  , Eliom_service.post
-  , Eliom_service.non_att
-  , Eliom_service.co
-  , Eliom_service.non_ext
-  , Eliom_service.reg
-  , [ `WithoutSuffix ]
-  , unit
-  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
-    * ([ `One of (float * float * float * float)
-             option Eliom_parameter.ocaml
-       ] Eliom_parameter.param_name
-       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , unit Eliom_service.ocaml) Eliom_service.t
+type cropping = (float * float * float * float) React.S.t
 
 [%%client.start]
 
@@ -55,7 +40,7 @@ val cropper :
   -> ?ratio:float
   -> unit
   -> (unit -> unit)
-     * (float * float * float * float) Eliom_shared.React.S.t
+     * cropping
      * [> `Div ] Eliom_content.Html.elt
 
 (** [bind_input input preview ?container ?reset ()]
@@ -78,9 +63,8 @@ val bind_input :
     [arg] extra argument passed to [service] (as first argument) *)
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
-  -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
-  -> service:'a service
-  -> arg:'a
+  -> ?cropping:cropping
+  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
   -> unit
   -> unit Lwt.t
 
@@ -92,9 +76,8 @@ val do_submit :
 val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
-  -> service:'a service
-  -> arg:'a
+  -> ?cropping:cropping
+  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -104,11 +87,9 @@ val bind :
   ?container:#Dom_html.element Js.t Eliom_client_value.t
   -> input:Dom_html.inputElement Js.t Eliom_client_value.t
   -> preview:Dom_html.imageElement Js.t
-  -> ?crop:( (unit -> unit)
-             * (float * float * float * float) Eliom_shared.React.S.t )
+  -> ?crop:( (unit -> unit) * cropping )
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> service:'b service
-  -> arg:'b
+  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -135,10 +116,6 @@ val submit :
   -> [< Html_types.button_content ] Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
-(** [mk_service name arg_deriver]
-    Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
-val mk_service : string -> 'a Deriving_Json.t -> 'a service
-
 (** Ready-to-use form, using [service] and [arg]. Customizable with
     [input], the input button content, [submit], the submit button content.
     If [crop] is present, cropping is enable, with the optional ratio it is. *)
@@ -149,6 +126,5 @@ val mk_form :
              * [< Html_types.label_content_fun ] Eliom_content.Html.elt list)
   -> ?submit:([< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
               * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
-  -> 'a service
-  -> 'a
+  -> (?cropping:cropping -> File.file Js.t -> unit Lwt.t)
   -> [> `Form ] Eliom_content.Html.elt Lwt.t

@@ -337,41 +337,21 @@ let%shared submit ?(a = []) content =
 let%client loads ?cancel_handler ?use_capture t =
   Lwt_js_events.(seq_loop load ?cancel_handler ?use_capture t)
 
-let%client bind_input input preview ?container ?reset () =
-  let onerror () =
-    Eliom_lib.Option.iter (fun container ->
-      container##.classList##add (Js.string "ot-no-file")) container ;
-    preview##.src := Js.string "" ;
-    Lwt.return () in
-  Eliom_lib.Option.iter (fun f ->
-    Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f () ) ) )
-    reset ;
-  Lwt.async (fun () -> Lwt_js_events.changes input (fun _ _ ->
-    Js.Optdef.case (input##.files) onerror
-      (fun files -> Js.Opt.case (files##item 0) onerror
-          (fun file ->
-             let () = file_reader
-                 (Js.Unsafe.coerce file)
-                 (fun data ->
-                    preview##.src := data ;
-                    Eliom_lib.Option.iter (fun container ->
-                      container##.classList##remove (Js.string "ot-no-file") )
-                      container ) in
-             Lwt.return () ) ) ) )
+let%client bind_input = Ot_picture_uploader2.bind_input
+
+let%client upload ~service ~arg ?cropping file =
+  Eliom_client.call_ocaml_service service ()
+    (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
 
 let%client do_submit input ?cropping ~service ~arg () =
-  process_file input (fun file ->
-    Eliom_client.call_ocaml_service service
-      () (arg, (Eliom_lib.Option.map React.S.value cropping, file) ) )
+  let upload = upload ~service ~arg in
+  Ot_picture_uploader2.do_submit input ?cropping ~upload:upload ()
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
     button ?cropping ~service ~arg ~after_submit () =
-  Lwt.async (fun () -> Lwt_js_events.clicks button (fun ev _ ->
-    Dom.preventDefault ev ;
-    Dom_html.stopPropagation ev ;
-    let%lwt () = do_submit input ?cropping ~service ~arg () in
-    after_submit () ) )
+  let upload = upload ~service ~arg in
+  Ot_picture_uploader2.bind_submit input button ?cropping ~upload ~after_submit ()
 
 let%client bind
     ?container ~input ~preview ?crop ~submit ~service ~arg ~after_submit ()
