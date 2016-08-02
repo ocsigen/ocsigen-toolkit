@@ -339,18 +339,14 @@ let%client loads ?cancel_handler ?use_capture t =
 
 let%client bind_input = Ot_picture_uploader2.bind_input
 
-let%client upload ~service ~arg ?cropping file =
-  Eliom_client.call_ocaml_service service ()
-    (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
-
 let%client do_submit input ?cropping ~service ~arg () =
-  let upload = upload ~service ~arg in
+  let upload = Ot_picture_uploader2.ocaml_service_upload ~service ~arg in
   Ot_picture_uploader2.do_submit input ?cropping ~upload:upload ()
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
     button ?cropping ~service ~arg ~after_submit () =
-  let upload = upload ~service ~arg in
+  let upload = Ot_picture_uploader2.ocaml_service_upload ~service ~arg in
   Ot_picture_uploader2.bind_submit input button ?cropping ~upload ~after_submit ()
 
 let%client bind

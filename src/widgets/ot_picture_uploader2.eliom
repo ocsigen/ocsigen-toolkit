@@ -342,7 +342,30 @@ let%client bind_input input preview ?container ?reset () =
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t
+
+type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+
+type 'a service =
+  (unit
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
+  , [ `WithoutSuffix ]
+  , unit
+  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
+    * ([ `One of (float * float * float * float)
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
+       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
+  , unit Eliom_service.ocaml) Eliom_service.t
 ]
+
+let%client ocaml_service_upload ~service ~arg ?cropping file =
+  Eliom_client.call_ocaml_service service ()
+    (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
 
 let%client do_submit input ?cropping ~upload () =
   process_file input (fun file -> upload ?cropping file)

@@ -29,7 +29,28 @@
 [%%shared.start]
 type cropping = (float * float * float * float) React.S.t
 
+type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+
+type 'a service =
+  (unit
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
+  , [ `WithoutSuffix ]
+  , unit
+  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
+    * ([ `One of (float * float * float * float)
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
+       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
+  , unit Eliom_service.ocaml) Eliom_service.t
+
 [%%client.start]
+
+val ocaml_service_upload : service:('a service) -> arg:'a -> upload
 
 (** [ let (reset, cropping, cropper_dom) = cropper ~image () ]
     [ reset ] is function to call to reset the current cropper status
@@ -64,7 +85,7 @@ val bind_input :
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> ?cropping:cropping
-  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
+  -> upload:upload
   -> unit
   -> unit Lwt.t
 
@@ -77,7 +98,7 @@ val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
-  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
+  -> upload:upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -89,7 +110,7 @@ val bind :
   -> preview:Dom_html.imageElement Js.t
   -> ?crop:( (unit -> unit) * cropping )
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> upload:(?cropping:cropping -> File.file Js.t -> unit Lwt.t)
+  -> upload:upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -126,5 +147,5 @@ val mk_form :
              * [< Html_types.label_content_fun ] Eliom_content.Html.elt list)
   -> ?submit:([< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
               * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
-  -> (?cropping:cropping -> File.file Js.t -> unit Lwt.t)
+  -> upload
   -> [> `Form ] Eliom_content.Html.elt Lwt.t
