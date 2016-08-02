@@ -435,7 +435,7 @@ let%shared bullets
       let rec empty l res = if l = 0 then res else empty (l-1) ([]::res) in
       empty length []
     | _ ->
-      failwith @@ invalid_arg "content"
+      invalid_arg "content"
   in
   ul ~a:(a_class ["bullet-nav"]::a) (List.mapi bullet content)
 
