@@ -413,9 +413,10 @@ let%shared bullets
     ?(a = []) ?attributes
     ~(change : ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t)
     ~pos ~length
-    ?(size = Eliom_shared.React.S.const 1) () =
+    ?(size = Eliom_shared.React.S.const 1)
+    ?content () =
   let a = (a :> Html_types.ul_attrib attrib list) in
-  let bullet i =
+  let bullet i c =
     let class_ = bullet_class i pos size in
     let a = match attributes with
       | None -> []
@@ -425,10 +426,18 @@ let%shared bullets
            :: R.a_class class_
            :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]
            :: a)
-      []
+      c
   in
-  let rec aux acc i = if i = 0 then acc else aux (bullet (i-1)::acc) (i-1) in
-  ul ~a:(a_class ["bullet-nav"]::a) (aux [] length)
+  let content = match content with
+    | Some content when List.length content = length ->
+      content
+    | None ->
+      let rec empty l res = if l = 0 then res else empty (l-1) ([]::res) in
+      empty length []
+    | _ ->
+      failwith @@ invalid_arg "content"
+  in
+  ul ~a:(a_class ["bullet-nav"]::a) (List.mapi bullet content)
 
 let%shared ribbon
     ?(a = [])

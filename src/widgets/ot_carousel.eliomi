@@ -94,6 +94,8 @@ val make :
     to each bullet (for example a reactive class).
     Optional parameter [size] is the number of elements visible at the same time
     in the carousel (return by function [make]).
+    Optional parameter [content] makes it possible to fill the bullets with Html
+    elements.
  *)
 val bullets :
   ?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list ->
@@ -103,6 +105,7 @@ val bullets :
   pos:int Eliom_shared.React.S.t ->
   length:int ->
   ?size:int Eliom_shared.React.S.t ->
+  ?content: [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
   unit -> [> `Ul ] Eliom_content.Html.elt
 
 (** Menu (or tabs) for carousel. Current page has class ["active"].
