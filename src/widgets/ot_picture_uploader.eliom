@@ -106,7 +106,7 @@ let%shared cropper
      let x = ref 0. in
      let y = ref 0. in
      ignore @@ React.S.map (fun x ->
-       let top = Js.string (string_of_float x ^ "%") in
+       let top = Js.string (Printf.sprintf "%g%%" x) in
        let () = t_f##.style##.height := top in
        let () = tr_f##.style##.height := top in
        let () = tl_f##.style##.height := top in
@@ -115,7 +115,7 @@ let%shared cropper
        crop##.style##.top := top
      ) ~%top ;
      ignore @@ React.S.map (fun x ->
-       let bottom = Js.string (string_of_float x ^ "%") in
+       let bottom = Js.string (Printf.sprintf "%g%%" x) in
        let () = b_f##.style##.height := bottom in
        let () = br_f##.style##.height := bottom in
        let () = bl_f##.style##.height := bottom in
@@ -123,7 +123,7 @@ let%shared cropper
        let () = r_f##.style##.bottom := bottom in
        crop##.style##.bottom := bottom ) ~%bottom ;
      ignore @@ React.S.map (fun x ->
-       let right = Js.string (string_of_float x ^ "%") in
+       let right = Js.string (Printf.sprintf "%g%%" x) in
        let () = r_f##.style##.width := right in
        let () = tr_f##.style##.width := right in
        let () = br_f##.style##.width := right in
@@ -131,7 +131,7 @@ let%shared cropper
        let () = b_f##.style##.right := right in
        crop##.style##.right := right) ~%right ;
      ignore @@ React.S.map (fun x ->
-       let left = Js.string (string_of_float x ^ "%") in
+       let left = Js.string (Printf.sprintf "%g%%" x) in
        let () = l_f##.style##.width := left in
        let () = tl_f##.style##.width := left in
        let () = bl_f##.style##.width := left in
