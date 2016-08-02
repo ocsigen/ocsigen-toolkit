@@ -433,7 +433,7 @@ let%shared bullets
     | Some content when List.length content = length ->
       content
     | None ->
-      let rec empty l res = if l = 0 then res else f (l-1) ([]::res) in
+      let rec empty l res = if l = 0 then res else empty (l-1) ([]::res) in
       empty length []
     | _ ->
       failwith @@ invalid_arg "content"
