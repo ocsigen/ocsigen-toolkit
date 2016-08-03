@@ -24,7 +24,7 @@
     send to the before sending it server.  Also, controllers can be
     added to allow the user to specify a cropping area. No cropping is
     actually done on the client side, it MUST be handled on server
-    side by a service. *)
+    side. *)
 
 [%%shared.start]
 type cropping = (float * float * float * float) React.S.t
@@ -77,11 +77,10 @@ val bind_input :
   -> unit
   -> unit
 
-(** [ do_submit input ?cropping ~service ~arg () ]
+(** [ do_submit input ?cropping ~upload () ]
     [input] is the input with file loaded
     [cropping] are cropping info
-    [service] service used for submission
-    [arg] extra argument passed to [service] (as first argument) *)
+    [upload] function to upload the file *)
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> ?cropping:cropping
@@ -89,11 +88,9 @@ val do_submit :
   -> unit
   -> unit Lwt.t
 
-(** [ bind_submit input button ?cropping ~service ~arg ~after_submit () ]
-    Make [ button ] action is to call [service] with
-    [ (arg, (cropping, file)) ] parameters, [ file ] being the file select in
-    [ input ].
-    [ after_submit ] is called once [ service ] returned. *)
+(** [ bind_submit input button ?cropping ~upload ~after_submit () ]
+    binds the following two actions to [ button ] when it is being clicked:
+    call [ do_submit ] which uploads the file; then call [ after_submit ] *)
 val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
@@ -137,9 +134,11 @@ val submit :
   -> [< Html_types.button_content ] Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
-(** Ready-to-use form, using [service] and [arg]. Customizable with
+(** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
-    If [crop] is present, cropping is enable, with the optional ratio it is. *)
+    If [crop] is present, cropping is enable, with the optional ratio it is.
+    The last argument determines the method by which the file is uploaded.
+    *)
 val mk_form :
   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
