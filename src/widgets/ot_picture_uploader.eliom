@@ -21,25 +21,6 @@
 [%%shared open Eliom_content.Html ]
 [%%shared open Eliom_content.Html.F ]
 
-[%%shared
-type 'a service =
-  (unit
-  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-  , Eliom_service.post
-  , Eliom_service.non_att
-  , Eliom_service.co
-  , Eliom_service.non_ext
-  , Eliom_service.reg
-  , [ `WithoutSuffix ]
-  , unit
-  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
-    * ([ `One of (float * float * float * float)
-             option Eliom_parameter.ocaml
-       ] Eliom_parameter.param_name
-       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , unit Eliom_service.ocaml) Eliom_service.t
-]
-
 let%client process_file input callback =
   Js.Optdef.case
     (input##.files) (fun () -> Lwt.return ())
@@ -106,7 +87,7 @@ let%shared cropper
      let x = ref 0. in
      let y = ref 0. in
      ignore @@ React.S.map (fun x ->
-       let top = Js.string (Printf.sprintf "%g%%" x) in
+       let top = Js.string (string_of_float x ^ "%") in
        let () = t_f##.style##.height := top in
        let () = tr_f##.style##.height := top in
        let () = tl_f##.style##.height := top in
@@ -115,7 +96,7 @@ let%shared cropper
        crop##.style##.top := top
      ) ~%top ;
      ignore @@ React.S.map (fun x ->
-       let bottom = Js.string (Printf.sprintf "%g%%" x) in
+       let bottom = Js.string (string_of_float x ^ "%") in
        let () = b_f##.style##.height := bottom in
        let () = br_f##.style##.height := bottom in
        let () = bl_f##.style##.height := bottom in
@@ -123,7 +104,7 @@ let%shared cropper
        let () = r_f##.style##.bottom := bottom in
        crop##.style##.bottom := bottom ) ~%bottom ;
      ignore @@ React.S.map (fun x ->
-       let right = Js.string (Printf.sprintf "%g%%" x) in
+       let right = Js.string (string_of_float x ^ "%") in
        let () = r_f##.style##.width := right in
        let () = tr_f##.style##.width := right in
        let () = br_f##.style##.width := right in
@@ -131,7 +112,7 @@ let%shared cropper
        let () = b_f##.style##.right := right in
        crop##.style##.right := right) ~%right ;
      ignore @@ React.S.map (fun x ->
-       let left = Js.string (Printf.sprintf "%g%%" x) in
+       let left = Js.string (string_of_float x ^ "%") in
        let () = l_f##.style##.width := left in
        let () = tl_f##.style##.width := left in
        let () = bl_f##.style##.width := left in
@@ -337,27 +318,76 @@ let%shared submit ?(a = []) content =
 let%client loads ?cancel_handler ?use_capture t =
   Lwt_js_events.(seq_loop load ?cancel_handler ?use_capture t)
 
-let%client bind_input = Ot_picture_uploader2.bind_input
+let%client bind_input input preview ?container ?reset () =
+  let onerror () =
+    Eliom_lib.Option.iter (fun container ->
+      container##.classList##add (Js.string "ot-no-file")) container ;
+    preview##.src := Js.string "" ;
+    Lwt.return () in
+  Eliom_lib.Option.iter (fun f ->
+    Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f () ) ) )
+    reset ;
+  Lwt.async (fun () -> Lwt_js_events.changes input (fun _ _ ->
+    Js.Optdef.case (input##.files) onerror
+      (fun files -> Js.Opt.case (files##item 0) onerror
+          (fun file ->
+             let () = file_reader
+                 (Js.Unsafe.coerce file)
+                 (fun data ->
+                    preview##.src := data ;
+                    Eliom_lib.Option.iter (fun container ->
+                      container##.classList##remove (Js.string "ot-no-file") )
+                      container ) in
+             Lwt.return () ) ) ) )
 
-let%client do_submit input ?cropping ~service ~arg () =
-  let upload = Ot_picture_uploader2.ocaml_service_upload ~service ~arg in
-  Ot_picture_uploader2.do_submit input ?cropping ~upload:upload ()
+[%%shared
+type cropping = (float * float * float * float) React.S.t
+
+type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+
+type 'a service =
+  (unit
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
+  , [ `WithoutSuffix ]
+  , unit
+  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
+    * ([ `One of (float * float * float * float)
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
+       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
+  , unit Eliom_service.ocaml) Eliom_service.t
+]
+
+let%client ocaml_service_upload ~service ~arg ?cropping file =
+  Eliom_client.call_ocaml_service service ()
+    (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
+
+let%client do_submit input ?cropping ~upload () =
+  process_file input (fun file -> upload ?cropping file)
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
-    button ?cropping ~service ~arg ~after_submit () =
-  let upload = Ot_picture_uploader2.ocaml_service_upload ~service ~arg in
-  Ot_picture_uploader2.bind_submit input button ?cropping ~upload ~after_submit ()
+    button ?cropping ~upload ~after_submit () =
+  Lwt.async (fun () -> Lwt_js_events.clicks button (fun ev _ ->
+    Dom.preventDefault ev ;
+    Dom_html.stopPropagation ev ;
+    let%lwt () = do_submit input ?cropping ~upload () in
+    after_submit () ) )
 
 let%client bind
-    ?container ~input ~preview ?crop ~submit ~service ~arg ~after_submit ()
+    ?container ~input ~preview ?crop ~submit ~upload ~after_submit ()
   =
   let (reset, cropping) = match crop with
     | Some (x,y) -> Some x, Some y
     | _          -> None, None in
   let () = bind_input input preview ?container ?reset () in
   let () = bind_submit
-      input submit ?cropping ~service ~arg ~after_submit () in
+      input submit ?cropping ~upload ~after_submit () in
   ()
 
 let%shared mk_service name arg_deriver =
@@ -379,8 +409,7 @@ let%shared mk_form
     ?crop
     ?input:(input_a, input_content = [], [])
     ?submit:(submit_a, submit_content = [], [])
-    (service : 'a service)
-    (arg : 'a) =
+    (upload : ?cropping:cropping -> File.file Js.t -> unit Lwt.t) =
   let preview = preview () in
   let (input, input_label) = input ~a:input_a input_content in
   let submit = submit ~a:submit_a submit_content in
@@ -404,8 +433,7 @@ let%shared mk_form
                       ~preview:(To_dom.of_img ~%preview)
                       ?crop:~%crop
                       ~submit:(To_dom.of_button ~%submit)
-                      ~service:~%service
-                      ~arg:~%arg
+                      ~upload:~%upload
                       ~after_submit:~%after_submit
                       () : unit) ] in
   Lwt.return form
