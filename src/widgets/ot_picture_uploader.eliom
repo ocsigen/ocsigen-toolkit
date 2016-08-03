@@ -21,6 +21,25 @@
 [%%shared open Eliom_content.Html ]
 [%%shared open Eliom_content.Html.F ]
 
+[%%shared
+type 'a service =
+  (unit
+  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+  , Eliom_service.post
+  , Eliom_service.non_att
+  , Eliom_service.co
+  , Eliom_service.non_ext
+  , Eliom_service.reg
+  , [ `WithoutSuffix ]
+  , unit
+  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
+    * ([ `One of (float * float * float * float)
+             option Eliom_parameter.ocaml
+       ] Eliom_parameter.param_name
+       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
+  , unit Eliom_service.ocaml) Eliom_service.t
+]
+
 let%client process_file input callback =
   Js.Optdef.case
     (input##.files) (fun () -> Lwt.return ())
@@ -344,23 +363,6 @@ let%client bind_input input preview ?container ?reset () =
 type cropping = (float * float * float * float) React.S.t
 
 type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
-
-type 'a service =
-  (unit
-  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-  , Eliom_service.post
-  , Eliom_service.non_att
-  , Eliom_service.co
-  , Eliom_service.non_ext
-  , Eliom_service.reg
-  , [ `WithoutSuffix ]
-  , unit
-  , [ `One of 'a Eliom_parameter.ocaml ] Eliom_parameter.param_name
-    * ([ `One of (float * float * float * float)
-             option Eliom_parameter.ocaml
-       ] Eliom_parameter.param_name
-       * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , unit Eliom_service.ocaml) Eliom_service.t
 ]
 
 let%client ocaml_service_upload ~service ~arg ?cropping file =
