@@ -126,7 +126,7 @@ let angle_to_hours_minutes ?round_5:(round_5 = false) e =
     else
       m
   in
-  assert (0 <= h && h <= 11);
+  assert (0 <= h && h <= 12);
   assert (0 <= m && m <= 59);
   h, m
 
