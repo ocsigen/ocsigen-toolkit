@@ -105,7 +105,7 @@ let round_30_degrees e =
     else
       e / 30 * 30
   in
-  if e >= 360 then 355 else e
+  if e >= 360 then 0 else e
 
 let angle_to_hours_minutes ?round_5:(round_5 = false) e =
   let m = e * 2 in
