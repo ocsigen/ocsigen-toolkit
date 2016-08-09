@@ -497,7 +497,7 @@ let make_hours_minutes_seq_24h
      ignore [%client
        (ignore @@
         let f (h, m) =
-          let h, b = if h > 12 then h - 12, false else h, true in
+          let h, b = if h >= 12 then h - 12, false else h, true in
           ~%f_e_h (h * 30, true);
           ~%f_e_m (m * 6, true);
           ~%f_is_am (b, true)
@@ -555,7 +555,7 @@ let make_hours_minutes_seq
       | Some update ->
         [%client (
            let f (h, m) =
-             (let h = if h > 12 then h - 12 else h in
+             (let h = if h >= 12 then h - 12 else h in
               ~%f_e_h (h * 30, true));
              ~%f_e_m (m * 6, true)
            in
