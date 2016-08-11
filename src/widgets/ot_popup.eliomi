@@ -56,7 +56,7 @@ val hcf :
     not be selected using the TAB key. When the popup is closed their old
     tabIndex value is restored. Note, that some elements that are tabbable in
     some browsers but not by specification (scrollable div's) are not affected.
-    If [setup_form] (default: false) is true then the popup is scanned for a
+    If [setup_form] (default: None) is true then the popup is scanned for a
     form element and [setup_tabcycle_auto] is applied. If no form element is
     found, the whole popup is scanned for form elements. *)
 val popup :
