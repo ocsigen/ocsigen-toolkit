@@ -359,29 +359,37 @@ let%client bind_input input preview ?container ?reset () =
                       container ) in
              Lwt.return () ) ) ) )
 
-let%client do_submit input ?cropping ~service ~arg () =
-  process_file input (fun file ->
-    Eliom_client.call_ocaml_service service
-      () (arg, (Eliom_lib.Option.map React.S.value cropping, file) ) )
+[%%shared
+type cropping = (float * float * float * float) React.S.t
+
+type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+]
+
+let%client ocaml_service_upload ~service ~arg ?cropping file =
+  Eliom_client.call_ocaml_service service ()
+    (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
+
+let%client do_submit input ?cropping ~upload () =
+  process_file input (fun file -> upload ?cropping file)
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
-    button ?cropping ~service ~arg ~after_submit () =
+    button ?cropping ~upload ~after_submit () =
   Lwt.async (fun () -> Lwt_js_events.clicks button (fun ev _ ->
     Dom.preventDefault ev ;
     Dom_html.stopPropagation ev ;
-    let%lwt () = do_submit input ?cropping ~service ~arg () in
+    let%lwt () = do_submit input ?cropping ~upload () in
     after_submit () ) )
 
 let%client bind
-    ?container ~input ~preview ?crop ~submit ~service ~arg ~after_submit ()
+    ?container ~input ~preview ?crop ~submit ~upload ~after_submit ()
   =
   let (reset, cropping) = match crop with
     | Some (x,y) -> Some x, Some y
     | _          -> None, None in
   let () = bind_input input preview ?container ?reset () in
   let () = bind_submit
-      input submit ?cropping ~service ~arg ~after_submit () in
+      input submit ?cropping ~upload ~after_submit () in
   ()
 
 let%shared mk_service name arg_deriver =
@@ -403,8 +411,7 @@ let%shared mk_form
     ?crop
     ?input:(input_a, input_content = [], [])
     ?submit:(submit_a, submit_content = [], [])
-    (service : 'a service)
-    (arg : 'a) =
+    (upload : ?cropping:cropping -> File.file Js.t -> unit Lwt.t) =
   let preview = preview () in
   let (input, input_label) = input ~a:input_a input_content in
   let submit = submit ~a:submit_a submit_content in
@@ -428,8 +435,7 @@ let%shared mk_form
                       ~preview:(To_dom.of_img ~%preview)
                       ?crop:~%crop
                       ~submit:(To_dom.of_button ~%submit)
-                      ~service:~%service
-                      ~arg:~%arg
+                      ~upload:~%upload
                       ~after_submit:~%after_submit
                       () : unit) ] in
   Lwt.return form

@@ -24,9 +24,13 @@
     send to the before sending it server.  Also, controllers can be
     added to allow the user to specify a cropping area. No cropping is
     actually done on the client side, it MUST be handled on server
-    side by a service. *)
+    side. *)
 
 [%%shared.start]
+type cropping = (float * float * float * float) React.S.t
+
+type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+
 type 'a service =
   (unit
   , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
@@ -46,6 +50,8 @@ type 'a service =
 
 [%%client.start]
 
+val ocaml_service_upload : service:('a service) -> arg:'a -> upload
+
 (** [ let (reset, cropping, cropper_dom) = cropper ~image () ]
     [ reset ] is function to call to reset the current cropper status
     [ cropping ] are current cropping parameters
@@ -55,7 +61,7 @@ val cropper :
   -> ?ratio:float
   -> unit
   -> (unit -> unit)
-     * (float * float * float * float) Eliom_shared.React.S.t
+     * cropping
      * [> `Div ] Eliom_content.Html.elt
 
 (** [bind_input input preview ?container ?reset ()]
@@ -71,30 +77,25 @@ val bind_input :
   -> unit
   -> unit
 
-(** [ do_submit input ?cropping ~service ~arg () ]
+(** [ do_submit input ?cropping ~upload () ]
     [input] is the input with file loaded
     [cropping] are cropping info
-    [service] service used for submission
-    [arg] extra argument passed to [service] (as first argument) *)
+    [upload] function to upload the file *)
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
-  -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
-  -> service:'a service
-  -> arg:'a
+  -> ?cropping:cropping
+  -> upload:upload
   -> unit
   -> unit Lwt.t
 
-(** [ bind_submit input button ?cropping ~service ~arg ~after_submit () ]
-    Make [ button ] action is to call [service] with
-    [ (arg, (cropping, file)) ] parameters, [ file ] being the file select in
-    [ input ].
-    [ after_submit ] is called once [ service ] returned. *)
+(** [ bind_submit input button ?cropping ~upload ~after_submit () ]
+    binds the following two actions to [ button ] when it is being clicked:
+    call [ do_submit ] which uploads the file; then call [ after_submit ] *)
 val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> ?cropping:(float * float * float * float) Eliom_shared.React.S.t
-  -> service:'a service
-  -> arg:'a
+  -> ?cropping:cropping
+  -> upload:upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -104,11 +105,9 @@ val bind :
   ?container:#Dom_html.element Js.t Eliom_client_value.t
   -> input:Dom_html.inputElement Js.t Eliom_client_value.t
   -> preview:Dom_html.imageElement Js.t
-  -> ?crop:( (unit -> unit)
-             * (float * float * float * float) Eliom_shared.React.S.t )
+  -> ?crop:( (unit -> unit) * cropping )
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> service:'b service
-  -> arg:'b
+  -> upload:upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -139,9 +138,11 @@ val submit :
     Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
 val mk_service : string -> 'a Deriving_Json.t -> 'a service
 
-(** Ready-to-use form, using [service] and [arg]. Customizable with
+(** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
-    If [crop] is present, cropping is enable, with the optional ratio it is. *)
+    If [crop] is present, cropping is enable, with the optional ratio it is.
+    The last argument determines the method by which the file is uploaded.
+    *)
 val mk_form :
   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
@@ -149,6 +150,5 @@ val mk_form :
              * [< Html_types.label_content_fun ] Eliom_content.Html.elt list)
   -> ?submit:([< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
               * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
-  -> 'a service
-  -> 'a
+  -> upload
   -> [> `Form ] Eliom_content.Html.elt Lwt.t
