@@ -400,7 +400,7 @@ let%client bind
 let%shared mk_service name arg_deriver =
   Eliom_service.create_ocaml
     ~name
-    ~id:Eliom_service.Global
+    ~path:Eliom_service.No_path
     ~meth:
       (Eliom_service.Post
          (Eliom_parameter.unit,
