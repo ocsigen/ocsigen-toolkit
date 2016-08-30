@@ -28,6 +28,8 @@
    User can display the next/previous items by pressing buttons,
    by swiping on touch screens, or by pressing arrow keys.
 
+   It is possible to put a carousel inside another carousel.
+
    Carousel can be horizontal or vertical.
 
    This module also defines two other widgets related to the carousel:
