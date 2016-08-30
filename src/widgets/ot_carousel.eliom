@@ -122,7 +122,10 @@ let%shared make
         in
         truncate ((float width_carousel) /. (float width_element) +. 0.5)
     in
-    ~%set_nb_visible_elements (comp_nb_visible_elements ());
+    Lwt.async (fun () ->
+      let%lwt () = Ot_nodeready.nodeready d2' in
+      ~%set_nb_visible_elements (comp_nb_visible_elements ());
+      Lwt.return ());
     let maxi () = ~%maxi - (React.S.value ~%nb_visible_elements) + 1 in
     let pos_signal = ~%pos_signal in
     let pos_set = ~%pos_set in
