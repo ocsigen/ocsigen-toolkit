@@ -658,26 +658,38 @@ let%shared ribbon
 let%shared blur = function true -> ["blurred"] | false -> []
 
 let%shared previous ?(a = [])
-    ~(change : ([> `Prev ] -> unit) Eliom_client_value.t)
+    ~(change : ([> `Prev | `Goto of int ] -> unit) Eliom_client_value.t)
+    ?(step = Eliom_shared.React.S.const 1)
     ~pos content =
   Form.button_no_value
     ~button_type:`Button
     ~a:(R.a_class (Eliom_shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
         :: a_class ["car-prev"]
-        :: a_onclick  [%client  fun _ -> ~%change `Prev ]
+        :: a_onclick  [%client
+          fun _ ->
+            let step = React.S.value ~%step in
+            ~%change (if step > 1
+                      then `Goto (React.S.value ~%pos - step)
+                      else `Prev) ]
         :: (a :> Html_types.button_attrib
                 Eliom_content.Html.attrib list) )
     content
 
 let%shared next ?(a = [])
-    ~(change : ([> `Next ] -> unit) Eliom_client_value.t) ~pos ~size ~length content =
+    ~(change : ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t)
+    ?(step = Eliom_shared.React.S.const 1)
+    ~pos ~size ~length content =
   Form.button_no_value
     ~button_type:`Button
     ~a:(R.a_class (Eliom_shared.React.S.l2
                      [%shared fun p s -> blur (p + s >= ~%length)]
                      pos size)
         :: a_class ["car-next"]
-        :: a_onclick  [%client  fun _ -> ~%change `Next ]
+        :: a_onclick  [%client
+          fun _ -> let step = React.S.value ~%step in
+            ~%change (if step > 1
+                      then `Goto (React.S.value ~%pos + step)
+                      else `Next) ]
         :: (a :> Html_types.button_attrib
                 Eliom_content.Html.attrib list) )
     content
