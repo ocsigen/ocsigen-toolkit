@@ -28,6 +28,8 @@
    User can display the next/previous items by pressing buttons,
    by swiping on touch screens, or by pressing arrow keys.
 
+   It is possible to put a carousel inside another carousel.
+
    Carousel can be horizontal or vertical.
 
    This module also defines two other widgets related to the carousel:
@@ -134,16 +136,20 @@ val ribbon :
   [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
   [> `Div ] Eliom_content.Html.elt
 
+(** Go to the previous page (or mores page if [offset] is present). *)
 val previous :
   ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
-  -> change: ([> `Prev ] -> unit) Eliom_client_value.t
+  -> change: ([> `Prev | `Goto of int ] -> unit) Eliom_client_value.t
+  -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
   -> Html_types.button_content Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
+(** Go to the next page (or more pages if [offset] is present). *)
 val next :
     ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
-  -> change: ([> `Next ] -> unit) Eliom_client_value.t
+  -> change: ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t
+  -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
   -> size:int Eliom_shared.React.S.t
   -> length:int
