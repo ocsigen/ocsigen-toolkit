@@ -662,7 +662,7 @@ let%shared blur = function true -> ["blurred"] | false -> []
 
 let%shared previous ?(a = [])
     ~(change : ([> `Prev | `Goto of int ] -> unit) Eliom_client_value.t)
-    ?(step = Eliom_shared.React.S.const 1)
+    ?(offset = Eliom_shared.React.S.const 1)
     ~pos content =
   Form.button_no_value
     ~button_type:`Button
@@ -670,9 +670,9 @@ let%shared previous ?(a = [])
         :: a_class ["car-prev"]
         :: a_onclick  [%client
           fun _ ->
-            let step = React.S.value ~%step in
-            ~%change (if step > 1
-                      then `Goto (React.S.value ~%pos - step)
+            let offset = React.S.value ~%offset in
+            ~%change (if offset > 1
+                      then `Goto (React.S.value ~%pos - offset)
                       else `Prev) ]
         :: (a :> Html_types.button_attrib
                 Eliom_content.Html.attrib list) )
@@ -680,7 +680,7 @@ let%shared previous ?(a = [])
 
 let%shared next ?(a = [])
     ~(change : ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t)
-    ?(step = Eliom_shared.React.S.const 1)
+    ?(offset = Eliom_shared.React.S.const 1)
     ~pos ~size ~length content =
   Form.button_no_value
     ~button_type:`Button
@@ -689,9 +689,9 @@ let%shared next ?(a = [])
                      pos size)
         :: a_class ["car-next"]
         :: a_onclick  [%client
-          fun _ -> let step = React.S.value ~%step in
-            ~%change (if step > 1
-                      then `Goto (React.S.value ~%pos + step)
+          fun _ -> let offset = React.S.value ~%offset in
+            ~%change (if offset > 1
+                      then `Goto (React.S.value ~%pos + offset)
                       else `Next) ]
         :: (a :> Html_types.button_attrib
                 Eliom_content.Html.attrib list) )
