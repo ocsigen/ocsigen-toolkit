@@ -34,8 +34,91 @@ let px_of_float px = Printf.sprintf "%gpx" px
 
 let style elt = Dom_html.window##getComputedStyle elt
 
-(*TODO: constructors instead of strings?*)
+(* -------------------------------------------------------------------------- *)
+(* Sum type for the display property. A value of this type is returned by
+ * display'.
+ *)
+type display =
+  | Block
+  | Compact
+  | Flex
+  | Inherit
+  | Inline
+  | Inline_block
+  | Inline_flex
+  | Inline_table
+  | Initial
+  | List_item
+  | Marker
+  | None
+  | Run_in
+  | Table
+  | Table_caption
+  | Table_cell
+  | Table_column
+  | Table_column_group
+  | Table_footer_group
+  | Table_header_group
+  | Table_row
+  | Table_row_group
+  | Unknown
+
+let display_of_str d = match d with
+  | "block"              -> Block
+  | "compact"            -> Compact
+  | "flex"               -> Flex
+  | "inherit"            -> Inherit
+  | "inline"             -> Inline
+  | "inline-block"       -> Inline_block
+  | "inline-flex"        -> Inline_flex
+  | "inline-table"       -> Inline_table
+  | "initial"            -> Initial
+  | "list-item"          -> List_item
+  | "marker"             -> Marker
+  | "none"               -> None
+  | "run-in"             -> Run_in
+  | "table"              -> Table
+  | "table-caption"      -> Table_caption
+  | "table-cell"         -> Table_cell
+  | "table-column"       -> Table_column
+  | "table-column-group" -> Table_column_group
+  | "table-footer-group" -> Table_footer_group
+  | "table-header-group" -> Table_header_group
+  | "table-row"          -> Table_row
+  | "table-row-group"    -> Table_row_group
+  | _                    -> Unknown
+
+let display_to_str d = match d with
+  | Block                -> "block"
+  | Compact              -> "compact"
+  | Flex                 -> "flex"
+  | Inherit              -> "inherit"
+  | Inline               -> "inline"
+  | Inline_block         -> "inline-block"
+  | Inline_flex          -> "inline-flex"
+  | Inline_table         -> "inline-table"
+  | Initial              -> "initial"
+  | List_item            -> "list-item"
+  | Marker               -> "marker"
+  | None                 -> "none"
+  | Run_in               -> "run-in"
+  | Table                -> "table"
+  | Table_caption        -> "table-caption"
+  | Table_cell           -> "table-cell"
+  | Table_column         -> "table-column"
+  | Table_column_group   -> "table-column-group"
+  | Table_footer_group   -> "table-footer-group"
+  | Table_header_group   -> "table-header-group"
+  | Table_row            -> "table-row"
+  | Table_row_group      -> "table-row-group"
+  | Unknown              -> ""
+(* -------------------------------------------------------------------------- *)
+
 let display elt = Js.to_string (style elt)##.display
+
+(* display' elt returns a display type instead of a string *)
+let display' elt = display_of_str (display elt)
+
 let visibility elt = Js.to_string (style elt)##.visibility
 
 (*TODO: not well-tested! does this work on all browsers? *)
