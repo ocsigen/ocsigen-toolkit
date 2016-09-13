@@ -50,7 +50,10 @@ type 'a service =
 
 [%%client.start]
 
-val ocaml_service_upload : service:('a service) -> arg:'a -> upload
+val ocaml_service_upload :
+  service:('a service) -> arg:'a ->
+  ?progress:(int -> int -> unit) ->
+  upload
 
 (** [ let (reset, cropping, cropper_dom) = cropper ~image () ]
     [ reset ] is function to call to reset the current cropper status

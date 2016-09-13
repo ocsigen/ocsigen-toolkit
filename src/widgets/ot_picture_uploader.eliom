@@ -365,8 +365,8 @@ type cropping = (float * float * float * float) React.S.t
 type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
 ]
 
-let%client ocaml_service_upload ~service ~arg ?cropping file =
-  Eliom_client.call_ocaml_service service ()
+let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
+  Eliom_client.call_ocaml_service ~service () ?upload_progress:progress
     (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
 
 let%client do_submit input ?cropping ~upload () =
