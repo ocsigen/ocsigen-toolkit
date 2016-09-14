@@ -362,15 +362,20 @@ let%client bind_input input preview ?container ?reset () =
 [%%shared
 type cropping = (float * float * float * float) React.S.t
 
-type 'a upload = ?cropping:cropping -> File.file Js.t -> 'a Lwt.t
+type 'a upload =
+  ?progress:(int -> int -> unit) ->
+  ?cropping:cropping ->
+  File.file Js.t -> 'a Lwt.t
 ]
 
 let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
   Eliom_client.call_ocaml_service ~service () ?upload_progress:progress
     (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
 
-let%client do_submit input ?cropping ~upload () =
-  process_file input (fun file -> let%lwt _ = upload ?cropping file in Lwt.return ())
+let%client do_submit input ?progress ?cropping ~upload () =
+  process_file input @@ fun file ->
+    let%lwt _ = upload ?progress ?cropping file in
+    Lwt.return ()
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)

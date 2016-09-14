@@ -29,7 +29,10 @@
 [%%shared.start]
 type cropping = (float * float * float * float) React.S.t
 
-type 'a upload = ?cropping:cropping -> File.file Js.t -> 'a Lwt.t
+type 'a upload =
+  ?progress:(int -> int -> unit) ->
+  ?cropping:cropping ->
+  File.file Js.t -> 'a Lwt.t
 
 (** a service that implements a function with type ['a -> 'b] *)
 type ('a,'b) service =
@@ -53,7 +56,6 @@ type ('a,'b) service =
 
 val ocaml_service_upload :
   service:(('a,'b) service) -> arg:'a ->
-  ?progress:(int -> int -> unit) ->
   'b upload
 
 (** [ let (reset, cropping, cropper_dom) = cropper ~image () ]
@@ -87,6 +89,7 @@ val bind_input :
     [upload] function to upload the file *)
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
+  -> ?progress:(int -> int -> unit)
   -> ?cropping:cropping
   -> upload:('a upload)
   -> unit
