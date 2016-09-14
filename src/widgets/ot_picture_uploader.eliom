@@ -22,7 +22,7 @@
 [%%shared open Eliom_content.Html.F ]
 
 [%%shared
-type 'a service =
+type ('a,'b) service =
   (unit
   , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
   , Eliom_service.post
@@ -37,7 +37,7 @@ type 'a service =
              option Eliom_parameter.ocaml
        ] Eliom_parameter.param_name
        * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , unit Eliom_service.ocaml) Eliom_service.t
+  , 'b Eliom_service.ocaml) Eliom_service.t
 ]
 
 let%client process_file input callback =
@@ -362,7 +362,7 @@ let%client bind_input input preview ?container ?reset () =
 [%%shared
 type cropping = (float * float * float * float) React.S.t
 
-type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+type 'a upload = ?cropping:cropping -> File.file Js.t -> 'a Lwt.t
 ]
 
 let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
@@ -370,7 +370,7 @@ let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
     (arg, (Eliom_lib.Option.map React.S.value cropping, file) )
 
 let%client do_submit input ?cropping ~upload () =
-  process_file input (fun file -> upload ?cropping file)
+  process_file input (fun file -> let%lwt _ = upload ?cropping file in Lwt.return ())
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
@@ -411,7 +411,7 @@ let%shared mk_form
     ?crop
     ?input:(input_a, input_content = [], [])
     ?submit:(submit_a, submit_content = [], [])
-    (upload : ?cropping:cropping -> File.file Js.t -> unit Lwt.t) =
+    (upload : 'a upload) =
   let preview = preview () in
   let (input, input_label) = input ~a:input_a input_content in
   let submit = submit ~a:submit_a submit_content in
