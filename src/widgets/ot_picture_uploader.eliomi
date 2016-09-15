@@ -29,9 +29,13 @@
 [%%shared.start]
 type cropping = (float * float * float * float) React.S.t
 
-type upload = ?cropping:cropping -> File.file Js.t -> unit Lwt.t
+type 'a upload =
+  ?progress:(int -> int -> unit) ->
+  ?cropping:cropping ->
+  File.file Js.t -> 'a Lwt.t
 
-type 'a service =
+(** a service that implements a function with type ['a -> 'b] *)
+type ('a,'b) service =
   (unit
   , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
   , Eliom_service.post
@@ -46,11 +50,13 @@ type 'a service =
              option Eliom_parameter.ocaml
        ] Eliom_parameter.param_name
        * [ `One of Eliom_lib.file_info ] Eliom_parameter.param_name)
-  , unit Eliom_service.ocaml) Eliom_service.t
+  , 'b Eliom_service.ocaml) Eliom_service.t
 
 [%%client.start]
 
-val ocaml_service_upload : service:('a service) -> arg:'a -> upload
+val ocaml_service_upload :
+  service:(('a,'b) service) -> arg:'a ->
+  'b upload
 
 (** [ let (reset, cropping, cropper_dom) = cropper ~image () ]
     [ reset ] is function to call to reset the current cropper status
@@ -83,8 +89,9 @@ val bind_input :
     [upload] function to upload the file *)
 val do_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
+  -> ?progress:(int -> int -> unit)
   -> ?cropping:cropping
-  -> upload:upload
+  -> upload:('a upload)
   -> unit
   -> unit Lwt.t
 
@@ -95,7 +102,7 @@ val bind_submit :
   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
-  -> upload:upload
+  -> upload:('a upload)
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -107,7 +114,7 @@ val bind :
   -> preview:Dom_html.imageElement Js.t
   -> ?crop:( (unit -> unit) * cropping )
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> upload:upload
+  -> upload:('a upload)
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -136,7 +143,7 @@ val submit :
 
 (** [mk_service name arg_deriver]
     Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
-val mk_service : string -> 'a Deriving_Json.t -> 'a service
+val mk_service : string -> 'a Deriving_Json.t -> ('a,'b) service
 
 (** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
@@ -150,5 +157,5 @@ val mk_form :
              * [< Html_types.label_content_fun ] Eliom_content.Html.elt list)
   -> ?submit:([< Html_types.button_attrib > `Class ] Eliom_content.Html.attrib list
               * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
-  -> upload
+  -> 'a upload
   -> [> `Form ] Eliom_content.Html.elt Lwt.t
