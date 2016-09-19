@@ -58,9 +58,14 @@ because we probably want, when capture=true, to capture the event as early as po
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
-(** [click_outside e] returns when user clicks outside element [e]. *)
+(** [click_outside e] returns when user clicks outside element [e].
+    Will only catch clicks inside the element given as optional
+    parameter [?inside] (default is [Dom_html.document##.body]).
+*)
 val click_outside :
-  ?use_capture:bool -> #Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t
+  ?use_capture:bool ->
+  ?inside:Dom_html.element Js.t ->
+  #Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t
 
 
 [%%shared.start]

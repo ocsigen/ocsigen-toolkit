@@ -73,13 +73,14 @@ let%client rec in_ancestors ~elt ~ancestor =
              (fun () -> false)
              (fun elt -> in_ancestors ~elt ~ancestor)))
 
-let%client rec click_outside ?use_capture elt =
-  let%lwt ev = Lwt_js_events.click ?use_capture Dom_html.document in
+let%client rec click_outside ?use_capture
+    ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t)) elt =
+  let%lwt ev = Lwt_js_events.click ?use_capture inside in
   Js.Opt.case (ev##.target)
     (fun () -> click_outside ?use_capture elt)
     (fun target ->
        if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
-       then click_outside ?use_capture elt
+       then click_outside ?use_capture ~inside elt
        else Lwt.return ev)
 
 [%%shared

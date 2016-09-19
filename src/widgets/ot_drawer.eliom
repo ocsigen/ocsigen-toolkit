@@ -34,17 +34,17 @@ let%client clY ev =
     (fun () -> 0)
     (fun a -> a##.clientY)
 
-let%client unbind_click_outside, bind_click_outside =
-  let r = ref (Lwt.return ()) in
-  (fun () -> Lwt.cancel !r),
-  (fun elt close ->
-     let th =
-       let%lwt _ =
-         Ot_lib.click_outside ~use_capture:true (To_dom.of_element elt) in
-       close ();
-       Lwt.return ()
-     in
-     r := th)
+let%client bind_click_outside bckgrnd elt close =
+  Lwt.async (fun () ->
+    let%lwt ev =
+      Ot_lib.click_outside
+        ~use_capture:true
+        ~inside:(To_dom.of_element bckgrnd)
+        (To_dom.of_element elt)
+    in
+    Dom_html.stopPropagation ev;
+    close ();
+    Lwt.return ())
 
 let%client html () = Js.Opt.to_option @@
   Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
@@ -99,7 +99,6 @@ let%shared drawer ?(a = []) ?(position = `Left)
          Dom_html.document##.body##.scrollTop := !scroll_pos;
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
-       unbind_click_outside ();
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "closing";
@@ -119,7 +118,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
        add_class ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
        !(~%bind_touch) ();
-       bind_click_outside ~%d ~%close;
+       bind_click_outside ~%bckgrnd ~%d ~%close;
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "opening";
