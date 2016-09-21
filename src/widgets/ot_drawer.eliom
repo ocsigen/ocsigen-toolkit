@@ -71,8 +71,11 @@ let%client scroll_pos = ref 0
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
-let%shared drawer ?(a = []) ?(position = `Left)
-    ?(ios_scroll_pos_fix=true) ?onclose ?onopen content =
+let%shared drawer ?(a = [])
+    ?(position = `Left) ?(opened = false) ?(swipe = true)
+    ?(ios_scroll_pos_fix=true) ?onclose ?onopen
+    ?(wrap_close = fun f -> f) ?(wrap_open = fun f -> f)
+    content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
@@ -85,7 +88,10 @@ let%shared drawer ?(a = []) ?(position = `Left)
                             | `Right -> "dr-right"]]
       (toggle_button :: (content :> Html_types.div_content elt list))
   in
-  let bckgrnd = D.div ~a:(a_class [ "dr-drawer-bckgrnd" ] :: a) [ d ] in
+  let bckgrnd_init_class = if opened then ["open"] else [] in
+  let bckgrnd =
+    D.div ~a:(a_class ("dr-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
+  in
 
   let bind_touch =
     [%client
@@ -106,6 +112,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
          Lwt.return ()))
      : unit -> unit)]
   in
+  let close = wrap_close close in
 
   let open_ = [%client
     ((fun () ->
@@ -125,6 +132,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
          Lwt.return ()))
      : unit -> unit)]
   in
+  let open_ = wrap_open open_ in
 
   let _ = [%client (
     let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%d) in
@@ -151,7 +159,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
   : unit)]
   in
 
-  let _ = [%client (
+  let _ = if swipe then [%client (
     (* Swipe to close: *)
     let dr = To_dom.of_element ~%d in
     let bckgrnd = To_dom.of_element ~%bckgrnd in
@@ -256,6 +264,7 @@ let%shared drawer ?(a = []) ?(position = `Left)
     (*   (if ~%position = `Left then "swipeleft" else "swiperight") *)
     (*   (fun _ -> Lwt.async (fun () -> perform_animation `Close)) *)
   : unit)]
+  else [%client ()]
   in
 
   bckgrnd, open_, close
