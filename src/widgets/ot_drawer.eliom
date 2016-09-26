@@ -57,11 +57,9 @@ let%client html_ManipClass_remove cl = match html () with
   | None -> ()
 
 let%client add_class elt str =
-  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.add elt str;
   html_ManipClass_add @@ "dr-drawer-" ^ str
 let%client remove_class elt str =
-  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.remove elt str;
   html_ManipClass_remove @@ "dr-drawer-" ^ str
 
