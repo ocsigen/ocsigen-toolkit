@@ -96,9 +96,12 @@ let%shared bind
     ?(max : (unit -> int) Eliom_client_value.t option)
     ~(compute_final_pos
       : (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t)
-    ?onstart
-    ?onmove
-    ?onend
+    ?(onstart : (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+    option)
+    ?(onmove : (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+    option)
+    ?(onend : (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+    option)
     (elt : _ elt) =
   ignore [%client
     (let elt = ~%elt in

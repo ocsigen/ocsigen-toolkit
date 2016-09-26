@@ -57,11 +57,9 @@ let%client html_ManipClass_remove cl = match html () with
   | None -> ()
 
 let%client add_class elt str =
-  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.add elt str;
   html_ManipClass_add @@ "dr-drawer-" ^ str
 let%client remove_class elt str =
-  let body = Of_dom.of_body Dom_html.document##.body in
   Manip.Class.remove elt str;
   html_ManipClass_remove @@ "dr-drawer-" ^ str
 
@@ -71,10 +69,16 @@ let%client scroll_pos = ref 0
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
-let%shared drawer ?(a = [])
-    ?(position = `Left) ?(opened = false) ?(swipe = true)
-    ?(ios_scroll_pos_fix=true) ?onclose ?onopen
-    ?(wrap_close = fun f -> f) ?(wrap_open = fun f -> f)
+let%shared drawer
+    ?(a = [])
+    ?(position = `Left)
+    ?(opened = false)
+    ?(swipe = true)
+    ?(ios_scroll_pos_fix=true)
+    ?(onclose : (unit -> unit) Eliom_client_value.t option)
+    ?(onopen : (unit -> unit) Eliom_client_value.t option)
+    ?(wrap_close = fun f -> f)
+    ?(wrap_open = fun f -> f)
     content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
