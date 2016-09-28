@@ -56,6 +56,8 @@ let%client dispatch_event ~ev elt name x y =
                val clientY = y
              end)
            in
+           if touch##.target = Js.null then
+             failwith "new Touch() not supported";
            let opt = object%js
              val bubbles = Js._true
              val changedTouches = Js.array [| touch |]
