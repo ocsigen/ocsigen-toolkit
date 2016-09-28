@@ -13,6 +13,7 @@
     Based on http://www.w3schools.com/css/css_rwd_grid.asp.
  *)
 
+[%%shared.start]
 (** [container ~attr children] creates a container (a div with the CSS class
     « ot-container »).
 
