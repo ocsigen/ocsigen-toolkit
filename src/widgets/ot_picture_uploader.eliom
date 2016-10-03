@@ -397,7 +397,7 @@ let%client bind
       input submit ?cropping ~upload ~after_submit () in
   ()
 
-let%shared mk_service name arg_deriver =
+let%server mk_service name arg_deriver =
   Eliom_service.create_ocaml
     ~name
     ~path:Eliom_service.No_path

@@ -141,10 +141,6 @@ val submit :
   -> [< Html_types.button_content ] Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
-(** [mk_service name arg_deriver]
-    Create a named service taking [(arg_deriver, (cropping, file))] parameter *)
-val mk_service : string -> 'a Deriving_Json.t -> ('a,'b) service
-
 (** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
     If [crop] is present, cropping is enable, with the optional ratio it is.
@@ -159,3 +155,9 @@ val mk_form :
               * [< Html_types.button_content_fun ] Eliom_content.Html.elt list)
   -> 'a upload
   -> [> `Form ] Eliom_content.Html.elt Lwt.t
+
+[%%server.start]
+
+(** [mk_service name arg_deriver] Create a named service taking
+    [(arg_deriver, (cropping, file))] parameter *)
+val mk_service : string -> 'a Deriving_Json.t -> ('a,'b) service
