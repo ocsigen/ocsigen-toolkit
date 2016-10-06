@@ -14,7 +14,7 @@
     display: flex ;
     flex-wrap: nowrap ;
 
-    transform: translate3d(0,0,0);
+//    transform: translate3d(0,0,0);
     transition-property: transform, -webkit-transform;
     transition-timing-function: cubic-bezier(.03,.84,.56,1);
 
