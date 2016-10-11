@@ -21,8 +21,6 @@
 
 (* TODO:
 
- - Swiping: avoid small delay before starting transition (the movement seems
-   to stop and restart)
  - Make transition duration depend on swiping speed
 
  - full_height: restore position of each page
@@ -57,10 +55,23 @@ let%shared make_transform vertical pos =
    For example some content cannot have border-radius on Chrome ... *)
 
 [%%client
+let now () = (new%js Js.date_now)##getTime /. 1000.
+
+let average_time = 0.1 (* the time, in seconds,
+                          for computing the moving average
+                          (used to detect the current speed) *)
+
 type status =
   | Stopped
-  | Start of (int * int)
-  | Ongoing of (int * int * int)
+  | Start of (int * int * float) (* Just started, x, y positions, timestamp *)
+  | Ongoing of (int * int * int * float * int * float)
+    (* Ongoing swipe, (x start position,
+                       y start position,
+                       element width,
+                       current speed average over average_time,
+                       previous position,
+                       previous timestamp)
+    *)
 ]
 
 let%shared make
@@ -280,10 +291,26 @@ let%shared make
       else Lwt.return ()
     in
     let status = ref Stopped in
+    let compute_speed prev_speed prev_delta prev_timestamp delta =
+      let timestamp = now () in
+      let delta_t = timestamp -. prev_timestamp in
+      let speed =
+        if delta_t = 0.
+        then prev_speed
+        else
+          let cur_speed = (float delta -. float prev_delta) /. delta_t in
+          if delta_t >= average_time
+          then cur_speed
+          else ((average_time -. delta_t) *. prev_speed
+                +. delta_t *. cur_speed)
+               /. average_time
+      in
+      timestamp, speed
+    in
     let onpan ev _ =
       (match !status with
-       | Start (startx, starty) ->
-         let move = if not vertical then clX ev - startx else clY ev - starty in
+       | Start (startx, starty, prev_timestamp) ->
+         let move = if vertical then clY ev - starty else clX ev - startx in
          status :=
            if abs (if vertical
                    then clX ev - startx
@@ -295,12 +322,17 @@ let%shared make
                Manip.Class.add ~%d2 "swiping";
                set_top_margin ();
                remove_transition d2';
-               Ongoing (startx, starty, width_element ())
+               let timestamp = now () in
+               let delta_t = timestamp -. prev_timestamp in
+               let speed = if delta_t = 0. then 0. else float move /. delta_t in
+               Ongoing (startx, starty, width_element (),
+                        speed, move, timestamp)
              end
              else !status
        | _ -> ());
       (match !status with
-       | Ongoing (startx, starty, width_element) ->
+       | Ongoing (startx, starty, width_element,
+                  prev_speed, prev_delta, prev_timestamp) ->
          Dom.preventDefault ev;
          Dom_html.stopPropagation ev; (* in case there is a carousel
                                          in a carousel, e.g. *)
@@ -309,6 +341,11 @@ let%shared make
            then clY ev - starty
            else clX ev - startx
          in
+         let timestamp, speed =
+           compute_speed prev_speed prev_delta prev_timestamp delta
+         in
+         status :=
+           Ongoing (startx, starty, width_element, speed, delta, timestamp);
          Lwt.async
            (fun () -> perform_animation (`Move (delta, width_element)))
        | _ -> ());
@@ -316,43 +353,50 @@ let%shared make
     in
     (* let hammer = Hammer.make_hammer d2 in *)
     Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
-      status := Start (clX ev, clY ev);
+      status := Start (clX ev, clY ev, now ());
       Lwt.return ()));
     Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
+    let do_end ev startx starty prev_speed prev_delta prev_timestamp =
+      Dom_html.stopPropagation ev; (* in case there is a carousel
+                                      in a carousel, e.g. *)
+      add_transition d2';
+      status := Stopped;
+      let width, delta =
+        if vertical
+        then d2'##.offsetHeight, (clY ev - starty)
+        else d2'##.offsetWidth, (clX ev - startx)
+      in
+      let timestamp, speed =
+        compute_speed prev_speed prev_delta prev_timestamp delta
+      in
+      let pos = Eliom_shared.React.S.value pos_signal in
+      let rem = delta mod width in
+      let nbpages = - (delta / width +
+                       if rem > 30 (* ?? *) && speed >= 0. then 1
+                       else if rem < -30 && speed <= 0. then -1
+                       else 0)
+      in
+      let newpos = pos + nbpages in
+      let newpos =
+        let maxi = maxi () in
+        if newpos < 0 then 0 else if newpos > maxi then maxi else newpos
+      in
+      if newpos <> pos
+      then perform_animation (`Change newpos)
+      else perform_animation (`Goback newpos)
+    in
     let touchend ev _ =
       match !status with
-      | Start (startx, starty)
-      | Ongoing (startx, starty, _) ->
-        Dom_html.stopPropagation ev; (* in case there is a carousel
-                                        in a carousel, e.g. *)
-        add_transition d2';
-        status := Stopped;
-        let width, delta =
-          if vertical
-          then d2'##.offsetHeight, (clY ev - starty)
-          else d2'##.offsetWidth, (clX ev - startx)
-        in
-        let pos = Eliom_shared.React.S.value pos_signal in
-        let rem = delta mod width in
-        let nbpages = - delta / width -
-                      if rem > 30 (* ?? *) then 1
-                      else if rem < -30 then -1
-                      else 0
-        in
-        let newpos = pos + nbpages in
-        let newpos =
-          let maxi = maxi () in
-          if newpos < 0 then 0 else if newpos > maxi then maxi else newpos
-        in
-        if newpos <> pos
-        then perform_animation (`Change newpos)
-        else perform_animation (`Goback newpos)
+      | Start (startx, starty, timestamp) ->
+        do_end ev startx starty 0. 0 timestamp
+      | Ongoing (startx, starty, _width, speed, delta, timestamp) ->
+        do_end ev startx starty speed delta timestamp
       | _ -> Lwt.return ()
     in
     let touchcancel ev _ =
       match !status with
-      | Start (startx, starty)
-      | Ongoing (startx, starty, _) ->
+      | Start (startx, starty, _)
+      | Ongoing (startx, starty, _, _, _, _) ->
         add_transition d2';
         status := Stopped;
         let pos = Eliom_shared.React.S.value pos_signal in
