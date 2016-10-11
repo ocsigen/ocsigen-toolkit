@@ -19,14 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* TODO:
-
- - Make transition duration depend on swiping speed
-
- - full_height: restore position of each page
-
-*)
-
 
 [%%shared
 open Eliom_content.Html
@@ -59,7 +51,8 @@ let now () = (new%js Js.date_now)##getTime /. 1000.
 
 let average_time = 0.1 (* the time, in seconds,
                           for computing the moving average
-                          (used to detect the current speed) *)
+                          (the current speed is the average speed
+                          on that period) *)
 
 type status =
   | Stopped
@@ -370,10 +363,11 @@ let%shared make
         compute_speed prev_speed prev_delta prev_timestamp delta
       in
       let pos = Eliom_shared.React.S.value pos_signal in
+      let delta = delta + (int_of_float (speed *. ~%transition_duration) / 2) in
       let rem = delta mod width in
       let nbpages = - (delta / width +
-                       if rem > 30 (* ?? *) && speed >= 0. then 1
-                       else if rem < -30 && speed <= 0. then -1
+                       if rem > width / 2 then 1
+                       else if rem < - (width / 2) then -1
                        else 0)
       in
       let newpos = pos + nbpages in

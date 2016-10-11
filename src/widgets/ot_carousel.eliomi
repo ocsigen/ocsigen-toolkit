@@ -48,7 +48,8 @@
     [?update] is a react event you can use to command the carousel from outside.
     [?disabled] is always [false] by default. When [true], it is not possible
     to change carousel position.
-    [?transition_duration] must match the values in CSS (default: 0.6s).
+    [?transition_duration] allows to adjust the
+    transition duration (which is currently constant). Default is 0.6s.
 
     Use optional parameter [?full_height]
     if you don't want scroll bars in carousel
