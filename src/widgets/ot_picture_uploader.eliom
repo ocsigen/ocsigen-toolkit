@@ -194,7 +194,8 @@ let%shared cropper
                 /. React.S.value ~%img_w in
        let dy = (match y_axis with Some f -> f (cy -. !y)
                                  | None -> cy -. !y)
-                /. React.S.value ~%img_h in
+                /. ratio
+                /. React.S.value ~%img_w in
        let dx = if abs_float dx > abs_float dy then dx else dy in
        let dy = dx *. ratio
                 *. (React.S.value ~%img_w /. React.S.value ~%img_h) in
