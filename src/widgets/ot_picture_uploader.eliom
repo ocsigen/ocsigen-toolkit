@@ -61,6 +61,20 @@ let%client file_reader file callback =
                       ; Js.bool false) ) ) in
   let () = reader##readAsDataURL file in ()
 
+let%client on_animation_frame f =
+  let last = ref None in
+  fun x ->
+    if !last = None then
+      Dom_html._requestAnimationFrame
+        (Js.wrap_callback (fun () ->
+           match !last with
+           | None ->
+               assert false
+           | Some x ->
+               last := None;
+               f x));
+    last := Some x
+
 let%shared cropper
     ~(image : Dom_html.element Js.t Eliom_client_value.t )
     ?(ratio : float option) () =
@@ -105,7 +119,7 @@ let%shared cropper
      let tl_f = To_dom.of_element ~%tl_f in
      let x = ref 0. in
      let y = ref 0. in
-     ignore @@ React.S.map (fun x ->
+     ignore @@ React.S.map (on_animation_frame @@ fun x ->
        let top = Js.string (Printf.sprintf "%g%%" x) in
        let () = t_f##.style##.height := top in
        let () = tr_f##.style##.height := top in
@@ -114,7 +128,7 @@ let%shared cropper
        let () = r_f##.style##.top := top in
        crop##.style##.top := top
      ) ~%top ;
-     ignore @@ React.S.map (fun x ->
+     ignore @@ React.S.map (on_animation_frame @@ fun x ->
        let bottom = Js.string (Printf.sprintf "%g%%" x) in
        let () = b_f##.style##.height := bottom in
        let () = br_f##.style##.height := bottom in
@@ -122,7 +136,7 @@ let%shared cropper
        let () = l_f##.style##.bottom := bottom in
        let () = r_f##.style##.bottom := bottom in
        crop##.style##.bottom := bottom ) ~%bottom ;
-     ignore @@ React.S.map (fun x ->
+     ignore @@ React.S.map (on_animation_frame @@ fun x ->
        let right = Js.string (Printf.sprintf "%g%%" x) in
        let () = r_f##.style##.width := right in
        let () = tr_f##.style##.width := right in
@@ -130,7 +144,7 @@ let%shared cropper
        let () = t_f##.style##.right := right in
        let () = b_f##.style##.right := right in
        crop##.style##.right := right) ~%right ;
-     ignore @@ React.S.map (fun x ->
+     ignore @@ React.S.map (on_animation_frame @@ fun x ->
        let left = Js.string (Printf.sprintf "%g%%" x) in
        let () = l_f##.style##.width := left in
        let () = tl_f##.style##.width := left in
