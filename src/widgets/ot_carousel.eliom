@@ -72,6 +72,7 @@ let%shared make
     ?(vertical = false)
     ?(position = 0)
     ?(transition_duration = 0.6)
+    ?(inertia = 1.0)
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
@@ -363,7 +364,9 @@ let%shared make
         compute_speed prev_speed prev_delta prev_timestamp delta
       in
       let pos = Eliom_shared.React.S.value pos_signal in
-      let delta = delta + (int_of_float (speed *. ~%transition_duration) / 2) in
+      let delta = delta + (int_of_float
+                             (speed *. ~%transition_duration *. ~%inertia) / 2)
+      in
       let rem = delta mod width in
       let nbpages = - (delta / width +
                        if rem > width / 2 then 1

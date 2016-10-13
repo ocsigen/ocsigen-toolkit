@@ -50,6 +50,8 @@
     to change carousel position.
     [?transition_duration] allows to adjust the
     transition duration (which is currently constant). Default is 0.6s.
+    [?inertia] makes it possible to reduce (or increase) inertia.
+    Default is [1.0]. No inertia is [0.0].
 
     Use optional parameter [?full_height]
     if you don't want scroll bars in carousel
@@ -77,6 +79,7 @@ val make :
   ?vertical:bool ->
   ?position:int ->
   ?transition_duration:float ->
+  ?inertia:float ->
   ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header
