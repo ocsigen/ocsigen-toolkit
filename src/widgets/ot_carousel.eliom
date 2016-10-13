@@ -73,6 +73,7 @@ let%shared make
     ?(position = 0)
     ?(transition_duration = 0.6)
     ?(inertia = 1.0)
+    ?(allow_overswipe = false)
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
@@ -211,6 +212,7 @@ let%shared make
     in
     (********************** end *)
     let set_position ?transitionend pos =
+      let pos = max 0 (min pos (maxi ())) in
       let s = Js.string @@ make_transform vertical pos in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
@@ -259,6 +261,15 @@ let%shared make
             animation_frame_requested := false;
             (match !action with
              | `Move (delta, width_element) ->
+               let delta = if ~%allow_overswipe
+                 then delta
+                 else
+                   let global_delta =
+                     React.S.value ~%pos_signal * width_element
+                   in
+                   let m = - width_element * (maxi ()) + global_delta in
+                   min global_delta (max delta m)
+               in
                let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
                ~%swipe_pos_set (-. (float delta) /. float width_element);
