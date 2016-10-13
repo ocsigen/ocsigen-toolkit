@@ -6,6 +6,7 @@
     right: 0px ;
     bottom: 0px ;
     cursor: move ;
+    will-change: bottom, left, right, top ;
 }
 
 .ot-pup-ctrl { position: absolute ; }
@@ -69,6 +70,7 @@
 .ot-pup-fltr {
     background-color: rgba(255, 255, 255, .5) ;
     position: absolute ;
+    will-change: top,bottom,right,left,width,height ;
 }
 .ot-pup-fltr-t { top: 0px ; cursor: n-resize ; }
 .ot-pup-fltr-tr { top: 0px ; right: 0px ; cursor: ne-resize ; }
