@@ -97,9 +97,10 @@ let%shared drawer
     D.div ~a:(a_class ("dr-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
 
-  let bind_touch =
-    [%client
-      (ref (fun () -> failwith "bind_touch") : (unit -> unit) ref)] in
+  let bind_touch :
+    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t =
+    [%client Lwt.wait () ] in
+
   let touch_thread = [%client (ref (Lwt.return ()) : unit Lwt.t ref)] in
 
   let close = [%client
@@ -128,7 +129,10 @@ let%shared drawer
          Dom_html.document##.body##.scrollTop := !scroll_pos;
        add_class ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
-       !(~%bind_touch) ();
+       Lwt.async (fun () ->
+         let%lwt bind_touch = fst ~%bind_touch in bind_touch ();
+         Lwt.return_unit
+       );
        bind_click_outside ~%bckgrnd ~%d ~%close;
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
@@ -258,7 +262,7 @@ let%shared drawer
       in
       Lwt.pick [ a; b; c ]
     in
-    ~%bind_touch := (fun () ->
+    Lwt.wakeup (snd ~%bind_touch) (fun () ->
       let t = Lwt_js_events.touchstarts bckgrnd onpanstart in
       ~%touch_thread := t);
     (* Hammer.bind_callback hammer "panstart" onpanstart; *)
