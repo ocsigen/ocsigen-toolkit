@@ -204,9 +204,7 @@ COMMON_OPTIONS := -colorize-code -stars -sort
 eliomdoc_wiki = ODOC_WIKI_SUBPROJECT="$(1)" eliomdoc -$(1) -ppx -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -i $(shell ocamlfind query wikidoc) -g odoc_wiki.cma -d doc/$(1)/wiki $(2)
 eliomdoc_html = ODOC_WIKI_SUBPROJECT="$(1)" eliomdoc -$(1) -ppx -intro doc/indexdoc.$(1) $(COMMON_OPTIONS) -html -d doc/$(1)/html $(2)
 
-doc:
-	rm -rf doc/client
-	rm -rf doc/server
+doc: doc-clean
 	mkdir -p doc/client/html
 	mkdir -p doc/client/wiki
 	mkdir -p doc/server/html
@@ -215,6 +213,10 @@ doc:
 	$(call eliomdoc_wiki,client, $(CLIENT_INC) $(CLIENT_INC_DIRS) $(CLIENT_FILES_DOC))
 	$(call eliomdoc_html,server, $(SERVER_INC) $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
 	$(call eliomdoc_wiki,server, $(SERVER_INC) $(SERVER_INC_DIRS) $(SERVER_FILES_DOC))
+
+doc-clean:
+	rm -rf doc/client
+	rm -rf doc/server
 
 ##----------------------------------------------------------------------
 ## Clean up
