@@ -65,7 +65,18 @@
     for a header (for example a tabbar). [f] is the function which returns
     the height of this header.
 
-    Function returns:
+    Optional parameter [?make_transform] makes it possible to
+    customize the transformation applied to the carousel when it moves.
+    The default is a translation, but you may want for example a rotation
+    for a circular carousel. Function [make_transform] takes [~vertical]
+    (whether the carousel is vertical or horizontal), the current move
+    ([?delta], in pixels) if the carousel is currently being
+    dragged using fingers on touch screens, and the current position
+    (before starting moving the carousel if it is currently being dragged).
+    It must return the CSS value of the [transform] property for the
+    page container (which has class ["car2"]).
+
+    Function [make] returns:
     - the element,
     - the current position (as a react signal),
     - the number of visible elements. It is more than 1 if element width
@@ -87,6 +98,8 @@ val make :
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header
                | `Header of (unit -> int) Eliom_client_value.t ] ->
+  ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
+    Eliom_shared.Value.t ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
   int Eliom_shared.React.S.t *
