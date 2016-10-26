@@ -19,6 +19,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(*
+
+TODO:
+ - Make it possible to change the number of pages
+ - Circular carousel (swipe to first page after last page)
+ - Wheel: do not take face_size as parameter but compute it
+   (what if generated server side?)
+
+*)
+
 
 [%%shared
 open Eliom_content.Html
@@ -81,6 +91,7 @@ let%shared make
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
     ?(make_transform = [%shared default_make_transform])
+    ?(make_page_attribute = [%shared fun ~vertical:_ _ -> [] ])
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -94,7 +105,11 @@ let%shared make
   in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
-  let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
+  let pages = List.mapi (fun i e ->
+    D.div ~a:( a_class ["carpage"]
+               :: Eliom_shared.Value.local make_page_attribute ~vertical i)
+                            [e]) l
+  in
   let initial_translation =
     if position = 0
     then []
@@ -802,6 +817,72 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
           then change `Prev);
     Lwt.return ()
   )
+
+let%shared wheel_make_transform ~vertical ?(delta = 0) pos =
+  let angle = float pos *. 18. -. float delta +. 2. in
+  if vertical
+  then Printf.sprintf "rotateX(%.3fdeg)" angle
+  else Printf.sprintf "rotateY(%.3fdeg)" angle
+
+let%shared wheel_page_attribute pos z faces length ~vertical page_number =
+  let v = if vertical then "X" else "Y" in
+  let angle = -. float page_number *. 360. /. float faces in
+  let style = Printf.sprintf "transform: rotate%s(%.3fdeg) translateZ(%dpx)"
+      v angle z
+  in
+  let cls = Eliom_shared.React.S.map
+      [%shared fun pos ->
+        let faces = ~%faces in
+        let page_number = ~%page_number in
+        [ if page_number <= pos - faces / 2
+           || page_number > pos + (faces + 1) / 2
+          then "ot-hidden-wheel-face"
+          else "" ]
+      ]
+      pos
+  in
+  [ R.a_class cls
+  ; a_style style ]
+
+let%shared wheel
+    ?(a = [])
+    ?(vertical = true)
+    ?(position = 0)
+    ?transition_duration
+    ?inertia
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?(faces = 20)
+    ?(face_size = 25)
+    content =
+  let a = a_class ["ot-wheel"]::a in
+  let length = List.length content in
+  let z = int_of_float
+      (float face_size /. (2. *. tan (3.14159 /. float faces)))
+  in
+  (* I create another signal equal to pos
+     because I need pos before it is created :( *)
+  let pos2, set_pos2 = Eliom_shared.React.S.create position in
+  let carousel, pos, size, swipe_pos =
+    make
+      ~a
+      ~vertical
+      ~position
+      ?transition_duration
+      ?inertia
+      ?allow_overswipe
+      ?update
+      ?disabled
+      ~make_transform:[%shared wheel_make_transform]
+      ~make_page_attribute:
+        [%shared wheel_page_attribute ~%pos2 ~%z ~%faces ~%length]
+      content
+  in
+  let _ = [%client (React.S.map ~%set_pos2 ~%pos : _ React.S.t) ] in
+  carousel, pos, size, swipe_pos
+
+
 
 
 (* To test, uncomment the following lines: *)

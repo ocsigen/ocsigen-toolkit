@@ -76,6 +76,9 @@
     It must return the CSS value of the [transform] property for the
     page container (which has class ["car2"]).
 
+    Optional parameter [?make_page_attribute] allows to add html attributes
+    to each page of the carousel. It takes the page number as parameter.
+
     Function [make] returns:
     - the element,
     - the current position (as a react signal),
@@ -100,6 +103,34 @@ val make :
                | `Header of (unit -> int) Eliom_client_value.t ] ->
   ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
     Eliom_shared.Value.t ->
+  ?make_page_attribute:(vertical:bool ->
+                        int ->
+                        Html_types.div_attrib Eliom_content.Html.D.attrib list)
+    Eliom_shared.Value.t ->
+  [< Html_types.div_content ] Eliom_content.Html.elt list ->
+  [> `Div ] Eliom_content.Html.elt *
+  int Eliom_shared.React.S.t *
+  int Eliom_shared.React.S.t *
+  float React.S.t Eliom_client_value.t
+
+(** Carousel with 3D effect. Faces are displayed on a cylender.
+    Give the number of faces you want as parameter [faces] (default: 20).
+    The size of the faces (height for vertical carousel, width for horizontal)
+    must be given as parameter [face_size]
+    and must match the size given in the CSS (in pixel, default is 25).
+    This carousel is vertical by default.
+ *)
+val wheel :
+  ?a: [< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
+  ?vertical:bool ->
+  ?position:int ->
+  ?transition_duration:float ->
+  ?inertia:float ->
+  ?allow_overswipe:bool ->
+  ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+  ?disabled: bool Eliom_shared.React.S.t ->
+  ?faces:int ->
+  ?face_size:int ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
   int Eliom_shared.React.S.t *

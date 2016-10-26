@@ -135,3 +135,27 @@
                       But NOT during swipe, as swiping might change the
                       scroll position in page. */
 }
+
+.carousel.ot-wheel {
+    height: 25px;
+    width: 200px;
+    overflow: visible;
+    margin: 100px auto;
+    perspective: 500px;
+}
+.carousel.ot-wheel > .car2 {
+    position: absolute;
+    transform-style: preserve-3d;
+}
+.carousel.ot-wheel .carpage {
+    backface-visibility: hidden;
+    position: absolute;
+    height: 25px;
+    line-height: 25px;
+    vertical-align: middle;
+    transition: opacity 2s;
+    opacity: 1;
+}
+.carousel.ot-wheel .carpage.ot-hidden-wheel-face {
+    opacity: 0;
+}
