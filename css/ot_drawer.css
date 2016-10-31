@@ -21,7 +21,6 @@
 /*     content: 'login'; */
 /* } */
 
-/* $drawer-width: 22rem ; */
 
 .dr-drawer-bckgrnd {
     background-color: rgba(0,0,0,0);
@@ -59,7 +58,7 @@
     transform: translate3d(0, 0, 0);
     transition: -webkit-transform .35s ease-out;
     transition: transform .35s ease-out;
-    width: 22rem ;
+    width: calc(100% - 50px) ;
 
     /* We set up drawer so that the default transform is the identity
      * Otherwise, with Firefox, a transition is performed on page
@@ -68,8 +67,14 @@
     background-color: white;
 }
 
-.dr-drawer.dr-left { left: -22rem ; }
-.dr-drawer.dr-right { right: -22rem ; }
+@media (min-width: 720px) {
+    .dr-drawer {
+        width: 300px;
+    }
+}
+
+.dr-drawer.dr-left { right: 100% ; }
+.dr-drawer.dr-right { left: 100% ; }
 
 .dr-toggle-button::before { content: "≡"; }
 .dr-drawer-bckgrnd.open .dr-toggle-button::before { content: "⟨"; }
