@@ -243,10 +243,12 @@ let%shared make
       in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
-      pos_set pos;
+      let step = React.Step.create () in
+      pos_set ~step pos;
+      ~%swipe_pos_set ~step 0.;
+      React.Step.execute step;
       set_active ();
       Lwt.async (fun () ->
-        ~%swipe_pos_set 0.;
         let%lwt () = Lwt_js_events.transitionend d2' in
         Eliom_lib.Option.iter (fun f -> f ()) transitionend;
         Manip.Class.remove ~%d2 "swiping";
