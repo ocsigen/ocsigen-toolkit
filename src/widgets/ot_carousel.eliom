@@ -818,11 +818,11 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
     Lwt.return ()
   )
 
-let%shared wheel_make_transform faces ~vertical ?(delta = 0) pos =
+let%shared wheel_make_transform z faces ~vertical ?(delta = 0) pos =
   let angle = float pos *. (360. /. float faces) -. float delta in
   if vertical
-  then Printf.sprintf "rotateX(%.3fdeg)" angle
-  else Printf.sprintf "rotateY(%.3fdeg)" angle
+  then Printf.sprintf "translateZ(%dpx) rotateX(%.3fdeg)" (-z) angle
+  else Printf.sprintf "translateZ(%dpx) rotateY(%.3fdeg)" (-z) angle
 
 let%shared wheel_page_attribute pos z faces length ~vertical page_number =
   let v = if vertical then "X" else "Y" in
@@ -874,7 +874,7 @@ let%shared wheel
       ?allow_overswipe
       ?update
       ?disabled
-      ~make_transform:[%shared wheel_make_transform ~%faces]
+      ~make_transform:[%shared wheel_make_transform ~%z ~%faces]
       ~make_page_attribute:
         [%shared wheel_page_attribute ~%pos2 ~%z ~%faces ~%length]
       content
