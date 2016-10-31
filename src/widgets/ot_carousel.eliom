@@ -818,8 +818,12 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
     Lwt.return ()
   )
 
-let%shared wheel_make_transform z faces ~vertical ?(delta = 0) pos =
-  let angle = float pos *. (360. /. float faces) -. float delta in
+let%shared wheel_compute_angle pos faces swipe_pos =
+  (float pos +. swipe_pos) *. (360. /. float faces)
+
+let%shared wheel_make_transform z faces face_size ~vertical ?(delta = 0) pos =
+  let angle = wheel_compute_angle pos faces (-. float delta /. float face_size)
+  in
   if vertical
   then Printf.sprintf "translateZ(%dpx) rotateX(%.3fdeg)" (-z) angle
   else Printf.sprintf "translateZ(%dpx) rotateY(%.3fdeg)" (-z) angle
@@ -831,11 +835,11 @@ let%shared wheel_page_attribute pos z faces length ~vertical page_number =
       v angle z
   in
   let cls = Eliom_shared.React.S.map
-      [%shared fun pos ->
+      [%shared fun (pos, swipe_pos) ->
         let faces = ~%faces in
         let page_number = ~%page_number in
-        [ if page_number <= pos - faces / 2
-           || page_number > pos + (faces + 1) / 2
+        [ if float page_number <= float pos +. swipe_pos -. float faces /. 2.
+          || float page_number >  float pos +. swipe_pos +. float faces /. 2.
           then "ot-hidden-wheel-face"
           else "" ]
       ]
@@ -863,7 +867,7 @@ let%shared wheel
   in
   (* I create another signal equal to pos
      because I need pos before it is created :( *)
-  let pos2, set_pos2 = Eliom_shared.React.S.create position in
+  let pos2, set_pos2 = Eliom_shared.React.S.create (position, 0.) in
   let carousel, pos, size, swipe_pos =
     make
       ~a
@@ -874,12 +878,15 @@ let%shared wheel
       ?allow_overswipe
       ?update
       ?disabled
-      ~make_transform:[%shared wheel_make_transform ~%z ~%faces]
+      ~make_transform:[%shared wheel_make_transform ~%z ~%faces ~%face_size]
       ~make_page_attribute:
         [%shared wheel_page_attribute ~%pos2 ~%z ~%faces ~%length]
       content
   in
-  let _ = [%client (React.S.map ~%set_pos2 ~%pos : _ React.S.t) ] in
+  let _ = [%client
+    (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%pos ~%swipe_pos
+     : _ React.S.t) ]
+  in
   carousel, pos, swipe_pos
 
 
