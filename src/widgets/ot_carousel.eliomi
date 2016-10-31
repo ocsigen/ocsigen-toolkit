@@ -119,6 +119,12 @@ val make :
     must be given as parameter [face_size]
     and must match the size given in the CSS (in pixel, default is 25).
     This carousel is vertical by default.
+
+    Function [make] returns:
+    - the element,
+    - the current position (as a react signal),
+    - the current swipe position. Value -1.0 corresponds to previous page,
+    and +1.0 to next page.
  *)
 val wheel :
   ?a: [< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
@@ -133,7 +139,6 @@ val wheel :
   ?face_size:int ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
-  int Eliom_shared.React.S.t *
   int Eliom_shared.React.S.t *
   float React.S.t Eliom_client_value.t
 
