@@ -880,7 +880,7 @@ let%shared wheel
       content
   in
   let _ = [%client (React.S.map ~%set_pos2 ~%pos : _ React.S.t) ] in
-  carousel, pos, size, swipe_pos
+  carousel, pos, swipe_pos
 
 
 
