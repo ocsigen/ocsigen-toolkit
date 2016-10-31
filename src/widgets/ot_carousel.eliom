@@ -19,6 +19,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+(*
+
+TODO:
+ - Make it possible to change the number of pages
+ - Circular carousel (swipe to first page after last page)
+ - Wheel: do not take face_size as parameter but compute it
+   (what if generated server side?)
+
+*)
+
 
 [%%shared
 open Eliom_content.Html
@@ -36,12 +46,15 @@ let%client add_transition transition_duration =
 let%client remove_transition elt =
   (Js.Unsafe.coerce (elt##.style))##.transitionDuration := Js.string "0s"
 
-let%shared make_transform vertical pos =
+let%shared default_make_transform ~vertical ?(delta = 0) pos =
+  let p = -pos * 100 in
+  let sign = if delta > 0 then "+" else "-" in
+  let d = abs delta in
   if vertical
-  (* then Printf.sprintf "translate3d(0, %.3f%%, 0)" (-. float pos *. 100.) *)
-  (* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" (-. float pos *. 100.) *)
-  then Printf.sprintf "translate(0, %.3f%%)" (-. float pos *. 100.)
-  else Printf.sprintf "translate(%.3f%%, 0)" (-. float pos *. 100.)
+  (* then Printf.sprintf "translate3d(0, %.3f%%, 0)" d *)
+  (* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" d *)
+  then Printf.sprintf "translate(0, calc(%d%% %s %dpx)" p sign d
+  else Printf.sprintf "translate(calc(%d%% %s %dpx), 0)" d sign d
 (* translate3d possibly more efficient on some devices ... *)
 (* But causing troubles ...
    For example some content cannot have border-radius on Chrome ... *)
@@ -77,6 +90,8 @@ let%shared make
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
     ?(full_height = `No)
+    ?(make_transform = [%shared default_make_transform])
+    ?(make_page_attribute = [%shared fun ~vertical:_ _ -> [] ])
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -90,11 +105,18 @@ let%shared make
   in
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".car2>*")*)
-  let pages = List.map (fun e -> D.div ~a:[a_class ["carpage"]] [e]) l in
+  let pages = List.mapi (fun i e ->
+    D.div ~a:( a_class ["carpage"]
+               :: Eliom_shared.Value.local make_page_attribute ~vertical i)
+                            [e]) l
+  in
   let initial_translation =
     if position = 0
     then []
-    else [ a_style ("transform: "^make_transform vertical position) ]
+    else [ a_style
+             ("transform: "^
+              (Eliom_shared.Value.local make_transform) ~vertical position)
+         ]
   in
   let d2 = D.div ~a:(a_class ["car2"]::initial_translation) pages in
   let d = D.div
@@ -156,44 +178,47 @@ let%shared make
        full_height
     *)
     let set_top_margin () =
-      let dist = match ~%full_height with
-        (* In full height mode, just before swiping,
-           we add margin on top of columns,
-           to adapt it to the current scroll position of page.
-        *)
-        | `No -> None
-        | `No_header -> Some 0
-        | `Header (f : unit -> int) -> Some (f ())
-      in
-      Eliom_lib.Option.iter
-        (fun dist ->
-           let delta = max 0 (dist - int_of_float (Ot_size.client_top d)) in
-           let pos = React.S.value pos_signal in
-           Ot_lib.List.iteri2
-             (fun i coli scrolli ->
-                if i <> pos
-                then
-                  let coli' = To_dom.of_element coli in
-                  coli'##.style##.marginTop :=
-                    Js.string (string_of_int (delta - !scrolli) ^ "px")
-                else (* we save the scroll position of active column: *)
-                  scrolli := delta
-             )
-             ~%pages scroll_pages)
-        dist
+      if not vertical
+      then
+        let dist = match ~%full_height with
+          (* In full height mode, just before swiping,
+             we add margin on top of columns,
+             to adapt it to the current scroll position of page.
+          *)
+          | `No -> None
+          | `No_header -> Some 0
+          | `Header (f : unit -> int) -> Some (f ())
+        in
+        Eliom_lib.Option.iter
+          (fun dist ->
+             let delta = max 0 (dist - int_of_float (Ot_size.client_top d)) in
+             let pos = React.S.value pos_signal in
+             Ot_lib.List.iteri2
+               (fun i coli scrolli ->
+                  if i <> pos
+                  then
+                    let coli' = To_dom.of_element coli in
+                    coli'##.style##.marginTop :=
+                      Js.string (string_of_int (delta - !scrolli) ^ "px")
+                  else (* we save the scroll position of active column: *)
+                    scrolli := delta
+               )
+               ~%pages scroll_pages)
+          dist
     in
     let unset_top_margin () =
       (* In full height mode, after swiping,
          we remove the margins and set the correct
          scroll position for the page *)
-      let dist = match ~%full_height with
+      let dist = match ~%full_height, vertical with
         (* In full height mode, during swipe,
            we add margin on top of columns,
            to adapt it to the current scroll position of page.
         *)
-        | `No -> None
-        | `No_header -> Some 0
-        | `Header (f : unit -> int) -> Some (f ())
+        | _, true -> None
+        | `No, _ -> None
+        | `No_header, _ -> Some 0
+        | `Header (f : unit -> int), _ -> Some (f ())
       in
       Eliom_lib.Option.iter
         (fun dist ->
@@ -213,7 +238,9 @@ let%shared make
     (********************** end *)
     let set_position ?transitionend pos =
       let pos = max 0 (min pos (maxi ())) in
-      let s = Js.string @@ make_transform vertical pos in
+      let s = Js.string @@ (Eliom_shared.Value.local ~%make_transform)
+          ~vertical pos
+      in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
       pos_set pos;
@@ -273,15 +300,7 @@ let%shared make
                let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
                ~%swipe_pos_set (-. (float delta) /. float width_element);
-               let s = Printf.sprintf
-                   (* "translate3d(%scalc(%d%%%s%dpx), 0%s)" *)
-                   "translate(%scalc(%d%%%s%dpx)%s)"
-                   (if vertical then "0, " else "")
-                   (-pos * 100)
-                   sign
-                   (abs delta)
-                   (if vertical then "" else ", 0")
-               in
+               let s = ~%make_transform ~vertical ~delta pos in
                (Js.Unsafe.coerce (d2'##.style))##.transform := s;
                (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
              | `Goback position
@@ -798,6 +817,72 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
           then change `Prev);
     Lwt.return ()
   )
+
+let%shared wheel_make_transform ~vertical ?(delta = 0) pos =
+  let angle = float pos *. 18. -. float delta +. 2. in
+  if vertical
+  then Printf.sprintf "rotateX(%.3fdeg)" angle
+  else Printf.sprintf "rotateY(%.3fdeg)" angle
+
+let%shared wheel_page_attribute pos z faces length ~vertical page_number =
+  let v = if vertical then "X" else "Y" in
+  let angle = -. float page_number *. 360. /. float faces in
+  let style = Printf.sprintf "transform: rotate%s(%.3fdeg) translateZ(%dpx)"
+      v angle z
+  in
+  let cls = Eliom_shared.React.S.map
+      [%shared fun pos ->
+        let faces = ~%faces in
+        let page_number = ~%page_number in
+        [ if page_number <= pos - faces / 2
+           || page_number > pos + (faces + 1) / 2
+          then "ot-hidden-wheel-face"
+          else "" ]
+      ]
+      pos
+  in
+  [ R.a_class cls
+  ; a_style style ]
+
+let%shared wheel
+    ?(a = [])
+    ?(vertical = true)
+    ?(position = 0)
+    ?transition_duration
+    ?inertia
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?(faces = 20)
+    ?(face_size = 25)
+    content =
+  let a = a_class ["ot-wheel"]::a in
+  let length = List.length content in
+  let z = int_of_float
+      (float face_size /. (2. *. tan (3.14159 /. float faces)))
+  in
+  (* I create another signal equal to pos
+     because I need pos before it is created :( *)
+  let pos2, set_pos2 = Eliom_shared.React.S.create position in
+  let carousel, pos, size, swipe_pos =
+    make
+      ~a
+      ~vertical
+      ~position
+      ?transition_duration
+      ?inertia
+      ?allow_overswipe
+      ?update
+      ?disabled
+      ~make_transform:[%shared wheel_make_transform]
+      ~make_page_attribute:
+        [%shared wheel_page_attribute ~%pos2 ~%z ~%faces ~%length]
+      content
+  in
+  let _ = [%client (React.S.map ~%set_pos2 ~%pos : _ React.S.t) ] in
+  carousel, pos, size, swipe_pos
+
+
 
 
 (* To test, uncomment the following lines: *)

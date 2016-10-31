@@ -65,7 +65,21 @@
     for a header (for example a tabbar). [f] is the function which returns
     the height of this header.
 
-    Function returns:
+    Optional parameter [?make_transform] makes it possible to
+    customize the transformation applied to the carousel when it moves.
+    The default is a translation, but you may want for example a rotation
+    for a circular carousel. Function [make_transform] takes [~vertical]
+    (whether the carousel is vertical or horizontal), the current move
+    ([?delta], in pixels) if the carousel is currently being
+    dragged using fingers on touch screens, and the current position
+    (before starting moving the carousel if it is currently being dragged).
+    It must return the CSS value of the [transform] property for the
+    page container (which has class ["car2"]).
+
+    Optional parameter [?make_page_attribute] allows to add html attributes
+    to each page of the carousel. It takes the page number as parameter.
+
+    Function [make] returns:
     - the element,
     - the current position (as a react signal),
     - the number of visible elements. It is more than 1 if element width
@@ -87,6 +101,36 @@ val make :
   ?disabled: bool Eliom_shared.React.S.t ->
   ?full_height:[ `No | `No_header
                | `Header of (unit -> int) Eliom_client_value.t ] ->
+  ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
+    Eliom_shared.Value.t ->
+  ?make_page_attribute:(vertical:bool ->
+                        int ->
+                        Html_types.div_attrib Eliom_content.Html.D.attrib list)
+    Eliom_shared.Value.t ->
+  [< Html_types.div_content ] Eliom_content.Html.elt list ->
+  [> `Div ] Eliom_content.Html.elt *
+  int Eliom_shared.React.S.t *
+  int Eliom_shared.React.S.t *
+  float React.S.t Eliom_client_value.t
+
+(** Carousel with 3D effect. Faces are displayed on a cylender.
+    Give the number of faces you want as parameter [faces] (default: 20).
+    The size of the faces (height for vertical carousel, width for horizontal)
+    must be given as parameter [face_size]
+    and must match the size given in the CSS (in pixel, default is 25).
+    This carousel is vertical by default.
+ *)
+val wheel :
+  ?a: [< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
+  ?vertical:bool ->
+  ?position:int ->
+  ?transition_duration:float ->
+  ?inertia:float ->
+  ?allow_overswipe:bool ->
+  ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+  ?disabled: bool Eliom_shared.React.S.t ->
+  ?faces:int ->
+  ?face_size:int ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
   [> `Div ] Eliom_content.Html.elt *
   int Eliom_shared.React.S.t *
@@ -143,7 +187,7 @@ val ribbon :
   [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
   [> `Div ] Eliom_content.Html.elt
 
-(** Go to the previous page (or mores page if [offset] is present). *)
+(** Button to go to the previous page (or mores page if [offset] is present). *)
 val previous :
   ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
   -> change: ([> `Prev | `Goto of int ] -> unit) Eliom_client_value.t
@@ -152,7 +196,7 @@ val previous :
   -> Html_types.button_content Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
 
-(** Go to the next page (or more pages if [offset] is present). *)
+(** Button to go to the next page (or more pages if [offset] is present). *)
 val next :
     ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list
   -> change: ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t
