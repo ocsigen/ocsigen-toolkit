@@ -58,10 +58,10 @@ let%client html_ManipClass_remove cl = match html () with
 
 let%client add_class elt str =
   Manip.Class.add elt str;
-  html_ManipClass_add @@ "dr-drawer-" ^ str
+  html_ManipClass_add @@ "ot-drawer-" ^ str
 let%client remove_class elt str =
   Manip.Class.remove elt str;
-  html_ManipClass_remove @@ "dr-drawer-" ^ str
+  html_ManipClass_remove @@ "ot-drawer-" ^ str
 
 let%client scroll_pos = ref 0
 
@@ -83,18 +83,18 @@ let%shared drawer
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
-      ~button_type:`Button ~a:[a_class ["dr-toggle-button"]]
+      ~button_type:`Button ~a:[a_class ["ot-dr-toggle-button"]]
       []
   in
-  let d = D.div ~a:[a_class [ "dr-drawer"
+  let d = D.div ~a:[a_class [ "ot-drawer"
                             ; match position with
-                            | `Left -> "dr-left"
-                            | `Right -> "dr-right"]]
+                            | `Left -> "ot-dr-left"
+                            | `Right -> "ot-dr-right"]]
       (toggle_button :: (content :> Html_types.div_content elt list))
   in
-  let bckgrnd_init_class = if opened then ["open"] else [] in
+  let bckgrnd_init_class = if opened then ["ot-dr-open"] else [] in
   let bckgrnd =
-    D.div ~a:(a_class ("dr-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
+    D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
 
   let bind_touch :
@@ -105,14 +105,14 @@ let%shared drawer
 
   let close = [%client
     ((fun () ->
-       remove_class ~%bckgrnd "open";
+       remove_class ~%bckgrnd "ot-dr-open";
        if ~%ios_scroll_pos_fix then
          Dom_html.document##.body##.scrollTop := !scroll_pos;
-       add_class ~%bckgrnd "closing";
+       add_class ~%bckgrnd "ot-dr-closing";
        Lwt.cancel !(~%touch_thread);
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-         remove_class ~%bckgrnd "closing";
+         remove_class ~%bckgrnd "ot-dr-closing";
          Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
          Lwt.return ()))
      : unit -> unit)]
@@ -123,11 +123,11 @@ let%shared drawer
     ((fun () ->
        if ~%ios_scroll_pos_fix then
          scroll_pos := Dom_html.document##.body##.scrollTop;
-       add_class ~%bckgrnd "open";
+       add_class ~%bckgrnd "ot-dr-open";
        Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
        if ~%ios_scroll_pos_fix then
          Dom_html.document##.body##.scrollTop := !scroll_pos;
-       add_class ~%bckgrnd "opening";
+       add_class ~%bckgrnd "ot-dr-opening";
        Lwt.cancel !(~%touch_thread);
        Lwt.async (fun () ->
          let%lwt bind_touch = fst ~%bind_touch in bind_touch ();
@@ -136,7 +136,7 @@ let%shared drawer
        bind_click_outside ~%bckgrnd ~%d ~%close;
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-         remove_class ~%bckgrnd "opening";
+         remove_class ~%bckgrnd "ot-dr-opening";
          Lwt.return ()))
      : unit -> unit)]
   in
@@ -145,15 +145,15 @@ let%shared drawer
   let _ = [%client (
     let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%d) in
     (Eliom_client.onunload @@ fun () ->
-    html_ManipClass_remove "dr-drawer-opening";
-    html_ManipClass_remove "dr-drawer-open";
-    html_ManipClass_remove "dr-drawer-closing");
+    html_ManipClass_remove "ot-drawer-opening";
+    html_ManipClass_remove "ot-drawer-open";
+    html_ManipClass_remove "ot-drawer-closing");
     Lwt.return ()
   :unit Lwt.t)] in
 
   let _ = [%client
     (let toggle () =
-       if Manip.Class.contain ~%bckgrnd "open"
+       if Manip.Class.contain ~%bckgrnd "ot-dr-open"
        then ~%close ()
        else ~%open_ ()
      in
