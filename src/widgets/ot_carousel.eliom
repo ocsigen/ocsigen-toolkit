@@ -104,9 +104,9 @@ let%shared make
     [%client (snd ~%swipe_pos_sig : ?step:React.step -> float -> unit) ]
   in
   (* We wrap all pages in a div in order to add class carpage,
-     for efficiency reasons in CSS (avoids selector ".car2>*")*)
+     for efficiency reasons in CSS (avoids selector ".ot-car2>*")*)
   let pages = List.mapi (fun i e ->
-    D.div ~a:( a_class ["carpage"]
+    D.div ~a:( a_class ["ot-carpage"]
                :: Eliom_shared.Value.local make_page_attribute ~vertical i)
                             [e]) l
   in
@@ -118,11 +118,11 @@ let%shared make
               (Eliom_shared.Value.local make_transform) ~vertical position)
          ]
   in
-  let d2 = D.div ~a:(a_class ["car2"]::initial_translation) pages in
+  let d2 = D.div ~a:(a_class ["ot-car2"]::initial_translation) pages in
   let d = D.div
-      ~a:(a_class ("carousel"
-                   :: (if vertical then "vertical" else "horizontal")
-                   :: if full_height = `No then [] else ["full-height"])
+      ~a:(a_class ("ot-carousel"
+                   :: (if vertical then "ot-vertical" else "ot-horizontal")
+                   :: if full_height = `No then [] else ["ot-full-height"])
           ::a)
       [d2]
   in
@@ -164,12 +164,12 @@ let%shared make
        setting class active on visible pages (only)
     *)
     let set_active () =
-      (* Adding class "active" to all visible pages *)
+      (* Adding class "ot-active" to all visible pages *)
         List.iteri (fun i page ->
-          Manip.Class.remove page "active";
+          Manip.Class.remove page "ot-active";
           let pos = React.S.value pos_signal in
           if i >= pos && i < pos + React.S.value ~%nb_visible_elements
-          then (* Page is visible *) Manip.Class.add page "active";
+          then (* Page is visible *) Manip.Class.add page "ot-active";
         )
           ~%pages
     in
@@ -251,7 +251,7 @@ let%shared make
       Lwt.async (fun () ->
         let%lwt () = Lwt_js_events.transitionend d2' in
         Eliom_lib.Option.iter (fun f -> f ()) transitionend;
-        Manip.Class.remove ~%d2 "swiping";
+        Manip.Class.remove ~%d2 "ot-swiping";
         (* Remove swiping after calling f,
            because f will possibly change the scrolling position of the page *)
         Lwt.return ())
@@ -307,7 +307,7 @@ let%shared make
                (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
              | `Goback position
              | `Change position ->
-               Manip.Class.add ~%d2 "swiping";
+               Manip.Class.add ~%d2 "ot-swiping";
                set_top_margin ();
                action := `Move (0, 0);
                set_position ~transitionend:unset_top_margin position);
@@ -345,7 +345,7 @@ let%shared make
            else
              if abs move > Ot_swipe.threshold
              then begin
-               Manip.Class.add ~%d2 "swiping";
+               Manip.Class.add ~%d2 "ot-swiping";
                set_top_margin ();
                remove_transition d2';
                let timestamp = now () in
@@ -484,7 +484,7 @@ let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
     [%shared  fun p size ->
        if ~%i >= p && ~%i < p + size
-       then ["active"] else [] ] pos size
+       then ["ot-active"] else [] ] pos size
 
 let%shared bullets
     ?(a = []) ?attributes
@@ -499,7 +499,7 @@ let%shared bullets
       | None -> []
       | Some l -> (List.nth l i :> Html_types.li_attrib attrib list)
     in
-    li ~a:(a_class [ "bullet-nav-item" ]
+    li ~a:(a_class [ "ot-bullet-nav-item" ]
            :: R.a_class class_
            :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]
            :: a)
@@ -514,7 +514,7 @@ let%shared bullets
     | _ ->
       invalid_arg "content"
   in
-  ul ~a:(a_class ["bullet-nav"]::a) (List.mapi bullet content)
+  ul ~a:(a_class ["ot-bullet-nav"]::a) (List.mapi bullet content)
 
 let%shared ribbon
     ?(a = [])
@@ -528,7 +528,7 @@ let%shared ribbon
   let a = (a :> Html_types.div_attrib attrib list) in
   let item i c =
     let class_ = bullet_class i pos size in
-    D.li ~a:[ a_class ["car-ribbon-list-item"]
+    D.li ~a:[ a_class ["ot-car-ribbon-list-item"]
             ; R.a_class class_
             ; a_onclick  [%client fun _ -> ~%change (`Goto ~%i)]
             ]
@@ -536,12 +536,13 @@ let%shared ribbon
   in
   let l = List.mapi item l in
   let nb_pages = List.length l in
-  let the_ul = D.ul ~a:[a_class ["car-ribbon-list"]] l in
+  let the_ul = D.ul ~a:[a_class ["ot-car-ribbon-list"]] l in
   let cursor_elt =
-    Eliom_lib.Option.map (fun c -> D.div ~a:[a_class ["car-cursor"]] []) cursor
+    Eliom_lib.Option.map (fun c -> D.div ~a:[a_class ["ot-car-cursor"]] [])
+      cursor
   in
   let cursor_l = match cursor_elt with None -> [] | Some c -> [ c ] in
-  let container = D.div ~a:(a_class ["car-ribbon"]::a) (the_ul::cursor_l) in
+  let container = D.div ~a:(a_class ["ot-car-ribbon"]::a) (the_ul::cursor_l) in
   ignore [%client (
     let add_transition = add_transition ~%transition_duration in
     let the_ul = ~%the_ul in
@@ -732,7 +733,7 @@ let%shared ribbon
     Lwt.return () : _)];
   container
 
-let%shared blur = function true -> ["blurred"] | false -> []
+let%shared blur = function true -> ["ot-blurred"] | false -> []
 
 let%shared previous ?(a = [])
     ~(change : ([> `Prev | `Goto of int ] -> unit) Eliom_client_value.t)
@@ -741,7 +742,7 @@ let%shared previous ?(a = [])
   Form.button_no_value
     ~button_type:`Button
     ~a:(R.a_class (Eliom_shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
-        :: a_class ["car-prev"]
+        :: a_class ["ot-car-prev"]
         :: a_onclick  [%client
           fun _ ->
             let offset = React.S.value ~%offset in
@@ -761,7 +762,7 @@ let%shared next ?(a = [])
     ~a:(R.a_class (Eliom_shared.React.S.l2
                      [%shared fun p s -> blur (p + s >= ~%length)]
                      pos size)
-        :: a_class ["car-next"]
+        :: a_class ["ot-car-next"]
         :: a_onclick  [%client
           fun _ -> let offset = React.S.value ~%offset in
             ~%change (if offset > 1
@@ -776,17 +777,17 @@ let%shared next ?(a = [])
 (*   let menu = menu ~change ~pos ?size l in *)
 (*   let prev = button *)
 (*       ~button_type:`Button *)
-(*       ~a:[a_class ["car-prev"]; *)
+(*       ~a:[a_class ["ot-car-prev"]; *)
 (*           a_onclick {{ fun _ -> %change `Prev }}] *)
 (*       [pcdata ([%i18n prev_col ())] *)
 (*   in *)
 (*   let next = button *)
 (*       ~button_type:`Button *)
-(*       ~a:[a_class ["car-next"]; *)
+(*       ~a:[a_class ["ot-car-next"]; *)
 (*           a_onclick {{ fun _ -> %change `Next }}] *)
 (*       [pcdata ([%i18n next_col ())] *)
 (*   in *)
-(*   D.div ~a:(a_class ["car-nav"]::a) [prev; menu; next] *)
+(*   D.div ~a:(a_class ["ot-car-nav"]::a) [prev; menu; next] *)
 
 
 
