@@ -21,7 +21,6 @@
 /*     content: 'login'; */
 /* } */
 
-/* $drawer-width: 22rem ; */
 
 .dr-drawer-bckgrnd {
     background-color: rgba(0,0,0,0);
@@ -36,7 +35,7 @@
     height: 100vh;
     top: 0;
     left: 0;
-    z-index: 3;
+    z-index: 1;
 }
 
 .dr-drawer-bckgrnd.open {
@@ -48,7 +47,7 @@
     position: fixed;
     top: 0;
     height: 100%;
-    z-index: 3;
+    z-index: 1;
 
     /* [ overflow: visible ; ] is needed for the button
      * to be displayed
@@ -59,22 +58,40 @@
     transform: translate3d(0, 0, 0);
     transition: -webkit-transform .35s ease-out;
     transition: transform .35s ease-out;
-    width: 22rem ;
+    width: calc(100% - 50px) ;
 
     /* We set up drawer so that the default transform is the identity
      * Otherwise, with Firefox, a transition is performed on page
      * change. */
+
+    background-color: white;
 }
 
-.dr-drawer.dr-left { left: -22rem ; }
-.dr-drawer.dr-right { right: -22rem ; }
+@media (min-width: 720px) {
+    .dr-drawer {
+        width: 300px;
+    }
+}
 
-.dr-toggle-button::before { content: "drawer"; }
+.dr-drawer.dr-left { right: 100% ; }
+.dr-drawer.dr-right { left: 100% ; }
+
+.dr-toggle-button::before { content: "≡"; }
+.dr-drawer-bckgrnd.open .dr-toggle-button::before { content: "⟨"; }
+.dr-drawer-bckgrnd.open .dr-toggle-button {
+    background-color: #445;
+}
 
 .dr-drawer > .dr-toggle-button {
     position: absolute ;
     top: 0 ;
     cursor: pointer ;
+    height: 50px;
+    width: 50px;
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    outline: none;
 }
 
 .dr-drawer.dr-left > .dr-toggle-button { left: 100% ; }

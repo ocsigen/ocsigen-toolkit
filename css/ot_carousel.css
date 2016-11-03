@@ -129,11 +129,11 @@
     transition-property: left, right;
 }
 
-.carousel.full-height > .car2:not(.swiping) .carpage:not(.active) {
-    height: 100vh; /* We limit the size of non visible columns to avoid
-                      scolling too much in small columns
-                      But NOT during swipe, as swiping might change the
-                      scroll position in page. */
+.carousel.full-height > .car2:not(.swiping) > .carpage:not(.active) {
+    max-height: 100vh; /* We limit the size of non visible columns to avoid
+                          scrolling too much in small columns
+                          But NOT during swipe, as swiping might change the
+                          scroll position in page. */
 }
 
 .carousel.ot-wheel {
@@ -147,7 +147,7 @@
     position: absolute;
     transform-style: preserve-3d;
 }
-.carousel.ot-wheel .carpage {
+.carousel.ot-wheel > .car2 > .carpage {
     backface-visibility: hidden;
     position: absolute;
     height: 25px;
