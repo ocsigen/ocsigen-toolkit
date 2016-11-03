@@ -1,16 +1,14 @@
 /* Ocsigen widget: carousel */
 
-/* $carousel-bullet-size : 1.3rem ; */
-/* $carousel-bullet-margin : 2rem ; */
-/* $carousel-menu-padding : 1rem ; */
-
-.carousel {
+.ot-carousel {
 
     overflow: hidden ;
+    width: 200px; /* default size. Override this in your own stylesheet */
+    height: 150px; /* default size. Override this in your own stylesheet */
 
 }
 
-.carousel > .car2 {
+.ot-carousel > .ot-car2 {
     display: flex ;
     flex-wrap: nowrap ;
 
@@ -22,7 +20,7 @@
     width: 100%;
 }
 
-.carousel > .car2 .carpage {
+.ot-carousel > .ot-car2 .ot-carpage {
         width: 100% ;
         height: 100% ;
         margin-left: 0 ;
@@ -31,50 +29,44 @@
         flex-grow: 0 ;
 }
 
-.carousel.horizontal {
+.ot-carousel.ot-horizontal {
     touch-action: pan-y;
 }
 
-.carousel.horizontal > .car2 {
+.ot-carousel.ot-horizontal > .ot-car2 {
     flex-direction: row ;
 }
 
-.carousel.vertical {
+.ot-carousel.ot-vertical {
     touch-action: pan-x;
 }
 
-.carousel.vertical > .car2 {
+.ot-carousel.ot-vertical > .ot-car2 {
     flex-direction: column ;
 }
 
-.bullet-nav {
+.ot-bullet-nav {
     list-style-type: none ;
     display: flex ;
     flex-direction: row ;
     justify-content: center ;
 }
 
-.bullet-nav-item {
+.ot-bullet-nav-item {
 
     flex: 1 1 0 ;
     cursor: pointer;
-    /* width: $carousel-bullet-size ; */
-    /* height: $carousel-bullet-size ; */
-
-    /* &:not(:first-child) { margin-left: $carousel-bullet-margin ; } */
-
-    /* FIXME: replace with generic UTF8 icons or delete this style */
-    /* Bullets customized in m-carousel */
-    /* @include icon-before ($bs-font-bullet) ; */
-    /* &.active::after { content: $bs-font-bullet-current ; } */
-    /* &.ok::after { content: $bs-font-bullet-checked ; } */
-    /* &.active.ok::after  { content: $bs-font-bullet-current-checked ; } */
-    /* &.ko::after { content: $bs-font-bullet-x ; } */
-    /* &.active.ko::after { content: $bs-font-bullet-x ; } */
+    border: 1px solid rgba(255, 255, 255, 0.8);;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin: 4px;
 
 }
 
-.car-ribbon {
+.ot-bullet-nav-item.ot-active { background-color: rgba(255, 255, 255, 0.8); }
+
+.ot-car-ribbon {
 
     position: relative;
     overflow: hidden;
@@ -84,7 +76,7 @@
 
 }
 
-.car-ribbon-list {
+.ot-car-ribbon-list {
     position: relative;
     width: 100% ;
     display: flex ;
@@ -96,12 +88,12 @@
 }
 
 
-.car-ribbon-list:not(.notransition) {
+.ot-car-ribbon-list:not(.ot-notransition) {
     transition-property: left;
     transition-timing-function: cubic-bezier(.03,.84,.56,1);
 }
 
-.car-ribbon-list-item {
+.ot-car-ribbon-list-item {
 
     display: inline-block;
     cursor: pointer;
@@ -113,14 +105,23 @@
 }
 
 
-.car-ribbon-list-item.active { border-style: solid ; }
+.ot-car-ribbon-list-item.ot-active { border-style: solid ; }
 
-.car-next.blurred::before,
-.car-prev.blurred::before {
+.ot-car-prev, .ot-car-next {
+    background-color: transparent;
+}
+.ot-car-next.ot-blurred::before,
+.ot-car-prev.ot-blurred::before {
     visibility: hidden;
 }
+.ot-car-prev::before {
+    content: '❬';
+}
+.ot-car-next::before {
+    content: '❭';
+}
 
-.car-cursor {
+.ot-car-cursor {
     box-sizing: border-box;
     position: absolute;
     height: 3px;
@@ -129,25 +130,26 @@
     transition-property: left, right;
 }
 
-.carousel.full-height > .car2:not(.swiping) > .carpage:not(.active) {
+.ot-carousel.ot-full-height > .ot-car2:not(.ot-swiping)
+                                          > .ot-carpage:not(.ot-active) {
     max-height: 100vh; /* We limit the size of non visible columns to avoid
                           scrolling too much in small columns
                           But NOT during swipe, as swiping might change the
                           scroll position in page. */
 }
 
-.carousel.ot-wheel {
+.ot-carousel.ot-wheel {
     height: 25px;
     width: 200px;
     overflow: visible;
     margin: 100px auto;
     perspective: 500px;
 }
-.carousel.ot-wheel > .car2 {
+.ot-carousel.ot-wheel > .ot-car2 {
     position: absolute;
     transform-style: preserve-3d;
 }
-.carousel.ot-wheel > .car2 > .carpage {
+.ot-carousel.ot-wheel > .ot-car2 > .ot-carpage {
     backface-visibility: hidden;
     position: absolute;
     height: 25px;
@@ -156,6 +158,6 @@
     transition: opacity 2s;
     opacity: 1;
 }
-.carousel.ot-wheel .carpage.ot-hidden-wheel-face {
+.ot-carousel.ot-wheel .ot-carpage.ot-hidden-wheel-face {
     opacity: 0;
 }

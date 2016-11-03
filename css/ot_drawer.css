@@ -1,35 +1,35 @@
 /* Generic drawer stylesheet. */
 
-/* .dr-container.open .dr-toggle-button { */
+/* .ot-dr-container.open .ot-dr-toggle-button { */
 /*     display: none; */
 /* } */
 
 /* @include media-screen-m-l { */
-/*     .dr-toggle-button { */
+/*     .ot-dr-toggle-button { */
 /*         top: 1rem; */
 /*     } */
 /* }  */
 
-/* .dr-toggle-button::before { */
+/* .ot-dr-toggle-button::before { */
 /*     font-family: 'FontAwesome'; */
 /*     content: '\f0c9'; */
 /*     padding: 1rem; */
 /* } */
 
-/* .dr-toggle-button.login::before { */
+/* .ot-dr-toggle-button.login::before { */
 /*     font-family: 'Ubuntu'; */
 /*     content: 'login'; */
 /* } */
 
 
-.dr-drawer-bckgrnd {
+.ot-drawer-bckgrnd {
     background-color: rgba(0,0,0,0);
     transition: background-color .35s;
 }
 
-.dr-drawer-bckgrnd.closing,
-.dr-drawer-bckgrnd.opening,
-.dr-drawer-bckgrnd.open {
+.ot-drawer-bckgrnd.ot-dr-closing,
+.ot-drawer-bckgrnd.ot-dr-opening,
+.ot-drawer-bckgrnd.ot-dr-open {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -38,11 +38,11 @@
     z-index: 1;
 }
 
-.dr-drawer-bckgrnd.open {
+.ot-drawer-bckgrnd.ot-dr-open {
     background-color: rgba(0,0,0,0.5);
 }
 
-.dr-drawer {
+.ot-drawer {
 
     position: fixed;
     top: 0;
@@ -68,21 +68,21 @@
 }
 
 @media (min-width: 720px) {
-    .dr-drawer {
+    .ot-drawer {
         width: 300px;
     }
 }
 
-.dr-drawer.dr-left { right: 100% ; }
-.dr-drawer.dr-right { left: 100% ; }
+.ot-drawer.ot-dr-left { right: 100% ; }
+.ot-drawer.ot-dr-right { left: 100% ; }
 
-.dr-toggle-button::before { content: "≡"; }
-.dr-drawer-bckgrnd.open .dr-toggle-button::before { content: "⟨"; }
-.dr-drawer-bckgrnd.open .dr-toggle-button {
+.ot-dr-toggle-button::before { content: "≡"; }
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-toggle-button::before { content: "⟨"; }
+.ot-drawer-bckgrnd.ot-dr-open .ot-dr-toggle-button {
     background-color: #445;
 }
 
-.dr-drawer > .dr-toggle-button {
+.ot-drawer > .ot-dr-toggle-button {
     position: absolute ;
     top: 0 ;
     cursor: pointer ;
@@ -94,16 +94,16 @@
     outline: none;
 }
 
-.dr-drawer.dr-left > .dr-toggle-button { left: 100% ; }
-.dr-drawer.dr-right > .dr-toggle-button { right: 100% ; }
+.ot-drawer.ot-dr-left > .ot-dr-toggle-button { left: 100% ; }
+.ot-drawer.ot-dr-right > .ot-dr-toggle-button { right: 100% ; }
 
 
-.dr-drawer-bckgrnd.open .dr-drawer.dr-left  {
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-left  {
     -webkit-transform: translate3d(100%, 0, 0);
     transform: translate3d(100%, 0, 0);
 }
 
-.dr-drawer-bckgrnd.open .dr-drawer.dr-right {
+.ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-right {
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
 }
