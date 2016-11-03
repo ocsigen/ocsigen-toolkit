@@ -7,6 +7,8 @@
 .carousel {
 
     overflow: hidden ;
+    width: 200px; /* default size. Override this in your own stylesheet */
+    height: 150px; /* default size. Override this in your own stylesheet */
 
 }
 
@@ -58,21 +60,15 @@
 
     flex: 1 1 0 ;
     cursor: pointer;
-    /* width: $carousel-bullet-size ; */
-    /* height: $carousel-bullet-size ; */
-
-    /* &:not(:first-child) { margin-left: $carousel-bullet-margin ; } */
-
-    /* FIXME: replace with generic UTF8 icons or delete this style */
-    /* Bullets customized in m-carousel */
-    /* @include icon-before ($bs-font-bullet) ; */
-    /* &.active::after { content: $bs-font-bullet-current ; } */
-    /* &.ok::after { content: $bs-font-bullet-checked ; } */
-    /* &.active.ok::after  { content: $bs-font-bullet-current-checked ; } */
-    /* &.ko::after { content: $bs-font-bullet-x ; } */
-    /* &.active.ko::after { content: $bs-font-bullet-x ; } */
+    border: 1px solid rgba(255, 255, 255, 0.8);;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin: 4px;
 
 }
+
+.bullet-nav-item.active { background-color: rgba(255, 255, 255, 0.8); }
 
 .car-ribbon {
 
@@ -115,9 +111,18 @@
 
 .car-ribbon-list-item.active { border-style: solid ; }
 
+.car-prev, .car-next {
+    background-color: transparent;
+}
 .car-next.blurred::before,
 .car-prev.blurred::before {
     visibility: hidden;
+}
+.car-prev::before {
+    content: '❬';
+}
+.car-next::before {
+    content: '❭';
 }
 
 .car-cursor {
