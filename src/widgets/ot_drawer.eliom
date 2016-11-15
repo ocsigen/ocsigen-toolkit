@@ -24,6 +24,14 @@
   open Eliom_content.Html.F
 ]
 
+[%%client
+type status =
+  | Stopped
+  | Start
+  | Aborted
+  | In_progress
+]
+
 let%client clX ev =
   Js.Optdef.case ev##.changedTouches##(item (0))
     (fun () -> 0)
@@ -209,27 +217,55 @@ let%shared drawer
       end
     in
     (* let hammer = Hammer.make_hammer bckgrnd in *)
-    let start = ref 0 in
+    let startx = ref 0 (* position when touch starts *) in
+    let starty = ref 0 (* position when touch starts *) in
+    let status = ref Stopped in
     let onpan ev _ =
-      let d = clX ev - !start in
-      if (~%position = `Left && d <= 0) || (~%position = `Right && d >= 0)
-      then perform_animation (`Move d)
+      let left = clX ev - !startx in
+      if !status = Start
+      then begin
+        status := if abs (clY ev - !starty) > abs left
+          then Aborted (* vertical scrolling *)
+          else if abs left > Ot_swipe.threshold
+          then begin (* We decide to take the event *)
+            (Js.Unsafe.coerce (dr##.style))##.transition :=
+              Js.string "-webkit-transform 0s, transform 0s";
+            In_progress
+          end
+          else !status
+      end;
+      if !status = In_progress
+      then begin
+        Dom_html.stopPropagation ev;
+        if (~%position = `Left && left <= 0)
+        || (~%position = `Right && left >= 0)
+        then perform_animation (`Move left)
+        else Lwt.return ()
+      end
       else Lwt.return ()
     in
     let onpanend ev _ =
-      (Js.Unsafe.coerce (dr##.style))##.transition :=
-        Js.string "-webkit-transform .35s, transform .35s";
-      let width = dr##.offsetWidth in
-      let delta = float_of_int (clX ev - !start) in
-      if (~%position = `Left && delta < -0.3 *. float width)
-      || (~%position = `Right && delta > 0.3 *. float width)
-      then perform_animation `Close
-      else perform_animation `Open
+      if !status <>  Start
+      then begin
+        status := Stopped;
+        (Js.Unsafe.coerce (dr##.style))##.transition :=
+          Js.string "-webkit-transform .35s, transform .35s";
+        let width = dr##.offsetWidth in
+        let delta = float_of_int (clX ev - !startx) in
+        if (~%position = `Left && delta < -0.3 *. float width)
+        || (~%position = `Right && delta > 0.3 *. float width)
+        then perform_animation `Close
+        else perform_animation `Open
+      end
+      else begin
+        status := Stopped;
+        Lwt.return ()
+      end
     in
     let onpanstart ev _ =
-      (Js.Unsafe.coerce (dr##.style))##.transition :=
-        Js.string "-webkit-transform 0s, transform 0s";
-      start := clX ev;
+      status := Start;
+      startx := clX ev;
+      starty := clY ev;
       let%lwt () = onpan ev a in
       (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
            This wrapping is an attempt to understand why. *)

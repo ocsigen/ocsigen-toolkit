@@ -52,7 +52,8 @@
     /* [ overflow: visible ; ] is needed for the button
      * to be displayed
      * if the drawer needs to be scrollable, you probably will want
-     * to wrap the content into a wrapper with overflow-y: auto ; */
+     * to wrap the content into a wrapper
+     * with overflow-y: auto ; touch-action: pan-y; */
     overflow: visible ;
 
     transform: translate3d(0, 0, 0);
