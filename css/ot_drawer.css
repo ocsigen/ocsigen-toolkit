@@ -56,7 +56,7 @@
      * with overflow-y: auto ; touch-action: pan-y; */
     overflow: visible ;
 
-    transform: translate3d(0, 0, 0);
+    transform: translateX(0);
     transition: -webkit-transform .35s ease-out;
     transition: transform .35s ease-out;
     width: calc(100% - 50px) ;
@@ -100,11 +100,11 @@
 
 
 .ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-left  {
-    -webkit-transform: translate3d(100%, 0, 0);
-    transform: translate3d(100%, 0, 0);
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
 }
 
 .ot-drawer-bckgrnd.ot-dr-open .ot-drawer.ot-dr-right {
-    -webkit-transform: translate3d(-100%, 0, 0);
-    transform: translate3d(-100%, 0, 0);
+    -webkit-transform: translateX(-100%);
+    transform: translate(-100%);
 }

@@ -195,12 +195,10 @@ let%shared drawer
           animation_frame_requested := false;
           (match !action with
            | `Move delta ->
-             (* translate3d probably faster than changing property left
-                because forces acceleration *)
              let s = Js.string ((if ~%position = `Right
-                                 then "translate3d(calc(-100% + "
-                                 else "translate3d(calc(100% + ")^
-                                string_of_int delta^"px), 0, 0)") in
+                                 then "translateX(calc(-100% + "
+                                 else "translateX(calc(100% + ")^
+                                string_of_int delta^"px))") in
              (Js.Unsafe.coerce (dr##.style))##.transform := s;
              (Js.Unsafe.coerce (dr##.style))##.webkitTransform := s
            | `Close ->
