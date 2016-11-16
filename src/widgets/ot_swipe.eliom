@@ -120,7 +120,7 @@ let%shared bind
          Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
          Lwt.async (fun () ->
            let%lwt () = Lwt_js_events.transitionend elt' in
-           Manip.Class.remove elt "swiping";
+           Manip.Class.remove elt "ot-swiping";
            Lwt.return ());
        end;
        status := Stopped;
@@ -144,7 +144,7 @@ let%shared bind
            then Aborted (* vertical scrolling *)
            else if abs left > threshold
            then begin (* We decide to take the event *)
-             Manip.Class.add elt "swiping";
+             Manip.Class.add elt "ot-swiping";
              remove_transition elt';
              Eliom_lib.Option.iter (fun f -> f ev left) ~%onstart;
              (* We send a touchcancel to the parent (who received the start) *)
