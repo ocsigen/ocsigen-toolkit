@@ -1,5 +1,5 @@
-(* Eliom-base-app
- * http://www.ocsigen.org/eliom-base-app
+(* Ocsigen Toolkit
+ * http://www.ocsigen.org/ocsigen-toolkit
  *
  * Copyright (C) 2014
  *      Vincent Balat
@@ -21,7 +21,7 @@
 
 [%%shared.start]
 
-(** Spinner widget *)
+(** {2 Spinner widget} *)
 
 (** On client side, [with_spinner th] returns immediately a spinner
     while Lwt thread [th] is not finished, that will automatically

@@ -1,6 +1,6 @@
 [%%client.start]
 
-(** This module is an interface to getComputedStyle *)
+(** This module is an interface to getComputedStyle. *)
 
 open Eliom_content.Html
 

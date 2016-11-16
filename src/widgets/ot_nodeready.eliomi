@@ -18,19 +18,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-(** Wait for a node to be inserted in the DOM. *)
-
-(** {3 Known issues}
-   Using it on a node that is never actually added in the DOM
-   will make the node and the thread wakener kept in memory.
-   Also, note that nodeready is fired only once (except if you add a new
-   listener to it after triggering the first one).
-*)
-
-(** {3 Example}
-    [let _ = nodeready node in Firebug.console##debug node]
-*)
-
 [%%client.start]
 
+(** Wait for a node to be inserted in the DOM.
+
+    {3 Example}
+
+    [let _ = nodeready node in Firebug.console##debug node]
+
+    {3 Known issues}
+
+    Using it on a node that is never actually added in the DOM will
+    make the node and the thread wakener kept in memory.  Also, note
+    that nodeready is fired only once (except if you add a new
+    listener to it after triggering the first one). *)
 val nodeready : #Dom.node Js.t -> unit Lwt.t

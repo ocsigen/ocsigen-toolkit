@@ -20,7 +20,8 @@
  *)
 
 [%%shared.start]
-(** Drawer menu for mobile and Web applications *)
+
+(** {2 Drawer menu for mobile and Web applications} *)
 
 (** Build a drawer menu on the left or right of the screen.
     Returns the DOM element, and functions to open and close the menu.

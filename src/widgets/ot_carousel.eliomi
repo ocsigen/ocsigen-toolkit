@@ -19,29 +19,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(**
-
-   Carousel.
-
-   This is a widgets containing blocks. One or several blocks are displayed
-   at a time, depending on the size of the carousel.
-   User can display the next/previous items by pressing buttons,
-   by swiping on touch screens, or by pressing arrow keys.
-
-   It is possible to put a carousel inside another carousel.
-
-   Carousel can be horizontal or vertical.
-
-   This module also defines two other widgets related to the carousel:
-   - bullets displays the current position in the carousel (as a set of bullets),
-   - ribbon display a swipable horizontal menu to navigate the carousel.
-
-   You can define all these widgets in client or server OCaml side programs.
-
-*)
-
-
 [%%shared.start]
+
+(** {2 Carousel}
+
+    This is a widget containing blocks. One or several blocks are
+    displayed at a time, depending on the size of the carousel. User
+    can display the next/previous items by pressing buttons, by
+    swiping on touch screens, or by pressing arrow keys.
+
+    It is possible to put a carousel inside another carousel.
+
+    A carousel can be horizontal or vertical.
+
+    This module also defines two other widgets related to the carousel:
+
+    - bullets displays the current position in the carousel (as a set
+      of bullets),
+
+    - ribbon: display a swipeable horizontal menu to navigate the
+      carousel.
+
+    You can use all these widgets in client or server OCaml side
+    programs. *)
+
 (**
   Creates a carousel from the elements of a list.
     [?position] is the initial position (default 0).

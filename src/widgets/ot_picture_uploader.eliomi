@@ -18,15 +18,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-(** Picture uploader widget *)
+[%%shared.start]
 
-(** [Ot_picture_uploader] allow the user to see a picture he wants to
+(** {2 Picture uploader widget}
+
+    [Ot_picture_uploader] allows the user to see a picture he wants to
     send to the before sending it server.  Also, controllers can be
     added to allow the user to specify a cropping area. No cropping is
     actually done on the client side, it MUST be handled on server
     side. *)
 
-[%%shared.start]
 type cropping = (float * float * float * float) React.S.t
 
 type 'a upload =

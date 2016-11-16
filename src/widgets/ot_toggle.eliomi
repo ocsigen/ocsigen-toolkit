@@ -20,7 +20,7 @@
 
 [%%shared.start]
 
-(** Binary toggle widget *)
+(** {2 Binary toggle widget} *)
 
 (** [make ?init_up ?up_txt ?down_txt ()] produces a binary toggle. If
     [init_up] is true, the toggle is originally up (default: down). The

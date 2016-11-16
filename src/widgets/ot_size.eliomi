@@ -19,10 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(** Size functions for Dom elements. *)
 
 [%%client.start]
-  (** {3 Size and orientation} *)
+
+(** {2 Size functions for Dom elements}
+
+    {3 Size and orientation} *)
 
 type orientation = Portrait | Landscape
 

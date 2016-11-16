@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared.start]
-
 (** Calendar widget *)
+
+[%%shared.start]
 
 (** [intl] is the type of internationalization specifiers. [i_days]
     contains the names of the weekdays, starting with
