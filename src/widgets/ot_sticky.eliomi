@@ -16,14 +16,6 @@ val supports_position_sticky : 'a elt -> bool
     due to position:sticky polyfill [make_sticky] *)
 val is_sticky : 'a elt -> bool
 
-(** determines how certain values of [make_sticky] are computed
-    [`Fix] sets the value to a inline length when the element get stuck.
-    With [`Leave] the value is not touched at all.
-    [`Sync] causes the value to continuously (on window scroll/resize) be
-    derived from the inline other element, meaning from the inline for
-    the element fixed, and from fixed for the inline.
-*)
-
 (** returned by [make sticky] (if position:sticky is not supported). You only
     need this value if you want to manipulate the stickiness later (as
     [keep_in_sight] does.
