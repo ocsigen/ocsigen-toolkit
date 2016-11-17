@@ -40,23 +40,30 @@ val hcf :
 
 [%%client.start]
 
-(** [ popup ?a ?closeable ?confirmation_onclose ?onclose gen_content ]
+(** [ popup ?a ?close_button ?confirmation_onclose ?onclose gen_content ]
     Display a modal popup.
     Returns the popup container, in case you need it.
-    [closeable], if true (default), display a button to close the popup
+
+    Use [close_button] if you want to add a button to close the popup.
+
     [confirmation_on_close] is used to ask confirmation to the user
     when closing the popup with the close button. Meaningless if not
     [closeable].
+
     [onclose] is a hook called just after the popup has been actually closed.
+
     [gen_content] is a function taking the function closing the popup as
     parameter, and returning the popup content.
+
     For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
+
     If [disable_background] (default: true) is true then the tabIndex of all
     the elements not in the popup are set to -1 with the effect that they can
     not be selected using the TAB key. When the popup is closed their old
     tabIndex value is restored. Note, that some elements that are tabbable in
     some browsers but not by specification (scrollable div's) are not affected.
-    If [setup_form] is other then [None] the popup is scanned for a form element
+
+    If [setup_form] is provided, the popup is scanned for a form element
     and [setup_tabcycle_auto] is applied to it (if no form element is
     found the whole popup is scanned). This happens either once the popup opens
     (if [setup_form] equals [`OnPopup]) or with [`OnSignal] the tabcycling can
