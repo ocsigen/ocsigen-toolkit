@@ -46,7 +46,7 @@ type glue = {
   dissolve : unit -> unit
 }
 
-(** position:sticky polyfill which is not supported by Chrome. It
+(** position:sticky polyfill which is not supported by some browsers. It
     functions by making a clone with position:fixed of the designated
     element and continuously (window scroll/resize) monitoring the
     position of the element and the clone. The contents of the element
@@ -56,8 +56,11 @@ type glue = {
     browser. The supplied element should be a D-element.
     [dir] determines whether it sticks to the top on vertical scroll or the the
     left on horizontal scroll.
+
     NOTE: Do not forget to include the CSS attributes as defined in the file
     css/ot_sticky.css.
+
+    See in {!Ot_lib} for documentation of [~ios_html_scroll_hack].
 *)
 val make_sticky :
   dir:[ `Left | `Top ] ->
