@@ -16,6 +16,27 @@ val supports_position_sticky : 'a elt -> bool
     due to position:sticky polyfill [make_sticky] *)
 val is_sticky : 'a elt -> bool
 
+(** determines how certain values of [make_sticky] are computed
+    [`Fix] sets the value to a inline length when the element get stuck.
+    With [`Leave] the value is not touched at all.
+    [`Sync] causes the value to continuously (on window scroll/resize) be
+    derived from the inline other element, meaning from the inline for
+    the element fixed, and from fixed for the inline.
+*)
+
+(** returned by [make sticky] (if position:sticky is not supported). You only
+    need this value if you want to manipulate the stickiness later (as
+    [keep_in_sight] does.
+    [fixed]: element cloned from the element supplied to [make_sticky];
+    [inline]: original element supplied to [make_sticky];
+    [dir]: see [make_sticky];
+    [scroll_thread]: thread that makes either [fixed] or [inline] visible,
+                     depending on the scroll position;
+    [resize_thread]: thread that resizes the fixed element according to the
+                     inline element on window resize;
+    [dissolve]: undo [make_sticky] i.e. kill [scroll_thread] and [resize_thread]
+                and remove [fixed] from the DOM tree.
+*)
 type glue = {
   fixed : div_content D.elt;
   inline : div_content D.elt;
@@ -32,7 +53,12 @@ type glue = {
     is shifted back and forth between the two elements. Make sure to
     also apply the CSS code "position: sticky" to the element as this
     function has no effect if "position: sticky" is supported by the
-    browser. The supplied element should be a D-element. *)
+    browser. The supplied element should be a D-element.
+    [dir] determines whether it sticks to the top on vertical scroll or the the
+    left on horizontal scroll.
+    NOTE: Do not forget to include the CSS attributes as defined in the file
+    css/ot_sticky.css.
+*)
 val make_sticky :
   dir:[ `Left | `Top ] ->
   ?ios_html_scroll_hack:bool ->
