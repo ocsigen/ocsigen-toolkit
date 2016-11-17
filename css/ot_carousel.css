@@ -67,13 +67,21 @@
 .ot-bullet-nav-item.ot-active { background-color: rgba(255, 255, 255, 0.8); }
 
 .ot-car-ribbon {
-
     position: relative;
-    overflow: hidden;
     user-select: none;
     cursor: pointer;
     touch-action: pan-x;
+}
 
+.ot-car-ribbon::after {
+    z-index: 1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    bottom: -6px;
+    height: 6px;
+    background-image:
+    linear-gradient(to bottom, rgba(100,100,100, .3), rgba(100,100,100,0));
 }
 
 .ot-car-ribbon-list {
@@ -85,6 +93,7 @@
 
     white-space: nowrap;
     padding: .5rem 0;
+    margin: 0;
 }
 
 
@@ -104,8 +113,6 @@
 
 }
 
-
-.ot-car-ribbon-list-item.ot-active { border-style: solid ; }
 
 .ot-car-prev, .ot-car-next {
     background-color: transparent;
