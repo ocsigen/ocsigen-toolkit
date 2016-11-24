@@ -125,13 +125,35 @@ div.ot-tp-container div.ot-tp-display {
     margin-left: 4pt;
     padding: 6pt;
 }
-.ot-c-table th,
-.ot-c-table td {
-    padding: .6rem;
-    text-align: right;
+.ot-c-table {
+    font-size: 14px;
+    line-height: 22px;
+    table-layout: fixed;
+}
+.ot-c-table th:not(.ot-c-header) {
+    vertical-align: middle;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0 22px;
+    height: 36px;
+}
+.ot-c-table th.ot-c-header {
+    height: 43px;
+    font-size: 19px;
+    position: relative;
+    text-transform: capitalize;
 }
 .ot-c-table td {
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    height: 36px;
     cursor: pointer;
+}
+.ot-c-table td:not(:empty):hover {
+    background-color: #eee;
+    border-radius: 5px;
 }
 .ot-c-clicked {
     background-color: #990000;
@@ -141,7 +163,7 @@ div.ot-tp-container div.ot-tp-display {
 .ot-c-next-year-button,
 .ot-c-prev-button,
 .ot-c-next-button {
-    padding: 0 2rem;
+    padding: 0 28px;
     cursor: pointer;
 }
 th.ot-c-header {
@@ -158,4 +180,12 @@ th.ot-c-header {
 .ot-tp-clock-min {
     animation-name: shake-animation;
     animation-duration: .1s;
+}
+.ot-c-current>div {
+    color: white;
+    background-color: #ff5d55;
+    width: 27px;
+    line-height: 27px;
+    border-radius: 50%;
+    display: inline-block;
 }
