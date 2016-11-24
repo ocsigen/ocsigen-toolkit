@@ -1,13 +1,13 @@
 div.ot-toggle {
     display: inline;
-    padding: 5pt 1pt 5pt 1pt;
-    border-radius: 5pt
+    padding: 5px 1px 5px 1px;
+    border-radius: 5px
 }
 
 div.ot-inactive {
     color: white;
     display: inline;
-    padding: 3pt;
+    padding: 3px;
     border: solid 1px transparent;
     cursor: pointer;
 }
@@ -15,34 +15,37 @@ div.ot-inactive {
 div.ot-active.ot-up {
     color: green;
     display: inline;
-    padding: 3pt;
+    padding: 3px;
     border: solid 1px green;
-    border-radius: 5pt;
+    border-radius: 5px;
 }
 
 div.ot-active.ot-down {
     color: red;
     display: inline;
-    padding: 3pt;
+    padding: 3px;
     border: solid 1px red;
-    border-radius: 5pt;
+    border-radius: 5px;
 }
 
 svg.ot-tp-clock {
-    width: 120pt;
-    border: solid 1px #333333;
-    background-color: white;
-    border-radius: 60pt;
+    width: 120px;
+    background-color: #eee;
+    border-radius: 50%;
     display: inline-block;
 }
 
 svg.ot-tp-clock.ot-tp-clock-24h {
-    width: 160pt;
-    border-radius: 80pt;
+    width: 160px;
+    border-radius: 80px;
+}
+
+svg.ot-tp-clock text {
+    font-size: 11px;
 }
 
 svg.ot-tp-clock.ot-tp-clock-24h text {
-    font-size: 6pt;
+    font-size: 9px;
 }
 
 svg.ot-tp-clock path {
@@ -56,10 +59,10 @@ svg.ot-tp-clock path.ot-tp-hand {
 }
 
 svg.ot-tp-clock circle.ot-tp-hand-circle {
-    stroke: #990000;
+    stroke: #ff5d55;
     stroke-width: 1px;
-    fill: #990000;
-    fill-opacity: .3;
+    fill: #ff5d55;
+    fill-opacity: 1;
 }
 
 svg.ot-tp-clock.ot-tp-click-anywhere {
@@ -67,12 +70,8 @@ svg.ot-tp-clock.ot-tp-click-anywhere {
 }
 
 div.ot-tp-container {
-    width: 160pt;
-    border-radius: 4pt;
-    background-color: #f9f9f9;
-    margin: 5pt;
-    padding: 5pt;
-    border: solid 1px #999999;
+    width: 200px;
+    padding: 16px;
     display: block;
     text-align: center;
     -webkit-touch-callout: none;
@@ -90,16 +89,16 @@ div.ot-tp-container {
 
 div.ot-tp-container div.ot-toggle {
     display: inline;
-    padding: 5pt 1pt 5pt 1pt;
-    margin: 4pt 0pt 0pt 0pt;
+    padding: 5px 1px 5px 1px;
+    margin: 4px 0px 0px 0px;
     border: solid 1px #333333;
-    border-radius: 5pt
+    border-radius: 5px
 }
 
 div.ot-tp-container div.ot-inactive {
     color: black;
     display: inline;
-    padding: 3pt;
+    padding: 3px;
     border: solid 1px transparent;
     cursor: pointer;
 }
@@ -108,22 +107,23 @@ div.ot-tp-container div.ot-active {
     color: black;
     background-color: #fafafa;
     display: inline;
-    padding: 3pt;
+    padding: 3px;
     border: solid 1px #333333;
-    border-radius: 5pt;
+    border-radius: 5px;
 }
 
 div.ot-tp-container div.ot-toggle {
     display: inline-block;
-    padding: 5pt 1pt 5pt 1pt;
+    padding: 5px 1px 5px 1px;
     background-color: white;
     border: 1px solid #333333;
 }
 
 div.ot-tp-container div.ot-tp-display {
     display: block;
-    margin-left: 4pt;
-    padding: 6pt;
+    margin-left: 4px;
+    padding: 6px;
+    font-size: 22px;
 }
 .ot-c-table {
     font-size: 14px;
