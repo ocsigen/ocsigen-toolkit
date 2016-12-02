@@ -1,2 +1,103 @@
-Ocsigen-toolkit is still alpha.
-Look at the API documentation for more information.
+=Introduction=
+
+Ocsigen Toolkit provides various user interface widgets and related
+utilities that assist in the rapid development of interactive Web
+applications.
+
+Ocsigen Toolkit is built with [[site:/eliom|Eliom]].
+
+==Installation and getting started
+
+You can install Ocsigen Toolkit via OPAM:
+
+{{{
+opam install ocsigen-toolkit
+}}}
+
+You may want to use Ocsigen Toolkit in conjunction with
+[[site:/ocsigen-start|Ocsigen Start]], which provides an application
+template for quickly getting started with Ocsigen. The template
+provides various runnable examples of Ocsigen Toolkit widgets. See the
+<<a_manual project="ocsigen-toolkit" chapter="intro" | Ocsigen Start
+manual >> for details.
+
+==Programming style
+
+Most of the Ocsigen Toolkit widgets can be produced invariably on the
+server or on the client (with the same code). This enables a
+mobile-friendly programming paradigm, where most code lies in shared
+sections. The server instance of the code can be used to produce pages
+(with Ocsigen Toolkit widgets) during traditional Web interaction,
+while the client instance can be used to render the same pages and
+widgets on a mobile device without contacting the server. See the
+<<a_manual project="eliom" chapter="mobile-apps" | mobile applications
+section >> of the Eliom manual for details.
+
+The widgets generally follow a reactive programming style. We use
+<<a_api project="eliom" subproject="server" | module Eliom_shared >>
+extensively, which allows us to produce this reactive content on both
+sides.
+See
+<<a_manual project="eliom" chapter="clientserver-react" | the respective manual chapter >>
+for more info.
+<<a_api project="eliom" subproject="server" | module Eliom_shared >>
+signals and events appear in the Ocsigen Toolkit APIs, and can be used
+as a mechanism for composing different widgets.
+
+==CSS
+
+Most widgets need appropriate CSS to display properly. We provide
+default CSS files, normally installed in
+
+{{{~/.opam/${SWITCH}/share/ocsigen-toolkit/css/}}}
+
+Ocsigen Start uses these files by default. If your application does
+not use Ocsigen Start, you will need to include the CSS manually.
+
+Of course, you are free to modify the style to suit the desired look.
+
+==Widgets overview
+
+* <<a_api subproject="server" | Ot_buttons >>:
+  provides a dropdown menu widget
+* <<a_api subproject="server" | Ot_calendar >>:
+  calendar widget, allowing the user to pick dates
+* <<a_api subproject="server" | Ot_carousel >>:
+  container for blocks, only one of which is displayed at a time,
+  with various ways to move between them (buttons, swipe, keyboard arrows)
+* <<a_api subproject="server" | Ot_drawer >>:
+  a drawer menu that typically appears on an edge of the screen.
+  It can  appear/disappear via buttons or by swiping.
+* <<a_api subproject="server" | Ot_picture_uploader >>:
+  user interface for uploading pictures
+* <<a_api subproject="server" | Ot_popup >>:
+  popup windows that can be controlled in various ways
+* <<a_api subproject="server" | Ot_range >>:
+  widget for picking one among a range of values
+* <<a_api subproject="server" | Ot_spinner >>:
+  a spinner that appears while we wait for "slow" HTML content to be
+  generated
+* <<a_api subproject="server" | Ot_swipe >>:
+  make element swipeable on touch screens
+* <<a_api subproject="server" | Ot_time_picker >>:
+  clock-like widget that allows the user to pick a time
+* <<a_api subproject="server" | Ot_toggle >>:
+  binary toggle widget
+
+=== Non-widget utilities
+
+* <<a_api subproject="server" | Ot_nodeready >>:
+  produces an Lwt thread allowing one to wait for a node to be
+  inserted in the DOM
+* <<a_api subproject="server" | Ot_noderesize >>:
+  listen to element resize events
+* <<a_api subproject="server" | Ot_size >>:
+  utilities to deal with DOM element dimensions
+* <<a_api subproject="server" | Ot_social_meta >>:
+  extract social meta tags from documents
+* <<a_api subproject="server" | Ot_lib >>:
+  functions useful for other widgets
+* <<a_api subproject="server" | Ot_sticky >>:
+  make elements "sticky", i.e., do not let them go out of sight
+* <<a_api subproject="server" | Ot_style >>:
+  an interface to {{{Window.getComputedStyle()}}}
