@@ -58,46 +58,46 @@ Of course, you are free to modify the style to suit the desired look.
 
 ==Widgets overview
 
-* <<a_api subproject="server" | Ot_buttons >>:
+* <<a_api subproject="server" | module Ot_buttons >>:
   provides a dropdown menu widget
-* <<a_api subproject="server" | Ot_calendar >>:
+* <<a_api subproject="server" | module Ot_calendar >>:
   calendar widget, allowing the user to pick dates
-* <<a_api subproject="server" | Ot_carousel >>:
+* <<a_api subproject="server" | module Ot_carousel >>:
   container for blocks, only one of which is displayed at a time,
   with various ways to move between them (buttons, swipe, keyboard arrows)
-* <<a_api subproject="server" | Ot_drawer >>:
+* <<a_api subproject="server" | module Ot_drawer >>:
   a drawer menu that typically appears on an edge of the screen.
   It can  appear/disappear via buttons or by swiping.
-* <<a_api subproject="server" | Ot_picture_uploader >>:
+* <<a_api subproject="server" | module Ot_picture_uploader >>:
   user interface for uploading pictures
-* <<a_api subproject="server" | Ot_popup >>:
+* <<a_api subproject="server" | module Ot_popup >>:
   popup windows that can be controlled in various ways
-* <<a_api subproject="server" | Ot_range >>:
+* <<a_api subproject="server" | module Ot_range >>:
   widget for picking one among a range of values
-* <<a_api subproject="server" | Ot_spinner >>:
+* <<a_api subproject="server" | module Ot_spinner >>:
   a spinner that appears while we wait for "slow" HTML content to be
   generated
-* <<a_api subproject="server" | Ot_swipe >>:
+* <<a_api subproject="server" | module Ot_swipe >>:
   make element swipeable on touch screens
-* <<a_api subproject="server" | Ot_time_picker >>:
+* <<a_api subproject="server" | module Ot_time_picker >>:
   clock-like widget that allows the user to pick a time
-* <<a_api subproject="server" | Ot_toggle >>:
+* <<a_api subproject="server" | module Ot_toggle >>:
   binary toggle widget
 
 === Non-widget utilities
 
-* <<a_api subproject="server" | Ot_nodeready >>:
+* <<a_api subproject="server" | module Ot_nodeready >>:
   produces an Lwt thread allowing one to wait for a node to be
   inserted in the DOM
-* <<a_api subproject="server" | Ot_noderesize >>:
+* <<a_api subproject="server" | module Ot_noderesize >>:
   listen to element resize events
-* <<a_api subproject="server" | Ot_size >>:
+* <<a_api subproject="server" | module Ot_size >>:
   utilities to deal with DOM element dimensions
-* <<a_api subproject="server" | Ot_social_meta >>:
+* <<a_api subproject="server" | module Ot_social_meta >>:
   extract social meta tags from documents
-* <<a_api subproject="server" | Ot_lib >>:
+* <<a_api subproject="server" | module Ot_lib >>:
   functions useful for other widgets
-* <<a_api subproject="server" | Ot_sticky >>:
+* <<a_api subproject="server" | module Ot_sticky >>:
   make elements "sticky", i.e., do not let them go out of sight
-* <<a_api subproject="server" | Ot_style >>:
+* <<a_api subproject="server" | module Ot_style >>:
   an interface to {{{Window.getComputedStyle()}}}
