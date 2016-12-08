@@ -9,8 +9,6 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "js_of_ocaml" {> "2.7"}
-  "eliom" {> "5.0"}
-  "ppx_deriving"
+  "eliom" {>= "6.0"}
 ]
 available: [ ocaml-version >= "4.02" ]
