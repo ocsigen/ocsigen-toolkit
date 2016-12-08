@@ -1,10 +1,6 @@
 @keyframes ot-icon-animation-spinning {
     0% { transform: rotate(0deg) ; }
-    100% { transform: rotate(359deg) ; }
-}
-
-.ot-icon-animation-spinning {
-    animation: ot-icon-animation-spinning 1.5s linear infinite ;
+    100% { transform: rotate(360deg) ; }
 }
 
 @keyframes ot-icon-animation-shake {
@@ -73,16 +69,6 @@
     background-color: rgb(0, 0, 0) ;
     color: rgb(255, 255, 255) ;
     text-align: center ;
-}
-
-.ot-icon-spinner::before {
-    display: block ;
-    width: 1em ;
-    height: 1em ;
-    border: .1em solid #000 ;
-    border-left: .1em solid #777 ;
-    border-bottom: .1em solid #777 ;
-    border-radius: 50% ;
 }
 
 .ot-icon-plus::before {

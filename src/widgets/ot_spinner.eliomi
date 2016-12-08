@@ -29,7 +29,11 @@
     It has class "spinning" while the spinner is present.
 
     On server side, it will wait for [th] to be finished before
-    returning its result (and never display a spinner). *)
+    returning its result (and never display a spinner).
+
+    If you want the spinner on both sides, you can use [with_spinner_no_lwt]
+    and [Eliom_content.Html.C.node].
+ *)
 val with_spinner :
   ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
   ?fail:(exn ->
