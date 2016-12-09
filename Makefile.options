@@ -4,7 +4,7 @@
 
 # Package name for your
 PKG_NAME := ocsigen-toolkit
-PKG_VERS := 0.1
+PKG_VERS := 0.99
 PKG_DESC := reusable UI components meant for Eliom applications
 
 # Source files for the server
