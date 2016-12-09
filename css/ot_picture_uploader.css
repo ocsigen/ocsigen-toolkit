@@ -10,7 +10,12 @@
     border: 1px solid black;
 }
 
+.ot-no-file .ot-pup-ctrls {
+    border: none;
+}
+
 .ot-pup-ctrl { position: absolute ; }
+
 .ot-pup-ctrl-t {
     top: 0px ;
     left: 10px ;
