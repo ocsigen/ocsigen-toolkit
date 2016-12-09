@@ -3,13 +3,16 @@
 ## Introduction
 
 The Ocsigen Toolkit is a set of user interface widgets that facilitate
-the development of Eliom applications. The toolkit is in a very early
-stage of development.
+the development of Eliom applications. The toolkit is in beta state.
 
 ## Installation
 
-Use opam to install, after pinning the github repository.
+Use `opam` to install:
 
-**NB:** you may want to include provided css in you own stylesheet.
-Have a look at [css](/css) directory to find corresponding style to
-use with modules you use.
+```
+opam install opam-repository
+```
+
+**NB:** you may want to include the provided CSS in you own project.
+Take a look at the `css` directory for the style files that correspond
+to the modules you use.
