@@ -42,10 +42,10 @@ val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
     -webkit-overflow-scrolling: touch;}) may move the scroll event
     from window to html or to body.  For instance, with (ON) or
     without (OFF) the following CSS:
-    {|html{overflow:scroll;-webkit-overflow-scrolling: touch;}|}
+    [html{overflow:scroll;-webkit-overflow-scrolling: touch;}]
     we may observe this:
 
-    {|
+    {[
          | capture | elements receiving the scroll events
     -----+---------+-------------------------------------
     OFF  |    true | window
@@ -56,7 +56,7 @@ val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
     -----+---------+-------------------------------------
     ON   |   false | body
     -----------------------------------------------------
-    |}
+    ]}
 
     (Also, note that pure JavaScript "onscroll" attribute might be
     broken when ON.)  It's useful to listen on html even if it's only
