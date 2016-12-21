@@ -32,38 +32,42 @@ val onloads : (unit -> unit) -> unit
     replaced. In most use-cases you should have a line as follows
     before: let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element
     some_elt in *)
-
 val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
+
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
 
-(** If [ios_html_scroll_hack] then listen on window + html + body instead of only window.
-On iOS (8 and 9), in WkWebView and in Safari, some CSS properties
- (e.g. html{overflow:scroll; -webkit-overflow-scrolling: touch;})
-may move the scroll event from window to html or to body.
-For instance, with (ON) or without (OFF) the following CSS:
-html{overflow:scroll;-webkit-overflow-scrolling: touch;}
-we may observe this:
-     | capture | elements receiving the scroll events
------+---------+-------------------------------------
- OFF |    true | window
------+---------+-------------------------------------
- OFF |   false | window
------+---------+-------------------------------------
-  ON |    true | window + html + body
------+---------+-------------------------------------
-  ON |   false | body
------------------------------------------------------
-(Also, note that pure JavaScript "onscroll" attribute might be broken when ON.)
-It's useful to listen on html even if it's only relevant when ON + capture=true,
-because we probably want, when capture=true, to capture the event as early as possible.
-*)
+(** If [ios_html_scroll_hack] then listen on window + html + body
+    instead of only window.  On iOS (8 and 9), in WkWebView and in
+    Safari, some CSS properties (e.g. html{overflow:scroll;
+    -webkit-overflow-scrolling: touch;}) may move the scroll event
+    from window to html or to body.  For instance, with (ON) or
+    without (OFF) the following CSS:
+    {|html{overflow:scroll;-webkit-overflow-scrolling: touch;}|}
+    we may observe this:
+
+    {|
+         | capture | elements receiving the scroll events
+    -----+---------+-------------------------------------
+    OFF  |    true | window
+    -----+---------+-------------------------------------
+    OFF  |   false | window
+    -----+---------+-------------------------------------
+    ON   |    true | window + html + body
+    -----+---------+-------------------------------------
+    ON   |   false | body
+    -----------------------------------------------------
+    |}
+
+    (Also, note that pure JavaScript "onscroll" attribute might be
+    broken when ON.)  It's useful to listen on html even if it's only
+    relevant when ON + capture=true, because we probably want, when
+    capture=true, to capture the event as early as possible. *)
 val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
   (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
 (** [click_outside e] returns when user clicks outside element [e].
     Will only catch clicks inside the element given as optional
-    parameter [?inside] (default is [Dom_html.document##.body]).
-*)
+    parameter [?inside] (default is [Dom_html.document##.body]). *)
 val click_outside :
   ?use_capture:bool ->
   ?inside:Dom_html.element Js.t ->
