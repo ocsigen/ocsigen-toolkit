@@ -10,7 +10,7 @@ the development of Eliom applications. The toolkit is in beta state.
 Use `opam` to install:
 
 ```
-opam install opam-repository
+opam install ocsigen-toolkit
 ```
 
 **NB:** you may want to include the provided CSS in you own project.
