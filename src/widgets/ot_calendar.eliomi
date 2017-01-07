@@ -71,7 +71,10 @@ val make :
 (** [make_date_picker ?init ()] returns a client-side reactive signal
     [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
     clicks on. The optional parameter [init] provides an initial value
-    for the signal. *)
+    for the signal.
+    [?intl] is used to internationalize the calendar (see {!intl}). The default
+    behavior is for English.
+*)
 val make_date_picker :
   ?init : (int * int * int) ->
   ?update :
