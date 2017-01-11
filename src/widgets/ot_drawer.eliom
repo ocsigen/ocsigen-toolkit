@@ -253,7 +253,7 @@ let%shared drawer
       else Lwt.return ()
     in
     let onpanend ev _ =
-      if !status <>  Start
+      if !status = In_progress
       then begin
         status := Stopped;
         (Js.Unsafe.coerce (dr##.style))##.transition :=
