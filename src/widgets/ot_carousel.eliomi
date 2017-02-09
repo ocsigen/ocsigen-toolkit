@@ -114,7 +114,7 @@ val make :
   int Eliom_shared.React.S.t *
   float React.S.t Eliom_client_value.t
 
-(** Carousel with 3D effect. Faces are displayed on a cylender.
+(** Carousel with 3D effect. Faces are displayed on a cylinder.
     Give the number of faces you want as parameter [faces] (default: 20).
     The size of the faces (height for vertical carousel, width for horizontal)
     must be given as parameter [face_size]
