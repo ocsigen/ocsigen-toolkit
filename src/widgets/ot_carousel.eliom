@@ -59,6 +59,8 @@ let%shared default_make_transform ~vertical ?(delta = 0) pos =
 (* But causing troubles ...
    For example some content cannot have border-radius on Chrome ... *)
 
+let%shared ot_swiping = "ot-swiping"
+
 [%%client
 let now () = (new%js Js.date_now)##getTime /. 1000.
 
@@ -86,6 +88,7 @@ let%shared make
     ?(position = 0)
     ?(transition_duration = 0.6)
     ?(inertia = 1.0)
+    ?(swipeable = true)
     ?(allow_overswipe = false)
     ?(update : [`Goto of int | `Next | `Prev ] React.event Eliom_client_value.t option)
     ?(disabled = Eliom_shared.React.S.const false)
@@ -251,7 +254,7 @@ let%shared make
       Lwt.async (fun () ->
         let%lwt () = Lwt_js_events.transitionend d2' in
         Eliom_lib.Option.iter (fun f -> f ()) transitionend;
-        Manip.Class.remove ~%d2 "ot-swiping";
+        Manip.Class.remove ~%d2 ot_swiping;
         (* Remove swiping after calling f,
            because f will possibly change the scrolling position of the page *)
         Lwt.return ())
@@ -307,7 +310,7 @@ let%shared make
                (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
              | `Goback position
              | `Change position ->
-               Manip.Class.add ~%d2 "ot-swiping";
+               Manip.Class.add ~%d2 ot_swiping;
                set_top_margin ();
                action := `Move (0, 0);
                set_position ~transitionend:unset_top_margin position);
@@ -345,7 +348,7 @@ let%shared make
            else
              if abs move > Ot_swipe.threshold
              then begin
-               Manip.Class.add ~%d2 "ot-swiping";
+               Manip.Class.add ~%d2 ot_swiping;
                set_top_margin ();
                remove_transition d2';
                let timestamp = now () in
@@ -378,10 +381,6 @@ let%shared make
       Lwt.return ()
     in
     (* let hammer = Hammer.make_hammer d2 in *)
-    Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
-      status := Start (clX ev, clY ev, now ());
-      Lwt.return ()));
-    Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
     let do_end ev startx starty prev_speed prev_delta prev_timestamp =
       Dom_html.stopPropagation ev; (* in case there is a carousel
                                       in a carousel, e.g. *)
@@ -432,29 +431,15 @@ let%shared make
         perform_animation (`Goback pos)
       | _ -> Lwt.return ()
     in
-    Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
-    Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel);
-    (* Hammer.bind_callback hammer *)
-    (*   (if vertical then "swipedown" else "swiperight") *)
-    (*   (fun ev -> *)
-    (*      let pos = Eliom_shared.React.S.value pos_signal in *)
-    (*      Lwt.async (fun () -> if pos > 0 *)
-    (*                  then perform_animation (`Change (pos - 1)) *)
-    (*                  else perform_animation (`Goback pos)) *)
-    (*   ); *)
-    (* Hammer.bind_callback hammer *)
-    (*   (if vertical then "swipeup" else "swipeleft") *)
-    (*   (fun ev -> *)
-    (*      let pos = Eliom_shared.React.S.value pos_signal in *)
-    (*      Lwt.async (fun () -> if pos < maxi () *)
-    (*                  then perform_animation (`Change (pos + 1)) *)
-    (*                  else perform_animation (`Goback pos)) *)
-    (*   ); *)
-    (* (\* Warning! set_pan_all_directions: *)
-    (*    If we do that for horizontal carousel, *)
-    (*    it will break vertical scrolling on safari/ipad and firefox mobile ... *)
-    (*    We should probably allow only vertical pan for vertical carousel (?) *\) *)
-    (* if vertical then Hammer.set_pan_all_directions hammer; *)
+    if ~%swipeable
+    then begin
+      Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
+        status := Start (clX ev, clY ev, now ());
+        Lwt.return ()));
+      Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
+      Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
+      Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel);
+    end;
     ignore
       (Eliom_lib.Option.map
          (fun update ->
