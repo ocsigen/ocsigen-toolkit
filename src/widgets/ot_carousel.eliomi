@@ -53,6 +53,7 @@
     transition duration (which is currently constant). Default is 0.6s.
     [?inertia] makes it possible to reduce (or increase) inertia.
     Default is [1.0]. No inertia is [0.0].
+    Set [?swipeable] to [false] if you want to disable swiping.
     [?allow_overswipe] is [false] by default. It [true], it is possible to
     swipe before first page and after last page.
 
@@ -97,6 +98,7 @@ val make :
   ?position:int ->
   ?transition_duration:float ->
   ?inertia:float ->
+  ?swipeable:bool ->
   ?allow_overswipe:bool ->
   ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
   ?disabled: bool Eliom_shared.React.S.t ->
