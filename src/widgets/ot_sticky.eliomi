@@ -52,11 +52,15 @@ type glue = {
     NOTE: Do not forget to include the CSS attributes as defined in the file
     css/ot_sticky.css.
 
+    If [?force] is [true], will apply the polyfill even if the browser supports
+    sticky position (default is [false]).
+
     See in {!Ot_lib} for documentation of [~ios_html_scroll_hack].
 *)
 val make_sticky :
   dir:[ `Left | `Top ] ->
   ?ios_html_scroll_hack:bool ->
+  ?force:bool ->
   div_content elt ->
   glue option Lwt.t
 
