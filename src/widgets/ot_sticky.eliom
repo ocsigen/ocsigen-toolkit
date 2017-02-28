@@ -101,11 +101,12 @@ let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
     ?(ios_html_scroll_hack = false)
+    ?(force = false)
     elt =
 
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
 
-  if supports_position_sticky elt then Lwt.return None else begin
+  if not force && supports_position_sticky elt then Lwt.return None else begin
     let fixed_dom = Js.Opt.case
         (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
         (fun () -> failwith "could not clone element to make it sticky")
