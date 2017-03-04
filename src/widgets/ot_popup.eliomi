@@ -63,6 +63,9 @@ val hcf :
     tabIndex value is restored. Note, that some elements that are tabbable in
     some browsers but not by specification (scrollable div's) are not affected.
 
+    If [close_on_background_click] (default: false) is true then clicking on the
+    background of the popup closes it.
+
     If [setup_form] is provided, the popup is scanned for a form element
     and [setup_tabcycle_auto] is applied to it (if no form element is
     found the whole popup is scanned). This happens either once the popup opens
@@ -74,6 +77,7 @@ val popup :
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
   -> ?disable_background:bool
+  -> ?close_on_background_click:bool
   -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
