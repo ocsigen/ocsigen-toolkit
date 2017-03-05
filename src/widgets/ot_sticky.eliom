@@ -106,7 +106,7 @@ let make_sticky
 
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
 
-  if not force && supports_position_sticky elt then Lwt.return None else begin
+  if not force && supports_position_sticky elt then Lwt.return_none else begin
     let fixed_dom = Js.Opt.case
         (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
         (fun () -> failwith "could not clone element to make it sticky")
@@ -143,9 +143,9 @@ let make_sticky
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
     Eliom_client.onunload (fun () -> dissolve ());
-    Lwt.return @@ Some {glue with scroll_thread = scroll_thread;
-                                  resize_thread = resize_thread;
-                                  dissolve = dissolve}
+    Lwt.return_some {glue with scroll_thread = scroll_thread;
+                               resize_thread = resize_thread;
+                               dissolve = dissolve}
   end
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
