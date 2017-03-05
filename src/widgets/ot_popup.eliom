@@ -159,6 +159,7 @@ let%client popup
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return ())
     ?(disable_background=true)
+    ?(close_on_background_click=false)
     ?setup_form
     ?(ios_scroll_pos_fix=true)
     gen_content =
@@ -299,6 +300,19 @@ let%client popup
     | None -> content in
   let pop = D.div ~a:[a_class ["ot-popup"]] content in
   let box = D.div ~a:(a_class ["ot-popup-background"] :: a) [ pop ] in
+
+  if close_on_background_click then begin
+    (* Close the popup when user clicks on background *)
+    Lwt.async (fun () ->
+      let box_dom = Eliom_content.Html.To_dom.of_element box in
+      let%lwt event = Lwt_js_events.click box_dom in
+      if event##.target = Js.some box_dom then
+        close ()
+      else
+        Lwt.return ()
+    )
+  end;
+
   popup := Some box;
   Manip.appendToBody box;
   (* We must set the height explicitely, otherwise it does not
