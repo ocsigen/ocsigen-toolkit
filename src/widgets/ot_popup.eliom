@@ -362,5 +362,5 @@ let%client confirm ?(a = []) ?disable_background
   ask_question ?disable_background ?setup_form
     ~a:(a_class [ "ot-popup-confirmation" ] :: a)
     ~header:question
-    ~buttons:[ (yes, (fun () -> Lwt.return true) , ["ot-popup-yes"])
+    ~buttons:[ (yes, (fun () -> Lwt.return_true) , ["ot-popup-yes"])
              ; (no , (fun () -> Lwt.return false), ["ot-popup-no"]) ] []
