@@ -51,7 +51,7 @@ let config =
 
 let nodeready node =
   let node = (node :> Dom.node Js.t) in
-  if node_in_document node then Lwt.return () else begin
+  if node_in_document node then Lwt.return_unit else begin
     let t, s = Lwt.wait () in
     if !watched = [] then observer##observe Dom_html.document config;
     watched := (node, s) :: !watched;

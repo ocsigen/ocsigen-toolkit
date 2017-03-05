@@ -52,7 +52,7 @@ let%client bind_click_outside bckgrnd elt close =
     in
     Dom_html.stopPropagation ev;
     close ();
-    Lwt.return ())
+    Lwt.return_unit)
 
 let%client html () = Js.Opt.to_option @@
   Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
@@ -109,7 +109,7 @@ let%shared drawer
     ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t =
     [%client Lwt.wait () ] in
 
-  let touch_thread = [%client (ref (Lwt.return ()) : unit Lwt.t ref)] in
+  let touch_thread = [%client (ref (Lwt.return_unit) : unit Lwt.t ref)] in
 
   let close = [%client
     ((fun () ->
@@ -122,7 +122,7 @@ let%shared drawer
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "closing";
          Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
-         Lwt.return ()))
+         Lwt.return_unit))
      : unit -> unit)]
   in
   let close = wrap_close close in
@@ -145,7 +145,7 @@ let%shared drawer
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "opening";
-         Lwt.return ()))
+         Lwt.return_unit))
      : unit -> unit)]
   in
   let open_ = wrap_open open_ in
@@ -156,7 +156,7 @@ let%shared drawer
     html_ManipClass_remove "ot-drawer-opening";
     html_ManipClass_remove "ot-drawer-open";
     html_ManipClass_remove "ot-drawer-closing");
-    Lwt.return ()
+    Lwt.return_unit
   :unit Lwt.t)] in
 
   let _ = [%client
@@ -171,7 +171,7 @@ let%shared drawer
             Dom.preventDefault ev ;
             Dom_html.stopPropagation ev ;
             toggle ();
-            Lwt.return () ) )
+            Lwt.return_unit ) )
   : unit)]
   in
 
@@ -185,7 +185,7 @@ let%shared drawer
     let perform_animation a =
       if !action = `Close && a = `Open
       then (* We received a panend after a swipeleft. We ignore it. *)
-        Lwt.return ()
+        Lwt.return_unit
       else begin
         action := a;
         if not !animation_frame_requested
@@ -207,7 +207,7 @@ let%shared drawer
              Lwt.async (fun () ->
                let%lwt () = Lwt_js_events.transitionend dr in
                Manip.Class.remove ~%bckgrnd "ot-swiping";
-               Lwt.return ());
+               Lwt.return_unit);
              cl ()
            | `Open ->
              (Js.Unsafe.coerce (dr##.style))##.transform := Js.string "";
@@ -215,11 +215,11 @@ let%shared drawer
              Lwt.async (fun () ->
                let%lwt () = Lwt_js_events.transitionend dr in
                Manip.Class.remove ~%bckgrnd "ot-swiping";
-               Lwt.return ());
+               Lwt.return_unit);
           );
-          Lwt.return ()
+          Lwt.return_unit
         end
-        else Lwt.return ()
+        else Lwt.return_unit
       end
     in
     (* let hammer = Hammer.make_hammer bckgrnd in *)
@@ -248,9 +248,9 @@ let%shared drawer
         if (~%position = `Left && left <= 0)
         || (~%position = `Right && left >= 0)
         then perform_animation (`Move left)
-        else Lwt.return ()
+        else Lwt.return_unit
       end
-      else Lwt.return ()
+      else Lwt.return_unit
     in
     let onpanend ev _ =
       if !status = In_progress
@@ -267,7 +267,7 @@ let%shared drawer
       end
       else begin
         status := Stopped;
-        Lwt.return ()
+        Lwt.return_unit
       end
     in
     let onpanstart ev _ =

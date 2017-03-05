@@ -157,7 +157,7 @@ let%shared make
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready d2' in
       ~%set_nb_visible_elements (comp_nb_visible_elements ());
-      Lwt.return ());
+      Lwt.return_unit);
     let maxi () = ~%maxi - (React.S.value ~%nb_visible_elements) + 1 in
     let pos_signal = ~%pos_signal in
     let pos_set = ~%pos_set in
@@ -257,7 +257,7 @@ let%shared make
         Manip.Class.remove ~%d2 ot_swiping;
         (* Remove swiping after calling f,
            because f will possibly change the scrolling position of the page *)
-        Lwt.return ())
+        Lwt.return_unit)
     in
     (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).
@@ -273,7 +273,7 @@ let%shared make
       set_position ~%position;
       add_transition d2';
       Eliom_client.onunload (fun () -> React.S.stop ~strong:true update_size);
-      Lwt.return ());
+      Lwt.return_unit);
     let perform_animation a =
       ~%set_nb_visible_elements (comp_nb_visible_elements ());
       if not (React.S.value ~%disabled)
@@ -283,7 +283,7 @@ let%shared make
           (* We received both a panend and a swipe.
              The panend can be a `Goback and the swipe a `Change.
              We ignore the `Goback. *)
-          Lwt.return ()
+          Lwt.return_unit
         | _ ->
           action := a;
           if not !animation_frame_requested
@@ -314,10 +314,10 @@ let%shared make
                set_top_margin ();
                action := `Move (0, 0);
                set_position ~transitionend:unset_top_margin position);
-            Lwt.return ()
+            Lwt.return_unit
           end
-          else Lwt.return ()
-      else Lwt.return ()
+          else Lwt.return_unit
+      else Lwt.return_unit
     in
     let status = ref Stopped in
     let compute_speed prev_speed prev_delta prev_timestamp delta =
@@ -378,7 +378,7 @@ let%shared make
          Lwt.async
            (fun () -> perform_animation (`Move (delta, width_element)))
        | _ -> ());
-      Lwt.return ()
+      Lwt.return_unit
     in
     (* let hammer = Hammer.make_hammer d2 in *)
     let do_end ev startx starty prev_speed prev_delta prev_timestamp =
@@ -419,7 +419,7 @@ let%shared make
         do_end ev startx starty 0. 0 timestamp
       | Ongoing (startx, starty, _width, speed, delta, timestamp) ->
         do_end ev startx starty speed delta timestamp
-      | _ -> Lwt.return ()
+      | _ -> Lwt.return_unit
     in
     let touchcancel ev _ =
       match !status with
@@ -429,13 +429,13 @@ let%shared make
         status := Stopped;
         let pos = Eliom_shared.React.S.value pos_signal in
         perform_animation (`Goback pos)
-      | _ -> Lwt.return ()
+      | _ -> Lwt.return_unit
     in
     if ~%swipeable
     then begin
       Lwt.async (fun () -> Lwt_js_events.touchstarts d (fun ev aa ->
         status := Start (clX ev, clY ev, now ());
-        Lwt.return ()));
+        Lwt.return_unit));
       Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
       Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
       Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel);
@@ -454,11 +454,11 @@ let%shared make
               | `Next ->
                 let curpos = Eliom_shared.React.S.value pos_signal in
                 if curpos < maxi then perform_animation (`Change (curpos + 1))
-                else Lwt.return ()
+                else Lwt.return_unit
               | `Prev ->
                 let curpos = Eliom_shared.React.S.value pos_signal in
                 if curpos > 0 then perform_animation (`Change (curpos - 1))
-                else Lwt.return ())
+                else Lwt.return_unit)
             update)
        ~%update);
   : unit)]
@@ -564,7 +564,7 @@ let%shared ribbon
         Lwt.async @@ fun () ->
           let%lwt _ = Lwt_js.sleep 0.05 in
           set_containerwidth container'##.offsetWidth;
-          Lwt.return ()
+          Lwt.return_unit
       in
       Eliom_client.onunload (fun () -> React.S.stop ~strong:true watch_width);
       (* Changing the position of the ribbon when the carousel position
@@ -683,7 +683,7 @@ let%shared ribbon
            );
        | _ -> ()
       );
-      Lwt.return ()
+      Lwt.return_unit
     );
     (* Moving the ribbon with fingers: *)
     let fmax () = initial_gap in
@@ -715,7 +715,7 @@ let%shared ribbon
       ~onstart:(fun _ _ -> Eliom_lib.Option.iter remove_transition cursor_elt')
       ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
       the_ul;
-    Lwt.return () : _)];
+    Lwt.return_unit : _)];
   container
 
 let%shared blur = function true -> ["ot-blurred"] | false -> []
@@ -803,7 +803,7 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
           then change `Next
           else if key = 37 (* left *)
           then change `Prev);
-    Lwt.return ()
+    Lwt.return_unit
   )
 
 let%shared wheel_compute_angle pos faces swipe_pos =
@@ -918,7 +918,7 @@ let%shared wheel
 (*        send_ev (`Goto 0); *)
 (*        lwt () = Lwt_js.sleep 1. in *)
 (*        send_ev (`Goto 3); *)
-(*        Lwt.return () *)
+(*        Lwt.return_unit *)
 (*      ) *)
 
 (*  }} *)

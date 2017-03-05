@@ -105,7 +105,7 @@ module Make(A : sig
            Manip.Class.remove d spinning ;
            Manip.Class.remove d spinner ;
            dec_active_spinners ();
-           Lwt.return () ) ;
+           Lwt.return_unit ) ;
       A.return d
     | Lwt.Fail e -> A.bind (fail e) (fun c -> A.return (D.div ~a c))
 end

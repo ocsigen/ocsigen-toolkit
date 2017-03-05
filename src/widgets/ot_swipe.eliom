@@ -121,10 +121,10 @@ let%shared bind
          Lwt.async (fun () ->
            let%lwt () = Lwt_js_events.transitionend elt' in
            Manip.Class.remove elt "ot-swiping";
-           Lwt.return ());
+           Lwt.return_unit);
        end;
        status := Stopped;
-       Lwt.return ()
+       Lwt.return_unit
      in
      let onpanstart0 () =
        status := Start;
@@ -133,7 +133,7 @@ let%shared bind
        startx := clX ev - elt'##.offsetLeft;
        starty := clY ev;
        onpanstart0 ();
-       Lwt.return ()
+       Lwt.return_unit
      in
      let onpan ev aa =
        let left = clX ev - !startx in
@@ -168,7 +168,7 @@ let%shared bind
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (min + !startx) (clY ev);
            (* We propagate *)
-           Lwt.return ()
+           Lwt.return_unit
          | _, Some max when left > max ->
            (* max reached.
               We stop the movement of this element
@@ -179,13 +179,13 @@ let%shared bind
            (* We send a touchstart event to the parent *)
            dispatch_event ~ev elt' "touchstart" (max + !startx) (clY ev);
            (* We propagate *)
-           Lwt.return ()
+           Lwt.return_unit
          | _ ->
            Dom_html.stopPropagation ev;
            Dom.preventDefault ev;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onmove;
            do_pan left;
-           Lwt.return ()
+           Lwt.return_unit
        else begin (* Shall we restart swiping this element? *)
          let restart_pos = match !status, min, max with
            | Below, Some min, _ when left >= min -> Some min
@@ -202,8 +202,8 @@ let%shared bind
            onpanstart0 ((* restart_pos + !startx *));
            Dom_html.stopPropagation ev;
            do_pan left;
-           Lwt.return ()
-         | None -> (* We propagate *) Lwt.return ()
+           Lwt.return_unit
+         | None -> (* We propagate *) Lwt.return_unit
        end
      in
      Lwt.async (fun () -> Lwt_js_events.touchstarts elt' onpanstart);

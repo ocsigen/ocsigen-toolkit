@@ -121,7 +121,7 @@ let make_sticky
       fixed = fixed;
       inline = elt;
       dir = dir;
-      scroll_thread = Lwt.return (); (* updated below *)
+      scroll_thread = Lwt.return_unit; (* updated below *)
       resize_thread = React.S.const (0,0); (* updated below *)
       dissolve = fun () -> failwith "undefined"
     } in
@@ -129,7 +129,7 @@ let make_sticky
     init ();
     let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
-      update_state glue; Lwt.return ()
+      update_state glue; Lwt.return_unit
     in
     let resize_thread = Ot_size.width_height |> React.S.map @@
       fun (width, height) -> synchronise glue; update_state glue; (width, height)

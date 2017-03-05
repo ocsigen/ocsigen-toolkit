@@ -33,22 +33,22 @@ let%client tabswitch one two =
   let focuses_one = begin Lwt_js_events.focuses one @@ fun _ _ ->
     one##.tabIndex := 1;
     two##.tabIndex := 2;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let blurs_one = begin Lwt_js_events.blurs one @@ fun _ _ ->
     one##.tabIndex := 0;
     two##.tabIndex := 0;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let focuses_two = begin Lwt_js_events.focuses two @@ fun _ _ ->
     one##.tabIndex := 2;
     two##.tabIndex := 1;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let blurs_two = begin Lwt_js_events.blurs two @@ fun _ _ ->
     one##.tabIndex := 0;
     two##.tabIndex := 0;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   Lwt.join [focuses_one; blurs_one; focuses_two; blurs_two]
 
@@ -57,25 +57,25 @@ let%client tabcycle first second next_to_last last =
     last##.tabIndex := 1;
     first##.tabIndex := 2;
     second##.tabIndex := 3;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let blurs_first = begin Lwt_js_events.blurs first @@ fun _ _ ->
     first##.tabIndex := 0;
     second##.tabIndex := 0;
     last##.tabIndex := 0;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let focuses_last = begin Lwt_js_events.focuses last @@ fun _ _ ->
     next_to_last##.tabIndex := 1;
     last##.tabIndex := 2;
     first##.tabIndex := 3;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   let blurs_last = begin Lwt_js_events.blurs last @@ fun _ _ ->
     next_to_last##.tabIndex := 0;
     last##.tabIndex := 0;
     first##.tabIndex := 0;
-    Lwt.return ()
+    Lwt.return_unit
   end in
   Lwt.join [focuses_first; blurs_first; focuses_last; blurs_last]
 
@@ -100,7 +100,7 @@ let%client setup_tabcycle elts =
         | _ -> failwith "Ot_popup.setup_tabcycle: can't happen"
       in
       tabcycle one two next_to_last last
-    | _ -> Lwt.return ()
+    | _ -> Lwt.return_unit
   end
 
 
@@ -125,7 +125,7 @@ let%client focussable x =
   let do_it elt focus = fun () -> Lwt.async @@ fun () ->
     let%lwt _ = Ot_nodeready.nodeready elt in
     focus ();
-    Lwt.return ()
+    Lwt.return_unit
   in
   match Dom_html.tagged x with
   | Dom_html.A        x -> only_if_active' x (do_it x @@ fun () -> x##focus)
@@ -157,7 +157,7 @@ let%client popup
     ?(a = [])
     ?close_button
     ?confirmation_onclose
-    ?(onclose = fun () -> Lwt.return ())
+    ?(onclose = fun () -> Lwt.return_unit)
     ?(disable_background=true)
     ?(close_on_background_click=false)
     ?setup_form
@@ -223,7 +223,7 @@ let%client popup
     | Some f ->
       match%lwt f ()
       with true -> do_close ()
-         | false -> Lwt.return ()
+         | false -> Lwt.return_unit
   in
   (* FIXME: use a list for gen_content return type *)
   let%lwt c = Ot_spinner.with_spinner ~a:[a_class ["ot-popup-content"]]
@@ -271,7 +271,7 @@ let%client popup
               cancel ();
               React.S.stop stopper
         end;
-        Lwt.return ()
+        Lwt.return_unit
     end;
 
     if disable_background then begin
@@ -309,7 +309,7 @@ let%client popup
       if event##.target = Js.some box_dom then
         close ()
       else
-        Lwt.return ()
+        Lwt.return_unit
     )
   end;
 
@@ -329,7 +329,7 @@ let%client resetup_form_signal () =
     let%lwt _ = Lwt_js.sleep 0.1 in (* wait until formular has been updated *)
     set_signal false;
     set_signal true;
-    Lwt.return ()
+    Lwt.return_unit
   in
   (`OnSignal signal, resetup_form)
 
