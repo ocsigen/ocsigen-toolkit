@@ -42,8 +42,8 @@ type ('a,'b) service =
 
 let%client process_file input callback =
   Js.Optdef.case
-    (input##.files) (fun () -> Lwt.return ())
-    (function files -> Js.Opt.case (files##(item (0))) (fun () -> Lwt.return ())
+    (input##.files) (fun () -> Lwt.return_unit)
+    (function files -> Js.Opt.case (files##(item (0))) (fun () -> Lwt.return_unit)
                          (fun x -> callback x))
 
 let%client file_reader file callback =
@@ -248,7 +248,7 @@ let%shared cropper
              Lwt.pick @@
              List.map (fun e -> e Dom_html.document) rm_trigger in
            Dom_html.removeEventListener x ;
-           Lwt.return () ) )
+           Lwt.return_unit ) )
      in
      let listeners = match ~%ratio with
        | Some ratio ->
@@ -357,7 +357,7 @@ let%client bind_input input preview ?container ?reset () =
     Eliom_lib.Option.iter (fun container ->
       container##.classList##add (Js.string "ot-no-file")) container ;
     preview##.src := Js.string "" ;
-    Lwt.return () in
+    Lwt.return_unit in
   Eliom_lib.Option.iter (fun f ->
     Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f () ) ) )
     reset ;
@@ -372,7 +372,7 @@ let%client bind_input input preview ?container ?reset () =
                     Eliom_lib.Option.iter (fun container ->
                       container##.classList##remove (Js.string "ot-no-file") )
                       container ) in
-             Lwt.return () ) ) ) )
+             Lwt.return_unit ) ) ) )
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t
@@ -390,7 +390,7 @@ let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
     let%lwt _ = upload ?progress ?cropping file in
-    Lwt.return ()
+    Lwt.return_unit
 
 let%client bind_submit
     (input : Dom_html.inputElement Js.t Eliom_client_value.t)
@@ -427,7 +427,7 @@ let%server mk_service name arg_deriver =
     ()
 
 let%shared mk_form
-    ?(after_submit = fun () -> Lwt.return ())
+    ?(after_submit = fun () -> Lwt.return_unit)
     ?crop
     ?input:(input_a, input_content = [], [])
     ?submit:(submit_a, submit_content = [], [])

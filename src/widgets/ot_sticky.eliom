@@ -106,7 +106,7 @@ let make_sticky
 
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
 
-  if not force && supports_position_sticky elt then Lwt.return None else begin
+  if not force && supports_position_sticky elt then Lwt.return_none else begin
     let fixed_dom = Js.Opt.case
         (Dom.CoerceTo.element @@ (To_dom.of_element elt)##cloneNode Js._false)
         (fun () -> failwith "could not clone element to make it sticky")
@@ -121,7 +121,7 @@ let make_sticky
       fixed = fixed;
       inline = elt;
       dir = dir;
-      scroll_thread = Lwt.return (); (* updated below *)
+      scroll_thread = Lwt.return_unit; (* updated below *)
       resize_thread = React.S.const (0,0); (* updated below *)
       dissolve = fun () -> failwith "undefined"
     } in
@@ -129,7 +129,7 @@ let make_sticky
     init ();
     let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
     let scroll_thread = Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
-      update_state glue; Lwt.return ()
+      update_state glue; Lwt.return_unit
     in
     let resize_thread = Ot_size.width_height |> React.S.map @@
       fun (width, height) -> synchronise glue; update_state glue; (width, height)
@@ -143,9 +143,9 @@ let make_sticky
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
     Eliom_client.onunload (fun () -> dissolve ());
-    Lwt.return @@ Some {glue with scroll_thread = scroll_thread;
-                                  resize_thread = resize_thread;
-                                  dissolve = dissolve}
+    Lwt.return_some {glue with scroll_thread = scroll_thread;
+                               resize_thread = resize_thread;
+                               dissolve = dissolve}
   end
 
 (* This is about functionality built on top of position:sticky / the polyfill *)

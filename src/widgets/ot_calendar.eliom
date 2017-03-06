@@ -258,11 +258,11 @@ let%client attach_events
         (fun _ r ->
            update_classes cal zero d;
            let%lwt _ = action y m dom in
-           Lwt.return ())
+           Lwt.return_unit)
       | None ->
         (fun _ r ->
            update_classes cal zero d;
-           Lwt.return ())
+           Lwt.return_unit)
     in
     let set_onclick () =
       let f () = Lwt_js_events.clicks c action in
@@ -283,7 +283,7 @@ let%client attach_events_lwt
     and y = A.year d in
     let%lwt highlight = highlight y m in
     attach_events ?action ?click_non_highlighted ~intl d cal highlight;
-    Lwt.return ()
+    Lwt.return_unit
   in
   Lwt.async f
 
@@ -395,7 +395,7 @@ let make_date_picker ?init ?update ?button_labels ?intl () =
       A.(year d, month d |> int_of_month, day_of_month d)
   in
   let v, f =  Eliom_shared.React.S.create init in
-  let action = [%client fun y m d -> ~%f (y, m, d); Lwt.return () ]
+  let action = [%client fun y m d -> ~%f (y, m, d); Lwt.return_unit ]
   and click_non_highlighted = true in
   let d =
     make

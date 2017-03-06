@@ -12,6 +12,6 @@ let%shared dropdown ?(a = []) ~menu content =
   (* the following does nothing, but still fixes hover anomalies on iPad *)
   ignore [%client (
     Lwt.async @@ fun () -> Lwt_js_events.clicks (To_dom.of_element ~%dropdown)
-      (fun ev _ -> Lwt.return ())
+      (fun ev _ -> Lwt.return_unit)
   :_)];
   dropdown
