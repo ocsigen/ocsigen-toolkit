@@ -241,18 +241,32 @@ let%shared make
     (********************** end *)
     let set_position ?transitionend pos =
       let pos = max 0 (min pos (maxi ())) in
-      let s = Js.string @@ (Eliom_shared.Value.local ~%make_transform)
-          ~vertical pos
-      in
+      let before =
+        Js.Optdef.case ((Js.Unsafe.coerce (d2'##.style))##.transform)
+          (fun () -> (Js.Unsafe.coerce (d2'##.style))##.webkitTransform)
+          (fun e -> e)
+      and s =
+        Js.string @@ (Eliom_shared.Value.local ~%make_transform)
+          ~vertical pos in
       (Js.Unsafe.coerce (d2'##.style))##.transform := s;
       (Js.Unsafe.coerce (d2'##.style))##.webkitTransform := s;
+      let move =
+        not (before == (Js.Unsafe.coerce (d2'##.style))##.transform
+             || before == (Js.Unsafe.coerce (d2'##.style))##.webkitTransform)
+      in
+
       let step = React.Step.create () in
       pos_set ~step pos;
       ~%swipe_pos_set ~step 0.;
       React.Step.execute step;
       set_active ();
       Lwt.async (fun () ->
-        let%lwt () = Lwt_js_events.transitionend d2' in
+        let%lwt () =
+          if move then
+            Lwt_js_events.transitionend d2'
+          else
+            Lwt.return_unit
+        in
         Eliom_lib.Option.iter (fun f -> f ()) transitionend;
         Manip.Class.remove ~%d2 ot_swiping;
         (* Remove swiping after calling f,
