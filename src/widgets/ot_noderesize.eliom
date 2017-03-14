@@ -76,7 +76,7 @@ let%client noderesize sensor f =
     let w = ref element##.offsetWidth in
     let h = ref element##.offsetHeight in
     let throttle = ref false in
-    Dom.addEventListener element (Dom.Event.make "scroll")
+    Dom.addEventListener element (Dom_html.Event.scroll)
       (Dom.handler (fun _ ->
          if not !throttle then begin
            throttle := true ;
