@@ -75,15 +75,22 @@ let%client noderesize sensor f =
   let bind element =
     let w = ref element##.offsetWidth in
     let h = ref element##.offsetHeight in
+    let throttle = ref false in
     Dom.addEventListener element (Dom.Event.make "scroll")
       (Dom.handler (fun _ ->
-         let w' = element##.offsetWidth in
-         let h' = element##.offsetHeight in
-         if w' <> !w || h' <> !h then f () ;
-         w := w' ;
-         h := h' ;
-         reset sensor ;
-         Js.bool true ) ) (Js.bool false) in
+         if not !throttle then begin
+           throttle := true ;
+           ignore @@ Dom_html.window##requestAnimationFrame
+             (Js.wrap_callback @@ fun _ ->
+              let w' = element##.offsetWidth in
+              let h' = element##.offsetHeight in
+              if w' <> !w || h' <> !h then f () ;
+              w := w' ;
+              h := h' ;
+              reset sensor ;
+              throttle := false) end ;
+         Js.bool true) )
+      (Js.bool false) in
   reset sensor ;
   sensor.grow_listener_id <- Some (bind sensor.grow) ;
   sensor.shrink_listener_id <- Some (bind sensor.shrink)
