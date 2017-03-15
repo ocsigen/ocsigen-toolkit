@@ -95,6 +95,13 @@ let%shared rec lwt_sequence xs = match xs with
     let%lwt xs = lwt_sequence xs in
     Lwt.return (x::xs)
 
+type%shared 'a t = {
+  elt : ([> `Div ] as 'a) Eliom_content.Html.elt;
+  pos : int Eliom_shared.React.S.t;
+  vis_elts : int Eliom_shared.React.S.t;
+  swipe_pos : float React.S.t Eliom_client_value.t
+}
+
 let%shared make_generic
     ?(a = [])
     ?(vertical = false)
@@ -507,7 +514,7 @@ let%shared make_generic
        ~%update);
   : unit)]
   in
-  Lwt.return (d, pos_signal, nb_visible_elements, swipe_pos)
+  Lwt.return {elt = d; pos = pos_signal; vis_elts = nb_visible_elements; swipe_pos}
 
 let%shared make_lazy
     ?a
@@ -958,7 +965,7 @@ let%shared wheel
   (* I create another signal equal to pos
      because I need pos before it is created :( *)
   let pos2, set_pos2 = Eliom_shared.React.S.create (position, 0.) in
-  let%lwt carousel, pos, size, swipe_pos =
+  let%lwt c =
     make
       ~a
       ~vertical
@@ -974,10 +981,10 @@ let%shared wheel
       content
   in
   let _ = [%client
-    (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%pos ~%swipe_pos
+    (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%(c.pos) ~%(c.swipe_pos)
      : _ React.S.t) ]
   in
-  Lwt.return (carousel, pos, swipe_pos)
+  Lwt.return (c.elt, c.pos, c.swipe_pos)
 
 
 

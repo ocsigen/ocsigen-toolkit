@@ -43,6 +43,14 @@
     You can use all these widgets in client or server OCaml side
     programs. *)
 
+(** see [make] *)
+type 'a t = {
+  elt : ([> `Div ] as 'a) Eliom_content.Html.elt;
+  pos : int Eliom_shared.React.S.t;
+  vis_elts : int Eliom_shared.React.S.t;
+  swipe_pos : float React.S.t Eliom_client_value.t
+}
+
 (**
   Creates a carousel from the elements of a list.
     [?position] is the initial position (default 0).
@@ -81,7 +89,7 @@
     Optional parameter [?make_page_attribute] allows to add html attributes
     to each page of the carousel. It takes the page number as parameter.
 
-    Function [make] returns:
+    Function [make] returns a value of type [t] that contains:
     - the element,
     - the current position (as a react signal),
     - the number of visible elements. It is more than 1 if element width
@@ -111,10 +119,7 @@ val make :
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
   [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list ->
-  ([> `Div ] Eliom_content.Html.elt *
-   int Eliom_shared.React.S.t *
-   int Eliom_shared.React.S.t *
-   float React.S.t Eliom_client_value.t) Lwt.t
+  [> `Div ] t Lwt.t
 
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
@@ -143,10 +148,7 @@ val make_lazy :
     Eliom_shared.Value.t ->
   (unit -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list ->
-  ([> `Div ] Eliom_content.Html.elt *
-   int Eliom_shared.React.S.t *
-   int Eliom_shared.React.S.t *
-   float React.S.t Eliom_client_value.t) Lwt.t
+  [> `Div ] t Lwt.t
 
 (** Carousel with 3D effect. Faces are displayed on a cylinder.
     Give the number of faces you want as parameter [faces] (default: 20).
