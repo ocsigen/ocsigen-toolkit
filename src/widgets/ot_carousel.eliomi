@@ -110,11 +110,37 @@ val make :
                         int ->
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
-  [< Html_types.div_content ] Eliom_content.Html.elt list ->
-  [> `Div ] Eliom_content.Html.elt *
-  int Eliom_shared.React.S.t *
-  int Eliom_shared.React.S.t *
-  float React.S.t Eliom_client_value.t
+  [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list ->
+  ([> `Div ] Eliom_content.Html.elt *
+   int Eliom_shared.React.S.t *
+   int Eliom_shared.React.S.t *
+   float React.S.t Eliom_client_value.t) Lwt.t
+
+(** TODO: documentation *)
+val make_lazy :
+  ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+  ?vertical:bool ->
+  ?position:int ->
+  ?transition_duration:float ->
+  ?inertia:float ->
+  ?swipeable:bool ->
+  ?allow_overswipe:bool ->
+  ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+  ?disabled: bool Eliom_shared.React.S.t ->
+  ?full_height:[ `No | `No_header
+               | `Header of (unit -> int) Eliom_client_value.t ] ->
+  ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
+    Eliom_shared.Value.t ->
+  ?make_page_attribute:(vertical:bool ->
+                        int ->
+                        Html_types.div_attrib Eliom_content.Html.D.attrib list)
+    Eliom_shared.Value.t ->
+  (unit -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt Lwt.t)
+    Eliom_shared.Value.t list ->
+  ([> `Div ] Eliom_content.Html.elt *
+   int Eliom_shared.React.S.t *
+   int Eliom_shared.React.S.t *
+   float React.S.t Eliom_client_value.t) Lwt.t
 
 (** Carousel with 3D effect. Faces are displayed on a cylinder.
     Give the number of faces you want as parameter [faces] (default: 20).
@@ -140,10 +166,10 @@ val wheel :
   ?disabled: bool Eliom_shared.React.S.t ->
   ?faces:int ->
   ?face_size:int ->
-  [< Html_types.div_content ] Eliom_content.Html.elt list ->
-  [> `Div ] Eliom_content.Html.elt *
-  int Eliom_shared.React.S.t *
-  float React.S.t Eliom_client_value.t
+  [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list ->
+  ([> `Div ] Eliom_content.Html.elt *
+   int Eliom_shared.React.S.t *
+   float React.S.t Eliom_client_value.t) Lwt.t
 
 (** List of bullets for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.

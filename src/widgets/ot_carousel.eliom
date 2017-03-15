@@ -82,7 +82,15 @@ type status =
     *)
 ]
 
-let%shared make
+(*TODO: put into Ocsigen_lib?*)
+let%shared rec lwt_sequence xs = match xs with
+  | [] -> Lwt.return_nil
+  | x::xs ->
+    let%lwt x = x in
+    let%lwt xs = lwt_sequence xs in
+    Lwt.return (x::xs)
+
+let%shared make_generic
     ?(a = [])
     ?(vertical = false)
     ?(position = 0)
@@ -95,7 +103,7 @@ let%shared make
     ?(full_height = `No)
     ?(make_transform = [%shared default_make_transform])
     ?(make_page_attribute = [%shared fun ~vertical:_ _ -> [] ])
-    l =
+    contents =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
   let swipe_pos_sig = [%client
@@ -106,12 +114,23 @@ let%shared make
   let swipe_pos_set =
     [%client (snd ~%swipe_pos_sig : ?step:React.step -> float -> unit) ]
   in
+
+  let%lwt initial_contents = match contents with
+    | `Lazy gen_contents ->
+        let mk_contents i gen = if i = position
+          then Eliom_shared.Value.local gen ()
+          else Lwt.return @@ D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
+        in
+        lwt_sequence @@ List.mapi mk_contents gen_contents
+    | `Strict contents -> Lwt.return contents
+  in
+
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".ot-car2>*")*)
   let pages = List.mapi (fun i e ->
     D.div ~a:( a_class ["ot-carpage"]
                :: Eliom_shared.Value.local make_page_attribute ~vertical i)
-                            [e]) l
+                            [e]) initial_contents
   in
   let initial_translation =
     if position = 0
@@ -163,6 +182,27 @@ let%shared make
     let pos_set = ~%pos_set in
     let action = ref (`Move (0, 0)) in
     let animation_frame_requested = ref false in
+
+    let () = match ~%contents with
+      | `Strict _ -> ()
+      | `Lazy gen_contents ->
+          let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
+          let content_generators = List.mapi mk_generator gen_contents in
+          let fill_lazy_content = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
+            let content_generator = List.nth content_generators i in
+            match !content_generator with
+              | None -> Lwt.return ()
+              | Some gen -> begin
+                  let%lwt new_content = gen () in
+                  let old_content = List.nth ~%initial_contents i in
+                  Manip.replaceSelf old_content new_content;
+                  content_generator := None;
+                  Lwt.return ()
+              end
+          in
+          (*TODO: cancel fill_lazy_content on unload*)
+          ()
+    in
     (**********************
        setting class active on visible pages (only)
     *)
@@ -463,7 +503,65 @@ let%shared make
        ~%update);
   : unit)]
   in
-  d, pos_signal, nb_visible_elements, swipe_pos
+  Lwt.return (d, pos_signal, nb_visible_elements, swipe_pos)
+
+let%shared make_lazy
+    ?a
+    ?vertical
+    ?position
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    gen_contents =
+  make_generic
+    ?a
+    ?vertical
+    ?position
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    (`Lazy gen_contents)
+
+let%shared make
+    ?a
+    ?vertical
+    ?position
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    contents =
+  make_generic
+    ?a
+    ?vertical
+    ?position
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    (`Strict contents)
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
@@ -856,7 +954,7 @@ let%shared wheel
   (* I create another signal equal to pos
      because I need pos before it is created :( *)
   let pos2, set_pos2 = Eliom_shared.React.S.create (position, 0.) in
-  let carousel, pos, size, swipe_pos =
+  let%lwt carousel, pos, size, swipe_pos =
     make
       ~a
       ~vertical
@@ -875,7 +973,7 @@ let%shared wheel
     (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%pos ~%swipe_pos
      : _ React.S.t) ]
   in
-  carousel, pos, swipe_pos
+  Lwt.return (carousel, pos, swipe_pos)
 
 
 
