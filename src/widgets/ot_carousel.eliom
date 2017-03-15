@@ -192,21 +192,21 @@ let%shared make_generic
       | Strict _ -> ()
       | Lazy gen_contents ->
           let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
+          (* None: no generator as content is already present *)
           let content_generators = List.mapi mk_generator gen_contents in
-          let fill_lazy_content = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
+          let thread = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
             let content_generator = List.nth content_generators i in
             match !content_generator with
               | None -> Lwt.return ()
               | Some gen -> begin
+                  content_generator := None;
                   let%lwt new_content = gen () in
                   let old_content = List.nth ~%initial_contents i in
                   Manip.replaceSelf old_content new_content;
-                  content_generator := None;
                   Lwt.return ()
               end
           in
-          (*TODO: cancel fill_lazy_content on unload*)
-          ()
+          Eliom_client.onunload (fun () -> React.S.stop ~strong:true thread)
     in
     (**********************
        setting class active on visible pages (only)
