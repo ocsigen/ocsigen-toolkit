@@ -116,7 +116,13 @@ val make :
    int Eliom_shared.React.S.t *
    float React.S.t Eliom_client_value.t) Lwt.t
 
-(** TODO: documentation *)
+(** same as [make] except for the last argument. Instead of supplying the
+    contents for each page directly, supply a for each page a shared content
+    generator function. Contents will be generated and filled lazily, i.e. when
+    switching to a page for the first time. The initial page (defined by
+    [position] is directly generated on the server side (if [make_lazy] is
+    invoked on the server).
+*)
 val make_lazy :
   ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
   ?vertical:bool ->
