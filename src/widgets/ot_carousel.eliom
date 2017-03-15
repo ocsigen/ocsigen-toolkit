@@ -82,9 +82,9 @@ type status =
     *)
 ]
 
-type%shared contents =
-  | Strict of Html_types.div_content_fun Eliom_content.Html.elt list
-  | Lazy of (unit -> Html_types.div_content_fun Eliom_content.Html.elt Lwt.t)
+type%shared 'a contents =
+  | Strict of ([< Html_types.div_content] as 'a) Eliom_content.Html.elt list
+  | Lazy of (unit -> ([< Html_types.div_content] as 'a) Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list
 
 (*TODO: put into Ocsigen_lib?*)

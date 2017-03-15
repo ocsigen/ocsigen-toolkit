@@ -110,8 +110,8 @@ val make :
                         int ->
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
-  Html_types.div_content Eliom_content.Html.elt list ->
-  (Html_types.div_content Eliom_content.Html.elt *
+  [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list ->
+  ([> `Div ] Eliom_content.Html.elt *
    int Eliom_shared.React.S.t *
    int Eliom_shared.React.S.t *
    float React.S.t Eliom_client_value.t) Lwt.t
@@ -141,9 +141,9 @@ val make_lazy :
                         int ->
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
-  (unit -> Html_types.div_content Eliom_content.Html.elt Lwt.t)
+  (unit -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list ->
-  (Html_types.div_content Eliom_content.Html.elt *
+  ([> `Div ] Eliom_content.Html.elt *
    int Eliom_shared.React.S.t *
    int Eliom_shared.React.S.t *
    float React.S.t Eliom_client_value.t) Lwt.t
@@ -172,7 +172,7 @@ val wheel :
   ?disabled: bool Eliom_shared.React.S.t ->
   ?faces:int ->
   ?face_size:int ->
-  Html_types.div_content Eliom_content.Html.elt list ->
+  [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list ->
   ([> `Div ] Eliom_content.Html.elt *
    int Eliom_shared.React.S.t *
    float React.S.t Eliom_client_value.t) Lwt.t
