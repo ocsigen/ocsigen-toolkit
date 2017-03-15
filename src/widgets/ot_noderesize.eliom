@@ -101,9 +101,10 @@ let%client noderesize_aux reset sensor f =
   sensor.grow_listener_id <- Some (bind sensor.grow) ;
   sensor.shrink_listener_id <- Some (bind sensor.shrink)
 
-let%client noderesize = noderesize_aux reset
-
-let%client noderesize_opt ({ grow_child ; _ } as sensor) =
-  grow_child##.style##.width := Js.string "9999px" ;
-  grow_child##.style##.height := Js.string "9999px" ;
-  noderesize_aux reset_opt sensor
+let%client noderesize ?(safe=false) ({ grow_child ; _ } as sensor) =
+  if safe then noderesize_aux reset sensor
+  else begin
+    grow_child##.style##.width := Js.string "9999px" ;
+    grow_child##.style##.height := Js.string "9999px" ;
+    noderesize_aux reset_opt sensor
+  end

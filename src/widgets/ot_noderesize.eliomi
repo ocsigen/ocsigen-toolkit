@@ -45,18 +45,18 @@
 
     {[Lwt.async (fun () ->
         let div' = (To_dom.of_element div) in
-        let%lwt () = Nodeready.nodeready container' in
-        Ot_noderesize.noderesize (Noderesize.init div) (fun () ->
+        let%lwt () = Ot_nodeready.nodeready container' in
+        Ot_noderesize.noderesize (ot_noderesize.attach div) (fun () ->
           Firebug.console##log (Js.string "Resized") ) )]} *)
 
 type resize_sensor
 
 val attach : #Dom_html.element Js.t -> resize_sensor
 
-val noderesize : resize_sensor -> (unit -> unit) -> unit
-
-(** Same as noderesize, but use static values for sensor in order to avoid
-    reading parent watched element's size for each sensor reset. *)
-val noderesize_opt : resize_sensor -> (unit -> unit) -> unit
+(** When [safe] is set to [true], [noderesize] will work whatever sized is
+    the watched element. When set to [false] (which is the default),
+    elements bigger than 9999px (width or height) will not detect resize,
+    but noderesize will be more efficient (less computation/reading). *)
+val noderesize : ?safe:bool -> resize_sensor -> (unit -> unit) -> unit
 
 val detach : resize_sensor -> unit
