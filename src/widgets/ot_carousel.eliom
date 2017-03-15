@@ -82,6 +82,11 @@ type status =
     *)
 ]
 
+type%shared contents =
+  | Strict of Html_types.div_content_fun Eliom_content.Html.elt list
+  | Lazy of (unit -> Html_types.div_content_fun Eliom_content.Html.elt Lwt.t)
+    Eliom_shared.Value.t list
+
 (*TODO: put into Ocsigen_lib?*)
 let%shared rec lwt_sequence xs = match xs with
   | [] -> Lwt.return_nil
@@ -116,13 +121,13 @@ let%shared make_generic
   in
 
   let%lwt initial_contents = match contents with
-    | `Lazy gen_contents ->
+    | Lazy gen_contents ->
         let mk_contents i gen = if i = position
           then Eliom_shared.Value.local gen ()
           else Lwt.return @@ D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
         in
         lwt_sequence @@ List.mapi mk_contents gen_contents
-    | `Strict contents -> Lwt.return contents
+    | Strict contents -> Lwt.return contents
   in
 
   (* We wrap all pages in a div in order to add class carpage,
@@ -184,8 +189,8 @@ let%shared make_generic
     let animation_frame_requested = ref false in
 
     let () = match ~%contents with
-      | `Strict _ -> ()
-      | `Lazy gen_contents ->
+      | Strict _ -> ()
+      | Lazy gen_contents ->
           let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
           let content_generators = List.mapi mk_generator gen_contents in
           let fill_lazy_content = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
@@ -532,7 +537,7 @@ let%shared make_lazy
     ?full_height
     ?make_transform
     ?make_page_attribute
-    (`Lazy gen_contents)
+    (Lazy gen_contents)
 
 let%shared make
     ?a
@@ -561,7 +566,7 @@ let%shared make
     ?full_height
     ?make_transform
     ?make_page_attribute
-    (`Strict contents)
+    (Strict contents)
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
