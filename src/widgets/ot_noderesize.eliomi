@@ -35,6 +35,9 @@
     possible or use a [onnodeready] event to attach [noderesize]
     listener.
 
+    Also, if the element is removed, then re-inserted in the DOM, sensor
+    will not work anymore.
+
     If the element to be watched is not positionned, a [position:
     relative] will be applied.
 
