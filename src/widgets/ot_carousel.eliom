@@ -188,26 +188,25 @@ let%shared make_generic
     let action = ref (`Move (0, 0)) in
     let animation_frame_requested = ref false in
 
-    let () = match ~%contents with
-      | Strict _ -> ()
-      | Lazy gen_contents ->
-          let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
-          (* None: no generator as content is already present *)
-          let content_generators = List.mapi mk_generator gen_contents in
-          let thread = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
-            let content_generator = List.nth content_generators i in
-            match !content_generator with
-              | None -> Lwt.return ()
-              | Some gen -> begin
-                  content_generator := None;
-                  let%lwt new_content = gen () in
-                  let old_content = List.nth ~%initial_contents i in
-                  Manip.replaceSelf old_content new_content;
-                  Lwt.return ()
-              end
-          in
-          Eliom_client.onunload (fun () -> React.S.stop ~strong:true thread)
+    (* fill pages with content when switching to for the first time *)
+    let () = match ~%contents with | Strict _ -> () | Lazy gen_contents ->
+      let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
+      (* None: no generator as content is already present *)
+      let content_generators = List.mapi mk_generator gen_contents in
+      let thread = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
+        let content_generator = List.nth content_generators i in
+        match !content_generator with
+          | Some gen ->
+              content_generator := None;
+              let%lwt new_content = gen () in
+              let old_content = List.nth ~%initial_contents i in
+              Manip.replaceSelf old_content new_content;
+              Lwt.return ()
+          | None -> Lwt.return ()
+      in
+      Eliom_client.onunload (fun () -> React.S.stop ~strong:true thread)
     in
+
     (**********************
        setting class active on visible pages (only)
     *)
