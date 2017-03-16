@@ -34,7 +34,7 @@ let%client attach watched =
   let style = "display:block; position: absolute; \
                left: 0; top: 0; right: 0; bottom: 0; \
                overflow: hidden; z-index: -1000; visibility: hidden;" in
-  let style_child = "position: absolute; left: 0; top: 0;" in
+  let style_child = "position: absolute; left: 0; top: 0; transition: 0s;" in
   let grow_child = D.div ~a:[ a_style style_child ] [] in
   let grow =
     D.div ~a:[ a_class ["resize-sensor-grow"] ; a_style style ] [ grow_child ]
@@ -71,19 +71,40 @@ let%client reset { grow ; grow_child ; shrink ; _ } =
   grow##.scrollLeft := grow##.scrollWidth ;
   grow##.scrollTop := grow##.scrollHeight
 
-let%client noderesize sensor f =
+let%client reset_opt { grow ; grow_child ; shrink ; _ } =
+  shrink##.scrollLeft := 9999 ;
+  shrink##.scrollTop := 9999 ;
+  grow##.scrollLeft := 9999 ;
+  grow##.scrollTop := 9999
+
+let%client noderesize_aux reset sensor f =
   let bind element =
     let w = ref element##.offsetWidth in
     let h = ref element##.offsetHeight in
-    Dom.addEventListener element (Dom.Event.make "scroll")
+    let throttle = ref false in
+    Dom.addEventListener element (Dom_html.Event.scroll)
       (Dom.handler (fun _ ->
-         let w' = element##.offsetWidth in
-         let h' = element##.offsetHeight in
-         if w' <> !w || h' <> !h then f () ;
-         w := w' ;
-         h := h' ;
-         reset sensor ;
-         Js.bool true ) ) (Js.bool false) in
+         if not !throttle then begin
+           throttle := true ;
+           ignore @@ Dom_html.window##requestAnimationFrame
+             (Js.wrap_callback @@ fun _ ->
+              let w' = element##.offsetWidth in
+              let h' = element##.offsetHeight in
+              if w' <> !w || h' <> !h then f () ;
+              w := w' ;
+              h := h' ;
+              reset sensor ;
+              throttle := false) end ;
+         Js.bool true) )
+      (Js.bool false) in
   reset sensor ;
   sensor.grow_listener_id <- Some (bind sensor.grow) ;
   sensor.shrink_listener_id <- Some (bind sensor.shrink)
+
+let%client noderesize ?(safe=false) ({ grow_child ; _ } as sensor) =
+  if safe then noderesize_aux reset sensor
+  else begin
+    grow_child##.style##.width := Js.string "9999px" ;
+    grow_child##.style##.height := Js.string "9999px" ;
+    noderesize_aux reset_opt sensor
+  end
