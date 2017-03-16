@@ -82,9 +82,9 @@ type status =
     *)
 ]
 
-type%shared 'a contents =
-  | Strict of ([< Html_types.div_content] as 'a) Eliom_content.Html.elt list
-  | Lazy of (unit -> ([< Html_types.div_content] as 'a) Eliom_content.Html.elt Lwt.t)
+type%shared +'a contents =
+  | Strict of 'a Eliom_content.Html.elt list
+  | Lazy of (unit -> 'a Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list
 
 (*TODO: put into Ocsigen_lib?*)
@@ -96,7 +96,7 @@ let%shared rec lwt_sequence xs = match xs with
     Lwt.return (x::xs)
 
 type%shared 'a t = {
-  elt : ([> `Div ] as 'a) Eliom_content.Html.elt;
+  elt : 'a Eliom_content.Html.elt;
   pos : int Eliom_shared.React.S.t;
   vis_elts : int Eliom_shared.React.S.t;
   swipe_pos : float React.S.t Eliom_client_value.t
@@ -116,6 +116,9 @@ let%shared make_generic
     ?(make_transform = [%shared default_make_transform])
     ?(make_page_attribute = [%shared fun ~vertical:_ _ -> [] ])
     contents =
+
+  let contents = (contents :> Html_types.div_content contents) in
+
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
   let swipe_pos_sig = [%client
