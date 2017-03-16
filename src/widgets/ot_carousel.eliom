@@ -122,14 +122,24 @@ let%shared make_generic
     [%client (snd ~%swipe_pos_sig : ?step:React.step -> float -> unit) ]
   in
 
-  let%lwt initial_contents = match contents with
+  let%lwt initial_contents, spinners = match contents with
+    | Strict contents -> Lwt.return (contents, [])
     | Lazy gen_contents ->
         let mk_contents i gen = if i = position
-          then Eliom_shared.Value.local gen ()
-          else Lwt.return @@ D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
+          then
+            let%lwt contents = Eliom_shared.Value.local gen () in
+            Lwt.return (contents, None)
+          else
+            let spinner = D.div ~a:[a_class ["ot-icon-animation-spinning"]] [] in
+            Lwt.return (spinner, Some spinner)
         in
-        Lwt_list.map_s (fun x -> x) @@ List.mapi mk_contents gen_contents
-    | Strict contents -> Lwt.return contents
+        Lwt.map List.split @@
+          Lwt_list.map_s (fun x -> x) @@
+            List.mapi mk_contents gen_contents
+  in
+  let gen_contents = match contents with
+    | Strict contents -> None
+    | Lazy gen_contents -> Some gen_contents
   in
 
   (* We wrap all pages in a div in order to add class carpage,
@@ -190,20 +200,19 @@ let%shared make_generic
     let action = ref (`Move (0, 0)) in
     let animation_frame_requested = ref false in
 
-    (* fill pages with content when switching to for the first time *)
-    let () = match ~%contents with | Strict _ -> () | Lazy gen_contents ->
-      let mk_generator i gen = ref @@ if i = ~%position then None else Some gen in
-      (* None: no generator as content is already present *)
-      let content_generators = List.mapi mk_generator gen_contents in
-      let _ = pos_signal |> React.S.map @@ fun i -> Lwt.async @@ fun () ->
+    (* replace spinners with content when switched to for the first time *)
+    let () = match ~%gen_contents with | None -> () | Some gen_contents ->
+      let mk_generator gen spinner = ref @@ match spinner with
+        | None -> None (* no generator/spinner as content is already present *)
+        | Some spinner -> Some (gen, spinner)
+      in
+      let content_generators = List.map2 mk_generator gen_contents ~%spinners in
+      let _ = pos_signal |> React.S.map @@ fun i ->
         let content_generator = List.nth content_generators i in
-        match !content_generator with
-          | Some gen ->
+        Lwt.async @@ fun () -> match !content_generator with
+          | Some (gen, spinner) ->
               content_generator := None;
-              let%lwt new_content = gen () in
-              let old_content = List.nth ~%initial_contents i in
-              Manip.replaceSelf old_content new_content;
-              Lwt.return ()
+              Lwt.map (Manip.replaceSelf spinner) (gen ())
           | None -> Lwt.return ()
       in ()
     in
