@@ -89,7 +89,7 @@ type%shared 'a t = {
   swipe_pos : float React.S.t Eliom_client_value.t
 }
 
-let%shared make_generic
+let%shared make
     ?(a = [])
     ?(vertical = false)
     ?(position = 0)
@@ -102,7 +102,6 @@ let%shared make_generic
     ?(full_height = `No)
     ?(make_transform = [%shared default_make_transform])
     ?(make_page_attribute = [%shared fun ~vertical:_ _ -> [] ])
-    ~lazy_pages
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -171,20 +170,6 @@ let%shared make_generic
     let pos_set = ~%pos_set in
     let action = ref (`Move (0, 0)) in
     let animation_frame_requested = ref false in
-
-    (* replace spinners with content when switched to for the first time *)
-    let () = match ~%lazy_pages with | None -> () | Some lazy_pages ->
-      let lazy_pages = List.map ref lazy_pages in
-      let _ = pos_signal |> React.S.map @@ fun i ->
-        let page = List.nth lazy_pages i in
-        Lwt.async @@ fun () -> match !page with
-          | Some (spinner, gen_content) ->
-              page := None; (* indicates that the content is already there *)
-              Lwt.map (Manip.replaceSelf spinner) (gen_content ())
-          | None -> Lwt.return ()
-      in ()
-    in
-
     (**********************
        setting class active on visible pages (only)
     *)
@@ -505,23 +490,22 @@ let%shared make_lazy
   let gen_contents = (gen_contents :>
     (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list) in
 
-  let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option) Lwt.t
+  let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t
     = fun i gen -> if i = position
         then
           let%lwt contents = Eliom_shared.Value.local gen () in
-          Lwt.return (contents, None)
+          Lwt.return (contents, ref @@ None)
         else
           let spinner = D.div ~a:[a_class ["ot-icon-animation-spinning"]] [] in
-          Lwt.return (spinner, Some (spinner, gen))
+          Lwt.return (spinner, ref @@ Some (spinner, gen))
   in
-
-  let%lwt contents, lazy_pages =
+  let%lwt contents, spinners_and_generators =
         Lwt.map List.split @@
           Lwt_list.map_s (fun x -> x) @@
             List.mapi mk_contents gen_contents
   in
 
-  Lwt.return @@ make_generic
+  let carousel = make
     ?a
     ?vertical
     ~position
@@ -534,38 +518,22 @@ let%shared make_lazy
     ?full_height
     ?make_transform
     ?make_page_attribute
-    ~lazy_pages:(Some lazy_pages)
     contents
+  in
 
-let%shared make
-    ?a
-    ?vertical
-    ?position
-    ?transition_duration
-    ?inertia
-    ?swipeable
-    ?allow_overswipe
-    ?update
-    ?disabled
-    ?full_height
-    ?make_transform
-    ?make_page_attribute
-    contents =
-  make_generic
-    ?a
-    ?vertical
-    ?position
-    ?transition_duration
-    ?inertia
-    ?swipeable
-    ?allow_overswipe
-    ?update
-    ?disabled
-    ?full_height
-    ?make_transform
-    ?make_page_attribute
-    ~lazy_pages:None
-    contents
+  (* replace spinners with content when switched to for the first time *)
+  let _ = [%client (
+      let _ = ~%carousel.pos |> React.S.map @@ fun i ->
+        let spinner_and_generator = List.nth ~%spinners_and_generators i in
+        Lwt.async @@ fun () -> match !spinner_and_generator with
+          | Some (spinner, gen_content) ->
+              spinner_and_generator := None;
+              Lwt.map (Manip.replaceSelf spinner) (gen_content ())
+          | None -> Lwt.return ()
+      in ()
+  : unit)] in
+
+  Lwt.return carousel
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
