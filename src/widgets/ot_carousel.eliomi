@@ -119,7 +119,7 @@ val make :
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
-  [> `Div ] t Lwt.t
+  [> `Div ] t
 
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
@@ -175,9 +175,9 @@ val wheel :
   ?faces:int ->
   ?face_size:int ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
-  ([> `Div ] Eliom_content.Html.elt *
-   int Eliom_shared.React.S.t *
-   float React.S.t Eliom_client_value.t) Lwt.t
+  [> `Div ] Eliom_content.Html.elt *
+  int Eliom_shared.React.S.t *
+  float React.S.t Eliom_client_value.t
 
 (** List of bullets for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
