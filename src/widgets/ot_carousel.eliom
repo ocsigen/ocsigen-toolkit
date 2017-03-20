@@ -82,12 +82,14 @@ type status =
     *)
 ]
 
-type%shared 'a t = {
+[%%shared
+type 'a t = {
   elt : 'a Eliom_content.Html.elt;
   pos : int Eliom_shared.React.S.t;
   vis_elts : int Eliom_shared.React.S.t;
   swipe_pos : float React.S.t Eliom_client_value.t
 }
+]
 
 let%shared make
     ?(a = [])
