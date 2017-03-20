@@ -82,6 +82,13 @@ type status =
     *)
 ]
 
+type%shared 'a t = {
+  elt : 'a Eliom_content.Html.elt;
+  pos : int Eliom_shared.React.S.t;
+  vis_elts : int Eliom_shared.React.S.t;
+  swipe_pos : float React.S.t Eliom_client_value.t
+}
+
 let%shared make
     ?(a = [])
     ?(vertical = false)
@@ -477,7 +484,70 @@ let%shared make
        ~%update);
   : unit)]
   in
-  d, pos_signal, nb_visible_elements, swipe_pos
+  {elt = d; pos = pos_signal; vis_elts = nb_visible_elements; swipe_pos}
+
+let%shared make_lazy
+    ?a
+    ?vertical
+    ?(position = 0)
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    gen_contents =
+
+  let gen_contents = (gen_contents :>
+    (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list) in
+
+  let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t
+    = fun i gen -> if i = position
+        then
+          let%lwt contents = Eliom_shared.Value.local gen () in
+          Lwt.return (contents, ref @@ None)
+        else
+          let spinner = D.div ~a:[a_class ["ot-icon-animation-spinning"]] [] in
+          Lwt.return (spinner, ref @@ Some (spinner, gen))
+  in
+  let%lwt contents, spinners_and_generators =
+        Lwt.map List.split @@
+          Lwt_list.map_s (fun x -> x) @@
+            List.mapi mk_contents gen_contents
+  in
+
+  let carousel = make
+    ?a
+    ?vertical
+    ~position
+    ?transition_duration
+    ?inertia
+    ?swipeable
+    ?allow_overswipe
+    ?update
+    ?disabled
+    ?full_height
+    ?make_transform
+    ?make_page_attribute
+    contents
+  in
+
+  (* replace spinners with content when switched to for the first time *)
+  let _ = [%client (
+      let _ = ~%carousel.pos |> React.S.map @@ fun i ->
+        let spinner_and_generator = List.nth ~%spinners_and_generators i in
+        Lwt.async @@ fun () -> match !spinner_and_generator with
+          | Some (spinner, gen_content) ->
+              spinner_and_generator := None;
+              Lwt.map (Manip.replaceSelf spinner) (gen_content ())
+          | None -> Lwt.return ()
+      in ()
+  : unit)] in
+
+  Lwt.return carousel
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
@@ -870,7 +940,7 @@ let%shared wheel
   (* I create another signal equal to pos
      because I need pos before it is created :( *)
   let pos2, set_pos2 = Eliom_shared.React.S.create (position, 0.) in
-  let carousel, pos, size, swipe_pos =
+  let c =
     make
       ~a
       ~vertical
@@ -886,10 +956,10 @@ let%shared wheel
       content
   in
   let _ = [%client
-    (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%pos ~%swipe_pos
+    (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%(c.pos) ~%(c.swipe_pos)
      : _ React.S.t) ]
   in
-  carousel, pos, swipe_pos
+  c.elt, c.pos, c.swipe_pos
 
 
 

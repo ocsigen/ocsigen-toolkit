@@ -43,6 +43,14 @@
     You can use all these widgets in client or server OCaml side
     programs. *)
 
+(** see [make] *)
+type 'a t = {
+  elt : 'a Eliom_content.Html.elt;
+  pos : int Eliom_shared.React.S.t;
+  vis_elts : int Eliom_shared.React.S.t;
+  swipe_pos : float React.S.t Eliom_client_value.t
+}
+
 (**
   Creates a carousel from the elements of a list.
     [?position] is the initial position (default 0).
@@ -81,7 +89,7 @@
     Optional parameter [?make_page_attribute] allows to add html attributes
     to each page of the carousel. It takes the page number as parameter.
 
-    Function [make] returns:
+    Function [make] returns a value of type [t] that contains:
     - the element,
     - the current position (as a react signal),
     - the number of visible elements. It is more than 1 if element width
@@ -111,10 +119,36 @@ val make :
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
   [< Html_types.div_content ] Eliom_content.Html.elt list ->
-  [> `Div ] Eliom_content.Html.elt *
-  int Eliom_shared.React.S.t *
-  int Eliom_shared.React.S.t *
-  float React.S.t Eliom_client_value.t
+  [> `Div ] t
+
+(** same as [make] except for the last argument. Instead of supplying the
+    contents for each page directly, supply a for each page a shared content
+    generator function. Contents will be generated and filled lazily, i.e. when
+    switching to a page for the first time. The initial page (defined by
+    [position] is directly generated on the server side (if [make_lazy] is
+    invoked on the server).
+*)
+val make_lazy :
+  ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+  ?vertical:bool ->
+  ?position:int ->
+  ?transition_duration:float ->
+  ?inertia:float ->
+  ?swipeable:bool ->
+  ?allow_overswipe:bool ->
+  ?update: [ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+  ?disabled: bool Eliom_shared.React.S.t ->
+  ?full_height:[ `No | `No_header
+               | `Header of (unit -> int) Eliom_client_value.t ] ->
+  ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
+    Eliom_shared.Value.t ->
+  ?make_page_attribute:(vertical:bool ->
+                        int ->
+                        Html_types.div_attrib Eliom_content.Html.D.attrib list)
+    Eliom_shared.Value.t ->
+  (unit -> [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t)
+    Eliom_shared.Value.t list ->
+  [> `Div ] t Lwt.t
 
 (** Carousel with 3D effect. Faces are displayed on a cylinder.
     Give the number of faces you want as parameter [faces] (default: 20).
