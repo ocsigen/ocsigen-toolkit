@@ -325,7 +325,6 @@ let%shared make
                    let m = - width_element * (maxi ()) + global_delta in
                    min global_delta (max delta m)
                in
-               let sign = if delta < 0 then " - " else " + " in
                let pos = Eliom_shared.React.S.value pos_signal in
                ~%swipe_pos_set (-. (float delta) /. float width_element);
                let s = ~%make_transform ~vertical ~delta pos in
@@ -488,6 +487,24 @@ let%shared make
   in
   {elt = d; pos = pos_signal; vis_elts = nb_visible_elements; swipe_pos}
 
+let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
+
+(* on the client side we generate the contents of the initially visible page
+   asynchronously so the tabs will be rendered right away *)
+let%client generate_initial_contents gen =
+  let s = spinner () in
+  begin Lwt.async @@ fun () ->
+    let%lwt contents = Eliom_shared.Value.local gen () in
+    Manip.replaceSelf s contents;
+    Lwt.return ()
+  end;
+  Lwt.return (s, ref @@ None)
+
+(* on the server side we generate all the visible contents right away *)
+let%server generate_initial_contents gen =
+  let%lwt contents = Eliom_shared.Value.local gen () in
+  Lwt.return (contents, ref @@ None)
+
 let%shared make_lazy
     ?a
     ?vertical
@@ -508,12 +525,8 @@ let%shared make_lazy
 
   let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t
     = fun i gen -> if i = position
-        then
-          let%lwt contents = Eliom_shared.Value.local gen () in
-          Lwt.return (contents, ref @@ None)
-        else
-          let spinner = D.div ~a:[a_class ["ot-icon-animation-spinning"]] [] in
-          Lwt.return (spinner, ref @@ Some (spinner, gen))
+        then generate_initial_contents gen
+        else Lwt.return @@ let s = spinner () in s, ref @@ Some (s, gen)
   in
   let%lwt contents, spinners_and_generators =
         Lwt.map List.split @@
