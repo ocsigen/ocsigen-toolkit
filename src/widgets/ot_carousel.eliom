@@ -491,17 +491,20 @@ let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
-let%client generate_initial_contents gen =
+let%client generate_initial_contents sleeper gen =
   let s = spinner () in
   begin Lwt.async @@ fun () ->
     let%lwt contents = Eliom_shared.Value.local gen () in
+    (* wait until DOM elements are created before attempting to replace them *)
+    let%lwt parent = sleeper in
+    ignore @@ To_dom.of_element parent;
     Manip.replaceSelf s contents;
     Lwt.return ()
   end;
   Lwt.return (s, ref @@ None)
 
 (* on the server side we generate all the visible contents right away *)
-let%server generate_initial_contents gen =
+let%server generate_initial_contents _ gen =
   let%lwt contents = Eliom_shared.Value.local gen () in
   Lwt.return (contents, ref @@ None)
 
@@ -519,13 +522,13 @@ let%shared make_lazy
     ?make_transform
     ?make_page_attribute
     gen_contents =
-
   let gen_contents = (gen_contents :>
     (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list) in
 
+  let sleeper, wakener = Lwt.wait () in
   let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t
     = fun i gen -> if i = position
-        then generate_initial_contents gen
+        then generate_initial_contents sleeper gen
         else Lwt.return @@ let s = spinner () in s, ref @@ Some (s, gen)
   in
   let%lwt contents, spinners_and_generators =
@@ -533,7 +536,6 @@ let%shared make_lazy
           Lwt_list.map_s (fun x -> x) @@
             List.mapi mk_contents gen_contents
   in
-
   let carousel = make
     ?a
     ?vertical
@@ -549,7 +551,7 @@ let%shared make_lazy
     ?make_page_attribute
     contents
   in
-
+  Lwt.wakeup wakener carousel.elt; (* generate initial content (only client-side) *)
   (* replace spinners with content when switched to for the first time *)
   let _ = [%client (
       let _ = ~%carousel.pos |> React.S.map @@ fun i ->
@@ -561,7 +563,6 @@ let%shared make_lazy
           | None -> Lwt.return ()
       in ()
   : unit)] in
-
   Lwt.return carousel
 
 let%shared bullet_class i pos size =
