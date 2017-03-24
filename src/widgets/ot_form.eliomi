@@ -33,11 +33,11 @@ end
     popup). Note: you get proper tab cycles only for three or more elements! The
     list does not need to be complete, as only the first, the second, the next
     to last, and the last element matter. *)
-val setup_tabcycle : #tabbable Js.t list -> unit Lwt.t
+val setup_tabcycle : #tabbable Js.t list -> unit
 
 (** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_tabcycle] *)
-val setup_tabcycle_auto : Dom_html.element Js.t -> unit Lwt.t
+val setup_tabcycle_auto : Dom_html.element Js.t -> unit
 
 (** The popup is scanned for a form element
     and [setup_tabcycle_auto] is applied to it (if no form element is
@@ -53,11 +53,6 @@ val setup_tabcycle_auto : Dom_html.element Js.t -> unit Lwt.t
     A function to cancel this behavior is returned.
 *)
 
-val setup_form
-  : trigger:[ `OnNodeReady | `OnSignal of bool React.S.t]
-  -> ?modal:bool
-  -> Dom_html.element Js.t
-  -> (unit -> unit) option Lwt.t
+val setup_form : Dom_html.element Js.t -> unit
 
-val resetup_form_signal
-  : unit -> [> `OnSignal of bool React.S.t] * (unit -> unit Lwt.t)
+val prevent_tab : Dom_html.element Js.t -> (unit -> unit)
