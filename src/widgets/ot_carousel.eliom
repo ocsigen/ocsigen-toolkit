@@ -554,6 +554,7 @@ let%shared make_lazy
   Lwt.wakeup wakener carousel.elt; (* generate initial content (only client-side) *)
   (* replace spinners with content when switched to for the first time *)
   let _ = [%client (
+    if ~%spinners_and_generators = [] then () else
       let _ = ~%carousel.pos |> React.S.map @@ fun i ->
         let spinner_and_generator = List.nth ~%spinners_and_generators i in
         Lwt.async @@ fun () -> match !spinner_and_generator with
