@@ -29,8 +29,6 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
     ; div ~a:[ a_class ["ot-hcf-content"] ] content
     ; F.footer ~a:[ a_class ["ot-hcf-footer"] ] footer ]
 
-let%client number_of_popups = ref 0
-
 let%client scroll_pos = ref 0
 
 let%client popup
@@ -46,18 +44,6 @@ let%client popup
     (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
   in
   let popup = ref None in
-
-  (let cl = (Js.string "ot-popup") in
-   if !number_of_popups <> 0 &&
-      (Dom_html.document##getElementsByClassName cl)##.length = 0 then
-     (* Before we open a popup, if the number of popups is not 0
-        and there's no opened popup, we must reset the popup counter.
-        This situation may happen when the user clicks on a link inside
-        a popup and loads a new page without resetting the whole environment. *)
-     number_of_popups := 0);
-
-  incr number_of_popups;
-
 
   let html = Js.Opt.to_option @@
     Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
@@ -77,8 +63,8 @@ let%client popup
   if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
   let do_close () =
-    decr number_of_popups;
-    if !number_of_popups = 0 then begin
+    if (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))
+       ##.length = 1 then begin
       html_ManipClass_remove "ot-with-popup";
       if ios_scroll_pos_fix then
         Dom_html.document##.body##.scrollTop := !scroll_pos
