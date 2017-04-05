@@ -27,32 +27,18 @@ class type tabbable = object
   method tabIndex : int Js.prop
 end
 
-(** [setup_tabcycle] makes a form in a popup more user-friendly, by focussing on
-    the first element of the form and forcing tab keys to cycle through the
-    elements of the form only (and not the elements of the page behind the
-    popup). Note: you get proper tab cycles only for three or more elements! The
-    list does not need to be complete, as only the first, the second, the next
-    to last, and the last element matter. *)
+(** [setup_tabcycle] makes tab key loop over child elements of an element and
+    only these elements. *)
 val setup_tabcycle : #tabbable Js.t list -> unit
 
 (** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_tabcycle] *)
 val setup_tabcycle_auto : Dom_html.element Js.t -> unit
 
-(** The popup is scanned for a form element
-    and [setup_tabcycle_auto] is applied to it (if no form element is
-    found the whole popup is scanned). This happens either once the popup opens
-    (if [setup_form] equals [`OnPopup]) or with [`OnSignal] the tabcycling can
-    be switched on (popup is rescanned) and off with a boolean signal.
-
-    If [disable_rest] (default: true) is true then the tabIndex of all
-    the elements not in the popup are set to -1 with the effect that they can
-    not be selected using the TAB key. When the popup is closed their old
-    tabIndex value is restored. Note, that some elements that are tabbable in
-    some browsers but not by specification (scrollable div's) are not affected.
-    A function to cancel this behavior is returned.
-*)
-
+(** Scan for focusable elements apply [setup_tabcycle_auto] to them and
+    focus the first. *)
 val setup_form : Dom_html.element Js.t -> unit
 
+(** [prevent_tab e] prevents [e] (and its children) to be focused with tab key.
+    A function to restore the initial status is returned. *)
 val prevent_tab : Dom_html.element Js.t -> (unit -> unit)
