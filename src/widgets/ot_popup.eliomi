@@ -57,34 +57,18 @@ val hcf :
 
     For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
 
-    If [disable_background] (default: true) is true then the tabIndex of all
-    the elements not in the popup are set to -1 with the effect that they can
-    not be selected using the TAB key. When the popup is closed their old
-    tabIndex value is restored. Note, that some elements that are tabbable in
-    some browsers but not by specification (scrollable div's) are not affected.
-
     If [close_on_background_click] (default: false) is true then clicking on the
     background of the popup closes it.
-
-    If [setup_form] is provided, the popup is scanned for a form element
-    and [setup_tabcycle_auto] is applied to it (if no form element is
-    found the whole popup is scanned). This happens either once the popup opens
-    (if [setup_form] equals [`OnPopup]) or with [`OnSignal] the tabcycling can
-    be switched on (popup is rescanned) and off with a boolean signal. *)
+*)
 val popup :
   ?a:[< div_attrib ] attrib list
   -> ?close_button:(button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
-  -> ?disable_background:bool
   -> ?close_on_background_click:bool
-  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
-
-val resetup_form_signal :
-  unit -> [> `OnSignal of bool React.S.t] * (unit -> unit Lwt.t)
 
 (** [ask_question ?a ?a_hcf question buttons]
     Prompt a user, wait for its response and return the selected value.
@@ -95,8 +79,6 @@ val resetup_form_signal :
 val ask_question :
   ?a:[< div_attrib ] attrib list
   -> ?a_hcf:[< div_attrib ] attrib list
-  -> ?disable_background:bool
-  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> header:[< header_content ] elt list
   -> buttons:([< button_content_fun ] elt list
               * (unit -> 'a Lwt.t)
@@ -113,27 +95,7 @@ val ask_question :
     [no] is the content of the 'no' button (returning false) *)
 val confirm :
   ?a:[< div_attrib ] attrib list
-  -> ?disable_background:bool
-  -> ?setup_form:[`OnPopup | `OnSignal of bool React.S.t]
   -> [< header_content_fun ] elt list
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
   -> bool Lwt.t
-
-(** An HTML element which can be selected by pressing the tab key *)
-class type tabbable = object
-  inherit Dom_html.element
-  method tabIndex : int Js.prop
-end
-
-(** [setup_tabcycle] makes a form in a popup more user-friendly, by focussing on
-    the first element of the form and forcing tab keys to cycle through the
-    elements of the form only (and not the elements of the page behind the
-    popup). Note: you get proper tab cycles only for three or more elements! The
-    list does not need to be complete, as only the first, the second, the next
-    to last, and the last element matter. *)
-val setup_tabcycle : #tabbable Js.t list -> unit Lwt.t
-
-(** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
-    and feeds them to [setup_tabcycle] *)
-val setup_tabcycle_auto : Dom_html.element Js.t -> unit Lwt.t
