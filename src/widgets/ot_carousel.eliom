@@ -86,6 +86,7 @@ type status =
 type 'a t = {
   elt : 'a Eliom_content.Html.elt;
   pos : int Eliom_shared.React.S.t;
+  pos_post : int Eliom_shared.React.S.t;
   vis_elts : int Eliom_shared.React.S.t;
   swipe_pos : float React.S.t Eliom_client_value.t
 }
@@ -107,6 +108,7 @@ let%shared make
     l =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
+  let pos_post, pos_post_set = Eliom_shared.React.S.create position in
   let swipe_pos_sig = [%client
     (React.S.create 0.
      : (float React.S.t * (?step:React.step -> float -> unit))) ]
@@ -278,6 +280,7 @@ let%shared make
         in
         Eliom_lib.Option.iter (fun f -> f ()) transitionend;
         Manip.Class.remove ~%d2 ot_swiping;
+        ~%pos_post_set pos;
         (* Remove swiping after calling f,
            because f will possibly change the scrolling position of the page *)
         Lwt.return_unit)
@@ -485,7 +488,7 @@ let%shared make
        ~%update);
   : unit)]
   in
-  {elt = d; pos = pos_signal; vis_elts = nb_visible_elements; swipe_pos}
+  {elt = d; pos = pos_signal; pos_post; vis_elts = nb_visible_elements; swipe_pos}
 
 let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 
