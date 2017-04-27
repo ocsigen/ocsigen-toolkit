@@ -47,6 +47,7 @@
 type 'a t = {
   elt : 'a Eliom_content.Html.elt;
   pos : int Eliom_shared.React.S.t;
+  pos_post : int Eliom_shared.React.S.t;
   vis_elts : int Eliom_shared.React.S.t;
   swipe_pos : float React.S.t Eliom_client_value.t
 }
@@ -90,13 +91,14 @@ type 'a t = {
     to each page of the carousel. It takes the page number as parameter.
 
     Function [make] returns a value of type [t] that contains:
-    - the element,
-    - the current position (as a react signal),
-    - the number of visible elements. It is more than 1 if element width
-    ([div.car2]) is set, in CSS, to a value smaller than carousel width
-    (for example 50% or 33.33%).
-    The width of all elements is supposed to be equal,
-    and the size of carousel must be a multiple of the size of element.
+    - the HTML element [elt],
+    - the current position [pos] (as a react signal),
+    - the current position [pos_post] which is updated after the tab change is
+      completed
+    - the number of visible elements [vis_elts]. It is more than 1 if element
+      width ([div.car2]) is set, in CSS, to a value smaller than carousel width
+      (for example 50% or 33.33%). The width of all elements is supposed to be
+      equal, and the size of carousel must be a multiple of the size of element.
     - the current swipe position. Value -1.0 corresponds to previous page,
     and +1.0 to next page.
 *)
