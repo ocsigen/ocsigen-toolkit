@@ -492,12 +492,28 @@ let%shared make
 
 let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 
+let%shared generate_content generator =
+  try%lwt Eliom_shared.Value.local generator ()
+  with e ->
+    let a = if Eliom_config.get_debugmode ()
+            then []
+            else [a_class ["ot-icon-question"]]
+    in
+    Lwt.return @@ div ~a [em [pcdata @@ Printexc.to_string e]]
+
+let%shared default_fail e =
+  [
+    if Eliom_config.get_debugmode ()
+    then em [ pcdata (Printexc.to_string e) ]
+    else em ~a:[ a_class ["ot-icon-question"] ]
+        [ pcdata (Printexc.to_string e) ] ]
+
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
 let%client generate_initial_contents sleeper gen =
   let s = spinner () in
   begin Lwt.async @@ fun () ->
-    let%lwt contents = Eliom_shared.Value.local gen () in
+    let%lwt contents = generate_content gen in
     (* wait until DOM elements are created before attempting to replace them *)
     let%lwt parent = sleeper in
     ignore @@ To_dom.of_element parent;
@@ -508,7 +524,7 @@ let%client generate_initial_contents sleeper gen =
 
 (* on the server side we generate all the visible contents right away *)
 let%server generate_initial_contents _ gen =
-  let%lwt contents = Eliom_shared.Value.local gen () in
+  let%lwt contents = generate_content gen in
   Lwt.return (contents, ref @@ None)
 
 let%shared make_lazy
@@ -554,7 +570,7 @@ let%shared make_lazy
     ?make_page_attribute
     contents
   in
-  Lwt.wakeup wakener carousel.elt; (* generate initial content (only client-side) *)
+  Lwt.wakeup wakener carousel.elt; (* generate initial content (client-side) *)
   (* replace spinners with content when switched to for the first time *)
   let _ = [%client (
     if ~%spinners_and_generators = [] then () else
@@ -563,7 +579,9 @@ let%shared make_lazy
         Lwt.async @@ fun () -> match !spinner_and_generator with
           | Some (spinner, gen_content) ->
               spinner_and_generator := None;
-              Lwt.map (Manip.replaceSelf spinner) (gen_content ())
+              let%lwt content = generate_content gen_content in
+              Manip.replaceSelf spinner content;
+              Lwt.return_unit
           | None -> Lwt.return ()
       in ()
   : unit)] in
