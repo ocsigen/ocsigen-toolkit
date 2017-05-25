@@ -14,7 +14,7 @@ let generate_color_samples precision =
   let color_list = match precision with
     | p when p <= 1     ->
       ignore (raise_exception
-                "genere_list_color, the argument have to be greater than 1");
+                "generate_list_color, the argument have to be greater than 1");
       []
     | precision         ->
       let step = 255 / (precision - 1) in
@@ -58,14 +58,14 @@ let color_samples_p6 = lazy (genere_color_samples 6)
 
 (* Some hand-mained color_samples *)
 let color_samples_10 = [[["#E03625"; "#FF4B3A"];
-                     ["#FF7E02"; "#FFC503"];
-                     ["#01CD64"; "#AF58B9"];
-                     ["#0198DD"; "#254760"];
-                     ["#FFFFFF"; "#000000"]]]
+                         ["#FF7E02"; "#FFC503"];
+                         ["#01CD64"; "#AF58B9"];
+                         ["#0198DD"; "#254760"];
+                         ["#FFFFFF"; "#000000"]]]
 
 let color_samples_6 = [[["#BEC3C7"; "#7A8E8D"];
-                    ["#1C3D50"; "#0280B4"];
-                    ["#00A385"; "#A444B2"]]]
+                        ["#1C3D50"; "#0280B4"];
+                        ["#00A385"; "#A444B2"]]]
 
 
 (**
