@@ -9,7 +9,7 @@ type t = (string ref * div * div list * div)
 let raise_exception str =
   failwith "ew_table_color_picker." ^ str
 
-let genere_lll_color precision =
+let generate_lll_color precision =
 
   let color_list = match precision with
     | p when p <= 1     ->
@@ -72,7 +72,7 @@ let lll_color_6 = [[["#BEC3C7"; "#7A8E8D"];
 ** Take one list of list of list of color (string) and build table list with it.
 ** return also div_color_list to allow to launch start script detection
 **)
-let genere_color_table lll_color =
+let generate_color_table lll_color =
 
   let build_color_div color =
     D.div ~a:[a_class["ew_table_color_picker_square"];
@@ -128,7 +128,7 @@ let create
       ?(initial_color = 0, 0, 0) ?(lll_color = Lazy.force lll_color_p5) () =
   let tbl, trl, tdl = initial_color in
   let color_ref = ref (List.nth (List.nth (List.nth lll_color tbl) trl) tdl) in
-  let div_color_list, tables = genere_color_table lll_color in
+  let div_color_list, tables = generate_color_table lll_color in
   let color_div = D.div ~a:[a_class["ew_table_color_picker_color_div"];
                           a_title !color_ref;
                           a_style ("background-color: " ^ !color_ref ^ ";")] []
@@ -162,8 +162,8 @@ let start (color_ref, color_div, color_list, _) =
       aux tail
   in aux color_list
 
-let genere_and_append (color_ref, color_div, fst_list, block) new_list =
-  let div_color_list, tables = genere_color_table new_list in
+let generate_and_append (color_ref, color_div, fst_list, block) new_list =
+  let div_color_list, tables = generate_color_table new_list in
   let aux = function
     | tbl::t    -> Eliom_content.Html.Manip.appendChild block tbl
     | []        -> ()
@@ -173,12 +173,12 @@ let genere_and_append (color_ref, color_div, fst_list, block) new_list =
 let add_square_color color_picker new_list =
   let color_ref, color_div, fst_list, block = color_picker in
   color_ref, color_div,
-  fst_list@(genere_and_append color_picker new_list), block
+  fst_list@(generate_and_append color_picker new_list), block
 
 let add_square_color_and_start color_picker new_list =
   let color_ref, color_div, fst_list, block = color_picker in
   ignore (start (color_ref, color_div,
-                 genere_and_append color_picker new_list, block))
+                 generate_and_append color_picker new_list, block))
 
 let get_color (color_ref, _ , _, _) = !color_ref
 

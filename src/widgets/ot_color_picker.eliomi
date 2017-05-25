@@ -5,9 +5,9 @@ type div = Html_types.div Eliom_content.Html.D.elt
 
 (** The agrument is the divisor of 255
 *** It have to be greater than 1 **)
-val genere_lll_color : int -> string list list list
+val generate_lll_color : int -> string list list list
 
-(* Some pre-genereated lll_color in several precision *)
+(* Some pre-generated lll_color in several precision *)
 val lll_color_p2 : string list list list Lazy.t
 val lll_color_p3 : string list list list Lazy.t
 val lll_color_p4 : string list list list Lazy.t
@@ -27,7 +27,7 @@ val lll_color_10 : string list list list (* 1 table 2 columns 3 lines *)
 *** - t to future action,
 *** - color_div, to display current select color,
 ***     it is not mandatory to include it in page
-*** - and the block with all color square content in the genered table **)
+*** - and the block with all color square content in the generated table **)
 val create :
   ?initial_color: int * int * int ->
   ?lll_color: string list list list ->
