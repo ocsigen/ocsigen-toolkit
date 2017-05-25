@@ -1,0 +1,26 @@
+/* It regroups one table of colors */
+.ot-color-picker-table {
+}
+
+.ot-color-picker-table-td {
+}
+
+.ot-color-picker-table-tr {
+}
+
+/* A class for the div contained in each table cell. It is used to display the
+ * color to select. */
+.ot-color-picker-square {
+	height: 0.9em;
+	width: 0.9em;
+	border-radius:0.1em;
+}
+
+/* The set of tables of colors */
+.ot-color-picker-block {
+}
+
+
+/* A class for the div that displays the currently selected color. */
+.ot-color-picker-current-color {
+}
