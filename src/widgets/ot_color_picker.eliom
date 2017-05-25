@@ -49,14 +49,14 @@ let generate_color_samples precision =
   in aux_red [] 0
 
 
-(* Some pre-genereated ll_color in several precision *)
+(* Some pre-generated color samples in several precisions. *)
 let color_samples_p2 = lazy (genere_color_samples 2)
 let color_samples_p3 = lazy (genere_color_samples 3)
 let color_samples_p4 = lazy (genere_color_samples 4)
 let color_samples_p5 = lazy (genere_color_samples 5)
 let color_samples_p6 = lazy (genere_color_samples 6)
 
-(* Some hand-mained color_samples *)
+(* Some hand-mained color samples *)
 let color_samples_10 = [[["#E03625"; "#FF4B3A"];
                          ["#FF7E02"; "#FFC503"];
                          ["#01CD64"; "#AF58B9"];
@@ -68,10 +68,8 @@ let color_samples_6 = [[["#BEC3C7"; "#7A8E8D"];
                         ["#00A385"; "#A444B2"]]]
 
 
-(**
-** Take one list of list of list of color (string) and build table list with it.
-** return also div_color_list to allow to launch start script detection
-**)
+(* Take one list of list of list of color (string) and build table list with it.
+   return also div_color_list to allow to launch start script detection. *)
 let generate_color_table color_samples =
 
   let build_color_div color =
