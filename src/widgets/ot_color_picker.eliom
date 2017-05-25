@@ -72,16 +72,16 @@ let color_samples_6 = [[["#BEC3C7"; "#7A8E8D"];
 let generate_color_table color_samples =
 
   let build_color_div color =
-    D.div ~a:[a_class["ew_table_color_picker_square"];
+    D.div ~a:[a_class["ot-color-picker-square"];
             a_title color;
             a_style ("background-color: " ^ color ^ ";")]
       []
   in
   let build_td_color color_div =
-    td ~a:[a_class["ew_table_color_picker_td"]] [color_div]
+    td ~a:[a_class["ot-color-picker-table-td"]] [color_div]
   in
   let build_tr_color tds =
-    tr ~a:[a_class["ew_table_color_picker_tr"]] tds
+    tr ~a:[a_class["ot-color-picker-table-tr"]] tds
   in
 
   let rec build_table div_color_list tables = function
@@ -111,7 +111,7 @@ let generate_color_table color_samples =
       in
 
       let div_color_list', trs = build_column div_color_list [] head in
-      let tbl = table ~a:[a_class["ew_table_color_picker_table"]] trs in
+      let tbl = table ~a:[a_class["ot-color-picker-table"]] trs in
       build_table
         div_color_list'
         (tbl::tables)
@@ -126,11 +126,11 @@ let create
   let tbl, trl, tdl = initial_color in
   let color_ref = ref (List.nth (List.nth (List.nth color_samples tbl) trl) tdl) in
   let div_color_list, tables = generate_color_table color_samples in
-  let color_div = D.div ~a:[a_class["ew_table_color_picker_color_div"];
+  let color_div = D.div ~a:[a_class["ot-color-picker-current-color"];
                           a_title !color_ref;
                           a_style ("background-color: " ^ !color_ref ^ ";")] []
   in
-  let block = D.div ~a:[a_class["ew_table_color_picker_block"]] tables in
+  let block = D.div ~a:[a_class["ot-color-picker-block"]] tables in
   let type_t = (color_ref, color_div, div_color_list, block) in
   type_t, color_div, block
 
