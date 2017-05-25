@@ -121,8 +121,7 @@ let generate_color_table color_samples =
   let div_color_list, tables = build_table [] [] color_samples in
   div_color_list, tables
 
-let create
-      ?(initial_color = 0, 0, 0) ?(color_samples = Lazy.force color_samples_p5) () =
+let make ?(initial_color = 0, 0, 0) ?(color_samples = Lazy.force color_samples_p5) () =
   let tbl, trl, tdl = initial_color in
   let color_ref = ref (List.nth (List.nth (List.nth color_samples tbl) trl) tdl) in
   let div_color_list, tables = generate_color_table color_samples in
