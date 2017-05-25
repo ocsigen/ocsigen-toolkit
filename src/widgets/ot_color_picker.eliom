@@ -50,11 +50,11 @@ let generate_color_samples precision =
 
 
 (* Some pre-generated color samples in several precisions. *)
-let color_samples_p2 = lazy (genere_color_samples 2)
-let color_samples_p3 = lazy (genere_color_samples 3)
-let color_samples_p4 = lazy (genere_color_samples 4)
-let color_samples_p5 = lazy (genere_color_samples 5)
-let color_samples_p6 = lazy (genere_color_samples 6)
+let color_samples_p2 = lazy (generate_color_samples 2)
+let color_samples_p3 = lazy (generate_color_samples 3)
+let color_samples_p4 = lazy (generate_color_samples 4)
+let color_samples_p5 = lazy (generate_color_samples 5)
+let color_samples_p6 = lazy (generate_color_samples 6)
 
 (* Some hand-mained color samples *)
 let color_samples_10 = [[["#E03625"; "#FF4B3A"];
