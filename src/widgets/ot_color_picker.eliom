@@ -6,16 +6,15 @@ open Eliom_content.Html.F
 type div = Html_types.div Eliom_content.Html.D.elt
 type t = (string ref * div * div list * div)
 
-let raise_exception str =
-  failwith "ew_table_color_picker." ^ str
+let raise_color_samples_exception () =
+  let message = "Ot_color_picker.generate_color_samples, \
+                 the argument have to be greater than 1" in
+  invalid_arg message
 
 let generate_color_samples precision =
 
   let color_list = match precision with
-    | p when p <= 1     ->
-      ignore (raise_exception
-                "generate_list_color, the argument have to be greater than 1");
-      []
+    | p when p <= 1     -> raise_color_samples_exception ()
     | precision         ->
       let step = 255 / (precision - 1) in
       let rec aux_build nl v =
