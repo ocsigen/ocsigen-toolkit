@@ -9,7 +9,7 @@ type t = (string ref * div * div list * div)
 let raise_exception str =
   failwith "ew_table_color_picker." ^ str
 
-let generate_lll_color precision =
+let generate_color_samples precision =
 
   let color_list = match precision with
     | p when p <= 1     ->
@@ -50,20 +50,20 @@ let generate_lll_color precision =
 
 
 (* Some pre-genereated ll_color in several precision *)
-let lll_color_p2 = lazy (genere_lll_color 2)
-let lll_color_p3 = lazy (genere_lll_color 3)
-let lll_color_p4 = lazy (genere_lll_color 4)
-let lll_color_p5 = lazy (genere_lll_color 5)
-let lll_color_p6 = lazy (genere_lll_color 6)
+let color_samples_p2 = lazy (genere_color_samples 2)
+let color_samples_p3 = lazy (genere_color_samples 3)
+let color_samples_p4 = lazy (genere_color_samples 4)
+let color_samples_p5 = lazy (genere_color_samples 5)
+let color_samples_p6 = lazy (genere_color_samples 6)
 
-(* Some hand-mained lll_color *)
-let lll_color_10 = [[["#E03625"; "#FF4B3A"];
+(* Some hand-mained color_samples *)
+let color_samples_10 = [[["#E03625"; "#FF4B3A"];
                      ["#FF7E02"; "#FFC503"];
                      ["#01CD64"; "#AF58B9"];
                      ["#0198DD"; "#254760"];
                      ["#FFFFFF"; "#000000"]]]
 
-let lll_color_6 = [[["#BEC3C7"; "#7A8E8D"];
+let color_samples_6 = [[["#BEC3C7"; "#7A8E8D"];
                     ["#1C3D50"; "#0280B4"];
                     ["#00A385"; "#A444B2"]]]
 
@@ -72,7 +72,7 @@ let lll_color_6 = [[["#BEC3C7"; "#7A8E8D"];
 ** Take one list of list of list of color (string) and build table list with it.
 ** return also div_color_list to allow to launch start script detection
 **)
-let generate_color_table lll_color =
+let generate_color_table color_samples =
 
   let build_color_div color =
     D.div ~a:[a_class["ew_table_color_picker_square"];
@@ -121,14 +121,14 @@ let generate_color_table lll_color =
         tail
   in
 
-  let div_color_list, tables = build_table [] [] lll_color in
+  let div_color_list, tables = build_table [] [] color_samples in
   div_color_list, tables
 
 let create
-      ?(initial_color = 0, 0, 0) ?(lll_color = Lazy.force lll_color_p5) () =
+      ?(initial_color = 0, 0, 0) ?(color_samples = Lazy.force color_samples_p5) () =
   let tbl, trl, tdl = initial_color in
-  let color_ref = ref (List.nth (List.nth (List.nth lll_color tbl) trl) tdl) in
-  let div_color_list, tables = generate_color_table lll_color in
+  let color_ref = ref (List.nth (List.nth (List.nth color_samples tbl) trl) tdl) in
+  let div_color_list, tables = generate_color_table color_samples in
   let color_div = D.div ~a:[a_class["ew_table_color_picker_color_div"];
                           a_title !color_ref;
                           a_style ("background-color: " ^ !color_ref ^ ";")] []
