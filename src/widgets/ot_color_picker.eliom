@@ -13,9 +13,9 @@ let raise_color_samples_exception () =
 
 let generate_color_samples precision =
 
-  let color_list = match precision with
-    | p when p <= 1     -> raise_color_samples_exception ()
-    | precision         ->
+  let color_list =
+    if precision <= 1 || precision > 256 then raise_color_samples_exception ()
+    else
       let step = 255 / (precision - 1) in
       let rec aux_build nl v =
         if (v > 255)
