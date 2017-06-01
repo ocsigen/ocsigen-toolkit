@@ -12,7 +12,6 @@ let raise_color_samples_exception () =
   invalid_arg message
 
 let generate_color_samples precision =
-
   let color_list =
     if precision <= 1 || precision > 256 then raise_color_samples_exception ()
     else
@@ -22,31 +21,11 @@ let generate_color_samples precision =
         then nl
         else aux_build ((Printf.sprintf "%02X" v)::nl) (v + step)
       in aux_build [] 0
-  in
-  let max_iteration = List.length color_list in
-
-  let rec aux_red nl = function
-    | n when n >= max_iteration -> nl
-    | n                         ->
-      let red = List.nth color_list n in
-
-      let rec aux_green nl = function
-        | n when n >= max_iteration     -> nl
-        | n                             ->
-          let green = List.nth color_list n in
-
-          let rec aux_blue nl = function
-            | n when n >= max_iteration -> nl
-            | n                         ->
-              let blue = List.nth color_list n in
-              aux_blue (("#" ^ red ^ green ^ blue)::nl) (n + 1)
-
-          in aux_green ((aux_blue [] 0)::nl) (n + 1)
-
-      in aux_red ((aux_green [] 0)::nl) (n + 1)
-
-  in aux_red [] 0
-
+  in List.map (fun red ->
+    List.map (fun green ->
+      List.map (fun blue ->
+        String.concat "" ["#"; red; green; blue]
+      ) color_list ) color_list ) color_list
 
 (* Some pre-generated color samples in several precisions. *)
 let color_samples_p2 = lazy (generate_color_samples 2)
