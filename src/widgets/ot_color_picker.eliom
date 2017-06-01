@@ -46,8 +46,8 @@ let color_samples_6 = [[["#BEC3C7"; "#7A8E8D"];
                         ["#00A385"; "#A444B2"]]]
 
 
-(* Take one list of list of list of color (string) and build table list with it.
-   return also div_color_list to allow to launch start script detection. *)
+(* Take a list of lists of lists of colors (strings) and returns a table list.
+   Also returns a div_color_list for launching start script detection. *)
 let generate_color_table color_samples =
 
   let build_color_div color =
