@@ -2,7 +2,6 @@
 
 [%%client
   open Eliom_content.Html
-  open Regexp
 ]
 
 open Eliom_content.Html.D
