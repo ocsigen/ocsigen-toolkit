@@ -9,7 +9,7 @@ open Eliom_content.Html.D
 [%%client
 
   module type PULLTOREFRESH = sig
-    val dragThreshold : float
+    val dragThreshold : float 
     val moveCount : int
     val headContainerHeight : int
     val pullText :  Html_types.span  Eliom_content.Html.D.elt
@@ -32,11 +32,11 @@ open Eliom_content.Html.D
   module Make(Elt:PULLTOREFRESH) = struct
     let dragThreshold = Elt.dragThreshold 
     let moveCount  = min (max 100 Elt.moveCount) 500
-    let dragStart = ref (-1)
-    let percentage = ref 0.
-    let joinRefreshFlag = ref false
-    let refreshFlag = ref false
-    let pullText = To_dom.of_element Elt.pullText
+    let dragStart = ref (-1) (*vertical coordinate of the first touch point, its value if -1 par default*)
+    let percentage = ref 0. (*drag distance/screenHeight*)
+    let joinRefreshFlag = ref false (*joinRefreshFlag=true if the container is not at its inital position*)
+    let refreshFlag = ref false (*refreshFlag=true if the container is being refreshed*)
+    let pullText = To_dom.of_element Elt.pullText (*Javascript version of pullText*)
     let icon = Elt.icon
     let container = Elt.container
     let js_container = To_dom.of_element container
@@ -83,19 +83,23 @@ open Eliom_content.Html.D
       js_container##.style##.transform := Js.string ("translate3d(0," ^ (string_of_float translateY) ^ "px,0)")
 
     let touchmove_handler ev _ =
-      (*do nothing if the page is being refreshed*)
       Dom_html.stopPropagation ev;
       if !dragStart >= 0 then
         begin
-          if !refreshFlag then
+          if !refreshFlag then (*do nothing if the page is being refreshed*)
             Dom.preventDefault ev
-          else if ev##.touches##.length=1 then
+          else if ev##.touches##.length=1 then (*do nothing if two or more touch points exist*)
             begin
               let target = ev##.changedTouches##item(0) in
               Js.Optdef.iter target (fun target ->
                 percentage := (float_of_int (!dragStart - target##.clientY))/. (float_of_int Dom_html.window##.screen##.height) 
               );
-              if Dom_html.document##.body##.scrollTop = 0 && !percentage<0. then touchmove_handler_ ev else joinRefreshFlag:=false
+              (*move the container if and only if scrollTop = 0 and the page is scrolled down*)
+              if Dom_html.document##.body##.scrollTop = 0 && !percentage<0. 
+              then 
+                touchmove_handler_ ev 
+              else 
+                joinRefreshFlag:=false
             end
         end;
       Lwt.return_unit
@@ -105,23 +109,22 @@ open Eliom_content.Html.D
       pullText##.textContent := Js.some ( Js.string Elt.loadingText);
       Manip.Class.removes icon Elt.pullIconClass;
       Manip.Class.adds icon Elt.loadingIconClass;
-      (*let translate_y = string_of_int (int_of_float (Ot_size.client_height (To_dom.of_element icon))) in*)
-      (*let translate_y =string_of_int ((To_dom.of_element icon)##.scrollHeight) in*)
       js_container##.style##.transform := Js.string ("translate3d(0,"^(string_of_int Elt.headContainerHeight)^"px,0)");
       refreshFlag := true;
       Lwt.async ( 
         fun () ->
-          let%lwt b = Elt.afterPull () in
-          if b then
+          let%lwt b = Elt.afterPull () in 
+          if b then (*if page refresh succeeds*)
             ignore( Dom_html.window##setTimeout (Js.wrap_callback (
               fun () -> 
                 pullText##.textContent := Js.some (Js.string Elt.successText);
                 Manip.Class.removes icon Elt.loadingIconClass;
                 Manip.Class.adds icon Elt.successClass;
                 js_container##.style##.transform := Js.string ("translate3d(0,0,0)");
-                refreshFlag:=false)) 700.)
+                refreshFlag:=false)) 700.) 
+                (*if the page refreshing is finished instantaneously, setTimeout is used to show the animation*)
           else
-            begin
+            begin (*if page refresh fails*)
               pullText##.textContent := Js.some (Js.string Elt.failureText) ;
               Manip.Class.removes icon Elt.loadingIconClass;
               Manip.Class.adds icon Elt.failureClass;
@@ -135,7 +138,7 @@ open Eliom_content.Html.D
             end;
           Lwt.return_unit )
 
-    let scroll_back () =
+    let scroll_back () = (*scroll back to top if |percentage| < dragThreshold*)
       if !joinRefreshFlag then
         begin
           Manip.Class.add container "ot-transition-on";
@@ -176,22 +179,22 @@ open Eliom_content.Html.D
 ]
 
 let make 
-    ?(dragThreshold = 0.3) 
-    ?(moveCount = 200)
-    ?(successClass = ["ot-default-icon-success"])
-    ?(failureClass = ["ot-default-icon-failure"])
-    ?(pullIconClass = ["ot-default-arrow-icon"])
-    ?(loadingIconClass = ["ot-default-spinner"])
-    ?(headContainerClass = ["ot-default-head-container"])
+    ?(dragThreshold = 0.3) (*refresh the page when drag distance/screenHeight > dragThreshold*)
+    ?(moveCount = 200)  (*maximal drag distance*)
+    ?(successClass = ["ot-default-icon-success"]) (*the class of icon if the function afterPull succeeds*)
+    ?(failureClass = ["ot-default-icon-failure"]) (*the class of icon if the function afterPull fails*)
+    ?(pullIconClass = ["ot-default-arrow-icon"]) (*the class of icon during dragging*)
+    ?(loadingIconClass = ["ot-default-spinner"]) (*the class of icon during loading*)
+    ?(headContainerClass = ["ot-default-head-container"]) (*headContainer contains the icon (div) and the text (span)*)
     ?(successText = "The page is refreshed")
     ?(failureText = "An error has occured")
     ?(pullDownText = "Pull down to refresh...")
     ?(releaseText = "Release to refresh...")
     ?(loadingText = "Loading...")
-    ?(rotateGradually = false)
-    ?(blockPullIcon = true)
+    ?(rotateGradually = false) (*if the icon rotates gradually during draggin*)
+    ?(blockPullIcon = true) (*if blockPullIcon=true , the icon can rotate at most 180 deg. Otherwise, it can rotate at most 360deg*)
     ~content 
-    (afterPull: (unit-> bool Lwt.t) Eliom_client_value.t) = 
+    (afterPull: (unit-> bool Lwt.t) Eliom_client_value.t) (*refresh function*) = 
   let icon = if rotateGradually then div [] else div ~a:[a_class ["ot-transition-on"]][] in
   let pullText = span [] in
   let headContainer = div ~a:[a_class ("ot-head-container"::headContainerClass)] [icon;pullText] in
@@ -223,6 +226,6 @@ let make
          let module Ptr = Make(Ptr_elt) in
          Ptr.init();
        in
-       Eliom_client.onload onload  : unit )
+       Eliom_client.onload onload  : unit ) (*initialize after the page is loaded to make sure that heightContainerHeight<>0*)
     ]);
   Eliom_content.Html.F.(div ~a:[a_class ["ot-pull-to-refresh-wrapper"]][container])
