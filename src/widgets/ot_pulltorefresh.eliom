@@ -191,7 +191,7 @@ let make
     ?(pullDownText = "Pull down to refresh...")
     ?(releaseText = "Release to refresh...")
     ?(loadingText = "Loading...")
-    ?(rotateGradually = false) (*if the icon rotates gradually during draggin*)
+    ?(rotateGradually = false) (*if the icon rotates gradually during dragging*)
     ?(blockPullIcon = true) (*if blockPullIcon=true , the icon can rotate at most 180 deg. Otherwise, it can rotate at most 360deg*)
     ~content 
     (afterPull: (unit-> bool Lwt.t) Eliom_client_value.t) (*refresh function*) = 
