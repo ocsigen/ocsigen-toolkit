@@ -26,6 +26,10 @@
     font-size: 14px;
   }
 
+.ot-display-none{
+    display: none !important;
+}
+
 .ot-head-container .ot-default-spinner {
     display: inline-block;
     margin-right: 8px;
