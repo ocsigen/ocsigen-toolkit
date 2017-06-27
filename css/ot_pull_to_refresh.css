@@ -30,12 +30,12 @@
     display: none ;
 }
 
- .ot-pull-refresh-spinner {
+.ot-pull-refresh-spinner {
     display: inline-block;
     margin-right: 6px;
 }
 
- .ot-pull-refresh-spinner {
+.ot-pull-refresh-spinner {
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -46,11 +46,11 @@
     background-size: contain;
 }
 
- .ot-pull-refresh-pull-down-icon {
+.ot-pull-refresh-pull-down-icon {
   transform: rotate(0deg);
 }
 
- .ot-pull-refresh-arrow-icon{
+.ot-pull-refresh-arrow-icon{
   width: 10px;
   height: 30px;
   display: inline-block;
@@ -61,7 +61,7 @@
   margin-bottom: 3px;
 }
 
- .ot-pull-refresh-up {
+.ot-pull-refresh-up {
   transform: rotate(180deg);
 }
 
