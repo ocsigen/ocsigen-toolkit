@@ -30,7 +30,7 @@
    [?failureText] is the information shown when the container refresh fails.
    [?pullDownText] is the information shown when the container is pulled down.
    [?releaseText] is the information shown when the container is pulled down 
-   and the ratio of its translation to the screen eight is greater than 
+   and the ratio of its translation to the screen height is greater than 
    dragThreshold
    [?loadingText] is the information shown during the loading. 
    Set [?rotateGradually] to true if you want [?pullDownIcon] rotates 
@@ -43,7 +43,6 @@
    Finally, user needs to provide an [afterPull] function to refresh the 
    container. 
 *)
-
 val make :
   ?dragThreshold: float -> 
   ?moveCount: int ->
