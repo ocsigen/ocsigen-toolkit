@@ -45,7 +45,7 @@
 
     {[Lwt.async (fun () ->
         let div' = (To_dom.of_element div) in
-        let%lwt () = Ot_nodeready.nodeready container' in
+        let%lwt () = Ot_nodeready.nodeready div' in
         Ot_noderesize.noderesize (ot_noderesize.attach div) (fun () ->
           Firebug.console##log (Js.string "Resized") ) )]} *)
 
