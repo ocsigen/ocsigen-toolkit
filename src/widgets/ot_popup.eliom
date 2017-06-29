@@ -37,6 +37,7 @@ let%client popup
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return_unit)
     ?(close_on_background_click=false)
+    ?(close_on_escape=close_button <> None)
     ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -62,6 +63,8 @@ let%client popup
   html_ManipClass_add "ot-with-popup";
   if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
 
+  let kill_keydown_thread = ref @@ fun () -> () in
+
   let do_close () =
     if (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))
        ##.length = 1 then begin
@@ -70,6 +73,7 @@ let%client popup
         Dom_html.document##.body##.scrollTop := !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
+    !kill_keydown_thread ();
     onclose ()
   in
 
@@ -99,11 +103,11 @@ let%client popup
     | None -> content in
   let pop = D.div ~a:[a_class ["ot-popup"]] content in
   let box = D.div ~a:(a_class ["ot-popup-background"] :: a) [ pop ] in
+  let box_dom = Eliom_content.Html.To_dom.of_element box in
 
   if close_on_background_click then begin
     (* Close the popup when user clicks on background *)
     Lwt.async (fun () ->
-      let box_dom = Eliom_content.Html.To_dom.of_element box in
       let%lwt event = Lwt_js_events.click box_dom in
       if event##.target = Js.some box_dom then
         close ()
@@ -111,6 +115,16 @@ let%client popup
         Lwt.return_unit
     )
   end ;
+
+  if close_on_escape then begin
+    Lwt.async @@ fun () ->
+      let keydown_thread = Lwt_js_events.keydowns Dom_html.window @@
+        fun ev _ -> if ev##.keyCode = 27 then close () else Lwt.return_unit
+      in
+      kill_keydown_thread := (fun () -> Lwt.cancel keydown_thread);
+      Eliom_client.onunload (fun () -> Lwt.cancel keydown_thread);
+      Lwt.return_unit
+  end;
 
   popup := Some box ;
   Manip.appendToBody box ;
