@@ -47,8 +47,8 @@ val hcf :
     Use [close_button] if you want to add a button to close the popup.
 
     [confirmation_on_close] is used to ask confirmation to the user
-    when closing the popup with the close button. Meaningless if not
-    [closeable].
+    when closing the popup with the close button. Only relevant if
+    [close_button] or [close_on_background_click] is supplied.
 
     [onclose] is a hook called just after the popup has been actually closed.
 
