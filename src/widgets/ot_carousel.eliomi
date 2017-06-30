@@ -247,7 +247,7 @@ val next :
   -> change: ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
-  -> size:int Eliom_shared.React.S.t
+  -> vis_elts:int Eliom_shared.React.S.t
   -> length:int
   -> Html_types.button_content Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt

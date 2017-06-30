@@ -22,7 +22,9 @@
 (*
 
 TODO:
- - Make it possible to change the number of pages
+ - Make it possible to have a non integer number of visible pages,
+   (with last page aligned to the right of carousel).
+ - Make it possible to change the number of pages dynamically
  - Circular carousel (swipe to first page after last page)
  - Wheel: do not take face_size as parameter but compute it
    (what if generated server side?)
@@ -845,12 +847,12 @@ let%shared previous ?(a = [])
 let%shared next ?(a = [])
     ~(change : ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t)
     ?(offset = Eliom_shared.React.S.const 1)
-    ~pos ~size ~length content =
+    ~pos ~vis_elts ~length content =
   Form.button_no_value
     ~button_type:`Button
     ~a:(R.a_class (Eliom_shared.React.S.l2
                      [%shared fun p s -> blur (p + s >= ~%length)]
-                     pos size)
+                     pos vis_elts)
         :: a_class ["ot-car-next"]
         :: a_onclick  [%client
           fun _ -> let offset = React.S.value ~%offset in
