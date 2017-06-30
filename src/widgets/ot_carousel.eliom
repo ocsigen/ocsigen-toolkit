@@ -163,7 +163,7 @@ let%shared make
         let width_carousel =
           if vertical then d##.offsetHeight else d##.offsetWidth
         in
-        truncate ((float width_carousel) /. (float width_element) +. 0.5)
+        truncate ((float width_carousel) /. (float width_element))
     in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready d2' in
