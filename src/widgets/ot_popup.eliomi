@@ -47,8 +47,9 @@ val hcf :
     Use [close_button] if you want to add a button to close the popup.
 
     [confirmation_on_close] is used to ask confirmation to the user
-    when closing the popup with the close button. Meaningless if not
-    [closeable].
+    when closing the popup with the close button. Only relevant if
+    one of [close_button], [close_on_background_click], [close_on_escape]
+    is supplied.
 
     [onclose] is a hook called just after the popup has been actually closed.
 
@@ -59,6 +60,9 @@ val hcf :
 
     If [close_on_background_click] (default: false) is true then clicking on the
     background of the popup closes it.
+
+    If [close_on_escape] (default: true if [close_button] is supplied) then
+    hitting the escape key will close the popup.
 *)
 val popup :
   ?a:[< div_attrib ] attrib list
@@ -66,6 +70,7 @@ val popup :
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
   -> ?close_on_background_click:bool
+  -> ?close_on_escape:bool
   -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
