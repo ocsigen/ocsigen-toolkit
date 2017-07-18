@@ -135,7 +135,8 @@
     height: 3px;
     bottom: 0;
     background-color: #66aaff;
-    transition-property: left, right;
+    transition-property: transform, width;
+    will-change: transform, width;
 }
 
 .ot-carousel.ot-full-height > .ot-car2:not(.ot-swiping)

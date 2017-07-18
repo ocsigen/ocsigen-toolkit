@@ -757,44 +757,44 @@ let%shared ribbon
                  | Some firstselectedelt, Some lastselectedelt ->
                    let firstselectedelt = To_dom.of_element firstselectedelt in
                    let lastselectedelt = To_dom.of_element lastselectedelt in
-                   let left = firstselectedelt##.offsetLeft + curleft in
-                   let right =
-                     - lastselectedelt##.offsetLeft
-                     - lastselectedelt##.offsetWidth
-                     + the_ul'##.offsetWidth
-                     - curleft
-                   in
                    let offset_left =
                      if offset >= 0.
-                     then int_of_float
+                     then
                          (offset *. float firstselectedelt##.offsetWidth)
                      else
                        match previouselt with
-                       | None -> 0
+                       | None -> 0.
                        | Some elt ->
-                         int_of_float
                            (offset
                             *. float (To_dom.of_element elt)##.offsetWidth)
                    in
                    let offset_right =
                      if offset <= 0.
                      then
-                       int_of_float
                          (offset *. float lastselectedelt##.offsetWidth)
                      else
                        match nextelt with
-                       | None -> 0
+                       | None -> 0.
                        | Some elt ->
-                         int_of_float
                            (offset
                             *. float (To_dom.of_element elt)##.offsetWidth)
                    in
-                   let left =
-                     Js.string (string_of_int (left + offset_left) ^ "px") in
-                   let right =
-                     Js.string (string_of_int (right - offset_right) ^ "px") in
-                   (To_dom.of_element cursor_elt)##.style##.left := left;
-                   (To_dom.of_element cursor_elt)##.style##.right := right
+                   let left = firstselectedelt##.offsetLeft + curleft in
+                   let width =
+                     lastselectedelt##.offsetLeft
+                     + lastselectedelt##.offsetWidth
+                     - firstselectedelt##.offsetLeft
+                     + truncate (offset_right -. offset_left +. 0.5) in
+                   let transform =
+                     Js.string
+                       (Printf.sprintf "translateX(%dpx)"
+                          (left + truncate (offset_left +. 0.5)))
+                   in
+                   let width = Js.string (string_of_int width ^ "px") in
+                   let style = (To_dom.of_element cursor_elt)##.style in
+                   (Js.Unsafe.coerce style)##.transform := transform;
+                   (Js.Unsafe.coerce style)##.webkitTransform := transform;
+                   style##.width := width
                  | _ -> ()
               )
               ~%pos
