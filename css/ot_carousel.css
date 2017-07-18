@@ -19,6 +19,7 @@
     height: 100%;
     width: 100%;
 }
+.ot-carousel > .ot-car2.ot-swiping { will-change: transform; }
 
 .ot-carousel > .ot-car2 .ot-carpage {
         width: 100% ;
