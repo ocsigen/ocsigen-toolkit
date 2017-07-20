@@ -120,7 +120,13 @@ let%shared make
   (* We wrap all pages in a div in order to add class carpage,
      for efficiency reasons in CSS (avoids selector ".ot-car2>*")*)
   let pages = List.mapi (fun i e ->
-    D.div ~a:( a_class ["ot-carpage"]
+    let clss =
+      if i >= position && i < position + 1 then
+        ["ot-carpage"; "ot-active"]
+      else
+        ["ot-carpage"]
+    in
+    D.div ~a:( a_class clss
                :: Eliom_shared.Value.local make_page_attribute ~vertical i)
                             [e]) l
   in
