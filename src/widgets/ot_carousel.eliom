@@ -29,6 +29,12 @@ TODO:
  - Wheel: do not take face_size as parameter but compute it
    (what if generated server side?)
 
+ - number of visible elements: fix computation
+   (for example if we have 1 fully visible and 2 * 2/3 elements,
+    the current version will return 2)
+   and add first/last (partially)
+   visible elements.
+
 *)
 
 
@@ -171,7 +177,8 @@ let%shared make
         let width_carousel =
           if vertical then d##.offsetHeight else d##.offsetWidth
         in
-        truncate ((float width_carousel) /. (float width_element))
+        (* +1 below is to avoid rounding error observed on Chrome for MacOS: *)
+        truncate ((float (width_carousel + 1)) /. (float width_element))
     in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready d2' in
