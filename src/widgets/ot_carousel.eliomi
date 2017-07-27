@@ -95,10 +95,11 @@ type 'a t = {
     - the current position [pos] (as a react signal),
     - the current position [pos_post] which is updated after the tab change is
       completed
-    - the number of visible elements [vis_elts]. It is more than 1 if element
+    - the number of fully visible elements [vis_elts].
+      It is more than 1 if element
       width ([div.car2]) is set, in CSS, to a value smaller than carousel width
       (for example 50% or 33.33%). The width of all elements is supposed to be
-      equal, and the size of carousel must be a multiple of the size of element.
+      equal.
     - the current swipe position. Value -1.0 corresponds to previous page,
     and +1.0 to next page.
 *)
@@ -246,7 +247,7 @@ val next :
   -> change: ([> `Next | `Goto of int ] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
-  -> size:int Eliom_shared.React.S.t
+  -> vis_elts:int Eliom_shared.React.S.t
   -> length:int
   -> Html_types.button_content Eliom_content.Html.elt list
   -> [> `Button ] Eliom_content.Html.elt
