@@ -8,4 +8,5 @@ share: [
   "css/ot_drawer.css"           {"css/ot_drawer.css"}
   "css/ot_buttons.css"          {"css/ot_buttons.css"}
   "css/ot_sticky.css"           {"css/ot_sticky.css"}
+  "css/ot_page_transition.css"  {"css/ot_page_transition.css"}
 ]
