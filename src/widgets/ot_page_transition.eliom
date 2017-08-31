@@ -7,7 +7,7 @@ type animation = Nil|Forward|Backward
 
 module type PAGE_TRANSITION_CONF = sig
   type screenshot
-  val screenshot_container : 
+  val screenshot_container :
     screenshot -> Html_types.div_content Eliom_content.Html.elt
 end
 
@@ -22,7 +22,7 @@ end
 
 let set_transition_duration elt t =
   let s = Js.string (Printf.sprintf "%.2fs" t) in
-  let container_style = 
+  let container_style =
     Js.Unsafe.coerce ((To_dom.of_element elt)##.style) in
   container_style##.transitionDuration := s
 
@@ -97,7 +97,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     try
       take_screenshot (push_screenshot id);
       forward_animation_ transition_duration id;
-      wait_for_screenshot 100 id 
+      wait_for_screenshot 100 id
     with _ -> Lwt.return_unit
 
   let backward_animation_
