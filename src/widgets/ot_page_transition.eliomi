@@ -27,7 +27,10 @@ end
     of the current page and then calls [callback]. A callback function
     is used here because [take_screenshot] is usually asynchronous.
     [animation_type ev] decides the type of the animation of page
-    transition in an onchangepage event. *)
+    transition in an onchangepage event.
+
+    TODO: we can avoid the callback function by transforming
+    [take_screenshot] to a function of type [unit -> screenshot Lwt.t]*)
 module Make (Conf:PAGE_TRANSITION_CONF) : sig
   type screenshot
   val install_global_handler :
@@ -38,7 +41,7 @@ end with type screenshot = Conf.screenshot
 
 (** [install_global_handler_withURI] enables you to skip the step of
     creating a module of type [PAGE_TRANSITION_CONF] when screenshots
-    are stored as uri. *)
+    are stored as a data uri. *)
 val install_global_handler_withURI :
   ?transition_duration:float ->
   take_screenshot: ((string -> unit) -> unit) ->
