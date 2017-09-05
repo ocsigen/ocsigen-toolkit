@@ -22,7 +22,16 @@ let set_position_sticky elt =
 
 let supports_position_sticky elt =
   let old_pos = Manip.Css.position elt in
-  let res = set_position_sticky elt in
+  let res =
+    (* Don't use [set_position_sticky] here because if it
+       fails to set the "effective position" to sticky, it doesn't mean that
+       the web engine doesn't support it. *)
+    (Manip.SetCss.position elt "-webkit-sticky";
+     Js.to_string (To_dom.of_element elt)##.style##.position = "-webkit-sticky")
+    ||
+    (Manip.SetCss.position elt "sticky";
+     Js.to_string (To_dom.of_element elt)##.style##.position = "sticky")
+  in
   Manip.SetCss.position elt old_pos;
   res
 
