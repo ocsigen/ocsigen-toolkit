@@ -7,7 +7,7 @@ open Html_types
 
 let is_position_sticky elt =
   let pos = Js.to_string
-      (Dom_html.window##getComputedStyle (To_dom.of_element elt))##.position
+      (To_dom.of_element elt)##.style##.position
   in pos = "-webkit-sticky" || pos = "sticky"
 
 let set_position_sticky elt =
