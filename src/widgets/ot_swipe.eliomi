@@ -1,9 +1,11 @@
 [%%shared.start]
 
 (**
-   [bind ~compute_final_pos elt] makes [elt] swipable on touch screens.
+   [bind ~compute_final_pos elt] makes [elt] left-right
+   swipable on touch screens.
    [compute_final_pos] is a function that will compute the final position
    of the element w.r.t. the position where it has been released (in pixels).
+   Use [(fun _ p -> p)] if you want it to stay where it was released.
 
    Use [?min] and [?max] if you want to limit the move.
    If outside range, events will be propagated to parent
