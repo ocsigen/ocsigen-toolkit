@@ -387,7 +387,10 @@ let%shared make
            then Stopped (* swiping in wrong direction (vertical/horizontal) *)
            else
              if abs move > Ot_swipe.threshold
-             then begin
+             then begin (* We decide to take the event *)
+               (* We send a touchcancel to the parent
+                  (which received the start) *)
+               Ot_swipe.dispatch_event ~ev d2' "touchcancel" (clX ev) (clY ev);
                Manip.Class.add ~%d2 ot_swiping;
                set_top_margin ();
                remove_transition d2';
