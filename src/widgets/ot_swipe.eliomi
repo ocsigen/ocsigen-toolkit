@@ -31,3 +31,7 @@ val bind:
 val clX : Dom_html.touchEvent Js.t -> int
 val clY : Dom_html.touchEvent Js.t -> int
 val threshold : int
+val dispatch_event :
+  ev:Dom_html.touchEvent Js.t ->
+  Dom_html.element Js.t ->
+  string -> int -> int -> unit
