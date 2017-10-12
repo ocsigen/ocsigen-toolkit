@@ -152,7 +152,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
       Eliom_client.onchangepage hc_handler;
       match animation_type ev with
       | Nil -> Lwt.return_unit
-      | Forward -> forward ev.Eliom_client.current_id
+      | Forward -> forward ev.Eliom_client.origin_id
       | Backward ->
         match ev.Eliom_client.target_id with
         | Some target_id -> backward target_id
