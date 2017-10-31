@@ -38,7 +38,6 @@ let%client popup
     ?(onclose = fun () -> Lwt.return_unit)
     ?(close_on_background_click=false)
     ?(close_on_escape=close_button <> None)
-    ?(ios_scroll_pos_fix=true)
     gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
@@ -59,9 +58,11 @@ let%client popup
     | None -> ()
   in
 
-  if ios_scroll_pos_fix then scroll_pos := Dom_html.document##.body##.scrollTop;
+  (* Hack to prevent body scrolling behind the popup on mobile devices: *)
+  scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
   html_ManipClass_add "ot-with-popup";
-  if ios_scroll_pos_fix then Dom_html.document##.body##.scrollTop := !scroll_pos;
+  Dom_html.document##.body##.style##.top :=
+    Js.string (Printf.sprintf "%dpx" (- !scroll_pos));
 
   let kill_keydown_thread = ref @@ fun () -> () in
 
@@ -69,8 +70,8 @@ let%client popup
     if (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))
        ##.length = 1 then begin
       html_ManipClass_remove "ot-with-popup";
-      if ios_scroll_pos_fix then
-        Dom_html.document##.body##.scrollTop := !scroll_pos
+      Dom_html.document##.body##.style##.top := Js.string "";
+      Dom_html.window##scroll 0 !scroll_pos
     end;
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
     !kill_keydown_thread ();

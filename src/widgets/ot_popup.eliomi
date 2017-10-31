@@ -71,7 +71,6 @@ val popup :
   -> ?onclose:(unit -> unit Lwt.t)
   -> ?close_on_background_click:bool
   -> ?close_on_escape:bool
-  -> ?ios_scroll_pos_fix:bool
   -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
   -> [> `Div ] elt Lwt.t
 

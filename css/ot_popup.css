@@ -1,3 +1,9 @@
+html.ot-with-popup, html.ot-with-popup > body {
+    overflow: hidden;
+    position: fixed ; /* To prevent scroll on mobile devices.
+                         One must also set top property manually
+                         to prevent scrolling page to top. */
+}
 .ot-popup-background {
     position: fixed ;
     right: 0 ;

@@ -34,13 +34,6 @@
     If [swipe] is true (default), the user can swipe to open or close the
     drawer.
 
-    If [ios_scroll_pos_fix] is true (default) each time after the drawer is
-    opened, the scroll position of the document body is set to the value it
-    had just before opening the drawer. This is a workaround for a bug in iOS
-    mobile where if one prevents document scrolling by CSS (requires on iOS the
-    CSS code: html.dr-drawer-open, html.dr-drawer-open>body {overflow: hidden})
-    the document is scrolled to the top.
-
     If present, function [onclose] is called just after the drawer is closed,
     and function [onopen] just before it starts opening.
 
@@ -53,7 +46,6 @@ val drawer :
   ?position:[ `Left | `Right ] ->
   ?opened:bool ->
   ?swipe:bool ->
-  ?ios_scroll_pos_fix:bool ->
   ?onclose:(unit -> unit) Eliom_client_value.t ->
   ?onopen:(unit -> unit) Eliom_client_value.t ->
   ?wrap_close:((unit -> unit) Eliom_client_value.t ->

@@ -82,7 +82,6 @@ let%shared drawer
     ?(position = `Left)
     ?(opened = false)
     ?(swipe = true)
-    ?(ios_scroll_pos_fix=true)
     ?(onclose : (unit -> unit) Eliom_client_value.t option)
     ?(onopen : (unit -> unit) Eliom_client_value.t option)
     ?(wrap_close = fun f -> f)
@@ -114,8 +113,8 @@ let%shared drawer
   let close = [%client
     ((fun () ->
        remove_class ~%bckgrnd "open";
-       if ~%ios_scroll_pos_fix then
-         Dom_html.document##.body##.scrollTop := !scroll_pos;
+       Dom_html.document##.body##.style##.top := Js.string "";
+       Dom_html.window##scroll 0 !scroll_pos;
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
        Lwt_js_events.async (fun () ->
@@ -129,12 +128,11 @@ let%shared drawer
 
   let open_ = [%client
     ((fun () ->
-       if ~%ios_scroll_pos_fix then
-         scroll_pos := Dom_html.document##.body##.scrollTop;
+       scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
        add_class ~%bckgrnd "open";
        Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
-       if ~%ios_scroll_pos_fix then
-         Dom_html.document##.body##.scrollTop := !scroll_pos;
+       Dom_html.document##.body##.style##.top :=
+         Js.string (Printf.sprintf "%dpx" (- !scroll_pos));
        add_class ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
        Lwt.async (fun () ->
