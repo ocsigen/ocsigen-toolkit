@@ -59,7 +59,7 @@ let%client popup
   in
 
   (* Hack to prevent body scrolling behind the popup on mobile devices: *)
-  scroll_pos := Dom_html.document##.body##.scrollTop;
+  scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
   html_ManipClass_add "ot-with-popup";
   Dom_html.document##.body##.style##.top :=
     Js.string (Printf.sprintf "%dpx" (- !scroll_pos));
