@@ -14,6 +14,7 @@
     height: 100%;
     background-size: contain;
     background-repeat: no-repeat;
+    will-change: transform;
 }
 
 .ot-page-transition-transform-1{

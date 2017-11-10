@@ -63,12 +63,9 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     wrapper,container
 
   let forward_animation_ transition_duration id =
-    Eliom_client.onload ( fun () ->
-      Lwt.async (fun () ->
-        let h =
-          Js.Optdef.get
-            Dom_html.window##.innerHeight
-            (fun () -> assert false) in
+    Eliom_client.onload @@ fun () ->
+      Lwt.async @@ fun () ->
+        let h = React.S.value Ot_size.height in
         let new_body = Of_dom.of_body Dom_html.document##.body in
         let style = Js.Unsafe.coerce Dom_html.document##.body##.style in
         let initial_height = style##.height in
@@ -91,7 +88,6 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         Manip.SetCss.height new_body (Js.to_string initial_height);
         style##.transitionDuration := initial_transition_duration;
         Lwt.return_unit
-      ))
 
   let forward_animation ?(transition_duration=0.5) take_screenshot id =
     try
@@ -104,18 +100,14 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
       transition_duration history_screenshot current_screenshot =
     let current_screenshot_container =
       Conf.screenshot_container current_screenshot in
-    let h =
-      Js.Optdef.get
-        Dom_html.window##.innerHeight
-        (fun () -> assert false) in
+    let h = React.S.value Ot_size.height in
     Manip.SetCss.heightPx current_screenshot_container h;
     let history_screenshot_wrapper,history_screenshot_container =
       wrap_screenshot history_screenshot transition_duration in
     Manip.Class.add
       history_screenshot_container "ot-page-transition-transform-2";
     let temporary_body =
-      body [current_screenshot_container;
-            history_screenshot_wrapper] in
+      D.body [current_screenshot_container; history_screenshot_wrapper] in
     Manip.replaceSelf
       (Of_dom.of_body Dom_html.document##.body) temporary_body;
     let%lwt () = Lwt_js_events.request_animation_frame () in
@@ -129,14 +121,11 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
   let backward_animation ?(transition_duration=0.5) take_screenshot id =
     try
       let scr_width,scr_height = Ot_size.get_screen_size () in
-      let history_screenshot,w,h = pop_screenshot id in
+      let hist_screenshot,w,h = pop_screenshot id in
       if w = scr_width && h = scr_height
       then begin
-        let f current_screenshot =
-          Lwt.async
-            (fun () ->
-               backward_animation_
-                 transition_duration history_screenshot current_screenshot)
+        let f cur_screenshot = Lwt.async @@ fun () ->
+          backward_animation_ transition_duration hist_screenshot cur_screenshot
         in
         take_screenshot f;
         Lwt_js.sleep transition_duration
