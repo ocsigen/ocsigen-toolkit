@@ -26,6 +26,8 @@ let set_transition_duration elt t =
     Js.Unsafe.coerce ((To_dom.of_element elt)##.style) in
   container_style##.transitionDuration := s
 
+let cl_will_change = "ot-page-transition-will-change"
+
 module Make (Conf:PAGE_TRANSITION_CONF) = struct
   type screenshot = Conf.screenshot
   let screenshot_list = Hashtbl.create 10
@@ -67,6 +69,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
       Lwt.async @@ fun () ->
         let h = React.S.value Ot_size.height in
         let new_body = Of_dom.of_body Dom_html.document##.body in
+        Manip.Class.add new_body cl_will_change;
         let style = Js.Unsafe.coerce Dom_html.document##.body##.style in
         let initial_height = style##.height in
         let initial_transition_duration = style##.transitionDuration in
@@ -86,6 +89,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         let%lwt () = Lwt_js.sleep transition_duration in
         Manip.removeSelf screenshot_wrapper;
         Manip.SetCss.height new_body (Js.to_string initial_height);
+        Manip.Class.remove new_body cl_will_change;
         style##.transitionDuration := initial_transition_duration;
         Lwt.return_unit
 
@@ -108,6 +112,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
       history_screenshot_container "ot-page-transition-transform-2";
     let temporary_body =
       D.body [current_screenshot_container; history_screenshot_wrapper] in
+    Manip.Class.add temporary_body cl_will_change;
     Manip.replaceSelf
       (Of_dom.of_body Dom_html.document##.body) temporary_body;
     let%lwt () = Lwt_js_events.request_animation_frame () in
@@ -116,6 +121,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     Manip.Class.add temporary_body "ot-page-transition-transform-1";
     Manip.Class.remove
       history_screenshot_container "ot-page-transition-transform-2";
+    Manip.Class.remove temporary_body cl_will_change;
     Lwt.return_unit
 
   let backward_animation ?(transition_duration=0.5) take_screenshot id =

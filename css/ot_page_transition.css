@@ -9,6 +9,10 @@
     background-color: white;
 }
 
+.ot-page-transition-will-change {
+    will-change: transform;
+}
+
 .ot-page-transition-container{
     width: 100%;
     height: 100%;
