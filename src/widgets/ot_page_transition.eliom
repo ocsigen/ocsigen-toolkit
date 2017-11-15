@@ -49,15 +49,6 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     then Hashtbl.replace screenshot_list id (screenshot,w,h)
     else Hashtbl.add screenshot_list id (screenshot,w,h)
 
-  let wait_for_screenshot max_wait_time id =
-    let rec aux i =
-      if (not (mem_screenshot id)) && i < max_wait_time then
-        let%lwt () = Lwt_js.sleep 0.01 in
-        aux (i+1)
-      else Lwt.return_unit
-    in
-    aux 0
-
   let wrap_screenshot screenshot transition_duration =
     let container = Conf.screenshot_container screenshot in
     let wrapper = div ~a:[a_class ["ot-page-transition-wrapper"]] [container] in
@@ -93,11 +84,24 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         style##.transitionDuration := initial_transition_duration;
         Lwt.return_unit
 
+  let wait_for ~sleep ~cycles cond =
+    let rec loop i =
+      if not (cond ()) && i < cycles then
+        let%lwt () = Lwt_js.sleep sleep in
+        loop (i+1)
+      else Lwt.return_unit
+    in
+    loop 0
+
   let forward_animation ?(transition_duration=0.5) take_screenshot id =
     try
-      take_screenshot (push_screenshot id);
+      let screenshot = ref None in
+      take_screenshot (fun ss -> screenshot := Some ss);
       forward_animation_ transition_duration id;
-      wait_for_screenshot 100 id
+      wait_for ~sleep:0.01 ~cycles:100
+        (fun () -> match !screenshot with
+                     | None -> false
+                     | Some ss -> push_screenshot id ss; true)
     with _ -> Lwt.return_unit
 
   let backward_animation_
