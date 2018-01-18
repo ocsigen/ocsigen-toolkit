@@ -56,13 +56,11 @@ let%client remove_transition elt =
 
 let%shared default_make_transform ~vertical ?(delta = 0) pos =
   let p = -pos * 100 in
-  let sign = if delta > 0 then "+" else "-" in
-  let d = abs delta in
   if vertical
   (* then Printf.sprintf "translate3d(0, %.3f%%, 0)" d *)
   (* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" d *)
-  then Printf.sprintf "translate(0, calc(%d%% %s %dpx)" p sign d
-  else Printf.sprintf "translate(calc(%d%% %s %dpx), 0)" p sign d
+  then Printf.sprintf "translateY(%d%%) translateY(%dpx)" p delta
+  else Printf.sprintf "translateX(%d%%) translateX(%dpx)" p delta
 (* translate3d possibly more efficient on some devices ... *)
 (* But causing troubles ...
    For example some content cannot have border-radius on Chrome ... *)
