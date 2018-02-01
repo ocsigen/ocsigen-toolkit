@@ -9,7 +9,7 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
-  "eliom" {>= "6.0"}
+  "eliom" {>= "6.3"}
   "calendar"
 ]
-available: [ ocaml-version >= "4.02" ]
+available: [ ocaml-version >= "4.03.0" ]
