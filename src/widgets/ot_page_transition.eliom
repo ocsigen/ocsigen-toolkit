@@ -26,6 +26,8 @@ let set_transition_duration elt t =
     Js.Unsafe.coerce ((To_dom.of_element elt)##.style) in
   container_style##.transitionDuration := s
 
+let cl_will_change = "ot-page-transition-will-change"
+
 module Make (Conf:PAGE_TRANSITION_CONF) = struct
   type screenshot = Conf.screenshot
   let screenshot_list = Hashtbl.create 10
@@ -47,15 +49,6 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     then Hashtbl.replace screenshot_list id (screenshot,w,h)
     else Hashtbl.add screenshot_list id (screenshot,w,h)
 
-  let wait_for_screenshot max_wait_time id =
-    let rec aux i =
-      if (not (mem_screenshot id)) && i < max_wait_time then
-        let%lwt () = Lwt_js.sleep 0.01 in
-        aux (i+1)
-      else Lwt.return_unit
-    in
-    aux 0
-
   let wrap_screenshot screenshot transition_duration =
     let container = Conf.screenshot_container screenshot in
     let wrapper = div ~a:[a_class ["ot-page-transition-wrapper"]] [container] in
@@ -63,13 +56,11 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     wrapper,container
 
   let forward_animation_ transition_duration id =
-    Eliom_client.onload ( fun () ->
-      Lwt.async (fun () ->
-        let h =
-          Js.Optdef.get
-            Dom_html.window##.innerHeight
-            (fun () -> assert false) in
+    Eliom_client.onload @@ fun () ->
+      Lwt.async @@ fun () ->
+        let h = React.S.value Ot_size.height in
         let new_body = Of_dom.of_body Dom_html.document##.body in
+        Manip.Class.add new_body cl_will_change;
         let style = Js.Unsafe.coerce Dom_html.document##.body##.style in
         let initial_height = style##.height in
         let initial_transition_duration = style##.transitionDuration in
@@ -89,33 +80,43 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         let%lwt () = Lwt_js.sleep transition_duration in
         Manip.removeSelf screenshot_wrapper;
         Manip.SetCss.height new_body (Js.to_string initial_height);
+        Manip.Class.remove new_body cl_will_change;
         style##.transitionDuration := initial_transition_duration;
         Lwt.return_unit
-      ))
+
+  let wait_for ~sleep ~cycles cond =
+    let rec loop i =
+      if not (cond ()) && i < cycles then
+        let%lwt () = Lwt_js.sleep sleep in
+        loop (i+1)
+      else Lwt.return_unit
+    in
+    loop 0
 
   let forward_animation ?(transition_duration=0.5) take_screenshot id =
     try
-      take_screenshot (push_screenshot id);
+      let screenshot = ref None in
+      take_screenshot (fun ss -> screenshot := Some ss);
       forward_animation_ transition_duration id;
-      wait_for_screenshot 100 id
+      wait_for ~sleep:0.01 ~cycles:100
+        (fun () -> match !screenshot with
+                     | None -> false
+                     | Some ss -> push_screenshot id ss; true)
     with _ -> Lwt.return_unit
 
   let backward_animation_
       transition_duration history_screenshot current_screenshot =
     let current_screenshot_container =
       Conf.screenshot_container current_screenshot in
-    let h =
-      Js.Optdef.get
-        Dom_html.window##.innerHeight
-        (fun () -> assert false) in
+    let h = React.S.value Ot_size.height in
     Manip.SetCss.heightPx current_screenshot_container h;
     let history_screenshot_wrapper,history_screenshot_container =
       wrap_screenshot history_screenshot transition_duration in
     Manip.Class.add
       history_screenshot_container "ot-page-transition-transform-2";
     let temporary_body =
-      body [current_screenshot_container;
-            history_screenshot_wrapper] in
+      D.body [current_screenshot_container; history_screenshot_wrapper] in
+    Manip.Class.add temporary_body cl_will_change;
     Manip.replaceSelf
       (Of_dom.of_body Dom_html.document##.body) temporary_body;
     let%lwt () = Lwt_js_events.request_animation_frame () in
@@ -124,19 +125,17 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
     Manip.Class.add temporary_body "ot-page-transition-transform-1";
     Manip.Class.remove
       history_screenshot_container "ot-page-transition-transform-2";
+    Manip.Class.remove temporary_body cl_will_change;
     Lwt.return_unit
 
   let backward_animation ?(transition_duration=0.5) take_screenshot id =
     try
       let scr_width,scr_height = Ot_size.get_screen_size () in
-      let history_screenshot,w,h = pop_screenshot id in
+      let hist_screenshot,w,h = pop_screenshot id in
       if w = scr_width && h = scr_height
       then begin
-        let f current_screenshot =
-          Lwt.async
-            (fun () ->
-               backward_animation_
-                 transition_duration history_screenshot current_screenshot)
+        let f cur_screenshot = Lwt.async @@ fun () ->
+          backward_animation_ transition_duration hist_screenshot cur_screenshot
         in
         take_screenshot f;
         Lwt_js.sleep transition_duration
