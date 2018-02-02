@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Introduction</title><meta charset="utf8"/><link rel="stylesheet" href="file:///home/balat/ocsigen/ocsigen.github.io/css/style.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/themes/prism.min.css"/><script src="/client.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-core.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-ocaml.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-clike.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-reason.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-javascript.min.js"></script></head><body><h1>Introduction</h1><p>Ocsigen Toolkit provides various user interface widgets and related
+utilities that assist in the rapid development of interactive Web
+applications.
+</p><p>Ocsigen Toolkit is built with <a href="/eliom" class="ocsimore_phrasing_link">Eliom</a>.
+</p><h2>Installation and getting started</h2><p>You can install Ocsigen Toolkit via OPAM:
+</p><pre>opam install ocsigen-toolkit
+</pre><p>You may want to use Ocsigen Toolkit in conjunction with
+<a href="/ocsigen-start" class="ocsimore_phrasing_link">Ocsigen Start</a>, which provides an application
+template for quickly getting started with Ocsigen. The template
+provides various runnable examples of Ocsigen Toolkit widgets. See the
+<span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/manual/intro">Ocsigen Start
+manual </a></span> for details.
+</p><h2>Programming style</h2><p>Most of the Ocsigen Toolkit widgets can be produced invariably on the
+server or on the client (with the same code). This enables a
+mobile-friendly programming paradigm, where most code lies in shared
+sections. The server instance of the code can be used to produce pages
+(with Ocsigen Toolkit widgets) during traditional Web interaction,
+while the client instance can be used to render the same pages and
+widgets on a mobile device without contacting the server. See the
+<span><a class="ocsforge_doclink_eliom" href="/eliom/6.2/manual/mobile-apps">mobile applications
+section </a></span> of the Eliom manual for details.
+</p><p>The widgets generally follow a reactive programming style. We use
+<span><a class="ocsforge_doclink_eliom" href="/eliom/6.2/api/server/Eliom_shared">Eliom_shared</a></span>
+extensively, which allows us to produce this reactive content on both
+sides.
+See
+<span><a class="ocsforge_doclink_eliom" href="/eliom/6.2/manual/clientserver-react">the respective manual chapter </a></span>
+for more info.
+<span><a class="ocsforge_doclink_eliom" href="/eliom/6.2/api/server/Eliom_shared">Eliom_shared</a></span>
+signals and events appear in the Ocsigen Toolkit APIs, and can be used
+as a mechanism for composing different widgets.
+</p><h2>CSS</h2><p>Most widgets need appropriate CSS to display properly. We provide
+default CSS files, normally installed in
+</p><p><span class="teletype">~/.opam/${SWITCH}/share/ocsigen-toolkit/css/</span>
+</p><p>Ocsigen Start uses these files by default. If your application does
+not use Ocsigen Start, you will need to include the CSS manually.
+</p><p>Of course, you are free to modify the style to suit the desired look.
+</p><h2>Widgets overview</h2><ul><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_buttons">Ot_buttons</a></span>:
+provides a dropdown menu widget
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_calendar">Ot_calendar</a></span>:
+calendar widget, allowing the user to pick dates
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_carousel">Ot_carousel</a></span>:
+container for blocks, only one of which is displayed at a time,
+with various ways to move between them (buttons, swipe, keyboard arrows)
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_drawer">Ot_drawer</a></span>:
+a drawer menu that typically appears on an edge of the screen.
+It can  appear/disappear via buttons or by swiping.
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_picture_uploader">Ot_picture_uploader</a></span>:
+user interface for uploading pictures
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_popup">Ot_popup</a></span>:
+popup windows that can be controlled in various ways
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_range">Ot_range</a></span>:
+widget for picking one among a range of values
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_spinner">Ot_spinner</a></span>:
+a spinner that appears while we wait for &quot;slow&quot; HTML content to be
+generated
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_swipe">Ot_swipe</a></span>:
+make element swipeable on touch screens
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_time_picker">Ot_time_picker</a></span>:
+clock-like widget that allows the user to pick a time
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_toggle">Ot_toggle</a></span>:
+binary toggle widget
+</li></ul><h3> Non-widget utilities</h3><ul><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_nodeready">Ot_nodeready</a></span>:
+produces an Lwt thread allowing one to wait for a node to be
+inserted in the DOM
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_noderesize">Ot_noderesize</a></span>:
+listen to element resize events
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_size">Ot_size</a></span>:
+utilities to deal with DOM element dimensions
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_social_meta">Ot_social_meta</a></span>:
+extract social meta tags from documents
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_lib">Ot_lib</a></span>:
+functions useful for other widgets
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_sticky">Ot_sticky</a></span>:
+make elements &quot;sticky&quot;, i.e., do not let them go out of sight
+</li><li> <span><a class="ocsforge_doclink_ocsigen-toolkit" href="/ocsigen-toolkit/1.0/api/server/Ot_style">Ot_style</a></span>:
+an interface to <span class="teletype">Window.getComputedStyle()</span>
+</li></ul></body></html>
