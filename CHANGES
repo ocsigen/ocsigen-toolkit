@@ -1,6 +1,6 @@
-===== 1.1 (2017-02-01) =====
+===== 1.1 (2017-02-08) =====
 
-* Compatibility with Eliom 6.3 and OCaml 4.03
+* Compatibility with Eliom 6.3 and OCaml 4.06
 * Ot_page_transition widget
 * Various small fixes and improvements
 
