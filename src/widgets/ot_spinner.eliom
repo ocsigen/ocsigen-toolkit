@@ -67,6 +67,21 @@ let dec_active_spinners () =
   set_num_active_spinners @@ React.S.value num_active_spinners - 1;
   if React.S.value num_active_spinners = 0 then set_onloaded ()
 
+let cl_spinning = "ot-icon-animation-spinning"
+let cl_spinner = "ot-icon-spinner"
+
+let replace_content elt thread =
+  inc_active_spinners ();
+  Manip.replaceChildren elt [];
+  Manip.Class.add elt cl_spinning;
+  Manip.Class.add elt cl_spinner;
+  let%lwt new_content = thread in
+  Manip.replaceChildren elt new_content;
+  Manip.Class.remove elt cl_spinning;
+  Manip.Class.remove elt cl_spinner;
+  dec_active_spinners ();
+  Lwt.return_unit
+
 module Make(A : sig
     type +'a t
     val bind : 'a t -> ('a -> 'b t) -> 'b t
@@ -85,10 +100,8 @@ module Make(A : sig
     match Lwt.state thread with
     | Lwt.Return v -> A.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
     | Lwt.Sleep ->
-      let spinning = "ot-icon-animation-spinning" in
-      let spinner = "ot-icon-spinner" in
       inc_active_spinners ();
-      let d = D.div ~a:(a_class [ "ot-spinner" ; spinner ; spinning ] :: a) []
+      let d = D.div ~a:(a_class [ "ot-spinner" ; cl_spinner ; cl_spinning ] :: a) []
       in
       Lwt.async
         (fun () ->
@@ -102,8 +115,8 @@ module Make(A : sig
                  (Lwt.return (v :> Html_types.div_content_fun F.elt list)))
            in
            Manip.replaceChildren d v ;
-           Manip.Class.remove d spinning ;
-           Manip.Class.remove d spinner ;
+           Manip.Class.remove d cl_spinning ;
+           Manip.Class.remove d cl_spinner ;
            dec_active_spinners ();
            Lwt.return_unit ) ;
       A.return d
