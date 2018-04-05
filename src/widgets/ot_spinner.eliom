@@ -70,12 +70,16 @@ let dec_active_spinners () =
 let cl_spinning = "ot-icon-animation-spinning"
 let cl_spinner = "ot-icon-spinner"
 
-let replace_content elt thread =
+let replace_content ?fail elt thread =
+  let fail = match fail with
+    | Some fail -> fail
+    | None      -> fun e -> Lwt.return (default_fail e)
+  in
   inc_active_spinners ();
   Manip.replaceChildren elt [];
   Manip.Class.add elt cl_spinning;
   Manip.Class.add elt cl_spinner;
-  let%lwt new_content = thread in
+  let%lwt new_content = try%lwt thread with e -> fail e in
   Manip.replaceChildren elt new_content;
   Manip.Class.remove elt cl_spinning;
   Manip.Class.remove elt cl_spinner;
