@@ -152,9 +152,9 @@
     let div = Dom_html.createDiv Dom_html.document in
     let div_hue = Dom_html.createDiv Dom_html.document in
     let div_sv = Dom_html.createDiv Dom_html.document in
-    div_hue##.className := Js.string "ojw_colorpicker_sv";
-    div_sv##.className := Js.string "ojw_colorpicker_hue";
-    div##.className := Js.string "ojw_colorpicker";
+    div_hue##.className := Js.string "ot-color-picker-hue";
+    div_sv##.className := Js.string "ot-color-picker-sv";
+    div##.className := Js.string "ot-color-picker";
     colorp.sv_canvas##.style##.position := Js.string "absolute";
     colorp.sv_canvas##.style##.zIndex := Js.string "-1";
     colorp.hue_canvas##.style##.position := Js.string "absolute";
