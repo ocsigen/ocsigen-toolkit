@@ -20,10 +20,9 @@
  *)
 
 [%%client.start]
-  type t
+type t
 
-  val make : ?width:int -> unit -> t
-  val append_at : Dom_html.element Js.t -> t -> unit
-  val init_handler : t -> unit
-  val get_rgb : t -> int * int * int
-
+val make : ?width:int -> unit -> t
+val append_at : Dom_html.element Js.t -> t -> unit
+val init_handler : t -> unit
+val get_rgb : t -> int * int * int

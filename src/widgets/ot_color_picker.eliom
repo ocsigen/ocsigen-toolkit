@@ -76,14 +76,14 @@
     let w = 360. in
     let inc = 360. /. 360. in
     let rec aux i =
-        if i >= w then () else
-          begin
-            let rgb = hsv_to_rgb i 1. 1. in
-            for y=0 to 20 do
-              set_point rgbdata i (float_of_int y) 360 rgb;
-            done;
-            aux (i +. inc)
-          end
+      if i >= w then () else
+        begin
+          let rgb = hsv_to_rgb i 1. 1. in
+          for y=0 to 20 do
+            set_point rgbdata i (float_of_int y) 360 rgb;
+          done;
+          aux (i +. inc)
+        end
     in aux 0.;
     ctx##(putImageData image (0.)  (0.))
 
@@ -100,11 +100,11 @@
           inner_aux (s +. 1.) v
         end
     in let rec aux v =
-      if v >= size' then () else
-        begin
-          inner_aux 0. v;
-          aux (v +. 1.)
-        end in aux 0.;
+         if v >= size' then () else
+           begin
+             inner_aux 0. v;
+             aux (v +. 1.)
+           end in aux 0.;
     ctx##(putImageData image (0.)  (0.))
 
   let init_handler colorp =
@@ -120,8 +120,8 @@
       ev##.clientY - y
     in
     Lwt_js_events.async
-    (fun () ->
-       Lwt_js_events.clicks colorp.sv_cover (fun ev _ ->
+      (fun () ->
+         Lwt_js_events.clicks colorp.sv_cover (fun ev _ ->
            let x, y = get_coord ev colorp.sv_canvas in
            let x', y' = float_of_int x, float_of_int y in
            let ctx = get_ctx colorp.sv_canvas in
@@ -130,10 +130,10 @@
            colorp.rgb <- r, g, b;
            draw_sv_cover colorp x' y';
            Lwt.return ()
-        ));
+         ));
     Lwt_js_events.async
-     (fun () ->
-       Lwt_js_events.clicks colorp.hue_cover (fun ev _ ->
+      (fun () ->
+         Lwt_js_events.clicks colorp.hue_cover (fun ev _ ->
            let x, y = get_coord ev colorp.hue_canvas in
            let x', y' = float_of_int x, float_of_int y in
            let ctx_sv = get_ctx colorp.sv_canvas in
@@ -146,7 +146,7 @@
            let cwidth' = float_of_int colorp.width in
            draw_sv_cover colorp cwidth' cwidth';
            Lwt.return ()
-        ))
+         ))
 
   let append_at elt colorp =
     let div = Dom_html.createDiv Dom_html.document in
