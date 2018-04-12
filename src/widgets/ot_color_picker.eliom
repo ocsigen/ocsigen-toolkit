@@ -170,7 +170,7 @@
   let get_rgb colorp =
     colorp.rgb
 
-  let create ?(width = 100) _ =
+  let make ?(width = 100) _ =
     let hue = Dom_html.createCanvas Dom_html.document in
     let sv = Dom_html.createCanvas Dom_html.document in
     let hue_cover = Dom_html.createCanvas Dom_html.document in
