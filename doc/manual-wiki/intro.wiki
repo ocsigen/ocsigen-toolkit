@@ -83,6 +83,8 @@ Of course, you are free to modify the style to suit the desired look.
   clock-like widget that allows the user to pick a time
 * <<a_api subproject="server" | module Ot_toggle >>:
   binary toggle widget
+* <<a_api subproject="client" | module Ot_color_picker >>:
+  color picker widget
 
 === Non-widget utilities
 

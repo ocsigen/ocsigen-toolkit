@@ -16,6 +16,7 @@
     Ot_picture_uploader
     Ot_nodeready
     Ot_noderesize
+    Ot_color_picker
 }
 
 {1 Index}
