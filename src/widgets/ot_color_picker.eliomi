@@ -20,9 +20,24 @@
  *)
 
 [%%client.start]
+
+(** This module implements a color picker.  *)
+
 type t
+(** Abstract type of color pickers.  *)
 
 val make : ?width:int -> unit -> t
+(** [make ?width ()] produces a color picker.  [width] is the width of
+    the different canvases of the picker; its default value is
+    [100].  *)
+
 val append_at : Dom_html.element Js.t -> t -> unit
+(** [append_at elt colorp] appends the color picker [colorp] to the DOM
+    element [elt].  *)
+
 val init_handler : t -> unit
+(** Initializes a handler for the given color picker.  *)
+
 val get_rgb : t -> int * int * int
+(** Returns the active color in the RGB format for the given color
+    picker.  *)
