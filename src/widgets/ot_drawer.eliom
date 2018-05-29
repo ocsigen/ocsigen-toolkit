@@ -95,8 +95,10 @@ let%shared drawer
   in
   let d = D.div ~a:[a_class [ "ot-drawer"
                             ; match position with
-                            | `Left -> "ot-dr-left"
-                            | `Right -> "ot-dr-right"]]
+                            | `Top -> "ot-dr-top"
+                            | `Right -> "ot-dr-right"
+                            | `Bottom -> "ot-dr-bottom"
+                            | `Left -> "ot-dr-left"]]
       (toggle_button :: (content :> Html_types.div_content elt list))
   in
   let bckgrnd_init_class = if opened then ["ot-dr-open"] else [] in

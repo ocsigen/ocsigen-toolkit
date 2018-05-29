@@ -43,7 +43,7 @@
 *)
 val drawer :
   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list ->
-  ?position:[ `Left | `Right ] ->
+  ?position:[ `Top | `Right | `Bottom | `Left ] ->
   ?opened:bool ->
   ?swipe:bool ->
   ?onclose:(unit -> unit) Eliom_client_value.t ->
