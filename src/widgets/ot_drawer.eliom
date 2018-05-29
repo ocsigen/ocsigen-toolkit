@@ -195,10 +195,15 @@ let%shared drawer
           animation_frame_requested := false;
           (match !action with
            | `Move delta ->
-             let s = Js.string ((if ~%position = `Right
-                                 then "translateX(calc(-100% + "
-                                 else "translateX(calc(100% + ")^
-                                string_of_int delta^"px))") in
+             let s =
+               (match ~%position with
+                | `Top -> "translateY(calc(100% + "
+                | `Right -> "translateX(calc(-100% + "
+                | `Bottom -> "translateY(calc(-100% + "
+                | `Left -> "translateX(calc(100% + ")
+               |> (fun t -> Printf.sprintf "%s%dpx" t delta)
+               |> Js.string
+             in
              (Js.Unsafe.coerce (dr##.style))##.transform := s;
              (Js.Unsafe.coerce (dr##.style))##.webkitTransform := s
            | `Close ->
@@ -228,26 +233,36 @@ let%shared drawer
     let status = ref Stopped in
     let onpan ev _ =
       let left = clX ev - !startx in
+      let top = clY ev - !starty in
       if !status = Start
-      then begin
-        status := if abs (clY ev - !starty) > abs left
-          then Aborted (* vertical scrolling *)
-          else if abs left > Ot_swipe.threshold
-          then begin (* We decide to take the event *)
+      then
+        status :=
+          if ((~%position = `Top || ~%position = `Bottom)
+              && abs left > abs top)
+          || ((~%position = `Left || ~%position = `Right)
+              && abs top > abs left)
+          then Aborted (* Orthogonal scrolling *)
+          else if ((~%position = `Top || ~%position = `Bottom)
+                   && abs top <= Ot_swipe.threshold)
+               || ((~%position = `Left || ~%position = `Right) &&
+                   abs left <= Ot_swipe.threshold)
+          then !status
+          else begin (* We decide to take the event *)
             Manip.Class.add ~%bckgrnd "ot-swiping";
             (Js.Unsafe.coerce (dr##.style))##.transition :=
               Js.string "-webkit-transform 0s, transform 0s";
             In_progress
-          end
-          else !status
-      end;
+          end;
       if !status = In_progress
       then begin
         Dom.preventDefault ev;
         Dom_html.stopPropagation ev;
-        if (~%position = `Left && left <= 0)
-        || (~%position = `Right && left >= 0)
-        then perform_animation (`Move left)
+        let move = ref 0 in
+        if (~%position = `Top && top <= 0 && (move := top; true))
+        || (~%position = `Right && left >= 0 && (move := left; true))
+        || (~%position = `Bottom && top >= 0 && (move := top; true))
+        || (~%position = `Left && left <= 0 && (move := left; true))
+        then perform_animation (`Move !move)
         else Lwt.return_unit
       end
       else Lwt.return_unit
@@ -259,9 +274,12 @@ let%shared drawer
         (Js.Unsafe.coerce (dr##.style))##.transition :=
           Js.string "-webkit-transform .35s, transform .35s";
         let width = dr##.offsetWidth in
-        let delta = float_of_int (clX ev - !startx) in
-        if (~%position = `Left && delta < -0.3 *. float width)
-        || (~%position = `Right && delta > 0.3 *. float width)
+        let deltaX = float_of_int (clX ev - !startx) in
+        let deltaY = float_of_int (clY ev - !starty) in
+        if (~%position = `Top && deltaY < -0.3 *. float width)
+        || (~%position = `Right && deltaX > 0.3 *. float width)
+        || (~%position = `Bottom && deltaY > 0.3 *. float width)
+        || (~%position = `Left && deltaX < -0.3 *. float width)
         then perform_animation `Close
         else perform_animation `Open
       end
