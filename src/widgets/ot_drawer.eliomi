@@ -23,7 +23,7 @@
 
 (** {2 Drawer menu for mobile and Web applications} *)
 
-(** Build a drawer menu on the left or right of the screen.
+(** Build a drawer menu on the left, right, top or bottom of the screen.
     Returns the DOM element, and functions to open and close the menu.
     It is also possible to open or close the menu by clicking on a button,
     and to swipe the menu to close it.
