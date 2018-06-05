@@ -25,10 +25,9 @@ open%client Eliom_content.Html.F
 let%client display
     ?(container_a = [ a_class ["ot-tip-container"] ])
     ?(filter_a = [ a_class ["ot-tip-filter"] ])
-    ?(side : [ `Center | `Left | `Right ] option)
     ~(origin : Dom_html.element Js.t)
-    ?(onopen = fun _ _ _ () -> ())
-    ?(onclose = fun _ _ _ () -> ())
+    ?(onopen = fun _ _ -> ())
+    ?(onclose = fun _ _ -> ())
     ~(content : (unit -> unit) ->
       [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list) () =
   let close = ref @@ fun () -> () in
@@ -50,40 +49,47 @@ let%client display
               - int_of_float bb##.right in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
   m##.style##.minWidth := print_px w ;
-  if top < bottom
-  then ( let top = print_px bb##.bottom in
-         m##.style##.top := top
-       ; m##.classList##add (Js.string "ot-tip-top") )
-  else (let bottom =
-          print_px
-            (float_of_int Dom_html.document##.documentElement##.clientHeight
-             -. bb##.top) in
-        m##.style##.bottom := bottom
-      ; m##.classList##add (Js.string "ot-tip-bottom") ) ;
-  let side =
-    if side = Some `Center || (side = None && right = left)
-    then (Lwt.async (fun () ->
-      let%lwt () = Ot_nodeready.nodeready m in
-      let _ = Dom_html.window##getComputedStyle m in (* Force layout *)
-      m##.style##.left :=
-        print_px (((bb##.right +. bb##.left) /. 2.)
-                  -. (float_of_int m##.offsetWidth) /. 2.)
-    ; Lwt.return_unit)
-         ; m##.classList##add (Js.string "ot-tip-center")
-         ; `Center )
-    else if side = Some `Left || (side = None && right < left)
-    then (let right =
-            print_px
-              (float_of_int Dom_html.document##.documentElement##.clientWidth
-               -. bb##.right) in
-          m##.style##.right := right
-        ; m##.classList##add (Js.string "ot-tip-left")
-        ; `Left)
-    else (* if side = Some `Right || (side = None && right > left) *)
-      ( m##.style##.left := print_px bb##.left
-      ; m##.classList##add (Js.string "ot-tip-right")
-      ; `Right )
-  in
+  if top < bottom then begin
+    let top = print_px bb##.bottom in
+    m##.style##.top := top;
+    m##.classList##add (Js.string "ot-tip-top")
+  end else begin
+    let bottom =
+      print_px
+        (float_of_int Dom_html.document##.documentElement##.clientHeight
+         -. bb##.top)
+    in
+    m##.style##.bottom := bottom;
+    m##.classList##add (Js.string "ot-tip-bottom")
+  end;
+  if right < left then begin
+    let right =
+      float_of_int Dom_html.document##.documentElement##.clientWidth
+      -. (bb##.right +. bb##.left) /. 2.
+    in
+    m##.style##.right := print_px right;
+    Lwt.async @@ fun () ->
+    let%lwt () = Ot_nodeready.nodeready m in
+    let off = float (m##.offsetWidth / 2) in
+    if off <= right -. 1. then begin
+      m##.style##.right := print_px (right -. off);
+      Manip.Class.add container "ot-tip-center"
+    end else
+      Manip.Class.add container "ot-tip-left";
+    Lwt.return_unit
+  end else begin
+    let left = (bb##.right +. bb##.left) /. 2. in
+    m##.style##.left := print_px left;
+    Lwt.async @@ fun () ->
+    let%lwt () = Ot_nodeready.nodeready m in
+    let off = float (m##.offsetWidth / 2) in
+    if off <= left -. 1. then begin
+      m##.style##.left := print_px (left -. off);
+      Manip.Class.add container "ot-tip-center"
+    end else
+      Manip.Class.add container "ot-tip-right";
+    Lwt.return_unit
+  end;
   let filter =
     D.div ~a:(a_onclick (fun _ -> !close ()) :: filter_a) [ container ]
   in
@@ -96,8 +102,8 @@ let%client display
   close := (fun () ->
     Dom.removeEventListener scroll_handler;
     Manip.removeSelf filter;
-    onclose filter container side () ;
+    onclose filter container
   );
   Manip.appendToBody filter ;
-  onopen filter container side () ;
+  onopen filter container;
   (filter, !close)

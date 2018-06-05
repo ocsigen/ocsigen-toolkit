@@ -37,10 +37,6 @@
     [menu_a]: menu attributes default is [ [ a_class ["ot-drp-menu"] ] ]
     and will be overriden if you provide this argument.
 
-    [side]: is the side you want the tip to be display. It references the [origin]
-    element. If no value is provided, side is choosen automatically according to
-    the space available on each side of the [origin] element.
-
     [origin] is the element from which the tip is supposed to pop out.
 
     [onopen filter menu side] is called after the filter is append to body.
@@ -56,14 +52,13 @@ val display
   : ?container_a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?filter_a:[< Html_types.div_attrib > `Class `OnClick]
     Eliom_content.Html.attrib list
-  -> ?side:[ `Left | `Right | `Center ]
   -> origin : Dom_html.element Js.t
   -> ?onopen:([> Html_types.div ] Eliom_content.Html.elt
               -> [> Html_types.div ] Eliom_content.Html.elt
-              -> [> `Left | `Right | `Center ] -> unit -> unit)
+              -> unit)
   -> ?onclose:([> Html_types.div ] Eliom_content.Html.elt
               -> [> Html_types.div ] Eliom_content.Html.elt
-              -> [> `Left | `Right | `Center ] -> unit -> unit)
+              -> unit)
   -> content: ((unit -> unit)
                -> [< Html_types.div_content_fun > `Div]
                  Eliom_content.Html.elt list)
