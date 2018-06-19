@@ -130,6 +130,8 @@ val make :
     switching to a page for the first time. The initial page (defined by
     [position] is directly generated on the server side (if [make_lazy] is
     invoked on the server).
+    Parameter [?spinner] make it possible to customize the element
+    that is displayed while page is loading.
 *)
 val make_lazy :
   ?a: [< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
@@ -149,6 +151,7 @@ val make_lazy :
                         int ->
                         Html_types.div_attrib Eliom_content.Html.D.attrib list)
     Eliom_shared.Value.t ->
+  ?spinner: (unit -> Html_types.div_content Eliom_content.Html.elt) ->
   (unit -> [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list ->
   [> `Div ] t Lwt.t
