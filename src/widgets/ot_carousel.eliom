@@ -526,7 +526,7 @@ let%shared default_fail e =
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
-let%client generate_initial_contents sleeper gen =
+let%client generate_initial_contents ~spinner sleeper gen =
   let s = spinner () in
   begin Lwt.async @@ fun () ->
     let%lwt contents = generate_content gen in
@@ -539,7 +539,7 @@ let%client generate_initial_contents sleeper gen =
   Lwt.return (s, ref @@ None)
 
 (* on the server side we generate all the visible contents right away *)
-let%server generate_initial_contents _ gen =
+let%server generate_initial_contents ~spinner:_ _ gen =
   let%lwt contents = generate_content gen in
   Lwt.return (contents, ref @@ None)
 
@@ -556,6 +556,7 @@ let%shared make_lazy
     ?full_height
     ?make_transform
     ?make_page_attribute
+    ?(spinner = spinner)
     gen_contents =
   let gen_contents = (gen_contents :>
     (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list) in
@@ -563,7 +564,7 @@ let%shared make_lazy
   let sleeper, wakener = Lwt.wait () in
   let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t
     = fun i gen -> if i = position
-        then generate_initial_contents sleeper gen
+        then generate_initial_contents ~spinner sleeper gen
         else Lwt.return @@ let s = spinner () in s, ref @@ Some (s, gen)
   in
   let%lwt contents, spinners_and_generators =
