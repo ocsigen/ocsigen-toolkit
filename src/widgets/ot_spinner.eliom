@@ -23,7 +23,7 @@
 [%%shared open Eliom_content.Html.F ]
 [%%client open Eliom_shared ]
 
-let%shared default_fail e =
+let%shared default_fail_fun e =
   [
     if Eliom_config.get_debugmode ()
     then em [ pcdata (Printexc.to_string e) ]
@@ -35,6 +35,19 @@ let%shared default_fail e =
       em ~a:[ a_class ["ot-icon-error"] ] []
     end
   ]
+
+let%shared default_fail_ref
+  : (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
+  = ref default_fail_fun
+
+let%shared default_fail e =
+  (!default_fail_ref e
+   : Html_types.div_content Eliom_content.Html.elt list
+   :> [< Html_types.div_content ] Eliom_content.Html.elt list)
+
+let%shared set_default_fail f = default_fail_ref :=
+    (f : exn -> [< Html_types.div_content ] Eliom_content.Html.elt list
+     :> exn -> Html_types.div_content Eliom_content.Html.elt list)
 
 let%server with_spinner ?(a = []) ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -78,7 +91,10 @@ let cl_spinner = "ot-icon-spinner"
 
 let replace_content ?fail elt thread =
   let fail = match fail with
-    | Some fail -> fail
+    | Some fail ->
+      (fail
+       : exn -> [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t
+       :> exn -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
     | None      -> fun e -> Lwt.return (default_fail e)
   in
   inc_active_spinners ();
