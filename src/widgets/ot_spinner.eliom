@@ -27,8 +27,14 @@ let%shared default_fail e =
   [
     if Eliom_config.get_debugmode ()
     then em [ pcdata (Printexc.to_string e) ]
-    else em ~a:[ a_class ["ot-icon-question"] ]
-        [ pcdata (Printexc.to_string e) ] ]
+    else begin
+      let e = Printexc.to_string e in
+      ignore [%client (Firebug.console##error
+                         (Js.string ("Ot_spinner content failed with "^ ~%e))
+                       : unit)];
+      em ~a:[ a_class ["ot-icon-error"] ] []
+    end
+  ]
 
 let%server with_spinner ?(a = []) ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in

@@ -58,6 +58,7 @@
     background-color: black ;
 }
 
+.ot-icon-error::before,
 .ot-icon-question::before {
     content: '?' ;
     display: block ;
