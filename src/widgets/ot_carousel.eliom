@@ -511,11 +511,17 @@ let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 let%shared generate_content generator =
   try%lwt Eliom_shared.Value.local generator ()
   with e ->
-    let a = if Eliom_config.get_debugmode ()
-            then []
-            else [a_class ["ot-icon-question"]]
-    in
-    Lwt.return @@ div ~a [em [pcdata @@ Printexc.to_string e]]
+    Lwt.return @@
+    if Eliom_config.get_debugmode ()
+    then em [ pcdata (Printexc.to_string e) ]
+    else begin
+      let e = Printexc.to_string e in
+      ignore [%client (Firebug.console##error
+                         (Js.string ("Ot_carousel content failed with "^ ~%e))
+                       : unit)];
+      em ~a:[ a_class ["ot-icon-error"] ] []
+    end
+
 
 let%shared default_fail e =
   [
