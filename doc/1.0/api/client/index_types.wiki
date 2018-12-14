@@ -1,0 +1,28 @@
+=Index of types=
+
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="button_labels"| type Ot_calendar.button_labels >> ~[<<a_api subproject="client" | module Ot_calendar >>~]|<<div class="odocwiki_info"|~An instance of <<span class="odocwiki_inlinecode"|button~_labels>> is used to customize the button
+    labels~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="cropping"| type Ot_picture_uploader.cropping >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]||
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display"| type Ot_style.display >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\G|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="glue"| type Ot_sticky.glue >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|returned by <<span class="odocwiki_inlinecode"|make sticky>> ~(if position~:sticky is not supported~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="intl"| type Ot_calendar.intl >> ~[<<a_api subproject="client" | module Ot_calendar >>~]||
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="orientation"| type Ot_size.orientation >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="resize_sensor"| type Ot_noderesize.resize_sensor >> ~[<<a_api subproject="client" | module Ot_noderesize >>~]||
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="service"| type Ot_picture_uploader.service >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|a service that implements a function with type <<span class="odocwiki_inlinecode"|~'a ~-~> ~'b>>
+>>
+|
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="upload"| type Ot_picture_uploader.upload >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]||
+\\

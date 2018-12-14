@@ -1,0 +1,59 @@
+<<code language="ocaml" | sig
+  type t =
+      Title
+    | Description
+    | Og_title
+    | Og_site_name
+    | Og_type
+    | Og_description
+    | Og_locale
+    | Og_locale_alternate
+    | Og_video
+    | Og_video_url
+    | Og_video_secure_url
+    | Og_video_type
+    | Og_video_with
+    | Og_video_height
+    | Og_image
+    | Og_url
+    | Og_image_secure_url
+    | Og_image_type
+    | Og_image_with
+    | Og_image_height
+    | Fb_admins
+    | Twitter_card
+    | Twitter_site
+    | Twitter_site_id
+    | Twitter_creator
+    | Twitter_creator_id
+    | Twitter_url
+    | Twitter_title
+    | Twitter_description
+    | Twitter_image
+    | Twitter_image_alt
+    | Twitter_player
+    | Twitter_player_width
+    | Twitter_player_height
+    | Twitter_player_stream
+    | Twitter_app_name_iphone
+    | Twitter_app_id_iphone
+    | Twitter_app_url_iphone
+    | Twitter_app_name_ipad
+    | Twitter_app_id_ipad
+    | Twitter_app_url_ipad
+    | Twitter_app_name_googleplay
+    | Twitter_app_id_googleplay
+    | Twitter_app_url_googleplay
+    | Unknown_meta of string * string
+  exception Unknown_property of string
+  val to_string : Ot_social_meta.t -> string
+  val of_string : string -> Ot_social_meta.t
+  val extract :
+    ?fallback:(Nethtml.document -> unit) ->
+    ?tbl:(Ot_social_meta.t, string) Hashtbl.t ->
+    Nethtml.document list -> (Ot_social_meta.t, string) Hashtbl.t
+  val extract_from_string :
+    ?fallback:(Nethtml.document -> unit) ->
+    ?tbl:(Ot_social_meta.t, string) Hashtbl.t ->
+    string -> (Ot_social_meta.t, string) Hashtbl.t
+end >>

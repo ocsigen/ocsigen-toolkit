@@ -1,0 +1,98 @@
+=Index of values=
+
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="bind"| value Ot_swipe.bind >> ~[<<a_api subproject="server" | module Ot_swipe >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="bullets"| value Ot_carousel.bullets >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~List of bullets for carousel~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="drawer"| value Ot_drawer.drawer >> ~[<<a_api subproject="server" | module Ot_drawer >>~]|<<div class="odocwiki_info"|~Build a drawer menu on the left or right of the screen~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="dropdown"| value Ot_buttons.dropdown >> ~[<<a_api subproject="server" | module Ot_buttons >>~]||
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="extract"| value Ot_social_meta.extract >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|extract ~?fallback ~?tbl docs>>~:
+    ~Extract social meta tags from docs~, add them in <<span class="odocwiki_inlinecode"|tbl>> and return <<span class="odocwiki_inlinecode"|tbl>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="extract_from_string"| value Ot_social_meta.extract_from_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]|<<div class="odocwiki_info"|~Same as <<span class="odocwiki_inlinecode"|extract>>~,
+    but with a <<span class="odocwiki_inlinecode"|string>> instead of a <<span class="odocwiki_inlinecode"|~Nethtml~.document list>>
+>>
+|
+|@@ @style="tet-align: left;"@@\\H|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="hcf"| value Ot_popup.hcf >> ~[<<a_api subproject="server" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Section with header~, content and footer~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="input"| value Ot_picture_uploader.input >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a file input element with good input type <<span class="odocwiki_inlinecode"|ot~-pup~-input>> class
+    and wrap it into a label~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="iteri2"| value Ot_lib.List.iteri2 >> ~[<<a_api subproject="server" | module Ot_lib.List >>~]||
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_toggle.make >> ~[<<a_api subproject="server" | module Ot_toggle >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?init~_up ~?up~_txt ~?down~_txt ~(~)>> produces a binary toggle~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_time_picker.make >> ~[<<a_api subproject="server" | module Ot_time_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?action ~?round~_~5 ~?h~2~4 ~(~)>> produces a clock~-style time picker
+    for hours and minutes~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_range.make >> ~[<<a_api subproject="server" | module Ot_range >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?txt~_up ~?txt~_down ~~f ~~lb ub>> produces a widget for picking
+    one of the values in <<span class="odocwiki_inlinecode"|~[lb~, ub~)>> via "up" and "down" buttons marked
+    with the text <<span class="odocwiki_inlinecode"|txt~_up>> and <<span class="odocwiki_inlinecode"|txt~_down>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_carousel.make >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Creates a carousel from the elements of a list~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_calendar.make >> ~[<<a_api subproject="server" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?highlight ~?click~_any ~?action>> produces a calendar~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make_date_picker"| value Ot_calendar.make_date_picker >> ~[<<a_api subproject="server" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make~_date~_picker ~?init ~(~)>> returns a client~-side reactive signal
+    <<span class="odocwiki_inlinecode"|~(y~, m~, d~)>> corresponding to the date <<span class="odocwiki_inlinecode"|d>>~:<<span class="odocwiki_inlinecode"|m>>~:<<span class="odocwiki_inlinecode"|y>> that the user
+    clicks on~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make_hours_minutes_seq"| value Ot_time_picker.make_hours_minutes_seq >> ~[<<a_api subproject="server" | module Ot_time_picker >>~]|<<div class="odocwiki_info"|~Alias of <<span class="odocwiki_inlinecode"|make>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="mk_form"| value Ot_picture_uploader.mk_form >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Ready~-to~-use form~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="mk_service"| value Ot_picture_uploader.mk_service >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|mk~_service name arg~_deriver>> ~Create a named service taking
+    <<span class="odocwiki_inlinecode"|~(arg~_deriver~, ~(cropping~, file~)~)>> parameter
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="next"| value Ot_carousel.next >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Button to go to the next page ~(or more pages if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="of_string"| value Ot_social_meta.of_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="preview"| value Ot_picture_uploader.preview >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a img element with no src~, no alt and <<span class="odocwiki_inlinecode"|ot~-pup~-preview>> class~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="previous"| value Ot_carousel.previous >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Button to go to the previous page ~(or mores page if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="ribbon"| value Ot_carousel.ribbon >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Menu ~(or tabs~) for carousel~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="submit"| value Ot_picture_uploader.submit >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a button with <<span class="odocwiki_inlinecode"|ot~-pup~-sumit>> clas
+>>
+|
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_string"| value Ot_social_meta.to_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
+|@@ @style="tet-align: left;"@@\\W|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="wheel"| value Ot_carousel.wheel >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Carousel with ~3~D effect~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="with_spinner"| value Ot_spinner.with_spinner >> ~[<<a_api subproject="server" | module Ot_spinner >>~]|<<div class="odocwiki_info"|~On client side~, <<span class="odocwiki_inlinecode"|with~_spinner th>> returns immediately a spinner
+    while ~Lwt thread <<span class="odocwiki_inlinecode"|th>> is not finished~, that will automatically
+    be replaced by the result of <<span class="odocwiki_inlinecode"|th>> when finished~.
+>>
+|
+\\

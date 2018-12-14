@@ -1,0 +1,24 @@
+=Module <<a_api_type subproject="client" | module Ot_nodeready >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_nodeready>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Ot_nodeready >><<span class="ocsforge_color_keyword"|end>>>>~Wait for a node to be inserted in the ~D~O~M~.
+
+
+    
+===@@id="3_Example"@@~Example===
+
+
+
+    <<span class="odocwiki_inlinecode"|let ~_ ~= nodeready node in ~Firebug~.console~#~#debug node>>
+
+
+    
+===@@id="3_Knownissues"@@~Known issues===
+
+
+
+    ~Using it on a node that is never actually added in the ~D~O~M will
+    make the node and the thread wakener kept in memory~.  ~Also~, note
+    that nodeready is fired only once ~(except if you add a new
+    listener to it after triggering the first one~)~.
+
+----
+<<pre id="VALnodeready" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|nodeready>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|~#<<span class="ocsforge_color_uid"|Dom>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|node>> <<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>>

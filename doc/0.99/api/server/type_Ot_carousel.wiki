@@ -1,0 +1,73 @@
+<<code language="ocaml" | sig
+  val make :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?vertical:bool ->
+    ?position:int ->
+    ?transition_duration:float ->
+    ?inertia:float ->
+    ?allow_overswipe:bool ->
+    ?update:[ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+    ?disabled:bool Eliom_shared.React.S.t ->
+    ?full_height:[ `Header of (unit -> int) Eliom_client_value.t
+                 | `No
+                 | `No_header ] ->
+    ?make_transform:(vertical:bool -> ?delta:int -> int -> string)
+                    Eliom_shared.Value.t ->
+    ?make_page_attribute:(vertical:bool ->
+                          int ->
+                          Html_types.div_attrib Eliom_content.Html.D.attrib
+                          list)
+                         Eliom_shared.Value.t ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list ->
+    [> `Div ] Eliom_content.Html.elt * int Eliom_shared.React.S.t *
+    int Eliom_shared.React.S.t * float React.S.t Eliom_client_value.t
+  val wheel :
+    ?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
+    ?vertical:bool ->
+    ?position:int ->
+    ?transition_duration:float ->
+    ?inertia:float ->
+    ?allow_overswipe:bool ->
+    ?update:[ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t ->
+    ?disabled:bool Eliom_shared.React.S.t ->
+    ?faces:int ->
+    ?face_size:int ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list ->
+    [> `Div ] Eliom_content.Html.elt * int Eliom_shared.React.S.t *
+    float React.S.t Eliom_client_value.t
+  val bullets :
+    ?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list ->
+    ?attributes:[< Html_types.li_attrib ] Eliom_content.Html.attrib list list ->
+    change:([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
+    pos:int Eliom_shared.React.S.t ->
+    length:int ->
+    ?size:int Eliom_shared.React.S.t ->
+    ?content:[< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
+    unit -> [> `Ul ] Eliom_content.Html.elt
+  val ribbon :
+    ?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list ->
+    change:([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t ->
+    pos:int Eliom_shared.React.S.t ->
+    ?size:int Eliom_shared.React.S.t ->
+    ?initial_gap:int ->
+    ?transition_duration:float ->
+    ?cursor:float React.S.t Eliom_client_value.t ->
+    [< Html_types.li_content_fun ] Eliom_content.Html.elt list list ->
+    [> `Div ] Eliom_content.Html.elt
+  val previous :
+    ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list ->
+    change:([> `Goto of int | `Prev ] -> unit) Eliom_client_value.t ->
+    ?offset:int Eliom_shared.React.S.t ->
+    pos:int Eliom_shared.React.S.t ->
+    Html_types.button_content Eliom_content.Html.elt list ->
+    [> `Button ] Eliom_content.Html.elt
+  val next :
+    ?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list ->
+    change:([> `Goto of int | `Next ] -> unit) Eliom_client_value.t ->
+    ?offset:int Eliom_shared.React.S.t ->
+    pos:int Eliom_shared.React.S.t ->
+    size:int Eliom_shared.React.S.t ->
+    length:int ->
+    Html_types.button_content Eliom_content.Html.elt list ->
+    [> `Button ] Eliom_content.Html.elt
+end >>

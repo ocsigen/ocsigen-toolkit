@@ -1,0 +1,57 @@
+==
+
+=@@id="1_OcsigentoolkitserverAPI"@@~Ocsigen~-toolkit server ~A~P~I=
+
+
+
+
+|<<a_api subproject="server" | module Ot_popup >>|<<div class="odocwiki_info"|~Popup widget
+>>
+|
+|<<a_api subproject="server" | module Ot_spinner >>|<<div class="odocwiki_info"|~Spinner widget
+>>
+|
+|<<a_api subproject="server" | module Ot_drawer >>|<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
+>>
+|
+|<<a_api subproject="server" | module Ot_carousel >>|<<div class="odocwiki_info"|~Carousel
+>>
+|
+|<<a_api subproject="server" | module Ot_swipe >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind ~~compute~_final~_pos elt>> makes <<span class="odocwiki_inlinecode"|elt>> left~-right
+   swipable on touch screens~.
+>>
+|
+|<<a_api subproject="server" | module Ot_range >>|<<div class="odocwiki_info"|~Range selection widget
+>>
+|
+|<<a_api subproject="server" | module Ot_lib >>||
+|<<a_api subproject="server" | module Ot_size >>||
+|<<a_api subproject="server" | module Ot_calendar >>|<<div class="odocwiki_info"|~Calendar widget
+>>
+|
+|<<a_api subproject="server" | module Ot_time_picker >>|<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
+>>
+|
+|<<a_api subproject="server" | module Ot_toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
+>>
+|
+|Ot_icons||
+|<<a_api subproject="server" | module Ot_picture_uploader >>|<<div class="odocwiki_info"|~Picture uploader widget
+>>
+|
+|<<a_api subproject="server" | module Ot_nodeready >>||
+|<<a_api subproject="server" | module Ot_noderesize >>||
+
+
+
+
+
+=@@id="1_Index"@@~Index=
+
+
+
+* <<a_api subproject="server" text="Index of types" | index types >>
+* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="server" text="Index of values" | index values >>
+* <<a_api subproject="server" text="Index of modules" | index modules >>
+

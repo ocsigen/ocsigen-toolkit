@@ -1,0 +1,6 @@
+<<code language="ocaml" | sig
+  module List :
+    sig
+      val iteri2 : (int -> 'a -> 'b -> unit) -> 'a list -> 'b list -> unit
+    end
+end >>

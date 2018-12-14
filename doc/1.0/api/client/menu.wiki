@@ -1,0 +1,22 @@
+=~Ocsigen~-toolkit client ~A~P~I
+==[[client/Ot_popup|Ot_popup]]
+==[[client/Ot_spinner|Ot_spinner]]
+==[[client/Ot_drawer|Ot_drawer]]
+==[[client/Ot_carousel|Ot_carousel]]
+==[[client/Ot_swipe|Ot_swipe]]
+==[[client/Ot_range|Ot_range]]
+==[[client/Ot_lib|Ot_lib]]
+==[[client/Ot_size|Ot_size]]
+==[[client/Ot_calendar|Ot_calendar]]
+==[[client/Ot_time_picker|Ot_time_picker]]
+==[[client/Ot_toggle|Ot_toggle]]
+==[[client/Ot_icons|Ot_icons]]
+==[[client/Ot_picture_uploader|Ot_picture_uploader]]
+==[[client/Ot_nodeready|Ot_nodeready]]
+==[[client/Ot_noderesize|Ot_noderesize]]
+=~Index
+== <<a_api subproject="client" text="Index of types" | index types >>
+== <<a_api subproject="client" text="Index of values" | index values >>
+== <<a_api subproject="client" text="Index of class methods" | index methods >>
+== <<a_api subproject="client" text="Index of class types" | index class types >>
+== <<a_api subproject="client" text="Index of modules" | index modules >>
