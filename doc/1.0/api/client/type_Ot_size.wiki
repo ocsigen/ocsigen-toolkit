@@ -1,0 +1,30 @@
+<<code language="ocaml" | sig
+  type orientation = Portrait | Landscape
+  val get_screen_size : unit -> int * int
+  val get_screen_orientation : unit -> Ot_size.orientation
+  val get_size :
+    < clientHeight : < get : int; .. > Js.gen_prop;
+      clientWidth : < get : int; .. > Js.gen_prop; .. >
+    Js.t -> int * int
+  val get_document_size : unit -> int * int
+  val width_height : (int * int) React.signal
+  val width : int React.signal
+  val height : int React.signal
+  val update_width_height : unit -> unit
+  val set_adaptative_width : #Dom_html.element Js.t -> (int -> int) -> unit
+  val set_adaptative_height : #Dom_html.element Js.t -> (int -> int) -> unit
+  val height_to_bottom : int -> #Dom_html.element Js.t -> int
+  val client_top : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_bottom : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_left : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_right : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_height : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_width : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_page_top : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_page_left : ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_page_bottom :
+    ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val client_page_right :
+    ?with_margin:bool -> #Dom_html.element Js.t -> float
+  val pageYOffset : unit -> int
+end >>

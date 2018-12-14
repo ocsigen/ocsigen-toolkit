@@ -1,0 +1,66 @@
+==
+
+=@@id="1_OcsigentoolkitclientAPI"@@~Ocsigen~-toolkit client ~A~P~I=
+
+
+
+
+|<<a_api subproject="client" | module Ot_popup >>|<<div class="odocwiki_info"|~Popup widget
+>>
+|
+|<<a_api subproject="client" | module Ot_spinner >>|<<div class="odocwiki_info"|~Spinner widget
+>>
+|
+|<<a_api subproject="client" | module Ot_drawer >>|<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
+>>
+|
+|<<a_api subproject="client" | module Ot_carousel >>|<<div class="odocwiki_info"|~Carousel
+>>
+|
+|<<a_api subproject="client" | module Ot_swipe >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind ~~compute~_final~_pos elt>> makes <<span class="odocwiki_inlinecode"|elt>> swipable on touch screens~.
+>>
+|
+|<<a_api subproject="client" | module Ot_range >>|<<div class="odocwiki_info"|~Range selection widget
+>>
+|
+|<<a_api subproject="client" | module Ot_lib >>|<<div class="odocwiki_info"|~N~O~T~E~: be careful when using the functions <<span class="odocwiki_inlinecode"|onresizes>>~,
+    <<span class="odocwiki_inlinecode"|window~_scroll>>~, and <<span class="odocwiki_inlinecode"|window~_scrolls>>~.
+>>
+|
+|<<a_api subproject="client" | module Ot_size >>|<<div class="odocwiki_info"|~Size functions for ~Dom elements
+>>
+|
+|<<a_api subproject="client" | module Ot_calendar >>|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|intl>> is the type of internationalization specifiers~.
+>>
+|
+|<<a_api subproject="client" | module Ot_time_picker >>|<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
+>>
+|
+|<<a_api subproject="client" | module Ot_toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
+>>
+|
+|Ot_icons||
+|<<a_api subproject="client" | module Ot_picture_uploader >>|<<div class="odocwiki_info"|~Picture uploader widget
+>>
+|
+|<<a_api subproject="client" | module Ot_nodeready >>|<<div class="odocwiki_info"|~Wait for a node to be inserted in the ~D~O~M~.
+>>
+|
+|<<a_api subproject="client" | module Ot_noderesize >>|<<div class="odocwiki_info"|~Get an event when an element~'s size changes
+>>
+|
+
+
+
+
+
+=@@id="1_Index"@@~Index=
+
+
+
+* <<a_api subproject="client" text="Index of types" | index types >>
+* <<a_api subproject="client" text="Index of values" | index values >>
+* <<a_api subproject="client" text="Index of class methods" | index methods >>
+* <<a_api subproject="client" text="Index of class types" | index class types >>
+* <<a_api subproject="client" text="Index of modules" | index modules >>
+

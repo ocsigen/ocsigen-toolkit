@@ -1,0 +1,35 @@
+=Module <<a_api_type subproject="client" | module Ot_time_picker >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_time_picker>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Ot_time_picker >><<span class="ocsforge_color_keyword"|end>>>>~This module implements a clock~-style time picker~.
+
+----
+<<pre id="VALmake" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|make>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?action: >><<span class="ocsforge_color_delimiter"| ( >>int * int <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?init: >>int * int <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?update: >><<span class="ocsforge_color_delimiter"| ( >>int * int<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|E>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?round_5: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?h24: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  unit <<span class="ocsforge_color_delimiter"| -> >>\\  [> `Div ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> *\\  <<span class="ocsforge_color_delimiter"| ( >>int * int<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_shared>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> *\\  <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?action ~?round~_~5 ~?h~2~4 ~(~)>> produces a clock~-style time picker
+    for hours and minutes~. ~The user is first asked to pick hours~, then
+    minutes with a separate clock~.
+
+
+    ~If <<span class="odocwiki_inlinecode"|action>> is provided~, it is called when a new time is
+    available~.
+
+
+    <<span class="odocwiki_inlinecode"|init>> ~(if provided~) is the default displayed time~.
+
+
+    <<span class="odocwiki_inlinecode"|update>> is a ~React event that can be used to trigger updates from
+    outside~.
+
+
+    ~If <<span class="odocwiki_inlinecode"|round~_~5>> is true ~(default~: false~)~, the output for the minutes
+    is rounded to multiples of ~5~.
+
+
+    ~If <<span class="odocwiki_inlinecode"|h~2~4>> is true ~(default~: true~)~, a ~2~4~-hour hour picker is
+    used~.
+
+
+    ~The first part of the output is the clock~. ~The second part of the
+    output is a reactive signal <<span class="odocwiki_inlinecode"|~(h~, m~)>> where <<span class="odocwiki_inlinecode"|h>> are the hours and
+    <<span class="odocwiki_inlinecode"|m>> the minutes that the user picked~. ~The third part of the output
+    is a function that can be called to go back to hours selection~.
+>>
+<<pre id="VALmake_hours_minutes_seq" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|make~_hours~_minutes~_seq>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?action: >><<span class="ocsforge_color_delimiter"| ( >>int * int <<span class="ocsforge_color_delimiter"| -> >> unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?init: >>int * int <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?update: >><<span class="ocsforge_color_delimiter"| ( >>int * int<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|E>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?round_5: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?h24: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  unit <<span class="ocsforge_color_delimiter"| -> >>\\  [> `Div ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> *\\  <<span class="ocsforge_color_delimiter"| ( >>int * int<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_shared>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> *\\  <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~Alias of <<span class="odocwiki_inlinecode"|make>>~. ~Deprecated~.
+>>

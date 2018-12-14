@@ -1,0 +1,256 @@
+=Index of values=
+
+|@@ @style="tet-align: left;"@@\\A|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ask_question"| value Ot_popup.ask_question >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|ask~_question ~?a ~?a~_hcf question buttons>>
+    ~Prompt a user~, wait for its response and return the selected value~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="attach"| value Ot_noderesize.attach >> ~[<<a_api subproject="client" | module Ot_noderesize >>~]||
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind"| value Ot_swipe.bind >> ~[<<a_api subproject="client" | module Ot_swipe >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind"| value Ot_picture_uploader.bind >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind>> is a shortcut for <<span class="odocwiki_inlinecode"|bind~_input>> and <<span class="odocwiki_inlinecode"|bind~_submit>> actions
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_arrow_keys"| value Ot_carousel.bind_arrow_keys >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Make arrow keys cause event change~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_input"| value Ot_picture_uploader.bind_input >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind~_input input preview ~?container ~?reset ~(~)>>
+    ~Bind <<span class="odocwiki_inlinecode"|input>> and <<span class="odocwiki_inlinecode"|preview>> so the file selected in <<span class="odocwiki_inlinecode"|input>> is the
+    image displayed in <<span class="odocwiki_inlinecode"|preview>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_submit"| value Ot_picture_uploader.bind_submit >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| bind~_submit input button ~?cropping ~~upload ~~after~_submit ~(~) >>
+    binds the following two actions to <<span class="odocwiki_inlinecode"| button >> when it is being clicked~:
+    call <<span class="odocwiki_inlinecode"| do~_submit >> which uploads the file~; then call <<span class="odocwiki_inlinecode"| after~_submit >>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bottom"| value Ot_style.bottom >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bullets"| value Ot_carousel.bullets >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~List of bullets for carousel~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="click_outside"| value Ot_lib.click_outside >> ~[<<a_api subproject="client" | module Ot_lib >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|click~_outside e>> returns when user clicks outside element <<span class="odocwiki_inlinecode"|e>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_bottom"| value Ot_size.client_bottom >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_height"| value Ot_size.client_height >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_left"| value Ot_size.client_left >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_bottom"| value Ot_size.client_page_bottom >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_left"| value Ot_size.client_page_left >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_right"| value Ot_size.client_page_right >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_top"| value Ot_size.client_page_top >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|position of an element relative to the document
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_right"| value Ot_size.client_right >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|size of an element
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_top"| value Ot_size.client_top >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|position of an element relative to the inner window~;
+    get~Client~Bounding~Rect does not include borders by default~, use <<span class="odocwiki_inlinecode"|with~_margin>>
+    to take them into account~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_width"| value Ot_size.client_width >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="confirm"| value Ot_popup.confirm >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Shortcut using <<span class="odocwiki_inlinecode"|ask~_question>> for prompting the user with a question
+    and returning a boolean~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="cropper"| value Ot_picture_uploader.cropper >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| let ~(reset~, cropping~, cropper~_dom~) ~= cropper ~~image ~(~) >>
+    <<span class="odocwiki_inlinecode"| reset >> is function to call to reset the current cropper status
+    <<span class="odocwiki_inlinecode"| cropping >> are current cropping parameters
+    <<span class="odocwiki_inlinecode"| cropper~_dom >> is the div containing cropping controllers
+>>
+|
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="detach"| value Ot_noderesize.detach >> ~[<<a_api subproject="client" | module Ot_noderesize >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display"| value Ot_style.display >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display'"| value Ot_style.display' >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display_of_str"| value Ot_style.display_of_str >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display_to_str"| value Ot_style.display_to_str >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="do_submit"| value Ot_picture_uploader.do_submit >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| do~_submit input ~?cropping ~~upload ~(~) >>
+    <<span class="odocwiki_inlinecode"|input>> is the input with file loaded
+    <<span class="odocwiki_inlinecode"|cropping>> are cropping info
+    <<span class="odocwiki_inlinecode"|upload>> function to upload the file
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="drawer"| value Ot_drawer.drawer >> ~[<<a_api subproject="client" | module Ot_drawer >>~]|<<div class="odocwiki_info"|~Build a drawer menu on the left or right of the screen~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="dropdown"| value Ot_buttons.dropdown >> ~[<<a_api subproject="client" | module Ot_buttons >>~]||
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="float_of_px"| value Ot_style.float_of_px >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\G|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_document_size"| value Ot_size.get_document_size >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_screen_orientation"| value Ot_size.get_screen_orientation >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_screen_size"| value Ot_size.get_screen_size >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="get_size"| value Ot_size.get_size >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@ @style="tet-align: left;"@@\\H|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="hcf"| value Ot_popup.hcf >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Section with header~, content and footer~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="height"| value Ot_size.height >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="height_to_bottom"| value Ot_size.height_to_bottom >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|~Compute the height of an element to the bottom of the page
+>>
+|
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="in_ancestors"| value Ot_lib.in_ancestors >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="input"| value Ot_picture_uploader.input >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a file input element with good input type <<span class="odocwiki_inlinecode"|ot~-pup~-input>> class
+    and wrap it into a label~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="invisible"| value Ot_style.invisible >> ~[<<a_api subproject="client" | module Ot_style >>~]|<<div class="odocwiki_info"|whether an element is currently invisible in the ~D~O~M ~(not the screen~)~;
+    you might want to do a <<span class="odocwiki_inlinecode"|~Ot~_nodeready~.nodeready>> before~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="is_position_sticky"| value Ot_sticky.is_position_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|whether computed ~C~S~S attribute "position" equals "sticky"
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="is_sticky"| value Ot_sticky.is_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|whether element is sticky~, either due to ~C~S~S attribute position~:sticky or
+    due to position~:sticky polyfill <<span class="odocwiki_inlinecode"|make~_sticky>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="iteri2"| value Ot_lib.List.iteri2 >> ~[<<a_api subproject="client" | module Ot_lib.List >>~]||
+|@@ @style="tet-align: left;"@@\\K|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="keep_in_sight"| value Ot_sticky.keep_in_sight >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|make sure an element gets never out of sight while scrolling by
+    continuously ~(window scroll~/resize~) monitoring the position of the
+    element and adjusting the top~/left value~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="left"| value Ot_style.left >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\M|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_toggle.make >> ~[<<a_api subproject="client" | module Ot_toggle >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?init~_up ~?up~_txt ~?down~_txt ~(~)>> produces a binary toggle~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_time_picker.make >> ~[<<a_api subproject="client" | module Ot_time_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?action ~?round~_~5 ~?h~2~4 ~(~)>> produces a clock~-style time picker
+    for hours and minutes~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_range.make >> ~[<<a_api subproject="client" | module Ot_range >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?txt~_up ~?txt~_down ~~f ~~lb ub>> produces a widget for picking
+    one of the values in <<span class="odocwiki_inlinecode"|~[lb~, ub~)>> via "up" and "down" buttons marked
+    with the text <<span class="odocwiki_inlinecode"|txt~_up>> and <<span class="odocwiki_inlinecode"|txt~_down>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_carousel.make >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Creates a carousel from the elements of a list~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_calendar.make >> ~[<<a_api subproject="client" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?highlight ~?click~_any ~?action>> produces a calendar~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make_date_picker"| value Ot_calendar.make_date_picker >> ~[<<a_api subproject="client" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make~_date~_picker ~?init ~(~)>> returns a client~-side reactive signal
+    <<span class="odocwiki_inlinecode"|~(y~, m~, d~)>> corresponding to the date <<span class="odocwiki_inlinecode"|d>>~:<<span class="odocwiki_inlinecode"|m>>~:<<span class="odocwiki_inlinecode"|y>> that the user
+    clicks on~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make_hours_minutes_seq"| value Ot_time_picker.make_hours_minutes_seq >> ~[<<a_api subproject="client" | module Ot_time_picker >>~]|<<div class="odocwiki_info"|~Alias of <<span class="odocwiki_inlinecode"|make>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make_sticky"| value Ot_sticky.make_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|position~:sticky polyfill which is not supported by some browsers~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="marginBottom"| value Ot_style.marginBottom >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="marginLeft"| value Ot_style.marginLeft >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="marginRight"| value Ot_style.marginRight >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="marginTop"| value Ot_style.marginTop >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="mk_form"| value Ot_picture_uploader.mk_form >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Ready~-to~-use form~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="next"| value Ot_carousel.next >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Button to go to the next page ~(or more pages if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="nodeready"| value Ot_nodeready.nodeready >> ~[<<a_api subproject="client" | module Ot_nodeready >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="noderesize"| value Ot_noderesize.noderesize >> ~[<<a_api subproject="client" | module Ot_noderesize >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="num_active_spinners"| value Ot_spinner.num_active_spinners >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|the number of spinners currently spinning
+>>
+|
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ocaml_service_upload"| value Ot_picture_uploader.ocaml_service_upload >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onloaded"| value Ot_spinner.onloaded >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|do an action once no spinners are spinning ~(could be right away~)
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onloads"| value Ot_lib.onloads >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onresizes"| value Ot_lib.onresizes >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="pageYOffset"| value Ot_size.pageYOffset >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|~Current vertical scroll position of the page~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="parse_px"| value Ot_style.parse_px >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="popup"| value Ot_popup.popup >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| popup ~?a ~?close~_button ~?confirmation~_onclose ~?onclose gen~_content >>
+    ~Display a modal popup~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="preview"| value Ot_picture_uploader.preview >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a img element with no src~, no alt and <<span class="odocwiki_inlinecode"|ot~-pup~-preview>> class~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="previous"| value Ot_carousel.previous >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Button to go to the previous page ~(or mores page if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="px_of_float"| value Ot_style.px_of_float >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="resetup_form_signal"| value Ot_popup.resetup_form_signal >> ~[<<a_api subproject="client" | module Ot_popup >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ribbon"| value Ot_carousel.ribbon >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Menu ~(or tabs~) for carousel~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="right"| value Ot_style.right >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_adaptative_height"| value Ot_size.set_adaptative_height >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|set~_adaptative~_height elt f>> will make the width of the element
+    recomputed using <<span class="odocwiki_inlinecode"|f>> everytime the height of the window changes~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_adaptative_width"| value Ot_size.set_adaptative_width >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|set~_adaptative~_width elt f>> will make the width of the element
+    recomputed using <<span class="odocwiki_inlinecode"|f>> everytime the width of the window changes~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_bottom"| value Ot_style.set_bottom >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_height"| value Ot_style.set_height >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_left"| value Ot_style.set_left >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_position_sticky"| value Ot_sticky.set_position_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|try to set ~C~S~S attribute "position" to "sticky"~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_right"| value Ot_style.set_right >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_top"| value Ot_style.set_top >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_width"| value Ot_style.set_width >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="setup_tabcycle"| value Ot_popup.setup_tabcycle >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|setup~_tabcycle>> makes a form in a popup more user~-friendly~, by focussing on
+    the first element of the form and forcing tab keys to cycle through the
+    elements of the form only ~(and not the elements of the page behind the
+    popup~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="setup_tabcycle_auto"| value Ot_popup.setup_tabcycle_auto >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|setup~_tabcycle~_auto>> scans an element for tabbable elements ~(buttons~, inputs~)
+    and feeds them to <<span class="odocwiki_inlinecode"|setup~_tabcycle>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="style"| value Ot_style.style >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="submit"| value Ot_picture_uploader.submit >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a button with <<span class="odocwiki_inlinecode"|ot~-pup~-sumit>> clas
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="supports_position_sticky"| value Ot_sticky.supports_position_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]||
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="top"| value Ot_style.top >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_width_height"| value Ot_size.update_width_height >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@ @style="tet-align: left;"@@\\V|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="visibility"| value Ot_style.visibility >> ~[<<a_api subproject="client" | module Ot_style >>~]||
+|@@ @style="tet-align: left;"@@\\W|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="wheel"| value Ot_carousel.wheel >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Carousel with ~3~D effect~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="when_loaded"| value Ot_spinner.when_loaded >> ~[<<a_api subproject="client" | module Ot_spinner >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="width"| value Ot_size.width >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="width_height"| value Ot_size.width_height >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|~N~O~T~E~: mind to stop any signals derived from the following signals ~(using
+    <<span class="odocwiki_inlinecode"|~React~.~S~.stop>>~) on unload~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="window_scroll"| value Ot_lib.window_scroll >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="window_scrolls"| value Ot_lib.window_scrolls >> ~[<<a_api subproject="client" | module Ot_lib >>~]|<<div class="odocwiki_info"|~If <<span class="odocwiki_inlinecode"|ios~_html~_scroll~_hack>> then listen on window ~+ html ~+ body instead of only window~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="with_spinner"| value Ot_spinner.with_spinner >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|~On client side~, <<span class="odocwiki_inlinecode"|with~_spinner th>> returns immediately a spinner
+    while ~Lwt thread <<span class="odocwiki_inlinecode"|th>> is not finished~, that will automatically
+    be replaced by the result of <<span class="odocwiki_inlinecode"|th>> when finished~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="with_spinner_no_lwt"| value Ot_spinner.with_spinner_no_lwt >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|~Same as <<span class="odocwiki_inlinecode"|with~_spinner>> but returns immediately~.
+>>
+|
+\\

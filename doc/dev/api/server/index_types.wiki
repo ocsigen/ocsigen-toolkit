@@ -1,0 +1,25 @@
+=Index of types=
+
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="button_labels"| type Ot_calendar.button_labels >> ~[<<a_api subproject="server" | module Ot_calendar >>~]|<<div class="odocwiki_info"|~An instance of <<span class="odocwiki_inlinecode"|button~_labels>> is used to customize the button
+    labels~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="cropping"| type Ot_picture_uploader.cropping >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]||
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="intl"| type Ot_calendar.intl >> ~[<<a_api subproject="server" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|intl>> is the type of internationalization specifiers~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="service"| type Ot_picture_uploader.service >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|a service that implements a function with type <<span class="odocwiki_inlinecode"|~'a ~-~> ~'b>>
+>>
+|
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Ot_social_meta.t >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Ot_carousel.t >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|see <<span class="odocwiki_inlinecode"|make>>
+>>
+|
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="upload"| type Ot_picture_uploader.upload >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]||
+\\

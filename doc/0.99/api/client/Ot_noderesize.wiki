@@ -1,0 +1,37 @@
+=Module <<a_api_type subproject="client" | module Ot_noderesize >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_noderesize>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Ot_noderesize >><<span class="ocsforge_color_keyword"|end>>>>
+==@@id="2_Getaneventwhenanelementssizechanges"@@~Get an event when an element~'s size changes==
+
+
+
+    
+===@@id="3_Knownissues"@@~Known issues===
+
+
+
+    ~This only work with elements in the ~D~O~M ~(maybe that the element
+    has to be displayd~, need to check this~)~.  ~In case of a content
+    loaded dynamically with js~, watch a parent already thereif
+    possible or use a <<span class="odocwiki_inlinecode"|onnodeready>> event to attach <<span class="odocwiki_inlinecode"|noderesize>>
+    listener~.
+
+
+    ~If the element to be watched is not positionned~, a <<span class="odocwiki_inlinecode"|position~:
+    relative>> will be applied~.
+
+
+    
+===@@id="3_Example"@@~Example===
+
+
+
+    
+<<code language='ocaml'|Lwt.async (fun () ->
+        let div' = (To_dom.of_element div) in
+        let%lwt () = Nodeready.nodeready container' in
+        Ot_noderesize.noderesize (Noderesize.init div) (fun () ->
+          Firebug.console##log (Js.string "Resized") ) )>>
+
+
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEresize_sensor"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|resize~_sensor>>>><<pre id="VALattach" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|attach>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|~#<<span class="ocsforge_color_uid"|Dom_html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|element>> <<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="resize_sensor" | type Ot_noderesize.resize_sensor >>>>>><<pre id="VALnoderesize" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|noderesize>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="resize_sensor" | type Ot_noderesize.resize_sensor >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<pre id="VALdetach" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|detach>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="resize_sensor" | type Ot_noderesize.resize_sensor >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>>

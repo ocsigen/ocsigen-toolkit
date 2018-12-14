@@ -1,0 +1,6 @@
+<<code language="ocaml" | sig
+  type resize_sensor
+  val attach : #Dom_html.element Js.t -> Ot_noderesize.resize_sensor
+  val noderesize : Ot_noderesize.resize_sensor -> (unit -> unit) -> unit
+  val detach : Ot_noderesize.resize_sensor -> unit
+end >>

@@ -1,0 +1,10 @@
+<<code language="ocaml" | functor (Conf : PAGE_TRANSITION_CONF) ->
+  sig
+    type screenshot = Conf.screenshot
+    val install_global_handler :
+      ?transition_duration:float ->
+      take_screenshot:((Ot_page_transition.Make.screenshot -> unit) -> unit) ->
+      animation_type:(Eliom_client.changepage_event ->
+                      Ot_page_transition.animation) ->
+      unit
+  end >>
