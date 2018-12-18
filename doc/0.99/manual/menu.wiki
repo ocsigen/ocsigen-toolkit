@@ -1,2 +1,0 @@
-=Ocsigen toolkit
-==[[intro|Introduction]]
