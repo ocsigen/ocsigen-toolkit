@@ -1,10 +1,8 @@
 language: c
 
-install:
-    - true
+install: true
 
-script:
-    - ./.howdocgen
+script: ./.howdocgen
 
 deploy:
   provider: pages
@@ -13,4 +11,4 @@ deploy:
   github-token: $GHP_TOKEN
   local-dir: _doc
   on:
-    branch: master
+    branch: wikidoc
