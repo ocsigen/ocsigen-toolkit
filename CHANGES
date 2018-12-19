@@ -1,3 +1,15 @@
+===== 2.0.0 (2018-12-19) =====
+
+* carousel improvements: lazy loading, performance
+* split Ot_popup into Ot_popup/Ot_form modules
+* close popups on hitting the ESC key
+* Ot_page_transition: widget for implementing page transition animations (beta)
+* Ot_spinner.replace_content: load new content into existing div
+* Ot_tip: display hovering boxes of content
+* vertical drawer
+* Ot_nodeready: avoid memory leaks
+* Automatically generate documentation (html_of_wiki)
+
 ===== 1.1 (2017-02-08) =====
 
 * Compatibility with Eliom 6.3 and OCaml 4.06
