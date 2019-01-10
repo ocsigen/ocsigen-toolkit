@@ -1,0 +1,43 @@
+==
+
+=@@id="1_OcsigentoolkitserverAPI"@@~Ocsigen~-toolkit server ~A~P~I=
+
+
+
+
+|<<a_api subproject="server" | module Ot_popup >>|<<div class="odocwiki_info"|~Popup widget
+>>
+|
+|<<a_api subproject="server" | module Ot_spinner >>|<<div class="odocwiki_info"|~Spinner widget
+>>
+|
+|<<a_api subproject="server" | module Ot_range >>|<<div class="odocwiki_info"|~Range selection widget
+>>
+|
+|<<a_api subproject="server" | module Ot_calendar >>|<<div class="odocwiki_info"|~Calendar widget
+>>
+|
+|<<a_api subproject="server" | module Ot_time_picker >>|<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
+>>
+|
+|<<a_api subproject="server" | module Ot_toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
+>>
+|
+|Ot_icons||
+|<<a_api subproject="server" | module Ot_picture_uploader >>|<<div class="odocwiki_info"|~Picture uploader widget
+>>
+|
+
+
+
+
+
+=@@id="1_Index"@@~Index=
+
+
+
+* <<a_api subproject="server" text="Index of types" | index types >>
+* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+* <<a_api subproject="server" text="Index of values" | index values >>
+* <<a_api subproject="server" text="Index of modules" | index modules >>
+

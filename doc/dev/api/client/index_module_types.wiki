@@ -1,0 +1,7 @@
+=Index of module types=
+
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="PAGE_TRANSITION_CONF"| module type Ot_page_transition.PAGE_TRANSITION_CONF >> ~[<<a_api subproject="client" | module Ot_page_transition >>~]|<<div class="odocwiki_info"|~Suppose that screenshots are stored in objects of type <<span class="odocwiki_inlinecode"|screenshot>>~.
+>>
+|
+\\

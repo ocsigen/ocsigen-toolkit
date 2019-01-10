@@ -1,0 +1,50 @@
+<<code language="ocaml" | sig
+  val parse_px : Js.js_string Js.t -> float option
+  val float_of_px : Js.js_string Js.t -> float
+  val px_of_float : float -> string
+  val style : #Dom_html.element Js.t -> Dom_html.cssStyleDeclaration Js.t
+  type display =
+      Block
+    | Compact
+    | Flex
+    | Inherit
+    | Inline
+    | Inline_block
+    | Inline_flex
+    | Inline_table
+    | Initial
+    | List_item
+    | Marker
+    | None
+    | Run_in
+    | Table
+    | Table_caption
+    | Table_cell
+    | Table_column
+    | Table_column_group
+    | Table_footer_group
+    | Table_header_group
+    | Table_row
+    | Table_row_group
+    | Unknown
+  val display_to_str : Ot_style.display -> string
+  val display_of_str : string -> Ot_style.display
+  val display : #Dom_html.element Js.t -> string
+  val display' : #Dom_html.element Js.t -> Ot_style.display
+  val visibility : #Dom_html.element Js.t -> string
+  val invisible : #Dom_html.element Js.t -> bool
+  val top : #Dom_html.element Js.t -> float option
+  val bottom : #Dom_html.element Js.t -> float option
+  val left : #Dom_html.element Js.t -> float option
+  val right : #Dom_html.element Js.t -> float option
+  val marginTop : #Dom_html.element Js.t -> float
+  val marginBottom : #Dom_html.element Js.t -> float
+  val marginLeft : #Dom_html.element Js.t -> float
+  val marginRight : #Dom_html.element Js.t -> float
+  val set_top : 'a Eliom_content.Html.elt -> float -> unit
+  val set_bottom : 'a Eliom_content.Html.elt -> float -> unit
+  val set_left : 'a Eliom_content.Html.elt -> float -> unit
+  val set_right : 'a Eliom_content.Html.elt -> float -> unit
+  val set_width : 'a Eliom_content.Html.elt -> float -> unit
+  val set_height : 'a Eliom_content.Html.elt -> float -> unit
+end >>
