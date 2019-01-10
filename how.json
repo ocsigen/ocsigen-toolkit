@@ -1,0 +1,8 @@
+{
+    "project": "ocsigen-toolkit",
+    "api": "api",
+    "menu": true,
+    "csw": true,
+    "templates": ["how_template/template.wiki"],
+    "manual": "manual"
+}
