@@ -1,0 +1,7 @@
+=Class type <<a_api_type subproject="client" | class type Ot_form.tabbable >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span id="TYPEtabbable"|<<span class="ocsforge_color_keyword"|class type>> <<span class="ocsforge_color_name"|tabbable>>>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="ocsforge_color_keyword"|object>><<a_api subproject="client" text=".." | class type Ot_form.tabbable >><<span class="ocsforge_color_keyword"|end>>>>~An ~H~T~M~L element which can be selected by pressing the tab key
+**~Inherits**
+* <<span class="odocwiki_inlinecode"|~Dom~_html~.element>>
+
+----
+<<pre class="ocsforge_color odocwiki_code"|<<span id="METHODtabIndex"|<<span class="ocsforge_color_keyword"|method>> <<span class="odocwiki_name"|tabIndex>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|prop>>>>>>

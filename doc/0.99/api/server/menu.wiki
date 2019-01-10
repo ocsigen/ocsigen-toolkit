@@ -1,0 +1,14 @@
+=~Ocsigen~-toolkit server ~A~P~I
+==[[server/Ot_popup|Ot_popup]]
+==[[server/Ot_spinner|Ot_spinner]]
+==[[server/Ot_range|Ot_range]]
+==[[server/Ot_calendar|Ot_calendar]]
+==[[server/Ot_time_picker|Ot_time_picker]]
+==[[server/Ot_toggle|Ot_toggle]]
+==[[server/Ot_icons|Ot_icons]]
+==[[server/Ot_picture_uploader|Ot_picture_uploader]]
+=~Index
+== <<a_api subproject="server" text="Index of types" | index types >>
+== <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
+== <<a_api subproject="server" text="Index of values" | index values >>
+== <<a_api subproject="server" text="Index of modules" | index modules >>

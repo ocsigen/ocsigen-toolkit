@@ -1,0 +1,23 @@
+{1 Ocsigen-toolkit client API}
+
+{!modules:
+    Ot_popup
+    Ot_spinner
+    Ot_drawer
+    Ot_carousel
+    Ot_swipe
+    Ot_range
+    Ot_lib
+    Ot_size
+    Ot_calendar
+    Ot_time_picker
+    Ot_toggle
+    Ot_icons
+    Ot_picture_uploader
+    Ot_nodeready
+    Ot_noderesize
+}
+
+{1 Index}
+
+{!indexlist}

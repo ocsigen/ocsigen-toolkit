@@ -1,0 +1,8 @@
+<<code language="ocaml" | sig
+  val make :
+    ?init_up:bool ->
+    ?up_txt:string ->
+    ?down_txt:string ->
+    ?update:bool React.E.t Eliom_client_value.t ->
+    unit -> [> `Div ] Eliom_content.Html.elt * bool Eliom_shared.React.S.t
+end >>

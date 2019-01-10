@@ -1,0 +1,19 @@
+=Module <<a_api_type subproject="server" | module Ot_spinner >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_spinner>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Ot_spinner >><<span class="ocsforge_color_keyword"|end>>>>
+==@@id="2_Spinnerwidget"@@~Spinner widget==
+
+
+----
+<<pre id="VALwith_spinner" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|with~_spinner>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?a: >>[< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_attrib>> ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|attrib>> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?fail: >><<span class="ocsforge_color_delimiter"| ( >>exn <<span class="ocsforge_color_delimiter"| -> >>\\         [< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> list <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  [< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> list <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  [> `Div ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|~On client side~, <<span class="odocwiki_inlinecode"|with~_spinner th>> returns immediately a spinner
+    while ~Lwt thread <<span class="odocwiki_inlinecode"|th>> is not finished~, that will automatically
+    be replaced by the result of <<span class="odocwiki_inlinecode"|th>> when finished~.
+    ~It has class "spinning" while the spinner is present~.
+
+
+    ~On server side~, it will wait for <<span class="odocwiki_inlinecode"|th>> to be finished before
+    returning its result ~(and never display a spinner~)~.
+
+
+    ~If you want the spinner on both sides~, you can use <<span class="odocwiki_inlinecode"|with~_spinner~_no~_lwt>>
+    and <<span class="odocwiki_inlinecode"|~Eliom~_content~.~Html~.~C~.node>>~.
+>>
