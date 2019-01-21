@@ -19,8 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared open Eliom_content.Html]
-[%%shared open Eliom_content.Html.F]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%shared Js_of_ocaml
 
 let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
   D.section
@@ -28,8 +29,6 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
     [ F.header ~a:[ a_class ["ot-hcf-header"] ] header
     ; div ~a:[ a_class ["ot-hcf-content"] ] content
     ; F.footer ~a:[ a_class ["ot-hcf-footer"] ] footer ]
-
-let%client scroll_pos = ref 0
 
 let%client popup
     ?(a = [])
@@ -39,6 +38,7 @@ let%client popup
     ?(close_on_background_click=false)
     ?(close_on_escape=close_button <> None)
     gen_content =
+
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
     (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
@@ -59,26 +59,28 @@ let%client popup
   in
 
   (* Hack to prevent body scrolling behind the popup on mobile devices: *)
-  scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
-  html_ManipClass_add "ot-with-popup";
-  Dom_html.document##.body##.style##.top :=
-    Js.string (Printf.sprintf "%dpx" (- !scroll_pos));
+  let scroll_pos = ref (Js.Unsafe.coerce Dom_html.window)##.pageYOffset in
+  let stop, stop_thread = React.E.create () in
+  Eliom_client.Page_status.onactive ~stop (fun () ->
+    html_ManipClass_add "ot-with-popup";
+    Dom_html.document##.body##.style##.top :=
+      Js.string (Printf.sprintf "%dpx" (- !scroll_pos))
+  );
 
-  let kill_keydown_thread = ref @@ fun () -> () in
+  let reset () =
+    html_ManipClass_remove "ot-with-popup";
+    Dom_html.document##.body##.style##.top := Js.string "";
+    Dom_html.window##scroll 0 !scroll_pos
+  in
 
   let do_close () =
     if (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))
-       ##.length = 1 then begin
-      html_ManipClass_remove "ot-with-popup";
-      Dom_html.document##.body##.style##.top := Js.string "";
-      Dom_html.window##scroll 0 !scroll_pos
-    end;
+       ##.length = 1 then reset ();
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
-    !kill_keydown_thread ();
+    stop_thread ();
     onclose ()
   in
-
-  Eliom_client.onunload (fun () -> html_ManipClass_remove "ot-with-popup");
+  Eliom_client.Page_status.oninactive ~stop reset;
 
   let close () =
     match confirmation_onclose with
@@ -107,24 +109,21 @@ let%client popup
   let box_dom = Eliom_content.Html.To_dom.of_element box in
 
   if close_on_background_click then begin
+    Eliom_client.Page_status.while_active ~stop (fun () ->
     (* Close the popup when user clicks on background *)
-    Lwt.async (fun () ->
       let%lwt event = Lwt_js_events.click box_dom in
       if event##.target = Js.some box_dom then
         close ()
       else
         Lwt.return_unit
     )
-  end ;
+  end;
 
   if close_on_escape then begin
-    Lwt.async @@ fun () ->
-      let keydown_thread = Lwt_js_events.keydowns Dom_html.window @@
+    Eliom_client.Page_status.while_active ~stop (fun () ->
+      Lwt_js_events.keydowns Dom_html.window @@
         fun ev _ -> if ev##.keyCode = 27 then close () else Lwt.return_unit
-      in
-      kill_keydown_thread := (fun () -> Lwt.cancel keydown_thread);
-      Eliom_client.onunload (fun () -> Lwt.cancel keydown_thread);
-      Lwt.return_unit
+    )
   end;
 
   popup := Some box ;
