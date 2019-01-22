@@ -1,0 +1,60 @@
+=Module <<a_api_type subproject="client" | module Ot_sticky >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_sticky>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Ot_sticky >><<span class="ocsforge_color_keyword"|end>>>>whether computed ~C~S~S attribute "position" equals "sticky"
+
+----
+<<pre id="VALis_position_sticky" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|is~_position~_sticky>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<div class="odocwiki_info"|whether computed ~C~S~S attribute "position" equals "sticky"
+>>
+<<pre id="VALset_position_sticky" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|set~_position~_sticky>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<div class="odocwiki_info"|try to set ~C~S~S attribute "position" to "sticky"~. <<span class="odocwiki_inlinecode"|false>> if
+    unsuccessful
+>>
+<<pre id="VALsupports_position_sticky" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|supports~_position~_sticky>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<pre id="VALis_sticky" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|is~_sticky>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >> bool>>>><<div class="odocwiki_info"|whether element is sticky~, either due to ~C~S~S attribute position~:sticky or
+    due to position~:sticky polyfill <<span class="odocwiki_inlinecode"|make~_sticky>>
+>>
+<<pre class="ocsforge_color odocwiki_code" id="TYPEglue"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|glue>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="ocsforge_color_delimiter"|~{>>
+<<span class="odocwiki_record"|<<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|fixed:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|D>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|inline:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|D>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|dir:>> <<span class="odocwiki_type"|[ `Left | `Top ]>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|scroll_thread:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|resize_thread:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_delimiter"| ( >>int * int<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|dissolve:>> <<span class="odocwiki_type"|unit <<span class="ocsforge_color_delimiter"| -> >> unit>><<span class="ocsforge_color_delimiter"|~;>> >>>>>><<span class="ocsforge_color_delimiter"|~}>>>><<div class="odocwiki_info"|returned by <<span class="odocwiki_inlinecode"|make sticky>> ~(if position~:sticky is not supported~)~. ~You only
+    need this value if you want to manipulate the stickiness later ~(as
+    <<span class="odocwiki_inlinecode"|keep~_in~_sight>> does~.
+    <<span class="odocwiki_inlinecode"|fixed>>~: element cloned from the element supplied to <<span class="odocwiki_inlinecode"|make~_sticky>>~;
+    <<span class="odocwiki_inlinecode"|inline>>~: original element supplied to <<span class="odocwiki_inlinecode"|make~_sticky>>~;
+    <<span class="odocwiki_inlinecode"|dir>>~: see <<span class="odocwiki_inlinecode"|make~_sticky>>~;
+    <<span class="odocwiki_inlinecode"|scroll~_thread>>~: thread that makes either <<span class="odocwiki_inlinecode"|fixed>> or <<span class="odocwiki_inlinecode"|inline>> visible~,
+                     depending on the scroll position~;
+    <<span class="odocwiki_inlinecode"|resize~_thread>>~: thread that resizes the fixed element according to the
+                     inline element on window resize~;
+    <<span class="odocwiki_inlinecode"|dissolve>>~: undo <<span class="odocwiki_inlinecode"|make~_sticky>> i~.e~. kill <<span class="odocwiki_inlinecode"|scroll~_thread>> and <<span class="odocwiki_inlinecode"|resize~_thread>>
+                and remove <<span class="odocwiki_inlinecode"|fixed>> from the ~D~O~M tree~.
+>>
+<<pre id="VALmake_sticky" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|make~_sticky>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| dir: >>[ `Left | `Top ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?ios_html_scroll_hack: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?force: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="client" text="glue" | type Ot_sticky.glue >> option <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|position~:sticky polyfill which is not supported by some browsers~. ~It
+    functions by making a clone with position~:fixed of the designated
+    element and continuously ~(window scroll~/resize~) monitoring the
+    position of the element and the clone~. ~The contents of the element
+    is shifted back and forth between the two elements~. ~Make sure to
+    also apply the ~C~S~S code "position~: sticky" to the element as this
+    function has no effect if "position~: sticky" is supported by the
+    browser~. ~The supplied element should be a ~D~-element~.
+    <<span class="odocwiki_inlinecode"|dir>> determines whether it sticks to the top on vertical scroll or the the
+    left on horizontal scroll~.
+
+
+    ~N~O~T~E~: ~Do not forget to include the ~C~S~S attributes as defined in the file
+    css~/ot~_sticky~.css~.
+
+
+    ~If <<span class="odocwiki_inlinecode"|~?force>> is <<span class="odocwiki_inlinecode"|true>>~, will apply the polyfill even if the browser supports
+    sticky position ~(default is <<span class="odocwiki_inlinecode"|false>>~)~.
+
+
+    ~See in <<a_api subproject="client" | module Ot_lib >> for documentation of <<span class="odocwiki_inlinecode"|~~ios~_html~_scroll~_hack>>~.
+>>
+<<pre id="VALkeep_in_sight" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|keep~_in~_sight>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| dir: >>[ `Left | `Top ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?ios_html_scroll_hack: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>>>><<div class="odocwiki_info"|make sure an element gets never out of sight while scrolling by
+    continuously ~(window scroll~/resize~) monitoring the position of the
+    element and adjusting the top~/left value~. ~Calls
+    <<span class="odocwiki_inlinecode"|make~_sticky>>~. ~Make sure to also apply the ~C~S~S code "position~:
+    sticky" to the element~. ~The element~'s absolute position is
+    determined by the parents position ~(which is not sticky but
+    inline~)~, so you probably want to wrap your element in a dedicated
+    div~. ~(~It has to be the parent and not the element itself because
+    when the element floats ~(is in its fixed state~) we can~'t use its
+    position for computing the right values~.  ~Returns a function by
+    which the <<span class="odocwiki_inlinecode"|keep~_in~_sight>> functionality can be stopped~.
+>>

@@ -1,0 +1,16 @@
+<<code language="ocaml" | sig
+  val drawer :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?position:[ `Left | `Right ] ->
+    ?opened:bool ->
+    ?swipe:bool ->
+    ?onclose:(unit -> unit) Eliom_client_value.t ->
+    ?onopen:(unit -> unit) Eliom_client_value.t ->
+    ?wrap_close:((unit -> unit) Eliom_client_value.t ->
+                 (unit -> unit) Eliom_client_value.t) ->
+    ?wrap_open:((unit -> unit) Eliom_client_value.t ->
+                (unit -> unit) Eliom_client_value.t) ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list ->
+    [> `Div ] Eliom_content.Html.elt * (unit -> unit) Eliom_client_value.t *
+    (unit -> unit) Eliom_client_value.t
+end >>
