@@ -23,6 +23,8 @@
 open Js_of_ocaml
 
 
+let debug = false
+
 let rec node_in_document node =
   node == (Dom_html.document :> Dom.node Js.t) ||
   Js.Opt.case (node##.parentNode) (fun () -> false) node_in_document
@@ -35,6 +37,14 @@ type t = {
 }
 
 let watched = ref []
+
+let log ~n:node s = if not debug then () else begin
+    (* Firebug.console##log(node); *)
+    ignore node;
+    print_endline @@
+      Printf.sprintf
+        "Ot_nodeready: %s; watching %n elements" s (List.length !watched)
+  end
 
 let handler records observer =
   let changes = ref false in
@@ -62,18 +72,33 @@ let config =
 
 let nodeready n =
   let n = (n :> Dom.node Js.t) in
-  if node_in_document n then Lwt.return_unit else begin
+  if node_in_document n then begin
+    log ~n "already in document";
+    Lwt.return_unit
+  end
+  else begin
     if !watched = [] then observer##observe Dom_html.document config;
-    try let {thread = t} = List.find (fun {node} -> n == node) !watched in t
+    try
+      let {thread} = List.find (fun {node} -> n == node) !watched in
+      log ~n "already being watched";
+      thread
     with Not_found ->
       let t, s = Lwt.wait () in
       let stop, stop_ondead = React.E.create () in
+      let stop_ondead () =
+        log ~n "put node in document";
+        stop_ondead ()
+      in
       Eliom_client.Page_status.ondead ~stop (fun () ->
         let (instances_of_node, rest) =
           List.partition (fun {node} -> n == node) !watched in
         watched := rest;
-        List.iter (fun {resolver} -> Lwt.wakeup resolver ()) instances_of_node
+        instances_of_node |> List.iter (fun {resolver} ->
+          log ~n "deinstalled";
+          Lwt.wakeup resolver ()
+        )
       );
       watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
+      log ~n "installed";
       t
   end
