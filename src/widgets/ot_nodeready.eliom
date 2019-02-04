@@ -20,32 +20,30 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
+
+let debug = false
+
 let rec node_in_document node =
   node == (Dom_html.document :> Dom.node Js.t) ||
   Js.Opt.case (node##.parentNode) (fun () -> false) node_in_document
 
-let age = ref 0
+type t = {
+  node : Dom.node Js.t;
+  thread : unit Lwt.t;
+  resolver : unit Lwt.u;
+  stop_ondead : unit -> unit
+}
+
 let watched = ref []
 
-(* We remove watched elements after two unload events to avoid memory
-   leaks due to elements that are never inserted in the page. *)
-let active = ref false
-let remove_from_dead_pages () =
-  let rec loop () =
-    Eliom_client.onunload @@ fun () ->
-    let (live, dead) =
-      List.partition (fun (age', _, _) -> !age = age') !watched in
-    watched := live;
-    incr age;
-    List.iter (fun (_, _, s) -> Lwt.wakeup s ()) dead;
-    if !watched = [] then
-      active := false
-    else
-      loop ()
-  in
-  if not !active then begin
-    active := true;
-    loop ()
+let log ~n:node s = if not debug then () else begin
+    (* Firebug.console##log(node); *)
+    ignore node;
+    print_endline @@
+      Printf.sprintf
+        "Ot_nodeready: %s; watching %n elements" s (List.length !watched)
   end
 
 let handler records observer =
@@ -56,10 +54,11 @@ let handler records observer =
   done;
   if !changes then begin
     let (ready, not_ready) =
-      List.partition (fun (_, n, _) -> node_in_document n) !watched in
+      List.partition (fun {node} -> node_in_document node) !watched in
     watched := not_ready;
     if not_ready = [] then observer##disconnect;
-    List.iter (fun (_, _, s) -> Lwt.wakeup s ()) ready
+    ready |> List.iter (fun {resolver; stop_ondead} -> stop_ondead ();
+                                                       Lwt.wakeup resolver ())
   end
 
 let observer =
@@ -71,12 +70,35 @@ let config =
   cfg##.subtree := true;
   cfg
 
-let nodeready node =
-  let node = (node :> Dom.node Js.t) in
-  if node_in_document node then Lwt.return_unit else begin
-    let t, s = Lwt.wait () in
+let nodeready n =
+  let n = (n :> Dom.node Js.t) in
+  if node_in_document n then begin
+    log ~n "already in document";
+    Lwt.return_unit
+  end
+  else begin
     if !watched = [] then observer##observe Dom_html.document config;
-    watched := (!age, node, s) :: !watched;
-    remove_from_dead_pages ();
-    t
+    try
+      let {thread} = List.find (fun {node} -> n == node) !watched in
+      log ~n "already being watched";
+      thread
+    with Not_found ->
+      let t, s = Lwt.wait () in
+      let stop, stop_ondead = React.E.create () in
+      let stop_ondead () =
+        log ~n "put node in document";
+        stop_ondead ()
+      in
+      Eliom_client.Page_status.ondead ~stop (fun () ->
+        let (instances_of_node, rest) =
+          List.partition (fun {node} -> n == node) !watched in
+        watched := rest;
+        instances_of_node |> List.iter (fun {resolver} ->
+          log ~n "deinstalled";
+          Lwt.wakeup resolver ()
+        )
+      );
+      watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
+      log ~n "installed";
+      t
   end

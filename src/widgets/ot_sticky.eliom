@@ -1,6 +1,7 @@
 [%%client.start]
 open Eliom_content.Html
 open Html_types
+open Js_of_ocaml
 
 
 (* This is about the real "position: sticky" *)
@@ -106,6 +107,7 @@ let update_state ?force g =
   | `Left -> if Ot_size.client_left fixed > Ot_size.client_left inline
                then stick ?force g else unstick ?force g
 
+(* TODO: ensure compatibility with DOM caching *)
 let make_sticky
     ~dir (* TODO: detect based on CSS attribute? *)
     (*TODO: `Bottom and `Right *)
@@ -159,6 +161,7 @@ let make_sticky
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
 
+(* TODO: ensure compatibility with DOM caching *)
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in

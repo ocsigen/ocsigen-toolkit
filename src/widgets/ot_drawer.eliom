@@ -19,10 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared
-  open Eliom_content.Html
-  open Eliom_content.Html.F
-]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%shared Js_of_ocaml
 
 [%%client
 type status =
@@ -71,8 +70,6 @@ let%client remove_class elt str =
   Manip.Class.remove elt ("ot-dr-" ^ str);
   html_ManipClass_remove @@ "ot-drawer-" ^ str
 
-let%client scroll_pos = ref 0
-
 (* Returns [(drawer, open_drawer, close_drawer)]
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
@@ -87,6 +84,9 @@ let%shared drawer
     ?(wrap_close = fun f -> f)
     ?(wrap_open = fun f -> f)
     content =
+
+  let scroll_pos = ref 0 in
+
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value
@@ -112,29 +112,33 @@ let%shared drawer
 
   let touch_thread = [%client (ref (Lwt.return_unit) : unit Lwt.t ref)] in
 
+  let reset = [%client (fun () ->
+     Dom_html.document##.body##.style##.top := Js.string "";
+     Dom_html.window##scroll 0 !(~%scroll_pos)
+  : unit -> unit)] in
+
   let close = [%client
-    ((fun () ->
+    (fun () ->
        remove_class ~%bckgrnd "open";
-       Dom_html.document##.body##.style##.top := Js.string "";
-       Dom_html.window##scroll 0 !scroll_pos;
+       ~%reset ();
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "closing";
          Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
-         Lwt.return_unit))
+         Lwt.return_unit)
      : unit -> unit)]
   in
   let close = wrap_close close in
 
   let open_ = [%client
     ((fun () ->
-       scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
+       ~%scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
        add_class ~%bckgrnd "open";
        Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
        Dom_html.document##.body##.style##.top :=
-         Js.string (Printf.sprintf "%dpx" (- !scroll_pos));
+         Js.string (Printf.sprintf "%dpx" (- !(~%scroll_pos)));
        add_class ~%bckgrnd "opening";
        Lwt.cancel !(~%touch_thread);
        Lwt.async (fun () ->
@@ -151,11 +155,12 @@ let%shared drawer
   let open_ = wrap_open open_ in
 
   let _ = [%client (
-    let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%d) in
-    (Eliom_client.onunload @@ fun () ->
-    html_ManipClass_remove "ot-drawer-opening";
-    html_ManipClass_remove "ot-drawer-open";
-    html_ManipClass_remove "ot-drawer-closing");
+    Eliom_client.Page_status.oninactive (fun () ->
+      ~%reset ();
+      html_ManipClass_remove "ot-drawer-opening";
+      html_ManipClass_remove "ot-drawer-open";
+      html_ManipClass_remove "ot-drawer-closing"
+    );
     Lwt.return_unit
   :unit Lwt.t)] in
 

@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-toolkit"
-version: "2.0.0"
+version: "2.0.dev"
 maintainer: "dev@ocsigen.org"
 synopsis: "Reusable UI components for Eliom applications (client only, or client-server)"
 description: "The Ocsigen Toolkit is a set of user interface widgets that facilitate the development of Eliom applications."
@@ -14,6 +14,6 @@ install: [ make "install" ]
 remove: [ make "uninstall" ]
 depends: [
   "ocaml" {>= "4.06.1"}
-  "eliom" {>= "6.4"}
+  "eliom" {>= "6.6.dev"}
   "calendar"
 ]

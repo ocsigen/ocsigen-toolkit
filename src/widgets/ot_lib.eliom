@@ -19,19 +19,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%client Js_of_ocaml
+
+
 let%client onloads handler =
   let rec loop () = Eliom_client.onload @@ fun () -> handler (); loop () in loop ()
 
 let%client onresizes handler =
-  let thread = Lwt_js_events.onresizes handler in
-  Eliom_client.onunload (fun () -> Lwt.cancel thread);
-  thread
+  let stop, stop_thread = React.E.create () in
+  Eliom_client.Page_status.while_active ~stop
+    (fun () -> Lwt_js_events.onresizes handler);
+  Lwt.finalize
+    (fun () -> fst @@ Lwt.wait ())
+    (fun () -> stop_thread (); Lwt.return_unit)
 
 let%client window_scroll ?use_capture () =
   Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
 
 let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
-  let thread = if ios_html_scroll_hack
+  let stop, stop_thread = React.E.create () in
+  Eliom_client.Page_status.while_active ~stop (fun () ->
+    if ios_html_scroll_hack
     then begin
       let rec loop () =
         let%lwt e =
@@ -58,9 +66,10 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
       loop ()
     end
     else Lwt_js_events.seq_loop window_scroll ?use_capture () handler
-  in
-  Eliom_client.onunload (fun () -> Lwt.cancel thread);
-  thread
+  );
+  Lwt.finalize
+    (fun () -> fst @@ Lwt.wait ())
+    (fun () -> stop_thread (); Lwt.return_unit)
 
 let%client rec in_ancestors ~elt ~ancestor =
   elt == (ancestor : Dom_html.element Js.t)
