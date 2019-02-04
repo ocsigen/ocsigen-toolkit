@@ -25,6 +25,8 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
 (** {2 Get an event when an element's size changes}
 
     {3 Known issues}

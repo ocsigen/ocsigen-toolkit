@@ -21,8 +21,8 @@
 [%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_content.Html
-
 open Eliom_shared.React.S.Infix
+open Js_of_ocaml
 
 type t = T_Up | T_Down
 
@@ -37,17 +37,17 @@ let display_toggle
   | T_Up ->
     div ~a:[a_class ["ot-toggle"]]
       [div ~a:[a_class ["ot-active"; "ot-up"]]
-         [pcdata up_txt];
+         [txt up_txt];
        div ~a:[a_class ["ot-inactive"; "ot-down"];
                a_onclick [%client (fun _ -> ~%f T_Down : _ -> _) ]]
-         [pcdata down_txt]]
+         [txt down_txt]]
   | T_Down ->
     div ~a:[a_class ["ot-toggle"]]
       [div ~a:[a_class ["ot-inactive"; "ot-up"];
                a_onclick [%client (fun _ -> ~%f T_Up : _ -> _) ]]
-         [pcdata up_txt];
+         [txt up_txt];
        div ~a:[a_class ["ot-active"; "ot-down"]]
-         [pcdata down_txt]]
+         [txt down_txt]]
 
 let make
       ?init_up:(init_up = false) ?up_txt ?down_txt

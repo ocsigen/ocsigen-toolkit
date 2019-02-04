@@ -18,8 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 
-[%%shared open Eliom_content.Html ]
-[%%shared open Eliom_content.Html.F ]
+open%shared Js_of_ocaml
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 [%%shared
 type ('a,'b) service =

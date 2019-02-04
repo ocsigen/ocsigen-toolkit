@@ -21,8 +21,8 @@
 [%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_shared.React.S.Infix
-
 open Eliom_content.Html
+open Js_of_ocaml
 
 type polar = int * int
 
@@ -202,7 +202,7 @@ let clock_reactive_hand_circle
       R.a_cy cy
     ]
   in
-  Eliom_content.Svg.(D.circle ~a [D.title (D.pcdata "")])
+  Eliom_content.Svg.(D.circle ~a [D.title (D.txt "")])
 
 let make_clock_point
     ?zero_is_12:(zero_is_12 = false)
@@ -216,13 +216,13 @@ let make_clock_point
     :: a_x_list [float_of_int x, Some `Px]
     :: a_y_list [float_of_int y, Some `Px]
     :: extra_attributes
-  and txt =
+  and msg =
     if i = 0 && zero_is_12 then
       "12"
     else
       string_of_int (step * i)
   in
-  text ~a [pcdata txt]
+  text ~a [txt msg]
 
 let clock_svg
     ?zero_is_12
@@ -411,7 +411,7 @@ let display_hours_minutes_seq ?h24:(h24 = false) f (h, m) b =
       else
         [D.a_class ["ot-tp-hours"; "ot-tp-inactive"];
          D.a_onclick [%client  fun _ -> ~%f true ]]
-    and c = [string_of_hours ~h24 h |> D.pcdata] in
+    and c = [string_of_hours ~h24 h |> D.txt] in
     D.span ~a c
   and m =
     let a =
@@ -420,14 +420,14 @@ let display_hours_minutes_seq ?h24:(h24 = false) f (h, m) b =
            a_onclick [%client  fun _ -> ~%f false ]]
       else
         [D.a_class ["ot-tp-minutes"; "ot-tp-active"]]
-    and c = [Printf.sprintf "%02d" m |> D.pcdata] in
+    and c = [Printf.sprintf "%02d" m |> D.txt] in
     D.span ~a c
   and a = [D.a_class ["ot-tp-display"]] in
   if h24 then
-    D.div ~a [h'; D.pcdata ":"; m]
+    D.div ~a [h'; D.txt ":"; m]
   else
-    D.div ~a [h'; D.pcdata ":"; m;
-              D.pcdata (if h < 12 then " AM" else " PM")]
+    D.div ~a [h'; D.txt ":"; m;
+              D.txt (if h < 12 then " AM" else " PM")]
 
 let combine_inputs_hours_minutes ?round_5 e_h e_m z_e_h z_e_m is_am =
   let f = [%shared fun (x, b) -> if b then Some x else None ] in

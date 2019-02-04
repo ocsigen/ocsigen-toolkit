@@ -1,5 +1,7 @@
 [%%shared.start]
 
+open Js_of_ocaml
+
 (**
    [bind ~compute_final_pos elt] makes [elt] left-right
    swipable on touch screens.

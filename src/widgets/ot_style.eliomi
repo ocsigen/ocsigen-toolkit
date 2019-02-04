@@ -2,6 +2,7 @@
 
 (** This module is an interface to getComputedStyle. *)
 
+open Js_of_ocaml
 open Eliom_content.Html
 
 val parse_px : Js.js_string Js.t -> float option

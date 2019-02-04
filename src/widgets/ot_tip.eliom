@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
+open%client Js_of_ocaml
 open%client Eliom_content.Html
 open%client Eliom_content.Html.F
 

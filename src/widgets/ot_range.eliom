@@ -21,8 +21,8 @@
 [%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_content.Html
-
 open Eliom_shared.React.S.Infix
+open Js_of_ocaml
 
 let display_aux (_, _, a) v =
   let v =
@@ -32,7 +32,7 @@ let display_aux (_, _, a) v =
     | None ->
       string_of_int v
   and a = [D.a_class ["ot-r-value"]] in
-  D.div ~a [D.pcdata v]
+  D.div ~a [D.txt v]
 
 let%client go_up (lb, ub, a) r (f : ?step:_ -> _) =
   let v = Eliom_shared.React.S.value r in
@@ -55,12 +55,12 @@ let display
        [div ~a:[a_class ["ot-r-up"];
                 a_onclick
                   [%client (fun _ -> go_up ~%e ~%v ~%f : _ -> _) ]]
-          [pcdata txt_up];
+          [txt txt_up];
         display_aux e v;
         div ~a:[a_class ["ot-r-down"];
                 a_onclick
                   [%client (fun _ -> go_down ~%e ~%v ~%f : _ -> _) ]]
-          [pcdata txt_down]])
+          [txt txt_down]])
 
 let make ?txt_up ?txt_down ?f ?lb:(lb = 0) ub =
   assert (ub > lb);

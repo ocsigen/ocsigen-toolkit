@@ -21,6 +21,8 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
 val in_ancestors : elt:Dom_html.element Js.t -> ancestor:Dom_html.element Js.t -> bool
 
 val onloads : (unit -> unit) -> unit

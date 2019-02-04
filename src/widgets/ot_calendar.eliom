@@ -21,6 +21,7 @@
 [%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_content.Html
+open Js_of_ocaml
 
 module A = CalendarLib.Date
 
@@ -155,16 +156,16 @@ let rec build_calendar
   and zero = zeroth_displayed_day ~intl day
   and prev_button =
     D.(span ~a:[a_class ["ot-c-prev-button"]]
-         [pcdata b_prev_month])
+         [txt b_prev_month])
   and next_button =
     D.(span ~a:[a_class ["ot-c-next-button"]]
-         [pcdata b_next_month])
+         [txt b_next_month])
   and prev_year_button =
     D.(span ~a:[a_class ["ot-c-prev-year-button"]]
-         [pcdata b_prev_year])
+         [txt b_prev_year])
   and next_year_button =
     D.(span ~a:[a_class ["ot-c-next-year-button"]]
-         [pcdata b_next_year])
+         [txt b_next_year])
   in
   let thead =
     D.(thead
@@ -172,11 +173,11 @@ let rec build_calendar
                 [prev_year_button;
                  prev_button;
                  CalendarLib.Printer.Date.sprint "%B %Y" fst_dow |>
-                 pcdata;
+                 txt;
                  next_button;
                  next_year_button]];
           tr (List.map
-                (fun d -> th [pcdata d])
+                (fun d -> th [txt d])
                 (get_rotated_days intl))])
   and f_cell i j =
     let d =
@@ -202,7 +203,7 @@ let rec build_calendar
            classes
        in
        [D.a_class classes],
-       [D.div [A.day_of_month d |> string_of_int |> D.pcdata]])
+       [D.div [A.day_of_month d |> string_of_int |> D.txt]])
     else
       [], []
   and f_a_row i = [] in

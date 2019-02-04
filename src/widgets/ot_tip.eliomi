@@ -21,6 +21,8 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
 (** {2 Tip widget} *)
 
 (** This module implement a [display] function which actually display a tip

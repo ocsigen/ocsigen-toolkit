@@ -1,7 +1,8 @@
 (** Swiping an element *)
 
-[%%shared open Eliom_content.Html ]
-[%%shared open Eliom_content.Html.F ]
+open%shared Js_of_ocaml
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 (** sensibility for detecting swipe left/right or up/down *)
 let%client threshold = 0

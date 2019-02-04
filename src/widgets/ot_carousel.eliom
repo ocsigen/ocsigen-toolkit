@@ -38,10 +38,9 @@ TODO:
 *)
 
 
-[%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F
-]
+open%shared Js_of_ocaml
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 let%client clX = Ot_swipe.clX
 
@@ -513,7 +512,7 @@ let%shared generate_content generator =
   with e ->
     Lwt.return @@
     if Eliom_config.get_debugmode ()
-    then em [ pcdata (Printexc.to_string e) ]
+    then em [ txt (Printexc.to_string e) ]
     else begin
       let e = Printexc.to_string e in
       ignore [%client (Firebug.console##error
@@ -526,9 +525,9 @@ let%shared generate_content generator =
 let%shared default_fail e =
   [
     if Eliom_config.get_debugmode ()
-    then em [ pcdata (Printexc.to_string e) ]
+    then em [ txt (Printexc.to_string e) ]
     else em ~a:[ a_class ["ot-icon-question"] ]
-        [ pcdata (Printexc.to_string e) ] ]
+        [ txt (Printexc.to_string e) ] ]
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
@@ -909,13 +908,13 @@ let%shared next ?(a = [])
 (*       ~button_type:`Button *)
 (*       ~a:[a_class ["ot-car-prev"]; *)
 (*           a_onclick {{ fun _ -> %change `Prev }}] *)
-(*       [pcdata ([%i18n prev_col ())] *)
+(*       [txt ([%i18n prev_col ())] *)
 (*   in *)
 (*   let next = button *)
 (*       ~button_type:`Button *)
 (*       ~a:[a_class ["ot-car-next"]; *)
 (*           a_onclick {{ fun _ -> %change `Next }}] *)
-(*       [pcdata ([%i18n next_col ())] *)
+(*       [txt ([%i18n next_col ())] *)
 (*   in *)
 (*   D.div ~a:(a_class ["ot-car-nav"]::a) [prev; menu; next] *)
 
@@ -1036,10 +1035,10 @@ let%shared wheel
 (*        let d, _ = make *)
 (*            ~position:2 *)
 (*            ~update:ev *)
-(*            [div [h1 [pcdata "Coucou 1"]]; *)
-(*             div [h1 [pcdata "Bonjour 2"]]; *)
-(*             div [h1 [pcdata "Salut 3"]]; *)
-(*             div [h1 [pcdata "Hello 4"]]; *)
+(*            [div [h1 [txt "Coucou 1"]]; *)
+(*             div [h1 [txt "Bonjour 2"]]; *)
+(*             div [h1 [txt "Salut 3"]]; *)
+(*             div [h1 [txt "Hello 4"]]; *)
 (*            ] *)
 (*        in *)
 (*        Manip.appendToBody d; *)

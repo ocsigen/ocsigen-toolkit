@@ -18,6 +18,7 @@
 
 [%%client.start]
 
+open Js_of_ocaml
 open Eliom_content.Html
 open Eliom_content.Html.F
 

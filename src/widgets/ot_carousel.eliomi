@@ -21,6 +21,8 @@
 
 [%%shared.start]
 
+open Js_of_ocaml
+
 (** {2 Carousel}
 
     This is a widget containing blocks. One or several blocks are
