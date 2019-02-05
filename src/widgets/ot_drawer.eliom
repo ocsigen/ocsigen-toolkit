@@ -112,15 +112,23 @@ let%shared drawer
 
   let touch_thread = [%client (ref (Lwt.return_unit) : unit Lwt.t ref)] in
 
-  let reset = [%client (fun () ->
+  let reset_scroll_pos = [%client (fun () ->
      Dom_html.document##.body##.style##.top := Js.string "";
      Dom_html.window##scroll 0 !(~%scroll_pos)
   : unit -> unit)] in
 
+  let stop_open_event = [%client (
+    React.E.create () : unit React.E.t * (?step:React.step -> unit -> unit)
+  )] in
+  let stop_open = [%client (
+    snd ~%stop_open_event : ?step:React.step -> unit -> unit
+  )] in
+
   let close = [%client
     (fun () ->
+       ~%stop_open ();
        remove_class ~%bckgrnd "open";
-       ~%reset ();
+       ~%reset_scroll_pos ();
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
        Lwt_js_events.async (fun () ->
@@ -146,17 +154,19 @@ let%shared drawer
          Lwt.return_unit
        );
        bind_click_outside ~%bckgrnd ~%d ~%close;
+       Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
+         (fun () -> html_ManipClass_add "ot-drawer-open");
        Lwt_js_events.async (fun () ->
          let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
          remove_class ~%bckgrnd "opening";
-         Lwt.return_unit))
-     : unit -> unit)]
+         Lwt.return_unit)
+    ) : unit -> unit)]
   in
   let open_ = wrap_open open_ in
 
   let _ = [%client (
     Eliom_client.Page_status.oninactive (fun () ->
-      ~%reset ();
+      ~%reset_scroll_pos ();
       html_ManipClass_remove "ot-drawer-opening";
       html_ManipClass_remove "ot-drawer-open";
       html_ManipClass_remove "ot-drawer-closing"

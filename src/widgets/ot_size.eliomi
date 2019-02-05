@@ -22,6 +22,8 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
 (** {2 Size functions for Dom elements}
 
     {3 Size and orientation} *)

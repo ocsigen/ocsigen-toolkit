@@ -21,6 +21,10 @@
 
 
 [%%client.start]
+
+open Js_of_ocaml
+
+
 (* size and orientation *)
 type orientation = Portrait | Landscape
 

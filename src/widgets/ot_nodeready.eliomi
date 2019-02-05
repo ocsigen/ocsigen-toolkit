@@ -20,6 +20,8 @@
 
 [%%client.start]
 
+open Js_of_ocaml
+
 (** Wait for a node to be inserted in the DOM.
 
     {3 Example}

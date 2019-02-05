@@ -19,14 +19,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%shared open Eliom_content.Html ]
-[%%shared open Eliom_content.Html.F ]
-[%%client open Eliom_shared ]
+open%shared Js_of_ocaml
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Eliom_shared
 
 let%shared default_fail_fun e =
   [
     if Eliom_config.get_debugmode ()
-    then em [ pcdata (Printexc.to_string e) ]
+    then em [ txt (Printexc.to_string e) ]
     else begin
       let e = Printexc.to_string e in
       ignore [%client (Firebug.console##error
