@@ -1,3 +1,7 @@
+===== 2.1 (2019-02-08) =====
+
+* compatibility with eliom's DOM caching functionality
+
 ===== 2.0.0 (2018-12-19) =====
 
 * carousel improvements: lazy loading, performance
