@@ -19,25 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%client.start]
+[%%shared.start]
 
 (** This module implements a color picker.  *)
 
-type t
-(** Abstract type of color pickers.  *)
+val hsv_to_rgb : int -> float -> float -> (float * float * float)
+(** [hsv_to_rgb h s v] converts HS(V/L) colors to RGB. *)
 
-val make : ?width:int -> unit -> t
-(** [make ?width ()] produces a color picker.  [width] is the width of
-    the different canvases of the picker; its default value is
-    [100].  *)
-
-val append_at : Dom_html.element Js.t -> t -> unit
-(** [append_at elt colorp] appends the color picker [colorp] to the DOM
-    element [elt].  *)
-
-val init_handler : t -> unit
-(** Initializes a handler for the given color picker.  *)
-
-val get_rgb : t -> int * int * int
-(** Returns the active color in the RGB format for the given color
-    picker.  *)
+val make : unit -> [> `Div ] Eliom_content.Html.D.elt * (int * float * float) Eliom_shared.React.S.t
+(** [make ()] produces a color picker. *)
