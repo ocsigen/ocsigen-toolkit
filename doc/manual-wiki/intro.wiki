@@ -4,7 +4,7 @@ Ocsigen Toolkit provides various user interface widgets and related
 utilities that assist in the rapid development of interactive Web
 applications.
 
-Ocsigen Toolkit is built with [[site:/eliom|Eliom]].
+Ocsigen Toolkit is built with [[wiki("eliom"):|Eliom]].
 
 ==Installation and getting started
 
@@ -15,7 +15,7 @@ opam install ocsigen-toolkit
 }}}
 
 You may want to use Ocsigen Toolkit in conjunction with
-[[site:/ocsigen-start|Ocsigen Start]], which provides an application
+[[wiki("ocsigen-start"):|Ocsigen Start]], which provides an application
 template for quickly getting started with Ocsigen. The template
 provides various runnable examples of Ocsigen Toolkit widgets. See the
 <<a_manual project="ocsigen-toolkit" chapter="intro" | Ocsigen Start
