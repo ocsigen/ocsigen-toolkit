@@ -39,6 +39,13 @@ open Js_of_ocaml
     [menu_a]: menu attributes default is [ [ a_class ["ot-drp-menu"] ] ]
     and will be overriden if you provide this argument.
 
+    [side]: specify how the tip whould be positioned with respect to
+    the [origin] element. By default, the tip is centered; if it would
+    not fit on screen, its right hand side or left hand side is aligned
+    with the middle of the [origin] element. When side is [`Left] or
+    [`Right], the tip and the [origin] element are aligned on the
+    right (resp. the left).
+
     [origin] is the element from which the tip is supposed to pop out.
 
     [onopen filter menu side] is called after the filter is append to body.
@@ -54,6 +61,7 @@ val display
   : ?container_a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?filter_a:[< Html_types.div_attrib > `Class `OnClick]
     Eliom_content.Html.attrib list
+  -> ?side:[ `Left | `Right | `Center ]
   -> origin : Dom_html.element Js.t
   -> ?onopen:([> Html_types.div ] Eliom_content.Html.elt
               -> [> Html_types.div ] Eliom_content.Html.elt
