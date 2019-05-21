@@ -1,0 +1,43 @@
+.ot-color-picker-selected-cell {
+  z-index: 2;
+  border: 2px solid black;
+  margin: -2px -2px -2px -2px;
+  box-shadow: 0 0 15px white;
+}
+
+.ot-color-picker-hue-picker {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin-bottom: 10px;
+  flex: 1;
+}
+
+.ot-color-picker-hue-picker-cell {
+  flex: 1;
+  height: 100%;
+}
+
+.ot-color-picker-sl-picker {
+  display: flex;
+  flex-direction: column;
+  flex: 9;
+  margin: 1px;
+}
+
+.ot-color-picker-sl-picker-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+.ot-color-picker-sl-picker-cell {
+  flex: 1;
+  height: 100%;
+}
+
+.ot-color-picker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
