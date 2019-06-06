@@ -9,4 +9,5 @@ share: [
   "css/ot_buttons.css"          {"css/ot_buttons.css"}
   "css/ot_sticky.css"           {"css/ot_sticky.css"}
   "css/ot_page_transition.css"  {"css/ot_page_transition.css"}
+  "css/ot_color_picker.css"     {"css/ot_color_picker.css"}
 ]
