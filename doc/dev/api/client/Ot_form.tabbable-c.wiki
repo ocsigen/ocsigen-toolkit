@@ -4,4 +4,4 @@
 * <<span class="odocwiki_inlinecode"|~Dom~_html~.element>>
 
 ----
-<<pre class="ocsforge_color odocwiki_code"|<<span id="METHODtabIndex"|<<span class="ocsforge_color_keyword"|method>> <<span class="odocwiki_name"|tabIndex>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|prop>>>>>>
+<<pre class="ocsforge_color odocwiki_code"|<<span id="METHODtabIndex"|<<span class="ocsforge_color_keyword"|method>> <<span class="odocwiki_name"|tabIndex>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_uid"|Js_of_ocaml>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|prop>>>>>>

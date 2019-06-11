@@ -1,12 +1,15 @@
 =Index of values=
 
 |@@ @style="tet-align: left;"@@\\B|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="bind"| value Ot_swipe.bind >> ~[<<a_api subproject="server" | module Ot_swipe >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="bind"| value Ot_swipe.bind >> ~[<<a_api subproject="server" | module Ot_swipe >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind ~~compute~_final~_pos elt>> makes <<span class="odocwiki_inlinecode"|elt>> left~-right
+   swipable on touch screens~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="bullets"| value Ot_carousel.bullets >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~List of bullets for carousel~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\D|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="drawer"| value Ot_drawer.drawer >> ~[<<a_api subproject="server" | module Ot_drawer >>~]|<<div class="odocwiki_info"|~Build a drawer menu on the left or right of the screen~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="drawer"| value Ot_drawer.drawer >> ~[<<a_api subproject="server" | module Ot_drawer >>~]|<<div class="odocwiki_info"|~Build a drawer menu on the left~, right~, top or bottom of the screen~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="dropdown"| value Ot_buttons.dropdown >> ~[<<a_api subproject="server" | module Ot_buttons >>~]||
@@ -21,6 +24,9 @@
 |
 |@@ @style="tet-align: left;"@@\\H|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="hcf"| value Ot_popup.hcf >> ~[<<a_api subproject="server" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Section with header~, content and footer~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="hsv_to_rgb"| value Ot_color_picker.hsv_to_rgb >> ~[<<a_api subproject="server" | module Ot_color_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|hsv~_to~_rgb h s v>> converts ~H~S~(~V~/~L~) colors to ~R~G~B~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\I|
@@ -40,6 +46,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_range.make >> ~[<<a_api subproject="server" | module Ot_range >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?txt~_up ~?txt~_down ~~f ~~lb ub>> produces a widget for picking
     one of the values in <<span class="odocwiki_inlinecode"|~[lb~, ub~)>> via "up" and "down" buttons marked
     with the text <<span class="odocwiki_inlinecode"|txt~_up>> and <<span class="odocwiki_inlinecode"|txt~_down>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_color_picker.make >> ~[<<a_api subproject="server" | module Ot_color_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~(~)>> produces a color picker~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_carousel.make >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Creates a carousel from the elements of a list~.

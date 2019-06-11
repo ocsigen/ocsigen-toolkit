@@ -2,7 +2,8 @@
   type cropping = (float * float * float * float) React.S.t
   type 'a upload =
       ?progress:(int -> int -> unit) ->
-      ?cropping:Ot_picture_uploader.cropping -> File.file Js.t -> 'a Lwt.t
+      ?cropping:Ot_picture_uploader.cropping ->
+      Js_of_ocaml.File.file Js_of_ocaml.Js.t -> 'a Lwt.t
   type ('a, 'b) service =
       (unit,
        'a * ((float * float * float * float) option * Eliom_lib.file_info),
@@ -20,33 +21,37 @@
     service:('a, 'b) Ot_picture_uploader.service ->
     arg:'a -> 'b Ot_picture_uploader.upload
   val cropper :
-    image:Dom_html.element Js.t Eliom_client_value.t ->
+    image:Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t Eliom_client_value.t ->
     ?ratio:float ->
     unit ->
     (unit -> unit) * Ot_picture_uploader.cropping *
     [> `Div ] Eliom_content.Html.elt
   val bind_input :
-    Dom_html.inputElement Js.t Eliom_client_value.t ->
-    Dom_html.imageElement Js.t Eliom_client_value.t ->
-    ?container:#Dom_html.element Js.t Eliom_client_value.t ->
+    Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t Eliom_client_value.t ->
+    Js_of_ocaml.Dom_html.imageElement Js_of_ocaml.Js.t Eliom_client_value.t ->
+    ?container:#Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t
+               Eliom_client_value.t ->
     ?reset:(unit -> unit) -> unit -> unit
   val do_submit :
-    Dom_html.inputElement Js.t Eliom_client_value.t ->
+    Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t Eliom_client_value.t ->
     ?progress:(int -> int -> unit) ->
     ?cropping:Ot_picture_uploader.cropping ->
     upload:'a Ot_picture_uploader.upload -> unit -> unit Lwt.t
   val bind_submit :
-    Dom_html.inputElement Js.t Eliom_client_value.t ->
-    #Dom_html.eventTarget Js.t Eliom_client_value.t ->
+    Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t Eliom_client_value.t ->
+    #Js_of_ocaml.Dom_html.eventTarget Js_of_ocaml.Js.t Eliom_client_value.t ->
     ?cropping:Ot_picture_uploader.cropping ->
     upload:'a Ot_picture_uploader.upload ->
     after_submit:(unit -> unit Lwt.t) -> unit -> unit
   val bind :
-    ?container:#Dom_html.element Js.t Eliom_client_value.t ->
-    input:Dom_html.inputElement Js.t Eliom_client_value.t ->
-    preview:Dom_html.imageElement Js.t ->
+    ?container:#Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t
+               Eliom_client_value.t ->
+    input:Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t
+          Eliom_client_value.t ->
+    preview:Js_of_ocaml.Dom_html.imageElement Js_of_ocaml.Js.t ->
     ?crop:(unit -> unit) * Ot_picture_uploader.cropping ->
-    submit:#Dom_html.eventTarget Js.t Eliom_client_value.t ->
+    submit:#Js_of_ocaml.Dom_html.eventTarget Js_of_ocaml.Js.t
+           Eliom_client_value.t ->
     upload:'a Ot_picture_uploader.upload ->
     after_submit:(unit -> unit Lwt.t) -> unit -> unit
   val input :

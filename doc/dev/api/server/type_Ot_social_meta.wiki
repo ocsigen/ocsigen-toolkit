@@ -50,10 +50,10 @@
   val of_string : string -> Ot_social_meta.t
   val extract :
     ?fallback:(Nethtml.document -> unit) ->
-    ?tbl:(Ot_social_meta.t, string) Hashtbl.t ->
-    Nethtml.document list -> (Ot_social_meta.t, string) Hashtbl.t
+    ?tbl:(Ot_social_meta.t, string) Stdlib.Hashtbl.t ->
+    Nethtml.document list -> (Ot_social_meta.t, string) Stdlib.Hashtbl.t
   val extract_from_string :
     ?fallback:(Nethtml.document -> unit) ->
-    ?tbl:(Ot_social_meta.t, string) Hashtbl.t ->
-    string -> (Ot_social_meta.t, string) Hashtbl.t
+    ?tbl:(Ot_social_meta.t, string) Stdlib.Hashtbl.t ->
+    string -> (Ot_social_meta.t, string) Stdlib.Hashtbl.t
 end >>

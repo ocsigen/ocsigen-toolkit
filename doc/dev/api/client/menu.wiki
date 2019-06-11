@@ -14,6 +14,7 @@
 ==[[client/Ot_picture_uploader|Ot_picture_uploader]]
 ==[[client/Ot_nodeready|Ot_nodeready]]
 ==[[client/Ot_noderesize|Ot_noderesize]]
+==[[client/Ot_color_picker|Ot_color_picker]]
 =~Index
 == <<a_api subproject="client" text="Index of types" | index types >>
 == <<a_api subproject="client" text="Index of values" | index values >>

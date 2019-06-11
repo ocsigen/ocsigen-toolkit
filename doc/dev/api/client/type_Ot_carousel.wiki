@@ -48,6 +48,7 @@
                           Html_types.div_attrib Eliom_content.Html.D.attrib
                           list)
                          Eliom_shared.Value.t ->
+    ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt) ->
     (unit -> [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t)
     Eliom_shared.Value.t list -> [> `Div ] Ot_carousel.t Lwt.t
   val wheel :
@@ -103,5 +104,5 @@
     ?use_capture:bool ->
     ?vertical:bool ->
     change:([> `Goto of int | `Next | `Prev ] -> unit) ->
-    #Dom_html.eventTarget Js.t -> unit Lwt.t
+    #Js_of_ocaml.Dom_html.eventTarget Js_of_ocaml.Js.t -> unit Lwt.t
 end >>

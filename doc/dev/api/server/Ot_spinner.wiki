@@ -16,4 +16,8 @@
 
     ~If you want the spinner on both sides~, you can use <<span class="odocwiki_inlinecode"|with~_spinner~_no~_lwt>>
     and <<span class="odocwiki_inlinecode"|~Eliom~_content~.~Html~.~C~.node>>~.
+
+
+    ~Function <<span class="odocwiki_inlinecode"|fail>> will be used to display block in case an exception is
+    raised~.
 >>

@@ -2,7 +2,8 @@
   type cropping = (float * float * float * float) React.S.t
   type 'a upload =
       ?progress:(int -> int -> unit) ->
-      ?cropping:Ot_picture_uploader.cropping -> File.file Js.t -> 'a Lwt.t
+      ?cropping:Ot_picture_uploader.cropping ->
+      Js_of_ocaml.File.file Js_of_ocaml.Js.t -> 'a Lwt.t
   type ('a, 'b) service =
       (unit,
        'a * ((float * float * float * float) option * Eliom_lib.file_info),

@@ -1,1 +1,1 @@
-<<code language="ocaml" | sig val nodeready : #Dom.node Js.t -> unit Lwt.t end >>
+<<code language="ocaml" | sig val nodeready : #Js_of_ocaml.Dom.node Js_of_ocaml.Js.t -> unit Lwt.t end >>
