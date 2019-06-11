@@ -1,0 +1,59 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_sticky</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;is_position_sticky&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_position_sticky&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;supports_position_sticky&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;is_sticky&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;glue&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fixed&nbsp;:&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.<span class="constructor">D</span>.elt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inline&nbsp;:&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.<span class="constructor">D</span>.elt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir&nbsp;:&nbsp;[&nbsp;<span class="keywordsign">`</span><span class="constructor">Left</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Top</span>&nbsp;];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;scroll_thread&nbsp;:&nbsp;unit&nbsp;<span class="constructor">Lwt</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resize_thread&nbsp;:&nbsp;(int&nbsp;*&nbsp;int)&nbsp;<span class="constructor">React</span>.<span class="constructor">S</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dissolve&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_sticky&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Left</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Top</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ios_html_scroll_hack:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?force:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Ot_sticky</span>.glue&nbsp;option&nbsp;<span class="constructor">Lwt</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;keep_in_sight&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dir:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Left</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Top</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ios_html_scroll_hack:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="constructor">Lwt</span>.t<br>
+<span class="keyword">end</span></code></body></html>

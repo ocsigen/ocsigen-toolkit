@@ -1,0 +1,88 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_style</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;parse_px&nbsp;:&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.js_string&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;float_of_px&nbsp;:&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.js_string&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;px_of_float&nbsp;:&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;style&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.cssStyleDeclaration&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;display&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Block</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Compact</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Flex</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Inherit</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Inline</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Inline_block</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Inline_flex</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Inline_table</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Initial</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">List_item</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Marker</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">None</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Run_in</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_caption</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_cell</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_column</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_column_group</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_footer_group</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_header_group</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_row</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Table_row_group</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Unknown</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;display_to_str&nbsp;:&nbsp;<span class="constructor">Ot_style</span>.display&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;display_of_str&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Ot_style</span>.display<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;display&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;display'&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Ot_style</span>.display<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;visibility&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;invisible&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;top&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;bottom&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;left&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;right&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;marginTop&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;marginBottom&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;marginLeft&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;marginRight&nbsp;:&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_top&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_bottom&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_left&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_right&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_width&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_height&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+<span class="keyword">end</span></code></body></html>

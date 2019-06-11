@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Ot_color_picker.html">
+<link rel="next" href="Ot_form.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_drawer</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Ot_color_picker.html" title="Ot_color_picker">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Ot_form.html" title="Ot_form">Next</a>
+</div>
+<h1>Module <a href="type_Ot_drawer.html">Ot_drawer</a></h1>
+
+<pre><span id="MODULEOt_drawer"><span class="keyword">module</span> Ot_drawer</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Ot_drawer.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><div class="info module top">
+<div class="info-desc">
+<h3 id="2_DrawermenuformobileandWebapplications">Drawer menu for mobile and Web applications</h3></div>
+</div>
+<hr width="100%">
+
+<pre><span id="VALdrawer"><span class="keyword">val</span> drawer</span> : <code class="type">?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list -><br>       ?position:[ `Bottom | `Left | `Right | `Top ] -><br>       ?opened:bool -><br>       ?swipe:bool -><br>       ?onclose:(unit -> unit) Eliom_client_value.t -><br>       ?onopen:(unit -> unit) Eliom_client_value.t -><br>       ?wrap_close:((unit -> unit) Eliom_client_value.t -><br>                    (unit -> unit) Eliom_client_value.t) -><br>       ?wrap_open:((unit -> unit) Eliom_client_value.t -><br>                   (unit -> unit) Eliom_client_value.t) -><br>       [< Html_types.div_content ] Eliom_content.Html.elt list -><br>       [> `Div ] Eliom_content.Html.elt * (unit -> unit) Eliom_client_value.t *<br>       (unit -> unit) Eliom_client_value.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Build a drawer menu on the left, right, top or bottom of the screen.
+    Returns the DOM element, and functions to open and close the menu.
+    It is also possible to open or close the menu by clicking on a button,
+    and to swipe the menu to close it.</p>
+
+<p>If <code class="code">opened</code> is true (false by default), the drawer is initialized in its
+    opened state.</p>
+
+<p>If <code class="code">swipe</code> is true (default), the user can swipe to open or close the
+    drawer.</p>
+
+<p>If present, function <code class="code">onclose</code> is called just after the drawer is closed,
+    and function <code class="code">onopen</code> just before it starts opening.</p>
+
+<p><code class="code">wrap_close</code> and <code class="code">wrap_open</code> can be used to customize calls to <code class="code">close</code> and
+    <code class="code">open_</code> functions when the drawer closing or opening is triggered. For
+    example, drawer closing can be disabled using <code class="code">wrap_close</code>.</p>
+</div>
+</div>
+</body></html>

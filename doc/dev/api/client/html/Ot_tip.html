@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Ot_time_picker.html">
+<link rel="next" href="Ot_toggle.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><link title="Tip widget" rel="Section" href="#2_Tipwidget">
+<title>Ot_tip</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Ot_time_picker.html" title="Ot_time_picker">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Ot_toggle.html" title="Ot_toggle">Next</a>
+</div>
+<h1>Module <a href="type_Ot_tip.html">Ot_tip</a></h1>
+
+<pre><span id="MODULEOt_tip"><span class="keyword">module</span> Ot_tip</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Ot_tip.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><hr width="100%">
+<h3 id="2_Tipwidget">Tip widget</h3><p>This module implement a <code class="code">display</code> function which actually display a tip
+    (i.e. a box over the page content).</p>
+
+<p>It appends an element (which is called here "the filter") to body. The filter is
+    meant take the whole page space, in order to capture clicks to close the tip.
+    The filter also contains another element, called the menu which is the container
+    for content to be displayed.</p>
+
+<p><code class="code">filter_a</code>: filter attributes default is <code class="code">&nbsp;a_class&nbsp;[<span class="string">"ot-drp-filter"</span>]&nbsp;</code>
+    and will be overriden if you provide this argument.</p>
+
+<p><code class="code">menu_a</code>: menu attributes default is <code class="code">&nbsp;[&nbsp;a_class&nbsp;[<span class="string">"ot-drp-menu"</span>]&nbsp;]&nbsp;</code>
+    and will be overriden if you provide this argument.</p>
+
+<p><code class="code">side</code>: specify how the tip whould be positioned with respect to
+    the <code class="code">origin</code> element. By default, the tip is centered; if it would
+    not fit on screen, its right hand side or left hand side is aligned
+    with the middle of the <code class="code">origin</code> element. When side is <code class="code"><span class="keywordsign">`</span><span class="constructor">Left</span></code> or
+    <code class="code"><span class="keywordsign">`</span><span class="constructor">Right</span></code>, the tip and the <code class="code">origin</code> element are aligned on the
+    right (resp. the left).</p>
+
+<p><code class="code">origin</code> is the element from which the tip is supposed to pop out.</p>
+
+<p><code class="code">onopen&nbsp;filter&nbsp;menu&nbsp;side</code> is called after the filter is append to body.</p>
+
+<p><code class="code">onclose&nbsp;filter&nbsp;menu&nbsp;side</code> is called after the tip has been closed.</p>
+
+<p><code class="code">content</code> is the function generating the main content. It takes the function
+    to close the tip as parameter</p>
+
+<pre><span id="VALdisplay"><span class="keyword">val</span> display</span> : <code class="type">?container_a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib<br>                    list -><br>       ?filter_a:[< Html_types.div_attrib > `Class `OnClick ]<br>                 Eliom_content.Html.attrib list -><br>       ?side:[ `Center | `Left | `Right ] -><br>       origin:Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t -><br>       ?onopen:([> Html_types.div ] Eliom_content.Html.elt -><br>                [> Html_types.div ] Eliom_content.Html.elt -> unit) -><br>       ?onclose:([> Html_types.div ] Eliom_content.Html.elt -><br>                 [> Html_types.div ] Eliom_content.Html.elt -> unit) -><br>       content:((unit -> unit) -><br>                [< Html_types.div_content_fun > `Div ] Eliom_content.Html.elt list) -><br>       unit -> [> Html_types.div ] Eliom_content.Html.elt * (unit -> unit)</code></pre></body></html>

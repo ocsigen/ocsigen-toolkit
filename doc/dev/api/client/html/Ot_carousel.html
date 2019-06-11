@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Ot_calendar.html">
+<link rel="next" href="Ot_color_picker.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><link title="Carousel" rel="Section" href="#2_Carousel">
+<title>Ot_carousel</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Ot_calendar.html" title="Ot_calendar">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Ot_color_picker.html" title="Ot_color_picker">Next</a>
+</div>
+<h1>Module <a href="type_Ot_carousel.html">Ot_carousel</a></h1>
+
+<pre><span id="MODULEOt_carousel"><span class="keyword">module</span> Ot_carousel</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Ot_carousel.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><hr width="100%">
+<h3 id="2_Carousel">Carousel</h3>
+<p>This is a widget containing blocks. One or several blocks are
+    displayed at a time, depending on the size of the carousel. User
+    can display the next/previous items by pressing buttons, by
+    swiping on touch screens, or by pressing arrow keys.</p>
+
+<p>It is possible to put a carousel inside another carousel.</p>
+
+<p>A carousel can be horizontal or vertical.</p>
+
+<p>This module also defines two other widgets related to the carousel:</p>
+
+<ul>
+<li>bullets displays the current position in the carousel (as a set
+      of bullets),</li>
+</ul>
+<ul>
+<li>ribbon: display a swipeable horizontal menu to navigate the
+      carousel.</li>
+</ul>
+<p>You can use all these widgets in client or server OCaml side
+    programs.</p>
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.elt">elt</span>&nbsp;: <code class="type">'a Eliom_content.Html.elt</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.pos">pos</span>&nbsp;: <code class="type">int Eliom_shared.React.S.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.pos_post">pos_post</span>&nbsp;: <code class="type">int Eliom_shared.React.S.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.vis_elts">vis_elts</span>&nbsp;: <code class="type">int Eliom_shared.React.S.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.swipe_pos">swipe_pos</span>&nbsp;: <code class="type">float React.S.t Eliom_client_value.t</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>see <code class="code">make</code></p>
+</div>
+</div>
+
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list -><br>       ?vertical:bool -><br>       ?position:int -><br>       ?transition_duration:float -><br>       ?inertia:float -><br>       ?swipeable:bool -><br>       ?allow_overswipe:bool -><br>       ?update:[ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t -><br>       ?disabled:bool Eliom_shared.React.S.t -><br>       ?full_height:[ `Header of (unit -> int) Eliom_client_value.t<br>                    | `No<br>                    | `No_header ] -><br>       ?make_transform:(vertical:bool -> ?delta:int -> int -> string)<br>                       Eliom_shared.Value.t -><br>       ?make_page_attribute:(vertical:bool -><br>                             int -><br>                             Html_types.div_attrib Eliom_content.Html.D.attrib list)<br>                            Eliom_shared.Value.t -><br>       [< Html_types.div_content ] Eliom_content.Html.elt list -><br>       [> `Div ] <a href="Ot_carousel.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>Creates a carousel from the elements of a list.
+    <code class="code">?position</code> is the initial position (default 0).
+    <code class="code">?update</code> is a react event you can use to command the carousel from outside.
+    <code class="code">?disabled</code> is always <code class="code"><span class="keyword">false</span></code> by default. When <code class="code"><span class="keyword">true</span></code>, it is not possible
+    to change carousel position.
+    <code class="code">?transition_duration</code> allows to adjust the
+    transition duration (which is currently constant). Default is 0.6s.
+    <code class="code">?inertia</code> makes it possible to reduce (or increase) inertia.
+    Default is <code class="code">1.0</code>. No inertia is <code class="code">0.0</code>.
+    Set <code class="code">?swipeable</code> to <code class="code"><span class="keyword">false</span></code> if you want to disable swiping.
+    <code class="code">?allow_overswipe</code> is <code class="code"><span class="keyword">false</span></code> by default. It <code class="code"><span class="keyword">true</span></code>, it is possible to
+    swipe before first page and after last page.</p>
+
+<p>Use optional parameter <code class="code">?full_height</code>
+    if you don't want scroll bars in carousel
+    pages. Carousel will expand as necessary in the page, and swiping
+    to another page will automatically update the scroll position of the
+    whole page. Use this for example if you want a page with several tabs.
+    <code class="code"><span class="keywordsign">`</span><span class="constructor">No_header</span></code> means that the top of the screen will be used for the
+    default position. Use <code class="code"><span class="keywordsign">`</span><span class="constructor">Header</span>&nbsp;f</code> if you want to add some extra space
+    for a header (for example a tabbar). <code class="code">f</code> is the function which returns
+    the height of this header.</p>
+
+<p>Optional parameter <code class="code">?make_transform</code> makes it possible to
+    customize the transformation applied to the carousel when it moves.
+    The default is a translation, but you may want for example a rotation
+    for a circular carousel. Function <code class="code">make_transform</code> takes <code class="code">~vertical</code>
+    (whether the carousel is vertical or horizontal), the current move
+    (<code class="code">?delta</code>, in pixels) if the carousel is currently being
+    dragged using fingers on touch screens, and the current position
+    (before starting moving the carousel if it is currently being dragged).
+    It must return the CSS value of the <code class="code">transform</code> property for the
+    page container (which has class <code class="code"><span class="string">"car2"</span></code>).</p>
+
+<p>Optional parameter <code class="code">?make_page_attribute</code> allows to add html attributes
+    to each page of the carousel. It takes the page number as parameter.</p>
+
+<p>Function <code class="code">make</code> returns a value of type <code class="code">t</code> that contains:</p>
+<ul>
+<li>the HTML element <code class="code">elt</code>,</li>
+<li>the current position <code class="code">pos</code> (as a react signal),</li>
+<li>the current position <code class="code">pos_post</code> which is updated after the tab change is
+      completed</li>
+<li>the number of fully visible elements <code class="code">vis_elts</code>.
+      It is more than 1 if element
+      width (<code class="code">div.car2</code>) is set, in CSS, to a value smaller than carousel width
+      (for example 50% or 33.33%). The width of all elements is supposed to be
+      equal.</li>
+<li>the current swipe position. Value -1.0 corresponds to previous page,
+    and +1.0 to next page.</li>
+</ul>
+</div>
+</div>
+
+<pre><span id="VALmake_lazy"><span class="keyword">val</span> make_lazy</span> : <code class="type">?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list -><br>       ?vertical:bool -><br>       ?position:int -><br>       ?transition_duration:float -><br>       ?inertia:float -><br>       ?swipeable:bool -><br>       ?allow_overswipe:bool -><br>       ?update:[ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t -><br>       ?disabled:bool Eliom_shared.React.S.t -><br>       ?full_height:[ `Header of (unit -> int) Eliom_client_value.t<br>                    | `No<br>                    | `No_header ] -><br>       ?make_transform:(vertical:bool -> ?delta:int -> int -> string)<br>                       Eliom_shared.Value.t -><br>       ?make_page_attribute:(vertical:bool -><br>                             int -><br>                             Html_types.div_attrib Eliom_content.Html.D.attrib list)<br>                            Eliom_shared.Value.t -><br>       ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt) -><br>       (unit -> [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t)<br>       Eliom_shared.Value.t list -> [> `Div ] <a href="Ot_carousel.html#TYPEt">t</a> Lwt.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>same as <code class="code">make</code> except for the last argument. Instead of supplying the
+    contents for each page directly, supply a for each page a shared content
+    generator function. Contents will be generated and filled lazily, i.e. when
+    switching to a page for the first time. The initial page (defined by
+    <code class="code">position</code> is directly generated on the server side (if <code class="code">make_lazy</code> is
+    invoked on the server).
+    Parameter <code class="code">?spinner</code> make it possible to customize the element
+    that is displayed while page is loading.</p>
+</div>
+</div>
+
+<pre><span id="VALwheel"><span class="keyword">val</span> wheel</span> : <code class="type">?a:[< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list -><br>       ?vertical:bool -><br>       ?position:int -><br>       ?transition_duration:float -><br>       ?inertia:float -><br>       ?allow_overswipe:bool -><br>       ?update:[ `Goto of int | `Next | `Prev ] React.event Eliom_client_value.t -><br>       ?disabled:bool Eliom_shared.React.S.t -><br>       ?faces:int -><br>       ?face_size:int -><br>       [< Html_types.div_content ] Eliom_content.Html.elt list -><br>       [> `Div ] Eliom_content.Html.elt * int Eliom_shared.React.S.t *<br>       float React.S.t Eliom_client_value.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Carousel with 3D effect. Faces are displayed on a cylinder.
+    Give the number of faces you want as parameter <code class="code">faces</code> (default: 20).
+    The size of the faces (height for vertical carousel, width for horizontal)
+    must be given as parameter <code class="code">face_size</code>
+    and must match the size given in the CSS (in pixel, default is 25).
+    This carousel is vertical by default.</p>
+
+<p>Function <code class="code">make</code> returns:</p>
+<ul>
+<li>the element,</li>
+<li>the current position (as a react signal),</li>
+<li>the current swipe position. Value -1.0 corresponds to previous page,
+    and +1.0 to next page.</li>
+</ul>
+</div>
+</div>
+
+<pre><span id="VALbullets"><span class="keyword">val</span> bullets</span> : <code class="type">?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list -><br>       ?attributes:[< Html_types.li_attrib ] Eliom_content.Html.attrib list list -><br>       change:([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t -><br>       pos:int Eliom_shared.React.S.t -><br>       length:int -><br>       ?size:int Eliom_shared.React.S.t -><br>       ?content:[< Html_types.li_content_fun ] Eliom_content.Html.elt list list -><br>       unit -> [> `Ul ] Eliom_content.Html.elt</code></pre><div class="info ">
+<div class="info-desc">
+<p>List of bullets for carousel. Current page has class <code class="code"><span class="string">"active"</span></code>.
+    <code class="code">pos</code> is a signal corresponding to current position.
+    <code class="code">change</code> is a function to change position of carousel.
+    This is usually the function to trigger the event given as
+    parameter to <code class="code">make</code>.
+    <code class="code">length</code> must be exactly the number of elements in the carousel.
+    Optional parameter <code class="code">attributes</code> makes possible to give an HTML attribute
+    to each bullet (for example a reactive class).
+    Optional parameter <code class="code">size</code> is the number of elements visible at the same time
+    in the carousel (return by function <code class="code">make</code>).
+    Optional parameter <code class="code">content</code> makes it possible to fill the bullets with Html
+    elements.</p>
+</div>
+</div>
+
+<pre><span id="VALribbon"><span class="keyword">val</span> ribbon</span> : <code class="type">?a:[< Html_types.ul_attrib ] Eliom_content.Html.attrib list -><br>       change:([ `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t -><br>       pos:int Eliom_shared.React.S.t -><br>       ?size:int Eliom_shared.React.S.t -><br>       ?initial_gap:int -><br>       ?transition_duration:float -><br>       ?cursor:float React.S.t Eliom_client_value.t -><br>       [< Html_types.li_content_fun ] Eliom_content.Html.elt list list -><br>       [> `Div ] Eliom_content.Html.elt</code></pre><div class="info ">
+<div class="info-desc">
+<p>Menu (or tabs) for carousel. Current page has class <code class="code"><span class="string">"active"</span></code>.
+    <code class="code">pos</code> is a signal corresponding to current position.
+    <code class="code">change</code> is a function to change position of carousel.
+    This is usually the function to trigger the event given as
+    parameter to <code class="code">make</code>.
+    Optional parameter <code class="code">size</code> is the number of elements visible at the same time
+    in the carousel (return by function <code class="code">make</code>).
+    Optional parameter <code class="code">gap</code> is the default gap on the left, in pixels.
+    The last argument is the list of titles, for each carousel page,
+    that will be included in <code class="code">&lt;li&gt;</code> tags.</p>
+
+<p>If <code class="code">cursor</code> is present, an element is added below the ribbon
+    to visualize the current position. It corresponds to the float
+    signal returned by <code class="code">make</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALprevious"><span class="keyword">val</span> previous</span> : <code class="type">?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list -><br>       change:([> `Goto of int | `Prev ] -> unit) Eliom_client_value.t -><br>       ?offset:int Eliom_shared.React.S.t -><br>       pos:int Eliom_shared.React.S.t -><br>       Html_types.button_content Eliom_content.Html.elt list -><br>       [> `Button ] Eliom_content.Html.elt</code></pre><div class="info ">
+<div class="info-desc">
+<p>Button to go to the previous page (or mores page if <code class="code">offset</code> is present).</p>
+</div>
+</div>
+
+<pre><span id="VALnext"><span class="keyword">val</span> next</span> : <code class="type">?a:[< Html_types.button_attrib ] Eliom_content.Html.attrib list -><br>       change:([> `Goto of int | `Next ] -> unit) Eliom_client_value.t -><br>       ?offset:int Eliom_shared.React.S.t -><br>       pos:int Eliom_shared.React.S.t -><br>       vis_elts:int Eliom_shared.React.S.t -><br>       length:int -><br>       Html_types.button_content Eliom_content.Html.elt list -><br>       [> `Button ] Eliom_content.Html.elt</code></pre><div class="info ">
+<div class="info-desc">
+<p>Button to go to the next page (or more pages if <code class="code">offset</code> is present).</p>
+</div>
+</div>
+
+<pre><span id="VALbind_arrow_keys"><span class="keyword">val</span> bind_arrow_keys</span> : <code class="type">?use_capture:bool -><br>       ?vertical:bool -><br>       change:([> `Goto of int | `Next | `Prev ] -> unit) -><br>       #Js_of_ocaml.Dom_html.eventTarget Js_of_ocaml.Js.t -> unit Lwt.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>Make arrow keys cause event change.
+     Returns a thread that never stops until you call <code class="code"><span class="constructor">Lwt</span>.cancel</code> on it.</p>
+</div>
+</div>
+</body></html>

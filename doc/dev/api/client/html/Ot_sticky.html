@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Ot_spinner.html">
+<link rel="next" href="Ot_style.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_sticky</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Ot_spinner.html" title="Ot_spinner">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Ot_style.html" title="Ot_style">Next</a>
+</div>
+<h1>Module <a href="type_Ot_sticky.html">Ot_sticky</a></h1>
+
+<pre><span id="MODULEOt_sticky"><span class="keyword">module</span> Ot_sticky</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Ot_sticky.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><hr width="100%">
+
+<pre><span id="VALis_position_sticky"><span class="keyword">val</span> is_position_sticky</span> : <code class="type">'a Eliom_content.Html.elt -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>whether computed CSS attribute "position" equals "sticky"</p>
+</div>
+</div>
+
+<pre><span id="VALset_position_sticky"><span class="keyword">val</span> set_position_sticky</span> : <code class="type">'a Eliom_content.Html.elt -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>try to set CSS attribute "position" to "sticky". <code class="code"><span class="keyword">false</span></code> if
+    unsuccessful</p>
+</div>
+</div>
+
+<pre><span id="VALsupports_position_sticky"><span class="keyword">val</span> supports_position_sticky</span> : <code class="type">'a Eliom_content.Html.elt -> bool</code></pre>
+<pre><span id="VALis_sticky"><span class="keyword">val</span> is_sticky</span> : <code class="type">'a Eliom_content.Html.elt -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>whether element is sticky, either due to CSS attribute position:sticky or
+    due to position:sticky polyfill <code class="code">make_sticky</code></p>
+</div>
+</div>
+
+<pre><code><span id="TYPEglue"><span class="keyword">type</span> <code class="type"></code>glue</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.fixed">fixed</span>&nbsp;: <code class="type">Html_types.div_content Eliom_content.Html.D.elt</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.inline">inline</span>&nbsp;: <code class="type">Html_types.div_content Eliom_content.Html.D.elt</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.dir">dir</span>&nbsp;: <code class="type">[ `Left | `Top ]</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.scroll_thread">scroll_thread</span>&nbsp;: <code class="type">unit Lwt.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.resize_thread">resize_thread</span>&nbsp;: <code class="type">(int * int) React.S.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTglue.dissolve">dissolve</span>&nbsp;: <code class="type">unit -> unit</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>returned by <code class="code">make&nbsp;sticky</code> (if position:sticky is not supported). You only
+    need this value if you want to manipulate the stickiness later (as
+    <code class="code">keep_in_sight</code> does.
+    <code class="code">fixed</code>: element cloned from the element supplied to <code class="code">make_sticky</code>;
+    <code class="code">inline</code>: original element supplied to <code class="code">make_sticky</code>;
+    <code class="code">dir</code>: see <code class="code">make_sticky</code>;
+    <code class="code">scroll_thread</code>: thread that makes either <code class="code">fixed</code> or <code class="code">inline</code> visible,
+                     depending on the scroll position;
+    <code class="code">resize_thread</code>: thread that resizes the fixed element according to the
+                     inline element on window resize;
+    <code class="code">dissolve</code>: undo <code class="code">make_sticky</code> i.e. kill <code class="code">scroll_thread</code> and <code class="code">resize_thread</code>
+                and remove <code class="code">fixed</code> from the DOM tree.</p>
+</div>
+</div>
+
+
+<pre><span id="VALmake_sticky"><span class="keyword">val</span> make_sticky</span> : <code class="type">dir:[ `Left | `Top ] -><br>       ?ios_html_scroll_hack:bool -><br>       ?force:bool -><br>       Html_types.div_content Eliom_content.Html.elt -> <a href="Ot_sticky.html#TYPEglue">glue</a> option Lwt.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>position:sticky polyfill which is not supported by some browsers. It
+    functions by making a clone with position:fixed of the designated
+    element and continuously (window scroll/resize) monitoring the
+    position of the element and the clone. The contents of the element
+    is shifted back and forth between the two elements. Make sure to
+    also apply the CSS code "position: sticky" to the element as this
+    function has no effect if "position: sticky" is supported by the
+    browser. The supplied element should be a D-element.
+    <code class="code">dir</code> determines whether it sticks to the top on vertical scroll or the the
+    left on horizontal scroll.</p>
+
+<p>NOTE: Do not forget to include the CSS attributes as defined in the file
+    css/ot_sticky.css.</p>
+
+<p>If <code class="code">?force</code> is <code class="code"><span class="keyword">true</span></code>, will apply the polyfill even if the browser supports
+    sticky position (default is <code class="code"><span class="keyword">false</span></code>).</p>
+
+<p>See in <a href="Ot_lib.html"><code class="code"><span class="constructor">Ot_lib</span></code></a> for documentation of <code class="code">~ios_html_scroll_hack</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALkeep_in_sight"><span class="keyword">val</span> keep_in_sight</span> : <code class="type">dir:[ `Left | `Top ] -><br>       ?ios_html_scroll_hack:bool -><br>       Html_types.div_content Eliom_content.Html.elt -> (unit -> unit) Lwt.t</code></pre><div class="info ">
+<div class="info-desc">
+<p>make sure an element gets never out of sight while scrolling by
+    continuously (window scroll/resize) monitoring the position of the
+    element and adjusting the top/left value. Calls
+    <code class="code">make_sticky</code>. Make sure to also apply the CSS code "position:
+    sticky" to the element. The element's absolute position is
+    determined by the parents position (which is not sticky but
+    inline), so you probably want to wrap your element in a dedicated
+    div. (It has to be the parent and not the element itself because
+    when the element floats (is in its fixed state) we can't use its
+    position for computing the right values.  Returns a function by
+    which the <code class="code">keep_in_sight</code> functionality can be stopped.</p>
+</div>
+</div>
+</body></html>

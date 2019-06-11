@@ -1,0 +1,86 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_size</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;orientation&nbsp;=&nbsp;<span class="constructor">Portrait</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Landscape</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_screen_size&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;*&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_screen_orientation&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Ot_size</span>.orientation<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_size&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;&nbsp;clientHeight&nbsp;:&nbsp;&lt;&nbsp;get&nbsp;:&nbsp;int;&nbsp;..&nbsp;&gt;&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.gen_prop;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clientWidth&nbsp;:&nbsp;&lt;&nbsp;get&nbsp;:&nbsp;int;&nbsp;..&nbsp;&gt;&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.gen_prop;&nbsp;..&nbsp;&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;*&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_document_size&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;*&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;width_height&nbsp;:&nbsp;(int&nbsp;*&nbsp;int)&nbsp;<span class="constructor">React</span>.signal<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;width&nbsp;:&nbsp;int&nbsp;<span class="constructor">React</span>.signal<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;height&nbsp;:&nbsp;int&nbsp;<span class="constructor">React</span>.signal<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;update_width_height&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_adaptative_width&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;set_adaptative_height&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;height_to_bottom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_top&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_bottom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_left&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_right&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_height&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_width&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_page_top&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_page_left&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_page_bottom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;client_page_right&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?with_margin:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">#</span><span class="constructor">Js_of_ocaml</span>.<span class="constructor">Dom_html</span>.element&nbsp;<span class="constructor">Js_of_ocaml</span>.<span class="constructor">Js</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;pageYOffset&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+<span class="keyword">end</span></code></body></html>

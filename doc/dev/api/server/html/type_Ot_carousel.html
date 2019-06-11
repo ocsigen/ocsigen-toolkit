@@ -1,0 +1,136 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Ot_buttons" rel="Chapter" href="Ot_buttons.html">
+<link title="Ot_calendar" rel="Chapter" href="Ot_calendar.html">
+<link title="Ot_carousel" rel="Chapter" href="Ot_carousel.html">
+<link title="Ot_color_picker" rel="Chapter" href="Ot_color_picker.html">
+<link title="Ot_drawer" rel="Chapter" href="Ot_drawer.html">
+<link title="Ot_form" rel="Chapter" href="Ot_form.html">
+<link title="Ot_lib" rel="Chapter" href="Ot_lib.html">
+<link title="Ot_nodeready" rel="Chapter" href="Ot_nodeready.html">
+<link title="Ot_noderesize" rel="Chapter" href="Ot_noderesize.html">
+<link title="Ot_page_transition" rel="Chapter" href="Ot_page_transition.html">
+<link title="Ot_picture_uploader" rel="Chapter" href="Ot_picture_uploader.html">
+<link title="Ot_popup" rel="Chapter" href="Ot_popup.html">
+<link title="Ot_range" rel="Chapter" href="Ot_range.html">
+<link title="Ot_size" rel="Chapter" href="Ot_size.html">
+<link title="Ot_social_meta" rel="Chapter" href="Ot_social_meta.html">
+<link title="Ot_spinner" rel="Chapter" href="Ot_spinner.html">
+<link title="Ot_sticky" rel="Chapter" href="Ot_sticky.html">
+<link title="Ot_style" rel="Chapter" href="Ot_style.html">
+<link title="Ot_swipe" rel="Chapter" href="Ot_swipe.html">
+<link title="Ot_time_picker" rel="Chapter" href="Ot_time_picker.html">
+<link title="Ot_tip" rel="Chapter" href="Ot_tip.html">
+<link title="Ot_toggle" rel="Chapter" href="Ot_toggle.html"><title>Ot_carousel</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;t&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos&nbsp;:&nbsp;int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos_post&nbsp;:&nbsp;int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vis_elts&nbsp;:&nbsp;int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;swipe_pos&nbsp;:&nbsp;float&nbsp;<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="constructor">Eliom_client_value</span>.t;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.div_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?vertical:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?position:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?transition_duration:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?inertia:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?swipeable:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?allow_overswipe:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?update:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="constructor">React</span>.event&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?disabled:bool&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?full_height:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Header</span>&nbsp;<span class="keyword">of</span>&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int)&nbsp;<span class="constructor">Eliom_client_value</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">No</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">No_header</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?make_transform:(vertical:bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?delta:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">Value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?make_page_attribute:(vertical:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.div_attrib&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.<span class="constructor">D</span>.attrib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">Value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&lt;&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Div</span>&nbsp;]&nbsp;<span class="constructor">Ot_carousel</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_lazy&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.div_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?vertical:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?position:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?transition_duration:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?inertia:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?swipeable:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?allow_overswipe:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?update:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="constructor">React</span>.event&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?disabled:bool&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?full_height:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Header</span>&nbsp;<span class="keyword">of</span>&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int)&nbsp;<span class="constructor">Eliom_client_value</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">No</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">No_header</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?make_transform:(vertical:bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?delta:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">Value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?make_page_attribute:(vertical:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.div_attrib&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.<span class="constructor">D</span>.attrib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">Value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?spinner:(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;[&lt;&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;<span class="constructor">Lwt</span>.t)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">Value</span>.t&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Div</span>&nbsp;]&nbsp;<span class="constructor">Ot_carousel</span>.t&nbsp;<span class="constructor">Lwt</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;wheel&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.div_attrib&nbsp;&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Class</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?vertical:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?position:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?transition_duration:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?inertia:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?allow_overswipe:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?update:[&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="constructor">React</span>.event&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?disabled:bool&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?faces:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?face_size:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&lt;&nbsp;<span class="constructor">Html_types</span>.div_content&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Div</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;*&nbsp;int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="constructor">Eliom_client_value</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;bullets&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.ul_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?attributes:[&lt;&nbsp;<span class="constructor">Html_types</span>.li_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;change:([&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;length:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?size:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?content:[&lt;&nbsp;<span class="constructor">Html_types</span>.li_content_fun&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Ul</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;ribbon&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.ul_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;change:([&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?size:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?initial_gap:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?transition_duration:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?cursor:float&nbsp;<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&lt;&nbsp;<span class="constructor">Html_types</span>.li_content_fun&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Div</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;previous&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.button_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;change:([&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Prev</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?offset:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.button_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Button</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;next&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?a:[&lt;&nbsp;<span class="constructor">Html_types</span>.button_attrib&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.attrib&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;change:([&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Goto</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Next</span>&nbsp;]&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit)&nbsp;<span class="constructor">Eliom_client_value</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?offset:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;pos:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;vis_elts:int&nbsp;<span class="constructor">Eliom_shared</span>.<span class="constructor">React</span>.<span class="constructor">S</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;length:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Html_types</span>.button_content&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;[&gt;&nbsp;<span class="keywordsign">`</span><span class="constructor">Button</span>&nbsp;]&nbsp;<span class="constructor">Eliom_content</span>.<span class="constructor">Html</span>.elt<br>
+<span class="keyword">end</span></code></body></html>

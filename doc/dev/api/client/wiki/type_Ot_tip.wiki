@@ -1,0 +1,17 @@
+<<code language="ocaml" | sig
+  val display :
+    ?container_a:[< Html_types.div_attrib > `Class ]
+                 Eliom_content.Html.attrib list ->
+    ?filter_a:[< Html_types.div_attrib > `Class `OnClick ]
+              Eliom_content.Html.attrib list ->
+    ?side:[ `Center | `Left | `Right ] ->
+    origin:Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t ->
+    ?onopen:([> Html_types.div ] Eliom_content.Html.elt ->
+             [> Html_types.div ] Eliom_content.Html.elt -> unit) ->
+    ?onclose:([> Html_types.div ] Eliom_content.Html.elt ->
+              [> Html_types.div ] Eliom_content.Html.elt -> unit) ->
+    content:((unit -> unit) ->
+             [< Html_types.div_content_fun > `Div ] Eliom_content.Html.elt
+             list) ->
+    unit -> [> Html_types.div ] Eliom_content.Html.elt * (unit -> unit)
+end >>
