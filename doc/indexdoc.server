@@ -1,4 +1,4 @@
-{1 Ocsigen-toolkit client API}
+{1 Ocsigen-toolkit server API}
 
 {!modules:
     Ot_popup
