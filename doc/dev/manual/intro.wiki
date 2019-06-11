@@ -65,6 +65,8 @@ Of course, you are free to modify the style to suit the desired look.
 * <<a_api subproject="server" | module Ot_carousel >>:
   container for blocks, only one of which is displayed at a time,
   with various ways to move between them (buttons, swipe, keyboard arrows)
+* <<a_api subproject="server" | module Ot_color_picker >>:
+  color picker widget
 * <<a_api subproject="server" | module Ot_drawer >>:
   a drawer menu that typically appears on an edge of the screen.
   It can  appear/disappear via buttons or by swiping.
