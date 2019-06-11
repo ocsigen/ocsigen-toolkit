@@ -6,10 +6,12 @@ open Eliom_content.Html]
 open Eliom_content.Html.D
 
 [%%client
+open Js_of_ocaml
+
 module type CONF = sig
   val dragThreshold : float
   val moveCount : int
-  val headContainerHeight : int
+  val headContainerHeight : unit -> int
   val pullDownIcon : Html_types.div Eliom_content.Html.D.elt
   val loadingIcon : Html_types.div Eliom_content.Html.D.elt
   val successIcon : Html_types.div Eliom_content.Html.D.elt
@@ -114,7 +116,9 @@ module Make (Conf : CONF) = struct
     show Conf.loadingIcon;
     js_container##.style##.transform
     := Js.string
-         ("translateY(" ^ string_of_int Conf.headContainerHeight ^ "px)");
+         ("translateY("
+         ^ (string_of_int @@ Conf.headContainerHeight ())
+         ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
         let%lwt b = Conf.afterPull () in
@@ -218,7 +222,7 @@ let make ?(dragThreshold = 0.3) ?(moveCount = 200)
            let dragThreshold = ~%dragThreshold
            let moveCount = ~%moveCount
 
-           let headContainerHeight =
+           let headContainerHeight () =
              (To_dom.of_element ~%headContainer)##.scrollHeight
 
            let pullDownIcon = ~%pullDownIcon
