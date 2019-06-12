@@ -142,22 +142,20 @@ let display_sl_grid ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
       (Array.to_list rows)
   )
 
-let display_aux ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
+let display_aux ?(a=[]) ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
   let open Eliom_content.Html in
-  D.(
-    div ~a:[a_class ["ot-color-picker"]]
+    D.div ~a:(D.a_class ["ot-color-picker"]::a)
       [ display_hue_selector ~setter sel
       ; display_sl_grid ~setter sel
       ]
-  )
 
-let display cp_sig =
+let display ?a cp_sig =
   let setter = snd cp_sig in
-  fst cp_sig >|= [%shared display_aux ~setter:~%setter] |> Eliom_content.Html.R.node
+  fst cp_sig >|= [%shared display_aux ?a:~%a ~setter:~%setter] |> Eliom_content.Html.R.node
 
-let make () =
+let make ?a =
   let cp_sig = Eliom_shared.React.S.create (255, 1.0, 0.0) in
-  ( display
+  ( display ?a
       cp_sig
   , fst cp_sig
   )
