@@ -30,7 +30,6 @@
 |<<a_api subproject="client" | module Ot_toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
-|Ot_icons||
 |<<a_api subproject="client" | module Ot_picture_uploader >>||
 |<<a_api subproject="client" | module Ot_nodeready >>||
 |<<a_api subproject="client" | module Ot_noderesize >>||

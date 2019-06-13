@@ -10,10 +10,10 @@
 ==[[server/Ot_calendar|Ot_calendar]]
 ==[[server/Ot_time_picker|Ot_time_picker]]
 ==[[server/Ot_toggle|Ot_toggle]]
-==[[server/Ot_icons|Ot_icons]]
 ==[[server/Ot_picture_uploader|Ot_picture_uploader]]
 ==[[server/Ot_nodeready|Ot_nodeready]]
 ==[[server/Ot_noderesize|Ot_noderesize]]
+==[[server/Ot_color_picker|Ot_color_picker]]
 =~Index
 == <<a_api subproject="server" text="Index of types" | index types >>
 == <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
