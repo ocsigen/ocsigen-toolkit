@@ -1,7 +1,7 @@
 <<code language="ocaml" | sig
   val drawer :
     ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
-    ?position:[ `Left | `Right ] ->
+    ?position:[ `Bottom | `Left | `Right | `Top ] ->
     ?opened:bool ->
     ?swipe:bool ->
     ?onclose:(unit -> unit) Eliom_client_value.t ->

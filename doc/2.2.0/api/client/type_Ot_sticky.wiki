@@ -1,0 +1,24 @@
+<<code language="ocaml" | sig
+  val is_position_sticky : 'a Eliom_content.Html.elt -> bool
+  val set_position_sticky : 'a Eliom_content.Html.elt -> bool
+  val supports_position_sticky : 'a Eliom_content.Html.elt -> bool
+  val is_sticky : 'a Eliom_content.Html.elt -> bool
+  type glue = {
+    fixed : Html_types.div_content Eliom_content.Html.D.elt;
+    inline : Html_types.div_content Eliom_content.Html.D.elt;
+    dir : [ `Left | `Top ];
+    scroll_thread : unit Lwt.t;
+    resize_thread : (int * int) React.S.t;
+    dissolve : unit -> unit;
+  }
+  val make_sticky :
+    dir:[ `Left | `Top ] ->
+    ?ios_html_scroll_hack:bool ->
+    ?force:bool ->
+    Html_types.div_content Eliom_content.Html.elt ->
+    Ot_sticky.glue option Lwt.t
+  val keep_in_sight :
+    dir:[ `Left | `Top ] ->
+    ?ios_html_scroll_hack:bool ->
+    Html_types.div_content Eliom_content.Html.elt -> (unit -> unit) Lwt.t
+end >>

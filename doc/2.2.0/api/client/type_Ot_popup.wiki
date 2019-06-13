@@ -1,0 +1,31 @@
+<<code language="ocaml" | sig
+  val hcf :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?header:[< Html_types.header_content_fun ] Eliom_content.Html.elt list ->
+    ?footer:[< Html_types.footer_content_fun ] Eliom_content.Html.elt list ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list ->
+    [> `Section ] Eliom_content.Html.elt
+  val popup :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?close_button:Html_types.button_content Eliom_content.Html.elt list ->
+    ?confirmation_onclose:(unit -> bool Lwt.t) ->
+    ?onclose:(unit -> unit Lwt.t) ->
+    ?close_on_background_click:bool ->
+    ?close_on_escape:bool ->
+    ((unit -> unit Lwt.t) ->
+     [< Html_types.div_content ] Eliom_content.Html.elt Lwt.t) ->
+    [> `Div ] Eliom_content.Html.elt Lwt.t
+  val ask_question :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?a_hcf:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    header:[< Html_types.header_content ] Eliom_content.Html.elt list ->
+    buttons:([< Html_types.button_content_fun ] Eliom_content.Html.elt list *
+             (unit -> 'a Lwt.t) * string list)
+            list ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list -> 'a Lwt.t
+  val confirm :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    [< Html_types.header_content_fun ] Eliom_content.Html.elt list ->
+    ([< Html_types.button_content_fun ] as 'a) Eliom_content.Html.elt list ->
+    'a Eliom_content.Html.elt list -> bool Lwt.t
+end >>

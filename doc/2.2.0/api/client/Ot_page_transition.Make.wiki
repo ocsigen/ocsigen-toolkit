@@ -1,0 +1,19 @@
+=Functor <<a_api_type subproject="client" | module Ot_page_transition.Make >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Make>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_sig_block"|<<span class="ocsforge_color_keyword"|functor>> <<span class="ocsforge_color_delimiter"|(>>Conf <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<a_api subproject="client" text="PAGE_TRANSITION_CONF" | module Ot_page_transition.PAGE_TRANSITION_CONF >>>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="client" text=".." | module Ot_page_transition.Make >><<span class="ocsforge_color_keyword"|end>><<span class="odocwiki_type"|  with type screenshot = Conf.screenshot>>>>>><<span class="odocwiki_inlinecode"|install~_global~_handler t take~_screenshot animation~_type>>
+    creates a global onchangepage handler which is registered
+    recursively and applies to all pages~. <<span class="odocwiki_inlinecode"|t>> is the transition duration
+    of the animation~. <<span class="odocwiki_inlinecode"|take~_screenshot callback>> takes a screenshot
+    of the current page and then calls <<span class="odocwiki_inlinecode"|callback>>~. ~A callback function
+    is used here because <<span class="odocwiki_inlinecode"|take~_screenshot>> is usually asynchronous~.
+    <<span class="odocwiki_inlinecode"|animation~_type ev>> decides the type of the animation of page
+    transition in an onchangepage event~.
+
+
+    ~T~O~D~O~: we can avoid the callback function by transforming
+    <<span class="odocwiki_inlinecode"|take~_screenshot>> to a function of type <<span class="odocwiki_inlinecode"|unit ~-~> screenshot ~Lwt~.t>>
+<<div class="odocwiki_module_param_list" | <<span class="odocwiki_param_title" |Parameters :>><<div|
+|@@class="odocwiki_paramstable"@ @class="centertop fifteen code"@@{{{Conf}}}|@@class="centertop"@@:|<<span class="odocwiki_type"|Ot_page_transition.PAGE_TRANSITION_CONF>>|
+>>>>
+
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEscreenshot"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|screenshot>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Conf>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|screenshot>>>> >><<pre id="VALinstall_global_handler" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|install~_global~_handler>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?transition_duration: >>float <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| take_screenshot: >><<span class="ocsforge_color_delimiter"| ( >><<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="client" text="screenshot" | type Ot_page_transition.Make.screenshot >> <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| animation_type: >><<span class="ocsforge_color_delimiter"| ( >><<span class="ocsforge_color_uid"|Eliom_client>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|changepage_event>> <<span class="ocsforge_color_delimiter"| -> >>\\                  <<a_api subproject="client" text="Ot_page_transition.animation" | type Ot_page_transition.animation >><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >>\\  unit>>>>

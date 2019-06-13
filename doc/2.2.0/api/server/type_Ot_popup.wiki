@@ -1,0 +1,8 @@
+<<code language="ocaml" | sig
+  val hcf :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?header:[< Html_types.header_content_fun ] Eliom_content.Html.elt list ->
+    ?footer:[< Html_types.footer_content_fun ] Eliom_content.Html.elt list ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list ->
+    [> `Section ] Eliom_content.Html.elt
+end >>
