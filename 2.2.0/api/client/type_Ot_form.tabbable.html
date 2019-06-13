@@ -1,0 +1,311 @@
+<html><head><title></title><meta charset="utf8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link rel="stylesheet" href="https://ocsigen.org/css/style.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/themes/prism.min.css"/><script type="text/javascript" src="https://ocsigen.org/js/client.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-core.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-ocaml.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-clike.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-reason.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-javascript.min.js">
+//<![CDATA[
+
+//]]>
+</script></head><body class="type_Ot_form.tabbable ocsigen-toolkit"><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href="../.././../../" class="ocsimore_phrasing_link"><img src="../.././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
+</p><p class="logo-subproject">Toolkit</p><div class="mainmenu"><p class="mainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a></p><p class="mainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a></p><p><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a></p><p><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a></p><p><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a></p><p><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a></p><p><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a></p></div><form id="googlesearch" action="https://google.com/search"><input name="q" id="gsearch-box" placeholder="Search using Google"/><label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label><input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/></form><aside class="how-drawer"><input id="how-drawer-toggle" type="checkbox"/><label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label><nav class="how-drawer-content"><ul class="drawermainmenu"><li class="drawermainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a>
+</li><li class="drawermainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-toolkit/" class="ocsimore_phrasing_link">Toolkit</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../html_of_wiki/" class="ocsimore_phrasing_link">html_of_wiki</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../deriving/" class="ocsimore_phrasing_link">deriving</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsimore/" class="ocsimore_phrasing_link">Ocsimore (<em>deprecated</em>)</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../projects" class="ocsimore_phrasing_link">Other projects</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../papers" class="ocsimore_phrasing_link">Research papers</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../credits" class="ocsimore_phrasing_link">Who does Ocsigen?</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../contributing" class="ocsimore_phrasing_link">Contributing</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../blog" class="ocsimore_phrasing_link">Blog</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../install" class="ocsimore_phrasing_link">Installation</a>
+</li><li class="drawermainmenu-page"><a href="https://github.com/ocsigen" class="ocsimore_phrasing_link">Source code</a>
+</li></ul><nav class="how-doctree"><h1>Ocsigen toolkit</h1><h2><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h2><h1>Ocsigen-toolkit server API</h1><h2><a href="../.././api/server/Ot_popup" class="ocsimore_phrasing_link">Ot_popup</a></h2><h2><a href="../.././api/server/Ot_spinner" class="ocsimore_phrasing_link">Ot_spinner</a></h2><h2><a href="../.././api/server/Ot_drawer" class="ocsimore_phrasing_link">Ot_drawer</a></h2><h2><a href="../.././api/server/Ot_carousel" class="ocsimore_phrasing_link">Ot_carousel</a></h2><h2><a href="../.././api/server/Ot_swipe" class="ocsimore_phrasing_link">Ot_swipe</a></h2><h2><a href="../.././api/server/Ot_range" class="ocsimore_phrasing_link">Ot_range</a></h2><h2><a href="../.././api/server/Ot_lib" class="ocsimore_phrasing_link">Ot_lib</a></h2><h2><a href="../.././api/server/Ot_size" class="ocsimore_phrasing_link">Ot_size</a></h2><h2><a href="../.././api/server/Ot_calendar" class="ocsimore_phrasing_link">Ot_calendar</a></h2><h2><a href="../.././api/server/Ot_time_picker" class="ocsimore_phrasing_link">Ot_time_picker</a></h2><h2><a href="../.././api/server/Ot_toggle" class="ocsimore_phrasing_link">Ot_toggle</a></h2><h2><a href="../.././api/server/Ot_picture_uploader" class="ocsimore_phrasing_link">Ot_picture_uploader</a></h2><h2><a href="../.././api/server/Ot_nodeready" class="ocsimore_phrasing_link">Ot_nodeready</a></h2><h2><a href="../.././api/server/Ot_noderesize" class="ocsimore_phrasing_link">Ot_noderesize</a></h2><h2><a href="../.././api/server/Ot_color_picker" class="ocsimore_phrasing_link">Ot_color_picker</a></h2><h1>Index</h1><h2> <span><a href="../.././api/server/index_types">Index of types</a></span></h2><h2> <span><a href="../.././api/server/index_exceptions">Index of exceptions</a></span></h2><h2> <span><a href="../.././api/server/index_values">Index of values</a></span></h2><h2> <span><a href="../.././api/server/index_modules">Index of modules</a></span></h2><h1>Ocsigen-toolkit client API</h1><h2><a href="../.././api/client/Ot_popup" class="ocsimore_phrasing_link">Ot_popup</a></h2><h2><a href="../.././api/client/Ot_spinner" class="ocsimore_phrasing_link">Ot_spinner</a></h2><h2><a href="../.././api/client/Ot_drawer" class="ocsimore_phrasing_link">Ot_drawer</a></h2><h2><a href="../.././api/client/Ot_carousel" class="ocsimore_phrasing_link">Ot_carousel</a></h2><h2><a href="../.././api/client/Ot_swipe" class="ocsimore_phrasing_link">Ot_swipe</a></h2><h2><a href="../.././api/client/Ot_range" class="ocsimore_phrasing_link">Ot_range</a></h2><h2><a href="../.././api/client/Ot_lib" class="ocsimore_phrasing_link">Ot_lib</a></h2><h2><a href="../.././api/client/Ot_size" class="ocsimore_phrasing_link">Ot_size</a></h2><h2><a href="../.././api/client/Ot_calendar" class="ocsimore_phrasing_link">Ot_calendar</a></h2><h2><a href="../.././api/client/Ot_time_picker" class="ocsimore_phrasing_link">Ot_time_picker</a></h2><h2><a href="../.././api/client/Ot_toggle" class="ocsimore_phrasing_link">Ot_toggle</a></h2><h2><a href="../.././api/client/Ot_picture_uploader" class="ocsimore_phrasing_link">Ot_picture_uploader</a></h2><h2><a href="../.././api/client/Ot_nodeready" class="ocsimore_phrasing_link">Ot_nodeready</a></h2><h2><a href="../.././api/client/Ot_noderesize" class="ocsimore_phrasing_link">Ot_noderesize</a></h2><h2><a href="../.././api/client/Ot_color_picker" class="ocsimore_phrasing_link">Ot_color_picker</a></h2><h1>Index</h1><h2> <span><a href="../.././api/client/index_types">Index of types</a></span></h2><h2> <span><a href="../.././api/client/index_values">Index of values</a></span></h2><h2> <span><a href="../.././api/client/index_methods">Index of class methods</a></span></h2><h2> <span><a href="../.././api/client/index_class_types">Index of class types</a></span></h2><h2> <span><a href="../.././api/client/index_modules">Index of modules</a></span></h2><h2> <span><a href="../.././api/client/index_module_types">Index of module types</a></span></h2></nav></nav></aside></div><p class="reasonwarning">Warning: Reason support is experimental.
+We are looking for beta-tester and contributors.
+</p><button id="reason">Switch to </button><div class="twocols"><nav class="leftcol">Version <select class="how-versions" onchange="location = this.value;"><option value="../.././../0.99/api/client/type_Ot_form.tabbable">0.99</option><option value="../.././../1.0/api/client/type_Ot_form.tabbable">1.0</option><option value="../.././../1.1.0/api/client/type_Ot_form.tabbable">1.1.0</option><option value="../.././../2.0/api/client/type_Ot_form.tabbable">2.0</option><option value="../.././../2.2.0/api/client/type_Ot_form.tabbable" selected="selected">2.2.0</option><option value="../.././../dev/api/client/type_Ot_form.tabbable">dev</option></select><nav class="how-doctree"><h1>Ocsigen toolkit</h1><h2><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h2><h1>Ocsigen-toolkit server API</h1><h2><a href="../.././api/server/Ot_popup" class="ocsimore_phrasing_link">Ot_popup</a></h2><h2><a href="../.././api/server/Ot_spinner" class="ocsimore_phrasing_link">Ot_spinner</a></h2><h2><a href="../.././api/server/Ot_drawer" class="ocsimore_phrasing_link">Ot_drawer</a></h2><h2><a href="../.././api/server/Ot_carousel" class="ocsimore_phrasing_link">Ot_carousel</a></h2><h2><a href="../.././api/server/Ot_swipe" class="ocsimore_phrasing_link">Ot_swipe</a></h2><h2><a href="../.././api/server/Ot_range" class="ocsimore_phrasing_link">Ot_range</a></h2><h2><a href="../.././api/server/Ot_lib" class="ocsimore_phrasing_link">Ot_lib</a></h2><h2><a href="../.././api/server/Ot_size" class="ocsimore_phrasing_link">Ot_size</a></h2><h2><a href="../.././api/server/Ot_calendar" class="ocsimore_phrasing_link">Ot_calendar</a></h2><h2><a href="../.././api/server/Ot_time_picker" class="ocsimore_phrasing_link">Ot_time_picker</a></h2><h2><a href="../.././api/server/Ot_toggle" class="ocsimore_phrasing_link">Ot_toggle</a></h2><h2><a href="../.././api/server/Ot_picture_uploader" class="ocsimore_phrasing_link">Ot_picture_uploader</a></h2><h2><a href="../.././api/server/Ot_nodeready" class="ocsimore_phrasing_link">Ot_nodeready</a></h2><h2><a href="../.././api/server/Ot_noderesize" class="ocsimore_phrasing_link">Ot_noderesize</a></h2><h2><a href="../.././api/server/Ot_color_picker" class="ocsimore_phrasing_link">Ot_color_picker</a></h2><h1>Index</h1><h2> <span><a href="../.././api/server/index_types">Index of types</a></span></h2><h2> <span><a href="../.././api/server/index_exceptions">Index of exceptions</a></span></h2><h2> <span><a href="../.././api/server/index_values">Index of values</a></span></h2><h2> <span><a href="../.././api/server/index_modules">Index of modules</a></span></h2><h1>Ocsigen-toolkit client API</h1><h2><a href="../.././api/client/Ot_popup" class="ocsimore_phrasing_link">Ot_popup</a></h2><h2><a href="../.././api/client/Ot_spinner" class="ocsimore_phrasing_link">Ot_spinner</a></h2><h2><a href="../.././api/client/Ot_drawer" class="ocsimore_phrasing_link">Ot_drawer</a></h2><h2><a href="../.././api/client/Ot_carousel" class="ocsimore_phrasing_link">Ot_carousel</a></h2><h2><a href="../.././api/client/Ot_swipe" class="ocsimore_phrasing_link">Ot_swipe</a></h2><h2><a href="../.././api/client/Ot_range" class="ocsimore_phrasing_link">Ot_range</a></h2><h2><a href="../.././api/client/Ot_lib" class="ocsimore_phrasing_link">Ot_lib</a></h2><h2><a href="../.././api/client/Ot_size" class="ocsimore_phrasing_link">Ot_size</a></h2><h2><a href="../.././api/client/Ot_calendar" class="ocsimore_phrasing_link">Ot_calendar</a></h2><h2><a href="../.././api/client/Ot_time_picker" class="ocsimore_phrasing_link">Ot_time_picker</a></h2><h2><a href="../.././api/client/Ot_toggle" class="ocsimore_phrasing_link">Ot_toggle</a></h2><h2><a href="../.././api/client/Ot_picture_uploader" class="ocsimore_phrasing_link">Ot_picture_uploader</a></h2><h2><a href="../.././api/client/Ot_nodeready" class="ocsimore_phrasing_link">Ot_nodeready</a></h2><h2><a href="../.././api/client/Ot_noderesize" class="ocsimore_phrasing_link">Ot_noderesize</a></h2><h2><a href="../.././api/client/Ot_color_picker" class="ocsimore_phrasing_link">Ot_color_picker</a></h2><h1>Index</h1><h2> <span><a href="../.././api/client/index_types">Index of types</a></span></h2><h2> <span><a href="../.././api/client/index_values">Index of values</a></span></h2><h2> <span><a href="../.././api/client/index_methods">Index of class methods</a></span></h2><h2> <span><a href="../.././api/client/index_class_types">Index of class types</a></span></h2><h2> <span><a href="../.././api/client/index_modules">Index of modules</a></span></h2><h2> <span><a href="../.././api/client/index_module_types">Index of module types</a></span></h2></nav></nav><article class="rightcol"><pre class=""><code class="language-ocaml translatable">object ('a)
+  method appendChild :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method attributes :
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Dom.namedNodeMap Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.readonly_prop
+  method blur : unit Js_of_ocaml__.Js.meth
+  method childNodes :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Dom.nodeList Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.prop
+  method classList :
+    Js_of_ocaml.Dom_html.tokenList Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.readonly_prop
+  method className :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method click : unit Js_of_ocaml__.Js.meth
+  method clientHeight : int Js_of_ocaml__.Js.readonly_prop
+  method clientLeft : int Js_of_ocaml__.Js.readonly_prop
+  method clientTop : int Js_of_ocaml__.Js.readonly_prop
+  method clientWidth : int Js_of_ocaml__.Js.readonly_prop
+  method cloneNode :
+    bool Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method compareDocumentPosition :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.DocumentPosition.t Js_of_ocaml__.Js.meth
+  method dir :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method firstChild :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method focus : unit Js_of_ocaml__.Js.meth
+  method getAttribute :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method getAttributeNS :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method getAttributeNode :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method getAttributeNodeNS :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method getBoundingClientRect :
+    Js_of_ocaml.Dom_html.clientRect Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method getClientRects :
+    Js_of_ocaml.Dom_html.clientRectList Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.meth
+  method getElementsByTagName :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.element Js_of_ocaml__.Dom.nodeList Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.meth
+  method hasAttribute :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    bool Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method hasAttributeNS :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    bool Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method hasChildNodes : bool Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method id :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method innerHTML :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method insertBefore :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method lang :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method lastChild :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method lookupNamespaceURI :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method lookupPrefix :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method namespaceURI :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method nextSibling :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method nodeName :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.readonly_prop
+  method nodeType : Js_of_ocaml__.Dom.nodeType Js_of_ocaml__.Js.readonly_prop
+  method nodeValue :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.readonly_prop
+  method offsetHeight : int Js_of_ocaml__.Js.readonly_prop
+  method offsetLeft : int Js_of_ocaml__.Js.readonly_prop
+  method offsetParent :
+    Js_of_ocaml.Dom_html.element Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.readonly_prop
+  method offsetTop : int Js_of_ocaml__.Js.readonly_prop
+  method offsetWidth : int Js_of_ocaml__.Js.readonly_prop
+  method onanimationcancel :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.animationEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onanimationend :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.animationEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onanimationiteration :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.animationEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onanimationstart :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.animationEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onclick :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondblclick :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondrag :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondragend :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondragenter :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondragleave :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondragover :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondragstart :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ondrop :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onkeydown :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.keyboardEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onkeypress :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.keyboardEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onkeyup :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.keyboardEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onmousedown :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onmousemove :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onmouseout :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onmouseover :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onmouseup :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onscroll :
+    ('a Js_of_ocaml__.Js.t, Js_of_ocaml.Dom_html.event Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method outerHTML :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method parentNode :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method previousSibling :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method querySelector :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml.Dom_html.element Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method querySelectorAll :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml.Dom_html.element Js_of_ocaml__.Dom.nodeList
+    Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method removeAttribute :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    unit Js_of_ocaml__.Js.meth
+  method removeAttributeNS :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    unit Js_of_ocaml__.Js.meth
+  method removeAttributeNode :
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method removeChild :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method replaceChild :
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
+  method scrollHeight : int Js_of_ocaml__.Js.prop
+  method scrollIntoView :
+    bool Js_of_ocaml__.Js.t -&gt; unit Js_of_ocaml__.Js.meth
+  method scrollLeft : int Js_of_ocaml__.Js.prop
+  method scrollTop : int Js_of_ocaml__.Js.prop
+  method scrollWidth : int Js_of_ocaml__.Js.prop
+  method setAttribute :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    unit Js_of_ocaml__.Js.meth
+  method setAttributeNS :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t -&gt;
+    unit Js_of_ocaml__.Js.meth
+  method setAttributeNode :
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method setAttributeNodeNS :
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t -&gt;
+    Js_of_ocaml__.Dom.attr Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.meth
+  method style :
+    Js_of_ocaml.Dom_html.cssStyleDeclaration Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.prop
+  method tabIndex : int Js_of_ocaml.Js.prop
+  method tagName :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t
+    Js_of_ocaml__.Js.readonly_prop
+  method textContent :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
+    Js_of_ocaml__.Js.prop
+  method title :
+    Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+end</code></pre></article></div></div></body></html>
