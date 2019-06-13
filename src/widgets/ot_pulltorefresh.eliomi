@@ -6,7 +6,8 @@
 *)
 
 val make
-  :  ?dragThreshold:float
+  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+  -> ?dragThreshold:float
   -> ?moveCount:int
   -> ?pullDownIcon:Html_types.div Eliom_content.Html.D.elt
   -> ?loadingIcon:Html_types.div Eliom_content.Html.D.elt
@@ -28,6 +29,7 @@ val make
   -> [> Html_types.div] Eliom_content.Html.D.elt
 (**
    Creates a pull-to-refresh container from an html element.
+   [?a] is the attribute array of the returned element
    [?dragThreshold] is a threshold. The container will be refreshed if the
    ratio of the drag distance to the screen height is greater than this
    threshold (default 0.3).

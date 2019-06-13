@@ -185,7 +185,7 @@ module Make (Conf : CONF) = struct
     Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
-let make ?(dragThreshold = 0.3) ?(moveCount = 200)
+let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
     ?(pullDownIcon = div ~a:[a_class ["ot-pull-refresh-arrow-icon"]] [])
     ?(loadingIcon = div ~a:[a_class ["ot-pull-refresh-spinner"]] [])
     ?(successIcon = div ~a:[a_class ["ot-pull-refresh-icon-success"]] [])
@@ -246,5 +246,5 @@ let make ?(dragThreshold = 0.3) ?(moveCount = 200)
        in
        Eliom_client.onload onload
         : unit)];
-  let open Eliom_content.Html.F in
-  div ~a:[a_class ["ot-pull-refresh-wrapper"]] [container]
+  let open Eliom_content.Html in
+  F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
