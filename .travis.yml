@@ -10,7 +10,7 @@ install:
 script:
     - how-generate
     - how-redirect "$HOW_LATEST/manual/intro" $HOW_OUT/index.html
-    - how-redirect-manual $HOW_LATEST latest
+    - how-redirect-manual $HOW_LATEST latest clientserver
 
 deploy:
   provider: pages
