@@ -30,10 +30,12 @@
 |<<a_api subproject="server" | module Ot_toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
-|Ot_icons||
 |<<a_api subproject="server" | module Ot_picture_uploader >>||
 |<<a_api subproject="server" | module Ot_nodeready >>||
 |<<a_api subproject="server" | module Ot_noderesize >>||
+|<<a_api subproject="server" | module Ot_color_picker >>|<<div class="odocwiki_info"|~This module implements a color picker~.
+>>
+|
 
 
 

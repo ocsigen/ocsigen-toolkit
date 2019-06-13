@@ -10,7 +10,6 @@
 ==[[client/Ot_calendar|Ot_calendar]]
 ==[[client/Ot_time_picker|Ot_time_picker]]
 ==[[client/Ot_toggle|Ot_toggle]]
-==[[client/Ot_icons|Ot_icons]]
 ==[[client/Ot_picture_uploader|Ot_picture_uploader]]
 ==[[client/Ot_nodeready|Ot_nodeready]]
 ==[[client/Ot_noderesize|Ot_noderesize]]
