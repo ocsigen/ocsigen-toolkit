@@ -153,7 +153,7 @@ module Make (Conf : CONF) = struct
 end]
 
 let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
-    ?(refresh_timeout = 20.) ?(header = default_header) ~content
+    ?(refresh_timeout = 20.) ?(header = [%shared default_header]) ~content
     (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
   let state_s, set_state = Eliom_shared.React.S.create None in
@@ -164,7 +164,8 @@ let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
            let open Eliom_content.Html in
            fun s ->
              F.div ~a:[F.a_class ["ot-pull-refresh-head-container"]]
-             @@ ~%header s]
+             @@ Eliom_shared.Value.local ~%header
+             @@ s]
          state_s
   in
   let container =

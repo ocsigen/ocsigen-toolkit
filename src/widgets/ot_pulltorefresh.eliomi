@@ -22,6 +22,7 @@ val make
               -> ([< Html_types.div_content_fun > `Div] as 'a)
                  Eliom_content.Html.elt
                  list)
+             Eliom_shared.Value.t
   -> content:'a Eliom_content.Html.elt
   -> (unit -> bool Lwt.t) Eliom_client_value.t
   -> [> Html_types.div] Eliom_content.Html.elt
