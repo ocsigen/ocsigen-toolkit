@@ -1,9 +1,19 @@
 [%%shared.start]
 
+type state = Pulling | Ready | Loading | Succeeded | Failed
+
 [%%client
 open Eliom_content.Html]
 
 open Eliom_content.Html.D
+
+let%shared default_header =
+  let open Eliom_content.Html in
+  function
+  | Some Succeeded -> [F.div ~a:[F.a_class ["ot-pull-refresh-icon-success"]] []]
+  | Some Failed -> [F.div ~a:[F.a_class ["ot-pull-refresh-icon-failure"]] []]
+  | Some _ -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
+  | None -> []
 
 [%%client
 open Js_of_ocaml
@@ -12,19 +22,9 @@ module type CONF = sig
   val dragThreshold : float
   val moveCount : int
   val headContainerHeight : unit -> int
-  val pullDownIcon : Html_types.div Eliom_content.Html.D.elt
-  val loadingIcon : Html_types.div Eliom_content.Html.D.elt
-  val successIcon : Html_types.div Eliom_content.Html.D.elt
-  val failureIcon : Html_types.div Eliom_content.Html.D.elt
-  val pullText : Html_types.span Eliom_content.Html.D.elt
   val container : Html_types.div Eliom_content.Html.D.elt
-  val pullDownText : string
-  val releaseText : string
-  val loadingText : string
-  val successText : string
-  val failureText : string
-  val rotateGradually : bool
-  val blockPullIcon : bool
+  val set_state : ?step:React.step -> state option -> unit
+  val timeout : float
   val afterPull : unit -> bool Lwt.t
 end
 
@@ -35,20 +35,8 @@ module Make (Conf : CONF) = struct
   let percentage = ref 0.
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
-  let pullText = To_dom.of_element Conf.pullText
   let container = Conf.container
   let js_container = To_dom.of_element container
-
-  let show =
-    let icon_list =
-      [Conf.pullDownIcon; Conf.loadingIcon; Conf.successIcon; Conf.failureIcon]
-    in
-    fun elt ->
-      icon_list
-      |> List.iter (fun x ->
-             if x == elt
-             then Manip.Class.remove x "ot-pull-refresh-display-none"
-             else Manip.Class.add x "ot-pull-refresh-display-none")
 
   let touchstart_handler ev _ =
     Dom_html.stopPropagation ev;
@@ -58,35 +46,16 @@ module Make (Conf : CONF) = struct
       let touch = ev##.changedTouches##item 0 in
       Js.Optdef.iter touch (fun touch -> dragStart := touch##.clientY);
       Manip.Class.remove container "ot-pull-refresh-transition-on";
-      show Conf.pullDownIcon;
-      if Conf.rotateGradually
-      then Manip.Class.remove Conf.pullDownIcon "ot-pull-refresh-transition-on"
-      else Manip.Class.remove Conf.pullDownIcon "ot-pull-refresh-up");
+      Conf.set_state @@ Some Pulling);
     Lwt.return_unit
 
   let touchmove_handler_ ev =
     Dom.preventDefault ev;
     let translateY = -. !percentage *. float_of_int moveCount in
     joinRefreshFlag := true;
-    (if Conf.rotateGradually
-    then
-      let rotate_deg = int_of_float (-180. *. !percentage /. dragThreshold) in
-      let rotate_deg =
-        if Conf.blockPullIcon
-        then min 180 rotate_deg
-        else min 360 (2 * rotate_deg)
-      in
-      (To_dom.of_element Conf.pullDownIcon)##.style##.transform
-      := Js.string ("rotate(" ^ string_of_int rotate_deg ^ "deg)"));
     if -. !percentage > dragThreshold
-    then (
-      pullText##.textContent := Js.some (Js.string Conf.releaseText);
-      if not Conf.rotateGradually
-      then Manip.Class.add Conf.pullDownIcon "ot-pull-refresh-up")
-    else (
-      pullText##.textContent := Js.some (Js.string Conf.pullDownText);
-      if not Conf.rotateGradually
-      then Manip.Class.remove Conf.pullDownIcon "ot-pull-refresh-up");
+    then Conf.set_state @@ Some Ready
+    else Conf.set_state @@ Some Pulling;
     js_container##.style##.transform
     := Js.string ("translateY(" ^ string_of_float translateY ^ "px)")
 
@@ -111,9 +80,8 @@ module Make (Conf : CONF) = struct
     Lwt.return_unit
 
   let refresh () =
+    Conf.set_state @@ Some Loading;
     Manip.Class.add container "ot-pull-refresh-transition-on";
-    pullText##.textContent := Js.some (Js.string Conf.loadingText);
-    show Conf.loadingIcon;
     js_container##.style##.transform
     := Js.string
          ("translateY("
@@ -121,16 +89,19 @@ module Make (Conf : CONF) = struct
          ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
-        let%lwt b = Conf.afterPull () in
+        let%lwt b =
+          Lwt.pick
+            [ Conf.afterPull ()
+            ; (let%lwt () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
+               Lwt.return_false) ]
+        in
         if b
         then
           (*if page refresh succeeds*)
           ignore
             (Dom_html.window##setTimeout
                (Js.wrap_callback (fun () ->
-                    pullText##.textContent :=
-                      Js.some (Js.string Conf.successText);
-                    show Conf.successIcon;
+                    Conf.set_state @@ Some Succeeded;
                     js_container##.style##.transform
                     := Js.string "translateY(0)";
                     refreshFlag := false))
@@ -139,8 +110,7 @@ module Make (Conf : CONF) = struct
               setTimeout is used to show the animation*)
         else (
           (*if page refresh fails*)
-          pullText##.textContent := Js.some (Js.string Conf.failureText);
-          show Conf.failureIcon;
+          Conf.set_state @@ Some Failed;
           js_container##.style##.transform := Js.string "translateY(0)";
           ignore
             (Dom_html.window##setTimeout
@@ -153,9 +123,6 @@ module Make (Conf : CONF) = struct
     if !joinRefreshFlag
     then (
       Manip.Class.add container "ot-pull-refresh-transition-on";
-      Manip.Class.add Conf.pullDownIcon "ot-pull-refresh-transition-on";
-      (To_dom.of_element Conf.pullDownIcon)##.style##.transform
-      := Js.string "rotate(0deg)";
       js_container##.style##.transform := Js.string "translateY(0)";
       ignore
         (Dom_html.window##setTimeout
@@ -178,7 +145,7 @@ module Make (Conf : CONF) = struct
     Lwt.return_unit
 
   let init () =
-    let open Lwt_js_events in
+    let open Js_of_ocaml_lwt.Lwt_js_events in
     Lwt.async (fun () -> touchstarts js_container touchstart_handler);
     Lwt.async (fun () -> touchmoves js_container touchmove_handler);
     Lwt.async (fun () -> touchends js_container touchend_handler);
@@ -186,58 +153,36 @@ module Make (Conf : CONF) = struct
 end]
 
 let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
-    ?(pullDownIcon = div ~a:[a_class ["ot-pull-refresh-arrow-icon"]] [])
-    ?(loadingIcon = div ~a:[a_class ["ot-pull-refresh-spinner"]] [])
-    ?(successIcon = div ~a:[a_class ["ot-pull-refresh-icon-success"]] [])
-    ?(failureIcon = div ~a:[a_class ["ot-pull-refresh-icon-failure"]] [])
-    ?(pullText = span [])
-    ?(headContainer = div ~a:[a_class ["ot-pull-refresh-head-container"]] [])
-    ?(successText = "The page is refreshed")
-    ?(failureText = "An error has occured")
-    ?(pullDownText = "Pull down to refresh...")
-    ?(releaseText = "Release to refresh...") ?(loadingText = "Loading...")
-    ?(rotateGradually = false) ?(blockPullIcon = true) ?(alreadyAdded = false)
-    ~content (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
+    ?(refresh_timeout = 20.) ?(header = default_header) ~content
+    (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
+  let state_s, set_state = Eliom_shared.React.S.create None in
+  let headContainer =
+    Eliom_content.Html.R.node
+    @@ Eliom_shared.React.S.map
+         [%shared
+           let open Eliom_content.Html in
+           fun s ->
+             F.div ~a:[F.a_class ["ot-pull-refresh-head-container"]]
+             @@ ~%header s]
+         state_s
+  in
   let container =
     div ~a:[a_class ["ot-pull-refresh-container"]] [headContainer; content]
   in
   ignore
     [%client
-      (Manip.Class.add ~%pullDownIcon "ot-pull-refresh-pull-down-icon";
-       if not ~%rotateGradually
-       then Manip.Class.add ~%pullDownIcon "ot-pull-refresh-transition-on";
-       if not ~%alreadyAdded
-       then (
-         let icon_list =
-           [~%pullDownIcon; ~%loadingIcon; ~%successIcon; ~%failureIcon]
-         in
-         List.iter
-           (fun elt -> Manip.Class.add elt "ot-pull-refresh-display-none")
-           icon_list;
-         Manip.appendChildren ~%headContainer icon_list;
-         Manip.appendChild ~%headContainer ~%pullText);
-       let onload () =
+      (let onload () =
          let module Ptr_conf = struct
+           let set_state = ~%set_state
            let dragThreshold = ~%dragThreshold
            let moveCount = ~%moveCount
+           let timeout = ~%refresh_timeout
 
            let headContainerHeight () =
              (To_dom.of_element ~%headContainer)##.scrollHeight
 
-           let pullDownIcon = ~%pullDownIcon
-           let loadingIcon = ~%loadingIcon
-           let successIcon = ~%successIcon
-           let failureIcon = ~%failureIcon
-           let pullText = ~%pullText
            let container = ~%container
-           let pullDownText = ~%pullDownText
-           let releaseText = ~%releaseText
-           let loadingText = ~%loadingText
-           let successText = ~%successText
-           let failureText = ~%failureText
-           let rotateGradually = ~%rotateGradually
-           let blockPullIcon = ~%blockPullIcon
            let afterPull = ~%afterPull
          end
          in
