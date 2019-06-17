@@ -146,11 +146,10 @@ module Make (Conf : CONF) = struct
 
   let init () =
     let open Js_of_ocaml_lwt.Lwt_js_events in
-    let ts = touchstarts js_container touchstart_handler in
-    let tm = touchmoves js_container touchmove_handler in
-    let te = touchends js_container touchend_handler in
-    let tc = touchcancels js_container touchend_handler in
-    [ts; tm; te; tc]
+    Lwt.async (fun () -> touchstarts js_container touchstart_handler);
+    Lwt.async (fun () -> touchmoves js_container touchmove_handler);
+    Lwt.async (fun () -> touchends js_container touchend_handler);
+    Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
 let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
@@ -188,14 +187,7 @@ let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
        end
        in
        let module Ptr = Make (Ptr_conf) in
-       let unlisten = ref (fun () -> ()) in
-       let onload () =
-         let threads = Ptr.init () in
-         unlisten := fun () -> List.iter Lwt.cancel threads
-       in
-       Eliom_client.Page_status.onactive onload;
-       Eliom_client.Page_status.oncached !unlisten;
-       Eliom_client.Page_status.ondead !unlisten
+       Ptr.init ()
         : unit)];
   let open Eliom_content.Html in
   F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
