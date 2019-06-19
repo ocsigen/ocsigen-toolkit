@@ -15,8 +15,7 @@ type state = Pulling | Ready | Loading | Succeeded | Failed
 
 val make
   :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
-  -> ?dragThreshold:float
-  -> ?moveCount:int
+  -> ?dragThreshold:int
   -> ?refresh_timeout:float
   -> ?header:(state option
               -> ([< Html_types.div_content_fun > `Div] as 'a)
@@ -30,15 +29,13 @@ val make
    Creates a pull-to-refresh container from an html element.
    [?a] is the attribute array of the returned element
    [?dragThreshold] is a threshold. The container will be refreshed if the
-   ratio of the drag distance to the screen height is greater than this
-   threshold (default 0.3).
-   [?moveCount] is the maximum vertical translation of the container
-   (default 200).
+   motion distance goes above the specified threshold
+   (default 80px).
    [?refresh_timeout] is the maximum amount of seconds
    to wait for the reload to happen.
    If there is a connection error or some other error,
-   (default 20s)
    this duration is how long to wait for a response.
+   (default 20s)
    [?header] is a function defining what to display in
    the space revealed when pulling the page down, depending on the state of
    the gesture.

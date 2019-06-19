@@ -11,15 +11,13 @@ let%shared default_header =
   let open Eliom_content.Html in
   function
   | Some Loading -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
-  | None -> []
+  | _ -> []
 
 [%%client
 open Js_of_ocaml
 
 module type CONF = sig
-  val dragThreshold : float
-  val moveCount : int
-  val headContainerHeight : unit -> int
+  val dragThreshold : int
   val container : Html_types.div Eliom_content.Html.D.elt
   val set_state : ?step:React.step -> state option -> unit
   val timeout : float
@@ -28,9 +26,8 @@ end
 
 module Make (Conf : CONF) = struct
   let dragThreshold = Conf.dragThreshold
-  let moveCount = min (max 100 Conf.moveCount) 500
   let dragStart = ref (-1)
-  let percentage = ref 0.
+  let distance = ref 0
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
   let container = Conf.container
@@ -49,9 +46,9 @@ module Make (Conf : CONF) = struct
 
   let touchmove_handler_ ev =
     Dom.preventDefault ev;
-    let translateY = -. !percentage *. float_of_int moveCount in
+    let translateY = -.float_of_int !distance in
     joinRefreshFlag := true;
-    if -. !percentage > dragThreshold
+    if - !distance > dragThreshold
     then Conf.set_state @@ Some Ready
     else Conf.set_state @@ Some Pulling;
     js_container##.style##.transform
@@ -67,12 +64,10 @@ module Make (Conf : CONF) = struct
       then (
         let target = ev##.changedTouches##item 0 in
         Js.Optdef.iter target (fun target ->
-            percentage :=
-              float_of_int (!dragStart - target##.clientY)
-              /. float_of_int Dom_html.window##.screen##.height);
+            distance := !dragStart - target##.clientY);
         (*move the container if and only if scrollTop = 0 and
             the page is scrolled down*)
-        if Dom_html.document##.body##.scrollTop = 0 && !percentage < 0.
+        if Dom_html.document##.body##.scrollTop = 0 && !distance < 0
         then touchmove_handler_ ev
         else joinRefreshFlag := false);
     Lwt.return_unit
@@ -81,10 +76,7 @@ module Make (Conf : CONF) = struct
     Conf.set_state @@ Some Loading;
     Manip.Class.add container "ot-pull-refresh-transition-on";
     js_container##.style##.transform
-    := Js.string
-         ("translateY("
-         ^ (string_of_int @@ Conf.headContainerHeight ())
-         ^ "px)");
+    := Js.string ("translateY(" ^ (string_of_int @@ Conf.dragThreshold) ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
         let%lwt b =
@@ -129,18 +121,18 @@ module Make (Conf : CONF) = struct
            500.))
 
   let touchend_handler ev _ =
-    if !percentage < 0. && !dragStart >= 0
+    if !distance < 0 && !dragStart >= 0
     then
       if !refreshFlag
       then Dom.preventDefault ev
       else (
-        if -. !percentage > dragThreshold && !joinRefreshFlag
+        if - !distance > dragThreshold && !joinRefreshFlag
         then refresh ()
         else scroll_back ();
         (*reinitialize paramaters*)
         joinRefreshFlag := false;
         dragStart := -1;
-        percentage := 0.);
+        distance := 0);
     Lwt.return_unit
 
   let init () =
@@ -151,8 +143,8 @@ module Make (Conf : CONF) = struct
     Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
-let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
-    ?(refresh_timeout = 20.) ?(header = [%shared default_header]) ~content
+let make ?(a = []) ?(dragThreshold = 80) ?(refresh_timeout = 20.)
+    ?(header = [%shared default_header]) ~content
     (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
   let state_s, set_state = Eliom_shared.React.S.create None in
@@ -162,7 +154,7 @@ let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
          [%shared
            let open Eliom_content.Html in
            fun s ->
-             F.div ~a:[F.a_class ["ot-pull-refresh-head-container"]]
+             D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
              @@ Eliom_shared.Value.local ~%header
              @@ s]
          state_s
@@ -175,12 +167,7 @@ let make ?(a = []) ?(dragThreshold = 0.3) ?(moveCount = 200)
       (let module Ptr_conf = struct
          let set_state = ~%set_state
          let dragThreshold = ~%dragThreshold
-         let moveCount = ~%moveCount
          let timeout = ~%refresh_timeout
-
-         let headContainerHeight () =
-           (To_dom.of_element ~%headContainer)##.scrollHeight
-
          let container = ~%container
          let afterPull = ~%afterPull
        end
