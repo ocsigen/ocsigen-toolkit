@@ -10,9 +10,7 @@ open Eliom_content.Html.D
 let%shared default_header =
   let open Eliom_content.Html in
   function
-  | Some Succeeded -> [F.div ~a:[F.a_class ["ot-pull-refresh-icon-success"]] []]
-  | Some Failed -> [F.div ~a:[F.a_class ["ot-pull-refresh-icon-failure"]] []]
-  | Some _ -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
+  | Some Loading -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
   | None -> []
 
 [%%client
@@ -119,6 +117,7 @@ module Make (Conf : CONF) = struct
         Lwt.return_unit)
 
   let scroll_back () =
+    Conf.set_state None;
     (*scroll back to top if |percentage| < dragThreshold*)
     if !joinRefreshFlag
     then (
