@@ -28,10 +28,15 @@ module Make (Conf : CONF) = struct
   let dragThreshold = Conf.dragThreshold
   let dragStart = ref (-1)
   let distance = ref 0
+  let top = ref true
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
   let container = Conf.container
   let js_container = To_dom.of_element container
+
+  let scroll_handler () =
+    let _, y = Dom_html.getDocumentScroll () in
+    if y > 0 then top := false else top := true
 
   let touchstart_handler ev _ =
     Dom_html.stopPropagation ev;
@@ -55,6 +60,7 @@ module Make (Conf : CONF) = struct
     := Js.string ("translateY(" ^ string_of_float translateY ^ "px)")
 
   let touchmove_handler ev _ =
+    scroll_handler ();
     Dom_html.stopPropagation ev;
     if !dragStart >= 0
     then
@@ -65,9 +71,9 @@ module Make (Conf : CONF) = struct
         let target = ev##.changedTouches##item 0 in
         Js.Optdef.iter target (fun target ->
             distance := !dragStart - target##.clientY);
-        (*move the container if and only if scrollTop = 0 and
+        (*move the container if and only if at the top of the document and
             the page is scrolled down*)
-        if Dom_html.document##.body##.scrollTop = 0 && !distance < 0
+        if !top && !distance < 0
         then touchmove_handler_ ev
         else joinRefreshFlag := false);
     Lwt.return_unit
@@ -121,7 +127,7 @@ module Make (Conf : CONF) = struct
            500.))
 
   let touchend_handler ev _ =
-    if !distance < 0 && !dragStart >= 0
+    if !top && !distance < 0 && !dragStart >= 0
     then
       if !refreshFlag
       then Dom.preventDefault ev
