@@ -1,0 +1,17 @@
+.ot-pull-refresh-wrapper{
+    overflow: hidden ;
+}
+
+.ot-pull-refresh-head-container {
+    margin-top: -85px;
+    height: 85px;
+    padding: 15px;
+  }
+
+.ot-pull-refresh-container .ot-pull-refresh-display-none {
+    display: none ;
+}
+
+.ot-pull-refresh-transition-on {
+    transition: 1000ms;
+}
