@@ -15,7 +15,8 @@ type state = Pulling | Ready | Loading | Succeeded | Failed
 
 val make
   :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
-  -> ?dragThreshold:int
+  -> ?scale:float
+  -> ?dragThreshold:float
   -> ?refresh_timeout:float
   -> ?header:(state option
               -> ([< Html_types.div_content_fun > `Div] as 'a)
@@ -28,6 +29,10 @@ val make
 (**
    Creates a pull-to-refresh container from an html element.
    [?a] is the attribute array of the returned element
+   [?scale] is the scaling factor of the drag motion.
+   Higher values means the page will follow the motion of the finger
+   more closely.
+   (default 5)
    [?dragThreshold] is a threshold. The container will be refreshed if the
    motion distance goes above the specified threshold
    (default 80px).
