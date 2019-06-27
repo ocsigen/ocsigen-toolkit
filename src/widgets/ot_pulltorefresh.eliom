@@ -154,38 +154,41 @@ module Make (Conf : CONF) = struct
     Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
-let make ?(a = []) ?(scale = 5.) ?(dragThreshold = 80.)
+let make ?(a = []) ?(app_only = true) ?(scale = 5.) ?(dragThreshold = 80.)
     ?(refresh_timeout = 20.) ?(header = [%shared default_header]) ~content
     (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
-  let state_s, set_state = Eliom_shared.React.S.create None in
-  let headContainer =
-    Eliom_content.Html.R.node
-    @@ Eliom_shared.React.S.map
-         [%shared
-           let open Eliom_content.Html in
-           fun s ->
-             D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
-             @@ Eliom_shared.Value.local ~%header
-             @@ s]
-         state_s
-  in
-  let container =
-    div ~a:[a_class ["ot-pull-refresh-container"]] [headContainer; content]
-  in
-  ignore
-    [%client
-      (let module Ptr_conf = struct
-         let set_state = ~%set_state
-         let scale = ~%scale
-         let dragThreshold = ~%dragThreshold
-         let timeout = ~%refresh_timeout
-         let container = ~%container
-         let afterPull = ~%afterPull
-       end
-       in
-       let module Ptr = Make (Ptr_conf) in
-       Ptr.init ()
-        : unit)];
-  let open Eliom_content.Html in
-  F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
+  if app_only && not (Eliom_client.is_client_app ())
+  then content
+  else
+    let state_s, set_state = Eliom_shared.React.S.create None in
+    let headContainer =
+      Eliom_content.Html.R.node
+      @@ Eliom_shared.React.S.map
+           [%shared
+             let open Eliom_content.Html in
+             fun s ->
+               D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
+               @@ Eliom_shared.Value.local ~%header
+               @@ s]
+           state_s
+    in
+    let container =
+      div ~a:[a_class ["ot-pull-refresh-container"]] [headContainer; content]
+    in
+    ignore
+      [%client
+        (let module Ptr_conf = struct
+           let set_state = ~%set_state
+           let scale = ~%scale
+           let dragThreshold = ~%dragThreshold
+           let timeout = ~%refresh_timeout
+           let container = ~%container
+           let afterPull = ~%afterPull
+         end
+         in
+         let module Ptr = Make (Ptr_conf) in
+         Ptr.init ()
+          : unit)];
+    let open Eliom_content.Html in
+    F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]

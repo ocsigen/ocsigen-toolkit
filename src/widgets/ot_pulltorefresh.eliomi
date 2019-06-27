@@ -15,6 +15,7 @@ type state = Pulling | Ready | Loading | Succeeded | Failed
 
 val make
   :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+  -> ?app_only:bool
   -> ?scale:float
   -> ?dragThreshold:float
   -> ?refresh_timeout:float
@@ -25,10 +26,14 @@ val make
              Eliom_shared.Value.t
   -> content:'a Eliom_content.Html.elt
   -> (unit -> bool Lwt.t) Eliom_client_value.t
-  -> [> Html_types.div] Eliom_content.Html.elt
+  -> 'a Eliom_content.Html.elt
 (**
    Creates a pull-to-refresh container from an html element.
    [?a] is the attribute array of the returned element
+   [?app_only] specifies whether to activate the behavior only in the mobile app
+   or also do it in a browser. Useful if you want refreshable contents
+   in your page that should also work inside a mobile browser.
+   (default true)
    [?scale] is the scaling factor of the drag motion.
    Higher values means the page will follow the motion of the finger
    more closely.
