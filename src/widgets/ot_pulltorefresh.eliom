@@ -159,7 +159,7 @@ let make ?(a = []) ?(app_only = true) ?(scale = 5.) ?(dragThreshold = 80.)
     (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
   if app_only && not (Eliom_client.is_client_app ())
-  then content
+  then div ~a [content]
   else
     let state_s, set_state = Eliom_shared.React.S.create None in
     let headContainer =
