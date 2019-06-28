@@ -17,7 +17,8 @@ let%shared default_header =
 open Js_of_ocaml
 
 module type CONF = sig
-  val dragThreshold : int
+  val dragThreshold : float
+  val scale : float
   val container : Html_types.div Eliom_content.Html.D.elt
   val set_state : ?step:React.step -> state option -> unit
   val timeout : float
@@ -27,7 +28,8 @@ end
 module Make (Conf : CONF) = struct
   let dragThreshold = Conf.dragThreshold
   let dragStart = ref (-1)
-  let distance = ref 0
+  let distance = ref 0.
+  let scale = Conf.scale
   let top = ref true
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
@@ -51,9 +53,9 @@ module Make (Conf : CONF) = struct
 
   let touchmove_handler_ ev =
     Dom.preventDefault ev;
-    let translateY = -.float_of_int !distance in
+    let translateY = !distance in
     joinRefreshFlag := true;
-    if - !distance > dragThreshold
+    if !distance > dragThreshold
     then Conf.set_state @@ Some Ready
     else Conf.set_state @@ Some Pulling;
     js_container##.style##.transform
@@ -70,10 +72,12 @@ module Make (Conf : CONF) = struct
       then (
         let target = ev##.changedTouches##item 0 in
         Js.Optdef.iter target (fun target ->
-            distance := !dragStart - target##.clientY);
+            distance :=
+              Float.sqrt (float_of_int (- !dragStart + target##.clientY))
+              *. scale);
         (*move the container if and only if at the top of the document and
             the page is scrolled down*)
-        if !top && !distance < 0
+        if !top && !distance > 0.
         then touchmove_handler_ ev
         else joinRefreshFlag := false);
     Lwt.return_unit
@@ -82,7 +86,8 @@ module Make (Conf : CONF) = struct
     Conf.set_state @@ Some Loading;
     Manip.Class.add container "ot-pull-refresh-transition-on";
     js_container##.style##.transform
-    := Js.string ("translateY(" ^ (string_of_int @@ Conf.dragThreshold) ^ "px)");
+    := Js.string
+         ("translateY(" ^ (string_of_float @@ Conf.dragThreshold) ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
         let%lwt b =
@@ -127,18 +132,18 @@ module Make (Conf : CONF) = struct
            500.))
 
   let touchend_handler ev _ =
-    if !top && !distance < 0 && !dragStart >= 0
+    if !top && !distance > 0. && !dragStart >= 0
     then
       if !refreshFlag
       then Dom.preventDefault ev
       else (
-        if - !distance > dragThreshold && !joinRefreshFlag
+        if !distance > dragThreshold && !joinRefreshFlag
         then refresh ()
         else scroll_back ();
         (*reinitialize paramaters*)
         joinRefreshFlag := false;
         dragStart := -1;
-        distance := 0);
+        distance := 0.);
     Lwt.return_unit
 
   let init () =
@@ -149,37 +154,41 @@ module Make (Conf : CONF) = struct
     Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
-let make ?(a = []) ?(dragThreshold = 80) ?(refresh_timeout = 20.)
-    ?(header = [%shared default_header]) ~content
+let make ?(a = []) ?(app_only = true) ?(scale = 5.) ?(dragThreshold = 80.)
+    ?(refresh_timeout = 20.) ?(header = [%shared default_header]) ~content
     (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
-  let state_s, set_state = Eliom_shared.React.S.create None in
-  let headContainer =
-    Eliom_content.Html.R.node
-    @@ Eliom_shared.React.S.map
-         [%shared
-           let open Eliom_content.Html in
-           fun s ->
-             D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
-             @@ Eliom_shared.Value.local ~%header
-             @@ s]
-         state_s
-  in
-  let container =
-    div ~a:[a_class ["ot-pull-refresh-container"]] [headContainer; content]
-  in
-  ignore
-    [%client
-      (let module Ptr_conf = struct
-         let set_state = ~%set_state
-         let dragThreshold = ~%dragThreshold
-         let timeout = ~%refresh_timeout
-         let container = ~%container
-         let afterPull = ~%afterPull
-       end
-       in
-       let module Ptr = Make (Ptr_conf) in
-       Ptr.init ()
-        : unit)];
-  let open Eliom_content.Html in
-  F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
+  if app_only && not (Eliom_client.is_client_app ())
+  then content
+  else
+    let state_s, set_state = Eliom_shared.React.S.create None in
+    let headContainer =
+      Eliom_content.Html.R.node
+      @@ Eliom_shared.React.S.map
+           [%shared
+             let open Eliom_content.Html in
+             fun s ->
+               D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
+               @@ Eliom_shared.Value.local ~%header
+               @@ s]
+           state_s
+    in
+    let container =
+      div ~a:[a_class ["ot-pull-refresh-container"]] [headContainer; content]
+    in
+    ignore
+      [%client
+        (let module Ptr_conf = struct
+           let set_state = ~%set_state
+           let scale = ~%scale
+           let dragThreshold = ~%dragThreshold
+           let timeout = ~%refresh_timeout
+           let container = ~%container
+           let afterPull = ~%afterPull
+         end
+         in
+         let module Ptr = Make (Ptr_conf) in
+         Ptr.init ()
+          : unit)];
+    let open Eliom_content.Html in
+    F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
