@@ -28,11 +28,14 @@ end
 module Make (Conf : CONF) = struct
   let dragThreshold = Conf.dragThreshold
   let dragStart = ref (-1)
+  let scrollXStart = ref (-1)
   let distance = ref 0.
   let scale = Conf.scale
   let top = ref true
+  let scrollingX = ref false
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
+  let first_move = ref false
   let container = Conf.container
   let js_container = To_dom.of_element container
 
@@ -46,9 +49,11 @@ module Make (Conf : CONF) = struct
     then Dom.preventDefault ev
     else
       let touch = ev##.changedTouches##item 0 in
-      Js.Optdef.iter touch (fun touch -> dragStart := touch##.clientY);
-      Manip.Class.remove container "ot-pull-refresh-transition-on";
-      Conf.set_state @@ Some Pulling);
+      Js.Optdef.iter touch (fun touch ->
+          dragStart := touch##.clientY;
+          scrollXStart := touch##.clientX);
+      first_move := true;
+      Manip.Class.remove container "ot-pull-refresh-transition-on");
     Lwt.return_unit
 
   let touchmove_handler_ ev =
@@ -63,23 +68,28 @@ module Make (Conf : CONF) = struct
 
   let touchmove_handler ev _ =
     scroll_handler ();
-    Dom_html.stopPropagation ev;
-    if !dragStart >= 0
-    then
-      if !refreshFlag
-      then Dom.preventDefault ev
-      else if ev##.touches##.length = 1
-      then (
-        let target = ev##.changedTouches##item 0 in
-        Js.Optdef.iter target (fun target ->
-            distance :=
-              Float.sqrt (float_of_int (- !dragStart + target##.clientY))
-              *. scale);
-        (*move the container if and only if at the top of the document and
+    if not !scrollingX
+    then (
+      Dom_html.stopPropagation ev;
+      if !dragStart >= 0
+      then
+        if !refreshFlag
+        then Dom.preventDefault ev
+        else if ev##.touches##.length = 1
+        then (
+          let target = ev##.changedTouches##item 0 in
+          Js.Optdef.iter target (fun target ->
+              let dY = - !dragStart + target##.clientY in
+              distance := Float.sqrt (float_of_int dY) *. scale;
+              if !first_move
+              then
+                scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
+          (*move the container if and only if at the top of the document and
             the page is scrolled down*)
-        if !top && !distance > 0.
-        then touchmove_handler_ ev
-        else joinRefreshFlag := false);
+          if !top && !distance > 0. && not !scrollingX
+          then touchmove_handler_ ev
+          else joinRefreshFlag := false));
+    first_move := false;
     Lwt.return_unit
 
   let refresh () =
@@ -144,6 +154,8 @@ module Make (Conf : CONF) = struct
         joinRefreshFlag := false;
         dragStart := -1;
         distance := 0.);
+    scrollXStart := -1;
+    scrollingX := false;
     Lwt.return_unit
 
   let init () =
