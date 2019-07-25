@@ -35,6 +35,7 @@ module Make (Conf : CONF) = struct
   let scrollingX = ref false
   let joinRefreshFlag = ref false
   let refreshFlag = ref false
+  let first_move = ref false
   let container = Conf.container
   let js_container = To_dom.of_element container
 
@@ -51,6 +52,7 @@ module Make (Conf : CONF) = struct
       Js.Optdef.iter touch (fun touch ->
           dragStart := touch##.clientY;
           scrollXStart := touch##.clientX);
+      first_move := true;
       Manip.Class.remove container "ot-pull-refresh-transition-on");
     Lwt.return_unit
 
@@ -66,7 +68,7 @@ module Make (Conf : CONF) = struct
 
   let touchmove_handler ev _ =
     scroll_handler ();
-    if%lwt Lwt.return (not !scrollingX)
+    if not !scrollingX
     then (
       Dom_html.stopPropagation ev;
       if !dragStart >= 0
@@ -79,13 +81,16 @@ module Make (Conf : CONF) = struct
           Js.Optdef.iter target (fun target ->
               let dY = - !dragStart + target##.clientY in
               distance := Float.sqrt (float_of_int dY) *. scale;
-              scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
+              if !first_move
+              then
+                scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
           (*move the container if and only if at the top of the document and
             the page is scrolled down*)
-          if !top && !distance > 0.
+          if !top && !distance > 0. && not !scrollingX
           then touchmove_handler_ ev
-          else joinRefreshFlag := false);
-      Lwt.return_unit)
+          else joinRefreshFlag := false));
+    first_move := false;
+    Lwt.return_unit
 
   let refresh () =
     Conf.set_state @@ Some Loading;
