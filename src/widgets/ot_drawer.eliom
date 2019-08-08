@@ -236,6 +236,10 @@ let%shared drawer
                let%lwt () = Lwt_js_events.transitionend dr in
                Manip.Class.remove ~%bckgrnd "ot-swiping";
                Lwt.return_unit);
+           | `Abort ->
+             (Js.Unsafe.coerce (dr##.style))##.transform := Js.string "";
+             (Js.Unsafe.coerce (dr##.style))##.webkitTransform := Js.string "";
+             Manip.Class.remove ~%bckgrnd "ot-swiping"
           );
           Lwt.return_unit
         end
@@ -296,6 +300,11 @@ let%shared drawer
         || (~%position = `Bottom && deltaY > 0.3 *. float width)
         || (~%position = `Left && deltaX < -0.3 *. float width)
         then perform_animation `Close
+        else if (~%position = `Top && deltaY >= 0.)
+             || (~%position = `Right && deltaX <= 0.)
+             || (~%position = `Bottom && deltaY <= 0.)
+             || (~%position = `Left && deltaX >= 0.)
+        then perform_animation `Abort
         else perform_animation `Open
       end
       else begin
