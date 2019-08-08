@@ -132,12 +132,9 @@ let%shared drawer
        ~%reset_scroll_pos ();
        add_class ~%bckgrnd "closing";
        Lwt.cancel !(~%touch_thread);
-       Lwt_js_events.async (fun () ->
-         let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-         remove_class ~%bckgrnd "closing";
-         Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
-         Lwt.return_unit)
-     : unit -> unit)]
+       remove_class ~%bckgrnd "closing";
+       Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
+       : unit -> unit)]
   in
   let close = wrap_close close in
 
