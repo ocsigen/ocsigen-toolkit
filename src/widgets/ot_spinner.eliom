@@ -50,7 +50,7 @@ let%shared set_default_fail f = default_fail_ref :=
     (f : exn -> [< Html_types.div_content ] Eliom_content.Html.elt list
      :> exn -> Html_types.div_content Eliom_content.Html.elt list)
 
-let%server with_spinner ?(a = []) ?fail thread =
+let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in
   let fail =
     ((match fail with
@@ -116,7 +116,7 @@ module Make(A : sig
     val return : 'a -> 'a t
   end) = struct
 
-  let with_spinner ?(a = []) ?fail thread =
+  let with_spinner ?(a = []) ?spinner ?fail thread =
     let a = (a :> Html_types.div_attrib attrib list) in
     let fail =
       match fail with
@@ -128,7 +128,11 @@ module Make(A : sig
     | Lwt.Return v -> A.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
     | Lwt.Sleep ->
       inc_active_spinners ();
-      let d = D.div ~a:(a_class [ "ot-spinner" ; cl_spinner ; cl_spinning ] :: a) []
+      let cl = [ "ot-spinner" ] in
+      let cl = if spinner = None then cl_spinner :: cl_spinning :: cl else cl in
+      let d =
+        D.div ~a:(a_class cl :: a)
+          (match spinner with None -> [] | Some s -> s)
       in
       Lwt.async
         (fun () ->

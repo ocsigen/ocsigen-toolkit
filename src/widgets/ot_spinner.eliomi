@@ -26,7 +26,6 @@
 (** On client side, [with_spinner th] returns immediately a spinner
     while Lwt thread [th] is not finished, that will automatically
     be replaced by the result of [th] when finished.
-    It has class "spinning" while the spinner is present.
 
     On server side, it will wait for [th] to be finished before
     returning its result (and never display a spinner).
@@ -36,9 +35,15 @@
 
     Function [fail] will be used to display block in case an exception is
     raised.
+
+    Use optional argument [spinner] on client side to customize the spinner.
+    By default it is a [div] element with classes
+    [ot-icon-spinner] and [ot-icon-animation-spinning].
+    (see default stylesheet).
  *)
 val with_spinner :
   ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+  ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
   ?fail:(exn ->
          [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t) ->
   [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
@@ -51,6 +56,7 @@ val with_spinner :
     before sending the page). *)
 val with_spinner_no_lwt :
   ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+  ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
   ?fail:(exn ->
          [< Html_types.div_content ] Eliom_content.Html.elt list) ->
   [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
