@@ -166,6 +166,8 @@ let%shared make
       if vertical then d2'##.offsetHeight else d2'##.offsetWidth
     in
     let comp_nb_visible_elements () =
+      (* Number of fully visible pages *)
+      (* Returns at least 1 *)
       (* We suppose that all elements have the same width *)
       let width_element = width_element () in
       if width_element = 0
@@ -175,7 +177,9 @@ let%shared make
           if vertical then d##.offsetHeight else d##.offsetWidth
         in
         (* +1 below is to avoid rounding error observed on Chrome for MacOS: *)
-        truncate ((float (width_carousel + 1)) /. (float width_element))
+        (* We consider that 1 element is visible when less than 1 is visible
+           (for example if we want margins between elements) *)
+        max 1 (truncate ((float (width_carousel + 1)) /. (float width_element)))
     in
     Lwt.async (fun () ->
       let%lwt () = Ot_nodeready.nodeready d2' in
