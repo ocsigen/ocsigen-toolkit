@@ -1,5 +1,6 @@
 [%%client.start]
 open Js_of_ocaml
+open Js_of_ocaml_lwt
 open Eliom_content
 open Html
 open Html.D

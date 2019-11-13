@@ -23,6 +23,7 @@
 [%%client.start]
 
 open Js_of_ocaml
+open Js_of_ocaml_lwt
 
 
 (* size and orientation *)

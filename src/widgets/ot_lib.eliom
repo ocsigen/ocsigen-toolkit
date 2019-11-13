@@ -20,6 +20,7 @@
  *)
 
 open%client Js_of_ocaml
+open%client Js_of_ocaml_lwt
 
 
 let%client onloads handler =
@@ -65,7 +66,10 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
       in
       loop ()
     end
-    else Lwt_js_events.seq_loop window_scroll ?use_capture () handler
+    else
+      Lwt_js_events.seq_loop
+        (Lwt_js_events.make_event Dom_html.Event.scroll) ?use_capture
+        Dom_html.window handler
   );
   Lwt.finalize
     (fun () -> fst @@ Lwt.wait ())

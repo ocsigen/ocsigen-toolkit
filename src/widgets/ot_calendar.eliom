@@ -22,6 +22,7 @@
 
 open Eliom_content.Html
 open Js_of_ocaml
+open%client Js_of_ocaml_lwt
 
 module A = CalendarLib.Date
 

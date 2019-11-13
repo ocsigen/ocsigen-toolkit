@@ -22,6 +22,7 @@
 open%shared Eliom_content.Html
 open%shared Eliom_content.Html.F
 open%shared Js_of_ocaml
+open%client Js_of_ocaml_lwt
 
 [%%client
 type status =

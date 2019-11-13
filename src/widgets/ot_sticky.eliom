@@ -2,6 +2,7 @@
 open Eliom_content.Html
 open Html_types
 open Js_of_ocaml
+open Js_of_ocaml_lwt
 
 
 (* This is about the real "position: sticky" *)

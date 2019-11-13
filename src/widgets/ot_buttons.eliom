@@ -2,7 +2,7 @@
 
 open Eliom_content.Html
 open Eliom_content.Html.F
-
+open%client Js_of_ocaml_lwt
 
 let%shared dropdown ?(a = []) ~menu content =
   let dropdown = D.div ~a:(a_class ["ot-dropdown"] :: a)

@@ -23,6 +23,7 @@
 open Eliom_shared.React.S.Infix
 open Eliom_content.Html
 open Js_of_ocaml
+open%client Js_of_ocaml_lwt
 
 type polar = int * int
 
