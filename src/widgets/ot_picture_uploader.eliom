@@ -424,7 +424,7 @@ let%server mk_service name arg_deriver =
           Eliom_parameter.(
             ocaml "service_arg" arg_deriver **
             ocaml "cropping"
-              [%derive.json: (float * float * float * float) option ]
+              [%json: (float * float * float * float) option ]
             ** file "f")))
     ()
 
