@@ -87,7 +87,7 @@ let%client noderesize_aux reset sensor f =
       (Dom.handler (fun _ ->
          if not !throttle then begin
            throttle := true ;
-           ignore @@ Dom_html.window##requestAnimationFrame
+           Dom_html._requestAnimationFrame
              (Js.wrap_callback @@ fun _ ->
               let w' = element##.offsetWidth in
               let h' = element##.offsetHeight in
