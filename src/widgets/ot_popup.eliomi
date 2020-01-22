@@ -56,8 +56,6 @@ val hcf :
     [gen_content] is a function taking the function closing the popup as
     parameter, and returning the popup content.
 
-    For [ios_scroll_pos_fix] see [Ot_drawer.drawer].
-
     If [close_on_background_click] (default: false) is true then clicking on the
     background of the popup closes it.
 
