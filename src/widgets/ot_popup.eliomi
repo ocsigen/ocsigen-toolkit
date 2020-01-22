@@ -40,9 +40,13 @@ val hcf :
 
 [%%client.start]
 
-(** [ popup ?a ?close_button ?confirmation_onclose ?onclose gen_content ]
+(** [ popup ?a ?enable_scrolling_hack
+       ?close_button ?confirmation_onclose ?onclose gen_content ]
     Display a modal popup.
     Returns the popup container, in case you need it.
+
+    [enable_scrolling_hack] (default: [true]) toggle the hack setting
+    popup background (body) to [fixed] when popups open
 
     Use [close_button] if you want to add a button to close the popup.
 
@@ -64,6 +68,7 @@ val hcf :
 *)
 val popup :
   ?a:[< div_attrib ] attrib list
+  -> ?enable_scrolling_hack:bool
   -> ?close_button:(button_content elt list)
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
   -> ?onclose:(unit -> unit Lwt.t)
