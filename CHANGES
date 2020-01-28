@@ -1,3 +1,7 @@
+===== 2.5.0 (2020-01-28) =====
+* ot_popup : Add parameter to toggle scroll hack
+* Compatibility with Js_of_ocaml 3.5
+
 ===== 2.4.1 (2019-08-16) =====
 * compatibility with Js_of_ocaml 3.5
 * carousel: make it possible to use it when less than 1 page is visible
