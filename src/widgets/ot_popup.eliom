@@ -33,6 +33,7 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
 
 let%client popup
     ?(a = [])
+    ?(enable_scrolling_hack=true)
     ?close_button
     ?confirmation_onclose
     ?(onclose = fun () -> Lwt.return_unit)
@@ -63,15 +64,18 @@ let%client popup
   let scroll_pos = ref (Js.Unsafe.coerce Dom_html.window)##.pageYOffset in
   let stop, stop_thread = React.E.create () in
   Eliom_client.Page_status.onactive ~stop (fun () ->
-    html_ManipClass_add "ot-with-popup";
-    Dom_html.document##.body##.style##.top :=
-      Js.string (Printf.sprintf "%dpx" (- !scroll_pos))
+    if enable_scrolling_hack then (
+      html_ManipClass_add "ot-with-popup";
+      Dom_html.document##.body##.style##.top :=
+        Js.string (Printf.sprintf "%dpx" (- !scroll_pos)))
   );
 
   let reset () =
-    html_ManipClass_remove "ot-with-popup";
-    Dom_html.document##.body##.style##.top := Js.string "";
-    Dom_html.window##scroll 0 !scroll_pos
+    if enable_scrolling_hack then (
+      html_ManipClass_remove "ot-with-popup";
+      Dom_html.document##.body##.style##.top := Js.string "";
+      Dom_html.window##scroll 0 !scroll_pos
+    )
   in
 
   let do_close () =
