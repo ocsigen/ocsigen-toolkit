@@ -106,3 +106,10 @@ val confirm :
   -> ([< button_content_fun ] as 'a) elt list
   -> 'a elt list
   -> bool Lwt.t
+
+
+(** Allows to fix the body manually (see [?enable_scrolling_hack] above) *)
+val enable_page_scroll : unit -> unit
+
+(** Disable body scrolling hack *)
+val disable_page_scroll : unit -> unit
