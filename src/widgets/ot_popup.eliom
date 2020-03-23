@@ -31,6 +31,40 @@ let%shared hcf ?(a=[]) ?(header=[]) ?(footer=[]) content =
     ; div ~a:[ a_class ["ot-hcf-content"] ] content
     ; F.footer ~a:[ a_class ["ot-hcf-footer"] ] footer ]
 
+let%client disable_page_scroll, enable_page_scroll =
+  let scroll_pos = ref None in
+  let html () = Js.Opt.to_option @@
+    Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
+      Of_dom.of_html
+  in
+  let html_ManipClass_add html cl = match html with
+    | Some html -> Manip.Class.add html cl
+    | None -> ()
+  in
+  let html_ManipClass_remove html cl = match html with
+    | Some html -> Manip.Class.remove html cl
+    | None -> ()
+  in
+  ((fun () ->
+    if !scroll_pos = None
+    then begin
+      let pos = (Js.Unsafe.coerce Dom_html.window)##.pageYOffset in
+      scroll_pos := Some pos;
+      html_ManipClass_add (html ()) "ot-with-popup";
+      Dom_html.document##.body##.style##.top :=
+        Js.string (Printf.sprintf "%dpx" (- pos))
+    end),
+   (fun () ->
+      match !scroll_pos with
+      | None -> ()
+      | Some pos ->
+        html_ManipClass_remove (html ()) "ot-with-popup";
+        Dom_html.document##.body##.style##.top := Js.string "";
+        Dom_html.window##scroll 0 pos;
+        scroll_pos := None
+   ))
+
+
 let%client popup
     ?(a = [])
     ?(enable_scrolling_hack=true)
@@ -46,36 +80,12 @@ let%client popup
     (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
   in
   let popup = ref None in
-
-  let html = Js.Opt.to_option @@
-    Js.Opt.map (Dom_html.CoerceTo.html Dom_html.document##.documentElement)
-      Of_dom.of_html
-  in
-  let html_ManipClass_add cl = match html with
-    | Some html -> Manip.Class.add html cl
-    | None -> ()
-  in
-  let html_ManipClass_remove cl = match html with
-    | Some html -> Manip.Class.remove html cl
-    | None -> ()
-  in
-
-  (* Hack to prevent body scrolling behind the popup on mobile devices: *)
-  let scroll_pos = ref (Js.Unsafe.coerce Dom_html.window)##.pageYOffset in
   let stop, stop_thread = React.E.create () in
   Eliom_client.Page_status.onactive ~stop (fun () ->
-    if enable_scrolling_hack then (
-      html_ManipClass_add "ot-with-popup";
-      Dom_html.document##.body##.style##.top :=
-        Js.string (Printf.sprintf "%dpx" (- !scroll_pos)))
-  );
+    if enable_scrolling_hack then disable_page_scroll ());
 
   let reset () =
-    if enable_scrolling_hack then (
-      html_ManipClass_remove "ot-with-popup";
-      Dom_html.document##.body##.style##.top := Js.string "";
-      Dom_html.window##scroll 0 !scroll_pos
-    )
+    if enable_scrolling_hack then enable_page_scroll ()
   in
 
   let do_close () =
