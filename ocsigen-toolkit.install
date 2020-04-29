@@ -11,4 +11,5 @@ share: [
   "css/ot_page_transition.css"  {"css/ot_page_transition.css"}
   "css/ot_color_picker.css"     {"css/ot_color_picker.css"}
   "css/ot_pull_to_refresh.css"  {"css/ot_pull_to_refresh.css"}
+  "css/ot_tongue.css"           {"css/ot_tongue.css"}
 ]
