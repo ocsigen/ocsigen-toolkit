@@ -308,10 +308,9 @@ let%client bind side stops init handle update set_before_signal
     Lwt.pick [a; b; c]
   in
   Lwt.async (fun () -> touchstarts handle' ontouchstart);
-  ignore
-    (Option.map
-       (fun update -> React.E.map (fun stop -> set 0.0 (stop, true)) update)
-       update)
+  match update with
+  | Some update -> ignore (React.E.map (fun stop -> set 0.0 (stop, true)) update)
+  | None -> ()
 
 let%shared tongue ?(a = []) ?(side = `Bottom)
     ?(stops : stop list =
