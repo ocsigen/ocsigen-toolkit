@@ -164,7 +164,7 @@ let%client closest_stop ~speed ~maxsize size stops =
         else if px <= maxsize
         then d, px, (stop, true), interval_info
         else abs (size - maxsize), maxsize, (`Px maxsize, true), `Point)
-      (Int.max_int, 0, (`Px 0, true), `Point)
+      (max_int, 0, (`Px 0, true), `Point)
       stops
   with
   | _, px, _, `Start when size >= px -> `Px size, false
