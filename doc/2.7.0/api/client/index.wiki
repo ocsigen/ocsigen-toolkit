@@ -15,6 +15,7 @@
 >>
 |
 |<<a_api subproject="client" | module Ot_carousel >>||
+|<<a_api subproject="client" | module Ot_tongue >>||
 |<<a_api subproject="client" | module Ot_swipe >>||
 |<<a_api subproject="client" | module Ot_range >>|<<div class="odocwiki_info"|~Range selection widget
 >>
