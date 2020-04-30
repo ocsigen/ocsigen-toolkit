@@ -3,6 +3,7 @@
 ==[[client/Ot_spinner|Ot_spinner]]
 ==[[client/Ot_drawer|Ot_drawer]]
 ==[[client/Ot_carousel|Ot_carousel]]
+==[[client/Ot_tongue|Ot_tongue]]
 ==[[client/Ot_swipe|Ot_swipe]]
 ==[[client/Ot_range|Ot_range]]
 ==[[client/Ot_lib|Ot_lib]]
