@@ -65,6 +65,9 @@
 |
 |@@ @style="tet-align: left;"@@\\D|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="detach"| value Ot_noderesize.detach >> ~[<<a_api subproject="client" | module Ot_noderesize >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="disable_page_scroll"| value Ot_popup.disable_page_scroll >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Disable body scrolling hack
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display"| value Ot_tip.display >> ~[<<a_api subproject="client" | module Ot_tip >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display"| value Ot_style.display >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display'"| value Ot_style.display' >> ~[<<a_api subproject="client" | module Ot_style >>~]||
@@ -80,6 +83,10 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="dropdown"| value Ot_buttons.dropdown >> ~[<<a_api subproject="client" | module Ot_buttons >>~]||
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="enable_page_scroll"| value Ot_popup.enable_page_scroll >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Allows to fix the body manually ~(see <<span class="odocwiki_inlinecode"|~?enable~_scrolling~_hack>> above~)
+>>
+|
 |@@ @style="tet-align: left;"@@\\F|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="float_of_px"| value Ot_style.float_of_px >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@ @style="tet-align: left;"@@\\G|
@@ -143,6 +150,9 @@
     with the text <<span class="odocwiki_inlinecode"|txt~_up>> and <<span class="odocwiki_inlinecode"|txt~_down>>~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_pulltorefresh.make >> ~[<<a_api subproject="client" | module Ot_pulltorefresh >>~]|<<div class="odocwiki_info"|~Creates a pull~-to~-refresh container from an html element~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="make"| value Ot_color_picker.make >> ~[<<a_api subproject="client" | module Ot_color_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~(~)>> produces a color picker~.
 >>
 |
@@ -202,7 +212,8 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="parse_px"| value Ot_style.parse_px >> ~[<<a_api subproject="client" | module Ot_style >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="popup"| value Ot_popup.popup >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| popup ~?a ~?close~_button ~?confirmation~_onclose ~?onclose gen~_content >>
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="popup"| value Ot_popup.popup >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| popup ~?a ~?enable~_scrolling~_hack
+       ~?close~_button ~?confirmation~_onclose ~?onclose gen~_content >>
     ~Display a modal popup~.
 >>
 |
@@ -265,6 +276,10 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="supports_position_sticky"| value Ot_sticky.supports_position_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]||
 |@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="tongue"| value Ot_tongue.tongue >> ~[<<a_api subproject="client" | module Ot_tongue >>~]|<<div class="odocwiki_info"|~A tongue is an expandable panel that can appear from a side of the screen
+   ~(usually top or bottom~)~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="top"| value Ot_style.top >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@ @style="tet-align: left;"@@\\U|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="update_width_height"| value Ot_size.update_width_height >> ~[<<a_api subproject="client" | module Ot_size >>~]||

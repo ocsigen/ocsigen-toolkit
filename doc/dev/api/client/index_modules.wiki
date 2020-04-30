@@ -31,11 +31,15 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_popup"| module Ot_popup >> |<<div class="odocwiki_info"|~Popup widget
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_pulltorefresh"| module Ot_pulltorefresh >> |<<div class="odocwiki_info"|~Pull to refresh
+    ~This widget can handle any element that needs to be refreshed
+    after being pulled down~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_range"| module Ot_range >> |<<div class="odocwiki_info"|~Range selection widget
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_size"| module Ot_size >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_social_meta"| module Ot_social_meta >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_spinner"| module Ot_spinner >> |<<div class="odocwiki_info"|~Spinner widget
 >>
 |
@@ -51,4 +55,5 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_toggle"| module Ot_toggle >> |<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_tongue"| module Ot_tongue >> ||
 \\

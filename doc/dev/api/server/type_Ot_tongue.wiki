@@ -1,0 +1,24 @@
+<<code language="ocaml" | sig
+  type simple_stop = [ `Full_content | `Percent of int | `Px of int ]
+  type stop =
+      [ `Full_content
+      | `Interval of Ot_tongue.simple_stop * Ot_tongue.simple_stop
+      | `Percent of int
+      | `Px of int ]
+  type tongue = {
+    elt : Html_types.div Eliom_content.Html.D.elt;
+    stop_signal_before : Ot_tongue.simple_stop React.S.t Eliom_client_value.t;
+    stop_signal_after : Ot_tongue.simple_stop React.S.t Eliom_client_value.t;
+    px_signal_before : int React.S.t Eliom_client_value.t;
+    px_signal_after : int React.S.t Eliom_client_value.t;
+  }
+  val tongue :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?side:[ `Bottom | `Left | `Right | `Top ] ->
+    ?stops:Ot_tongue.stop list ->
+    ?init:Ot_tongue.simple_stop ->
+    ?handle:[> `Div ] Eliom_content.Html.elt ->
+    ?update:Ot_tongue.simple_stop React.event Eliom_client_value.t ->
+    [< Html_types.div_content_fun ] Eliom_content.Html.elt list ->
+    Ot_tongue.tongue
+end >>

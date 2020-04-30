@@ -46,7 +46,6 @@
 
 
 * <<a_api subproject="server" text="Index of types" | index types >>
-* <<a_api subproject="server" text="Index of exceptions" | index exceptions >>
 * <<a_api subproject="server" text="Index of values" | index values >>
 * <<a_api subproject="server" text="Index of modules" | index modules >>
 

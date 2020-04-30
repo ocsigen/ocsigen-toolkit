@@ -13,15 +13,6 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="dropdown"| value Ot_buttons.dropdown >> ~[<<a_api subproject="server" | module Ot_buttons >>~]||
-|@@ @style="tet-align: left;"@@\\E|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="extract"| value Ot_social_meta.extract >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|extract ~?fallback ~?tbl docs>>~:
-    ~Extract social meta tags from docs~, add them in <<span class="odocwiki_inlinecode"|tbl>> and return <<span class="odocwiki_inlinecode"|tbl>>~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="extract_from_string"| value Ot_social_meta.extract_from_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]|<<div class="odocwiki_info"|~Same as <<span class="odocwiki_inlinecode"|extract>>~,
-    but with a <<span class="odocwiki_inlinecode"|string>> instead of a <<span class="odocwiki_inlinecode"|~Nethtml~.document list>>
->>
-|
 |@@ @style="tet-align: left;"@@\\H|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="hcf"| value Ot_popup.hcf >> ~[<<a_api subproject="server" | module Ot_popup >>~]|<<div class="odocwiki_info"|~Section with header~, content and footer~.
 >>
@@ -46,6 +37,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_range.make >> ~[<<a_api subproject="server" | module Ot_range >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~?txt~_up ~?txt~_down ~~f ~~lb ub>> produces a widget for picking
     one of the values in <<span class="odocwiki_inlinecode"|~[lb~, ub~)>> via "up" and "down" buttons marked
     with the text <<span class="odocwiki_inlinecode"|txt~_up>> and <<span class="odocwiki_inlinecode"|txt~_down>>~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_pulltorefresh.make >> ~[<<a_api subproject="server" | module Ot_pulltorefresh >>~]|<<div class="odocwiki_info"|~Creates a pull~-to~-refresh container from an html element~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="make"| value Ot_color_picker.make >> ~[<<a_api subproject="server" | module Ot_color_picker >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|make ~(~)>> produces a color picker~.
@@ -79,8 +73,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="next"| value Ot_carousel.next >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Button to go to the next page ~(or more pages if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
 >>
 |
-|@@ @style="tet-align: left;"@@\\O|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="of_string"| value Ot_social_meta.of_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
 |@@ @style="tet-align: left;"@@\\P|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="preview"| value Ot_picture_uploader.preview >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a img element with no src~, no alt and <<span class="odocwiki_inlinecode"|ot~-pup~-preview>> class~.
 >>
@@ -97,7 +89,10 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\T|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="to_string"| value Ot_social_meta.to_string >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="tongue"| value Ot_tongue.tongue >> ~[<<a_api subproject="server" | module Ot_tongue >>~]|<<div class="odocwiki_info"|~A tongue is an expandable panel that can appear from a side of the screen
+   ~(usually top or bottom~)~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\W|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="wheel"| value Ot_carousel.wheel >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Carousel with ~3~D effect~.
 >>

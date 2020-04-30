@@ -1,0 +1,43 @@
+=Module <<a_api_type subproject="server" | module Ot_pulltorefresh >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_pulltorefresh>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Ot_pulltorefresh >><<span class="ocsforge_color_keyword"|end>>>>~Pull to refresh
+    ~This widget can handle any element that needs to be refreshed
+    after being pulled down~.
+
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEstate"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|state>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="odocwiki_variants"|<<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|Pulling>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|Ready>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|Loading>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|Succeeded>>>>>><<span class="odocwiki_variant"|<<span class="odocwiki_variant_constr"|<<span class="ocsforge_color_keyword"| ~|>> <<span class="ocsforge_color_uid"|Failed>>>>>>>>>><<div class="odocwiki_info"|~Represents the state of the gesture behavior~.
+ `~Pulling` happens while the motion hasn~'t reached the threshold~.
+ `~Ready` happens while releasing the fingers will trigger the event~.
+ `~Succeeded` happens for a short time after a sucessfull event~.
+ `~Failed` happens for a short time after a failed event~.
+>>
+<<pre id="VALmake" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|make>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?a: >>[< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_attrib>> > `Class ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|attrib>> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?app_only: >>bool <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?scale: >>float <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?dragThreshold: >>float <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?refresh_timeout: >>float <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?header: >><<span class="ocsforge_color_delimiter"| ( >><<a_api subproject="server" text="state" | type Ot_pulltorefresh.state >> option <<span class="ocsforge_color_delimiter"| -> >>\\           <<span class="ocsforge_color_delimiter"| ( >>[< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content_fun>> > `Div ] as 'a<<span class="ocsforge_color_delimiter"| ) >>\\           <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> list<<span class="ocsforge_color_delimiter"| ) >>\\          <<span class="ocsforge_color_uid"|Eliom_shared>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| content: >>'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> bool <<span class="ocsforge_color_uid"|Lwt>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>><<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >> 'a <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>>>>>><<div class="odocwiki_info"|~Creates a pull~-to~-refresh container from an html element~.
+   <<span class="odocwiki_inlinecode"|~?a>> is the attribute array of the returned element
+   <<span class="odocwiki_inlinecode"|~?app~_only>> specifies whether to activate the behavior only in the mobile app
+   or also do it in a browser~. ~Useful if you want refreshable contents
+   in your page that should also work inside a mobile browser~.
+   ~(default true~)
+   <<span class="odocwiki_inlinecode"|~?scale>> is the scaling factor of the drag motion~.
+   ~Higher values means the page will follow the motion of the finger
+   more closely~.
+   ~(default ~5~)
+   <<span class="odocwiki_inlinecode"|~?drag~Threshold>> is a threshold~. ~The container will be refreshed if the
+   motion distance goes above the specified threshold
+   ~(default ~8~0px~)~.
+   <<span class="odocwiki_inlinecode"|~?refresh~_timeout>> is the maximum amount of seconds
+   to wait for the reload to happen~.
+   ~If there is a connection error or some other error~,
+   this duration is how long to wait for a response~.
+   ~(default ~2~0s~)
+   <<span class="odocwiki_inlinecode"|~?header>> is a function defining what to display in
+   the space revealed when pulling the page down~, depending on the state of
+   the gesture~.
+   ~I~M~P~O~R~T~A~N~T ~N~O~T~E~: ~Because of the way this module is implemented~,
+   that space needs a fixed height~.
+   ~If you want to give a custom display function~, you also need to
+   re~-style the class `ot~-pull~-refresh~-head~-container`
+   to override its height and top~-margin~.
+   ~(default displays a spinner until success or failure~)
+   <<span class="odocwiki_inlinecode"|content>> is the html element from which the container is created~.
+   ~Finally~, user needs to provide an <<span class="odocwiki_inlinecode"|after~Pull>> function to refresh the
+   container~.
+>>

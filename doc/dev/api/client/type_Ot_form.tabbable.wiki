@@ -27,6 +27,9 @@
     Js_of_ocaml__.Dom.DocumentPosition.t Js_of_ocaml__.Js.meth
   method dir :
     Js_of_ocaml__.Js.js_string Js_of_ocaml__.Js.t Js_of_ocaml__.Js.prop
+  method dispatchEvent :
+    Js_of_ocaml.Dom_html.event Js_of_ocaml__.Js.t ->
+    bool Js_of_ocaml__.Js.t Js_of_ocaml__.Js.meth
   method firstChild :
     Js_of_ocaml__.Dom.node Js_of_ocaml__.Js.t Js_of_ocaml__.Js.opt
     Js_of_ocaml__.Js.prop
@@ -159,6 +162,10 @@
     ('a Js_of_ocaml__.Js.t,
      Js_of_ocaml.Dom_html.dragEvent Js_of_ocaml__.Js.t)
     Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method ongotpointercapture :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
   method onkeydown :
     ('a Js_of_ocaml__.Js.t,
      Js_of_ocaml.Dom_html.keyboardEvent Js_of_ocaml__.Js.t)
@@ -170,6 +177,10 @@
   method onkeyup :
     ('a Js_of_ocaml__.Js.t,
      Js_of_ocaml.Dom_html.keyboardEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onlostpointercapture :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
     Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
   method onmousedown :
     ('a Js_of_ocaml__.Js.t,
@@ -190,6 +201,38 @@
   method onmouseup :
     ('a Js_of_ocaml__.Js.t,
      Js_of_ocaml.Dom_html.mouseEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointercancel :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerdown :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerenter :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerleave :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointermove :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerout :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerover :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
+    Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
+  method onpointerup :
+    ('a Js_of_ocaml__.Js.t,
+     Js_of_ocaml.Dom_html.pointerEvent Js_of_ocaml__.Js.t)
     Js_of_ocaml.Dom_html.event_listener Js_of_ocaml__.Js.writeonly_prop
   method onscroll :
     ('a Js_of_ocaml__.Js.t, Js_of_ocaml.Dom_html.event Js_of_ocaml__.Js.t)

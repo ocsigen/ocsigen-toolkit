@@ -15,9 +15,17 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="service"| type Ot_picture_uploader.service >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|a service that implements a function with type <<span class="odocwiki_inlinecode"|~'a ~-~> ~'b>>
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="simple_stop"| type Ot_tongue.simple_stop >> ~[<<a_api subproject="server" | module Ot_tongue >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="state"| type Ot_pulltorefresh.state >> ~[<<a_api subproject="server" | module Ot_pulltorefresh >>~]|<<div class="odocwiki_info"|~Represents the state of the gesture behavior~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="stop"| type Ot_tongue.stop >> ~[<<a_api subproject="server" | module Ot_tongue >>~]||
 |@@ @style="tet-align: left;"@@\\T|
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Ot_social_meta.t >> ~[<<a_api subproject="server" | module Ot_social_meta >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="t"| type Ot_carousel.t >> ~[<<a_api subproject="server" | module Ot_carousel >>~]|<<div class="odocwiki_info"|see <<span class="odocwiki_inlinecode"|make>>
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="tongue"| type Ot_tongue.tongue >> ~[<<a_api subproject="server" | module Ot_tongue >>~]|<<div class="odocwiki_info"|~Signals contain the current
+    position of the tongue~, as a <<span class="odocwiki_inlinecode"|simple~_stop>> or as <<span class="odocwiki_inlinecode"|int>>~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\U|

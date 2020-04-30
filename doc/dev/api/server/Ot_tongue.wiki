@@ -1,0 +1,46 @@
+=Module <<a_api_type subproject="server" | module Ot_tongue >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Ot_tongue>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Ot_tongue >><<span class="ocsforge_color_keyword"|end>>>>
+----
+<<pre class="ocsforge_color odocwiki_code" id="TYPEsimple_stop"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|simple~_stop>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="odocwiki_type"|[ `Full_content | `Percent of int | `Px of int ]>> >><<pre class="ocsforge_color odocwiki_code" id="TYPEstop"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|stop>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="odocwiki_type"|\\  [ `Full_content\\  | `Interval of <<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >> * <<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >>\\  | `Percent of int\\  | `Px of int ]>> >><<pre class="ocsforge_color odocwiki_code" id="TYPEtongue"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|tongue>> <<span class="ocsforge_color_delimiter"|~=>> <<span class="ocsforge_color_delimiter"|~{>>
+<<span class="odocwiki_record"|<<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|elt:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div>> <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|D>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|stop_signal_before:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|stop_signal_after:>> <<span class="odocwiki_type"|<<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|px_signal_before:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>><<span class="odocwiki_field"|<<span class="odocwiki_field_descr"|  <<span class="ocsforge_color_label"|px_signal_after:>> <<span class="odocwiki_type"|int <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|S>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>>>><<span class="ocsforge_color_delimiter"|~;>> >>>>>><<span class="ocsforge_color_delimiter"|~}>>>><<div class="odocwiki_info"|~Signals contain the current
+    position of the tongue~, as a <<span class="odocwiki_inlinecode"|simple~_stop>> or as <<span class="odocwiki_inlinecode"|int>>~.
+    ~Before ~(resp~. after~) signals are triggered before ~(resp~. after~) transition~.
+>>
+<<pre id="VALtongue" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|tongue>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  <<span class="ocsforge_color_label"| ?a: >>[< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_attrib>> ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|attrib>> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?side: >>[ `Bottom | `Left | `Right | `Top ] <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?stops: >><<a_api subproject="server" text="stop" | type Ot_tongue.stop >> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?init: >><<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?handle: >>[> `Div ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<span class="ocsforge_color_label"| ?update: >><<a_api subproject="server" text="simple_stop" | type Ot_tongue.simple_stop >> <<span class="ocsforge_color_uid"|React>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|event>> <<span class="ocsforge_color_uid"|Eliom_client_value>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  [< <<span class="ocsforge_color_uid"|Html_types>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|div_content_fun>> ] <<span class="ocsforge_color_uid"|Eliom_content>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|elt>> list <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="server" text="tongue" | type Ot_tongue.tongue >>>>>><<div class="odocwiki_info"|~A tongue is an expandable panel that can appear from a side of the screen
+   ~(usually top or bottom~)~. ~It is usually intended for touchscreen interfaces~.
+   ~It takes its content as main parameter~.
+
+
+   ~This function takes the content of the tongue and returns a value of type
+   <<span class="odocwiki_inlinecode"|tongue>>~.
+
+
+   <<span class="odocwiki_inlinecode"|~?side>> is the side of the screen where the tongue is attached~.
+   ~By default <<span class="odocwiki_inlinecode"|`~Bottom>>~.
+
+
+   <<span class="odocwiki_inlinecode"|~?stops>> is the list of positions you want the tongue to stick to~.
+   ~By default~,
+   it is <<span class="odocwiki_inlinecode"|~[`~Px ~7~0~; `~Percent ~1~0~0~; `~Interval ~(`~Percent ~1~0~0~, `~Full~_content~)~]>>~,
+   which means~: only ~7~0 pixels visible~,
+   screen size~, and any value between screen size
+   and content size~.
+
+
+   ~The percentage is given w~.r~.t~. windows height or width~.
+   ~Size of the tongue will never exceed content size~.
+
+
+   <<span class="odocwiki_inlinecode"|~?init>> is the initial position of the tongue~. ~Usually element of <<span class="odocwiki_inlinecode"|~~stops>>~.
+   ~By default <<span class="odocwiki_inlinecode"|`~Px ~7~0>>~.
+
+
+   <<span class="odocwiki_inlinecode"|~?handle>> is the element that will we used as handle to move the tongue
+   ~(usually an element of the content~)~.
+   ~It must be a ~D element~.
+   ~By default~, it is the whole tongue~.
+
+
+   <<span class="odocwiki_inlinecode"|~?update>> is a react event you can use to command the tongue position
+   from outside~.
+>>

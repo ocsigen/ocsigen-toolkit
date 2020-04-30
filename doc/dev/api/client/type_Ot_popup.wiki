@@ -7,6 +7,7 @@
     [> `Section ] Eliom_content.Html.elt
   val popup :
     ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?enable_scrolling_hack:bool ->
     ?close_button:Html_types.button_content Eliom_content.Html.elt list ->
     ?confirmation_onclose:(unit -> bool Lwt.t) ->
     ?onclose:(unit -> unit Lwt.t) ->
@@ -28,4 +29,6 @@
     [< Html_types.header_content_fun ] Eliom_content.Html.elt list ->
     ([< Html_types.button_content_fun ] as 'a) Eliom_content.Html.elt list ->
     'a Eliom_content.Html.elt list -> bool Lwt.t
+  val enable_page_scroll : unit -> unit
+  val disable_page_scroll : unit -> unit
 end >>
