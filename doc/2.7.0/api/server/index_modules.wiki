@@ -1,0 +1,49 @@
+=Index of modules=
+
+|@@ @style="tet-align: left;"@@\\L|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="List"| module Ot_lib.List >> ~[<<a_api subproject="server" | module Ot_lib >>~]||
+|@@ @style="tet-align: left;"@@\\O|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_buttons"| module Ot_buttons >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_calendar"| module Ot_calendar >> |<<div class="odocwiki_info"|~Calendar widget
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_carousel"| module Ot_carousel >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_color_picker"| module Ot_color_picker >> |<<div class="odocwiki_info"|~This module implements a color picker~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_drawer"| module Ot_drawer >> |<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_form"| module Ot_form >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_lib"| module Ot_lib >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_nodeready"| module Ot_nodeready >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_noderesize"| module Ot_noderesize >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_page_transition"| module Ot_page_transition >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_picture_uploader"| module Ot_picture_uploader >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_popup"| module Ot_popup >> |<<div class="odocwiki_info"|~Popup widget
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_pulltorefresh"| module Ot_pulltorefresh >> |<<div class="odocwiki_info"|~Pull to refresh
+    ~This widget can handle any element that needs to be refreshed
+    after being pulled down~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_range"| module Ot_range >> |<<div class="odocwiki_info"|~Range selection widget
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_size"| module Ot_size >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_spinner"| module Ot_spinner >> |<<div class="odocwiki_info"|~Spinner widget
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_sticky"| module Ot_sticky >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_style"| module Ot_style >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_swipe"| module Ot_swipe >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_time_picker"| module Ot_time_picker >> |<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_tip"| module Ot_tip >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_toggle"| module Ot_toggle >> |<<div class="odocwiki_info"|~Binary toggle widget
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_tongue"| module Ot_tongue >> ||
+\\

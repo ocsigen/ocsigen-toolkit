@@ -1,0 +1,25 @@
+<<code language="ocaml" | sig
+  val with_spinner :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
+    ?fail:(exn ->
+           [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t) ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
+    [> `Div ] Eliom_content.Html.elt Lwt.t
+  val with_spinner_no_lwt :
+    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
+    ?fail:(exn -> [< Html_types.div_content ] Eliom_content.Html.elt list) ->
+    [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
+    [> `Div ] Eliom_content.Html.elt
+  val replace_content :
+    ?fail:(exn ->
+           [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t) ->
+    'a Eliom_content.Html.elt ->
+    Html_types.div_content Eliom_content.Html.elt list Lwt.t -> unit Lwt.t
+  val num_active_spinners : int Eliom_shared.React.S.t
+  val onloaded : unit Eliom_shared.React.E.t
+  val when_loaded : (unit -> unit) -> unit
+  val set_default_fail :
+    (exn -> [< Html_types.div_content ] Eliom_content.Html.elt list) -> unit
+end >>
