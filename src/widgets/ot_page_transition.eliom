@@ -69,6 +69,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         let screenshot,_,_ = get_screenshot id in
         let screenshot_wrapper,screenshot_container =
           wrap_screenshot screenshot transition_duration in
+        Eliom_client.lock_request_handling ();
         Manip.appendToBody screenshot_wrapper;
         Manip.SetCss.heightPx new_body h;
         Manip.Class.add new_body "ot-page-transition-transform-1";
@@ -84,6 +85,7 @@ module Make (Conf:PAGE_TRANSITION_CONF) = struct
         Manip.SetCss.height new_body (Js.to_string initial_height);
         Manip.Class.remove new_body cl_will_change;
         style##.transitionDuration := initial_transition_duration;
+        Eliom_client.unlock_request_handling ();
         Lwt.return_unit
 
   let wait_for ~sleep ~cycles cond =
