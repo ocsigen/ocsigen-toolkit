@@ -3,7 +3,7 @@
     overflow: hidden;
     z-index: 1000;
     top: 0;
-    left: 50%;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: white;
@@ -34,11 +34,6 @@
 
 .ot-page-transition-off-screen-right {
     transform: translateX(100%);
-}
-
-.ot-page-transition-half-off-screen-right {
-    transform: translateX(-50%);
-    -webkit-transform: translateX(-50%);
 }
 
 .ot-page-transition-half-off-screen-left {
