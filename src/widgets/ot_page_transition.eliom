@@ -30,46 +30,45 @@ let set_transition_duration elt t =
   let container_style = Js.Unsafe.coerce (To_dom.of_element elt)##.style in
   container_style##.transitionDuration := s
 
-let cl_will_change = "ot-page-transition-will-change"
-let cl_off_screen_right = "ot-page-transition-off-screen-right"
-let cl_half_off_screen_left = "ot-page-transition-half-off-screen-left"
+let cl_body_pre_forward = "ot-page-transition-body-pre-forward"
+let cl_wrapper_post_backward = "ot-page-transition-wrapper-post-backward"
+let cl_wrapper = "ot-page-transition-wrapper"
+let cl_screenshot_post_forward = "ot-page-transition-screenshot-post-forward"
 
 module Make (Conf : PAGE_TRANSITION_CONF) = struct
   type screenshot = Conf.screenshot
 
   let wrap_screenshot ?(a = []) ~transition_duration ~screenshot =
     let container = Conf.screenshot_container screenshot in
-    let wrapper = div ~a:(a_class [cl_will_change] :: a) [container] in
+    let wrapper = div ~a:(a_class [cl_wrapper] :: a) [container] in
     set_transition_duration wrapper transition_duration;
     set_transition_duration container transition_duration;
     wrapper, container
 
   let forward_animation_ transition_duration cur_screenshot =
     let h = React.S.value Ot_size.height in
-    let new_body = Of_dom.of_body Dom_html.document##.body in
-    Manip.Class.add new_body cl_will_change;
+    let body = Of_dom.of_body Dom_html.document##.body in
     let%lwt () = Lwt_js_events.request_animation_frame () in
     let style = Js.Unsafe.coerce Dom_html.document##.body##.style in
     let initial_height = style##.height in
     let initial_transition_duration = style##.transitionDuration in
     let screenshot_wrapper, screenshot_container =
       wrap_screenshot
-        ~a:[a_class ["ot-page-transition-screenshot-left"]]
+        ~a:[a_class ["ot-page-transition-wrapper-forward"]]
         ~transition_duration ~screenshot:cur_screenshot
     in
     Eliom_client.lock_request_handling ();
     Manip.appendToBody screenshot_wrapper;
-    Manip.SetCss.heightPx new_body h;
-    Manip.Class.add new_body cl_off_screen_right;
+    Manip.SetCss.heightPx body h;
+    Manip.Class.add body cl_body_pre_forward;
     let%lwt () = Lwt_js_events.request_animation_frame () in
-    set_transition_duration new_body transition_duration;
+    set_transition_duration body transition_duration;
     let%lwt () = Lwt_js_events.request_animation_frame () in
-    Manip.Class.add screenshot_container cl_half_off_screen_left;
-    Manip.Class.remove new_body cl_off_screen_right;
+    Manip.Class.add screenshot_container cl_screenshot_post_forward;
+    Manip.Class.remove body cl_body_pre_forward;
     let%lwt () = Lwt_js.sleep transition_duration in
     Manip.removeSelf screenshot_wrapper;
-    Manip.SetCss.height new_body (Js.to_string initial_height);
-    Manip.Class.remove new_body cl_will_change;
+    Manip.SetCss.height body (Js.to_string initial_height);
     style##.transitionDuration := initial_transition_duration;
     Eliom_client.unlock_request_handling ();
     Lwt.return_unit
@@ -89,23 +88,23 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
 
   let backward_animation_ transition_duration history_screenshot =
     let h = React.S.value Ot_size.height in
-    let new_body = Of_dom.of_body Dom_html.document##.body in
+    let body = Of_dom.of_body Dom_html.document##.body in
     let%lwt () = Lwt_js_events.request_animation_frame () in
     let style = Js.Unsafe.coerce Dom_html.document##.body##.style in
     let initial_height = style##.height in
     let screenshot_wrapper, _ =
       wrap_screenshot
-        ~a:[a_class ["ot-page-transition-screenshot-right"]]
+        ~a:[a_class ["ot-page-transition-wrapper-backward"]]
         ~transition_duration ~screenshot:history_screenshot
     in
     Eliom_client.lock_request_handling ();
     Manip.appendToBody screenshot_wrapper;
-    Manip.SetCss.heightPx new_body h;
+    Manip.SetCss.heightPx body h;
     let%lwt () = Lwt_js_events.request_animation_frame () in
-    Manip.Class.add screenshot_wrapper cl_off_screen_right;
+    Manip.Class.add screenshot_wrapper cl_wrapper_post_backward;
     let%lwt () = Lwt_js.sleep transition_duration in
     Manip.removeSelf screenshot_wrapper;
-    Manip.SetCss.height new_body (Js.to_string initial_height);
+    Manip.SetCss.height body (Js.to_string initial_height);
     Eliom_client.unlock_request_handling ();
     Lwt.return_unit
 
