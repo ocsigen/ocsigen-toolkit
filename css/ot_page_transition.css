@@ -1,27 +1,21 @@
-.ot-page-transition-screenshot-right {
+.ot-page-transition-wrapper {
     position: fixed;
     overflow: hidden;
     z-index: 1000;
     top: 0;
+    height: 100%;
+    background-color: white;
+    will-change: transform;
+}
+
+.ot-page-transition-wrapper-backward {
     left: 0;
     width: 100%;
-    height: 100%;
-    background-color: white;
 }
 
-.ot-page-transition-screenshot-left {
-    position: fixed;
-    overflow: hidden;
-    z-index: 1000;
-    top: 0;
+.ot-page-transition-wrapper-forward {
     right: 100%;
     width: 100%;
-    height: 100%;
-    background-color: white;
-}
-
-.ot-page-transition-will-change {
-    will-change: transform;
 }
 
 .ot-page-transition-ss-container {
@@ -32,10 +26,15 @@
     will-change: transform;
 }
 
-.ot-page-transition-off-screen-right {
+.ot-page-transition-wrapper-post-backward {
     transform: translateX(100%);
 }
 
-.ot-page-transition-half-off-screen-left {
+.ot-page-transition-body-pre-forward {
+    will-change: transform;
+    transform: translateX(100%);
+}
+
+.ot-page-transition-screenshot-post-forward {
     transform: translateX(50%);
 }
