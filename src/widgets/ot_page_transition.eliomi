@@ -17,7 +17,7 @@ type animation = Nil|Forward|Backward
 module type PAGE_TRANSITION_CONF = sig
   type screenshot
   val screenshot_container :
-    screenshot -> Html_types.div_content Eliom_content.Html.elt
+    screenshot option -> Html_types.div_content Eliom_content.Html.elt
 end
 
 (** [install_global_handler t take_screenshot animation_type]

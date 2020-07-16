@@ -3,38 +3,36 @@
     overflow: hidden;
     z-index: 1000;
     top: 0;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
     background-color: white;
-    will-change: transform;
 }
 
 .ot-page-transition-wrapper-backward {
     left: 0;
-    width: 100%;
 }
 
 .ot-page-transition-wrapper-forward {
-    right: 100%;
-    width: 100%;
+    right: 100vw;
 }
 
 .ot-page-transition-ss-container {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-size: contain;
     background-repeat: no-repeat;
-    will-change: transform;
+    background-color: lightgrey;
 }
 
 .ot-page-transition-wrapper-post-backward {
-    transform: translateX(100%);
+    transform: translateX(100vw);
 }
 
 .ot-page-transition-body-pre-forward {
-    will-change: transform;
-    transform: translateX(100%);
+    transform: translateX(100vw);
+    height: 100vh;
 }
 
 .ot-page-transition-screenshot-post-forward {
-    transform: translateX(50%);
+    transform: translateX(100vw);
 }
