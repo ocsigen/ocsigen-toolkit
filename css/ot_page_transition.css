@@ -1,4 +1,15 @@
-.ot-page-transition-wrapper{
+.ot-page-transition-screenshot-right {
+    position: fixed;
+    overflow: hidden;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+.ot-page-transition-screenshot-left {
     position: fixed;
     overflow: hidden;
     z-index: 1000;
@@ -13,7 +24,7 @@
     will-change: transform;
 }
 
-.ot-page-transition-container{
+.ot-page-transition-ss-container {
     width: 100%;
     height: 100%;
     background-size: contain;
@@ -21,12 +32,10 @@
     will-change: transform;
 }
 
-.ot-page-transition-transform-1{
+.ot-page-transition-off-screen-right {
     transform: translateX(100%);
-    -webkit-transform: translateX(100%);
 }
 
-.ot-page-transition-transform-2{
+.ot-page-transition-half-off-screen-left {
     transform: translateX(50%);
-    -webkit-transform: translateX(50%);
 }
