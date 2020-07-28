@@ -1,3 +1,7 @@
+===== 2.8.0 (2020-07-28) =====
+
+* rework Ot_page_transition
+
 ===== 2.7.0 (2020-04-29) =====
 
 * New widget: ot_tongue
