@@ -731,6 +731,7 @@ let%shared ribbon
                 let left = firstselectedelt##.offsetLeft in
                 let right =
                   lastselectedelt##.offsetLeft + lastselectedelt##.offsetWidth
+                  + int_of_float (Ot_style.marginRight lastselectedelt)
                 in
                 (* We try to center the active columns *)
                 let newleft = -(left + right - containerwidth) / 2 in
