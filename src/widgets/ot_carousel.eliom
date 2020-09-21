@@ -693,8 +693,6 @@ let%shared ribbon
       let%lwt () = Ot_nodeready.nodeready container' in
       (* Ribbon position: *)
       set_containerwidth container'##.offsetWidth ;
-      add_transition the_ul';
-      Eliom_lib.Option.iter add_transition cursor_elt';
       Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
         set_containerwidth container'##.offsetWidth
       ) ;
@@ -832,6 +830,13 @@ let%shared ribbon
            );
        | _ -> ()
       );
+      Lwt.return_unit
+    );
+    Lwt.async (fun () ->
+      let%lwt () = Ot_nodeready.nodeready container' in
+      let%lwt () = Lwt_js_events.request_animation_frame () in
+      add_transition the_ul';
+      Eliom_lib.Option.iter add_transition cursor_elt';
       Lwt.return_unit
     );
     (* Moving the ribbon with fingers: *)
