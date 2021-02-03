@@ -512,10 +512,7 @@ let%shared make
 
 let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 
-let%shared generate_content generator =
-  try%lwt Eliom_shared.Value.local generator ()
-  with e ->
-    Lwt.return @@
+let%shared default_fail_fun e =
     if Eliom_config.get_debugmode ()
     then em [ txt (Printexc.to_string e) ]
     else begin
@@ -526,13 +523,23 @@ let%shared generate_content generator =
       em ~a:[ a_class ["ot-icon-error"] ] []
     end
 
+let%shared default_fail_ref
+  : (exn -> Html_types.div_content Eliom_content.Html.elt) ref
+  = ref default_fail_fun
 
 let%shared default_fail e =
-  [
-    if Eliom_config.get_debugmode ()
-    then em [ txt (Printexc.to_string e) ]
-    else em ~a:[ a_class ["ot-icon-question"] ]
-        [ txt (Printexc.to_string e) ] ]
+  (!default_fail_ref e
+   : Html_types.div_content Eliom_content.Html.elt
+   :> [< Html_types.div_content ] Eliom_content.Html.elt)
+
+let%shared set_default_fail f = default_fail_ref :=
+    (f : exn -> [< Html_types.div_content ] Eliom_content.Html.elt
+     :> exn -> Html_types.div_content Eliom_content.Html.elt)
+
+let%shared generate_content generator =
+  try%lwt Eliom_shared.Value.local generator ()
+  with e ->
+    Lwt.return (default_fail e)
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)

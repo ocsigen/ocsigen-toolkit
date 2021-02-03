@@ -277,3 +277,7 @@ val bind_arrow_keys :
   change: ([> `Goto of int | `Next | `Prev ] -> unit) ->
   #Dom_html.eventTarget Js.t ->
   unit Lwt.t
+
+(** Change the default function used to display error messages *)
+val set_default_fail :
+  (exn -> [< Html_types.div_content ] Eliom_content.Html.elt) -> unit
