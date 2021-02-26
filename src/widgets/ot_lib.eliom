@@ -39,41 +39,45 @@ let%client window_scroll ?use_capture () =
 
 let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
   let stop, stop_thread = React.E.create () in
+  let cur = ref Lwt.return_unit in
   Eliom_client.Page_status.while_active ~stop (fun () ->
-    if ios_html_scroll_hack
-    then begin
-      let rec loop () =
-        let%lwt e =
-          Lwt.pick (
-            List.map
-              (* We listen to several elements because scroll events are
-                 not happening on the same element on every platform. *)
-              (fun element -> Lwt_js_events.scroll ?use_capture element)
-              [ (Dom_html.window :> Dom_html.eventTarget Js.t) ;
-                (Dom_html.document##.documentElement :> Dom_html.eventTarget Js.t) ;
-                (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ]
-          )
+    cur :=
+      if ios_html_scroll_hack
+      then begin
+        let rec loop () =
+          let%lwt e =
+            Lwt.pick (
+              List.map
+                (* We listen to several elements because scroll events are
+                   not happening on the same element on every platform. *)
+                (fun element -> Lwt_js_events.scroll ?use_capture element)
+                [ (Dom_html.window :> Dom_html.eventTarget Js.t) ;
+                  (Dom_html.document##.documentElement :> Dom_html.eventTarget Js.t) ;
+                  (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ]
+            )
+          in
+          let continue = ref true in
+          let w =
+            try%lwt fst(Lwt.task())
+            with Lwt.Canceled -> continue := false; Lwt.return_unit in
+          let%lwt () = handler e w in
+          if !continue then
+            loop ()
+          else
+            Lwt.return_unit
         in
-        let continue = ref true in
-        let w =
-          try%lwt fst(Lwt.task())
-          with Lwt.Canceled -> continue := false; Lwt.return_unit in
-        let%lwt () = handler e w in
-        if !continue then
-          loop ()
-        else
-          Lwt.return_unit
-      in
-      loop ()
-    end
-    else
-      Lwt_js_events.seq_loop
-        (Lwt_js_events.make_event Dom_html.Event.scroll) ?use_capture
-        Dom_html.window handler
+        loop ()
+      end
+      else
+        Lwt_js_events.seq_loop
+          (Lwt_js_events.make_event Dom_html.Event.scroll) ?use_capture
+          Dom_html.window handler
+    ;
+    !cur
   );
   Lwt.finalize
-    (fun () -> fst @@ Lwt.wait ())
-    (fun () -> stop_thread (); Lwt.return_unit)
+    (fun () -> fst @@ Lwt.task ())
+    (fun () -> stop_thread (); Lwt.cancel !cur; Lwt.return_unit)
 
 let%client rec in_ancestors ~elt ~ancestor =
   elt == (ancestor : Dom_html.element Js.t)
