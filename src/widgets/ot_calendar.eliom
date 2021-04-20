@@ -269,8 +269,25 @@ let rec build_calendar ?prehilight
   ( build_table 5 6 ~a:[D.a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row
   , prev_button
   , next_button
+  , select_month
+  , select_year
   , prev_year_button
   , next_year_button )
+
+let%client get_options selector =
+  let options = selector##.options in
+  let size = selector##.options##.length - 1 in
+  let rec aux i acc =
+    if i < 0
+    then acc
+    else
+      aux (i - 1)
+        (Js.Opt.case
+           (options##item i)
+           (fun _ -> acc)
+           (fun e -> (e##.value, i) :: acc))
+  in
+  aux size []
 
 let%client update_classes cal zero d =
   let rows = (To_dom.of_table cal)##.rows in
@@ -339,29 +356,69 @@ let%client attach_events_lwt ?action ?click_non_highlighted ~intl d cal
   in
   Lwt.async f
 
+let%client make_span_handler selector
+    ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
+    apply fun_handler
+  =
+  Dom_html.handler (fun _ ->
+      fun_handler ();
+      set_sig (apply (React.S.value get_sig) 1);
+      selector##.selectedIndex := React.S.value get_sig;
+      Js._false)
+
+let%client set_selected_index selector selector_value options
+    ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
+    ()
+  =
+  let value = selector_value () in
+  try
+    let index = List.assoc (Js.string value) options in
+    set_sig index;
+    selector##.selectedIndex := React.S.value get_sig
+  with Not_found -> ()
+
+let%client make_selector_handler change_index fun_handler =
+  Dom_html.handler (fun _ -> fun_handler (); change_index (); Js._false)
+
 let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl d
-    (cal, prev, next, prev_year, next_year) f_d
+    (cal, prev, next, select_month, select_year, prev_year, next_year) f_d
   =
   (match highlight with
   | Some highlight ->
       attach_events_lwt ?click_non_highlighted ?action ~intl d cal highlight
   | None -> attach_events ?click_non_highlighted ?action ~intl d cal []);
+  let s_y = To_dom.of_select select_year in
+  let s_m = To_dom.of_select select_month in
+  let s_y_v () = Js.to_string s_y##.value in
+  let s_m_v () = Js.to_string s_m##.value in
+  let options_year = get_options s_y in
+  let options_month = get_options s_m in
+  let select_handler () =
+    f_d
+      (A.make_year_month
+         (s_y_v () |> int_of_string)
+         (s_m_v () |> int_of_strmonth))
+  in
+  let sig_year = React.S.create (default_period.limit - A.year d) in
+  let sig_month = React.S.create ((A.month d |> int_of_month) - 1) in
+  s_y##.selectedIndex := React.S.value (fst sig_year);
+  s_m##.selectedIndex := React.S.value (fst sig_month);
+  s_y##.onchange :=
+    make_selector_handler
+      (set_selected_index s_y s_y_v options_year sig_year)
+      select_handler;
+  s_m##.onchange :=
+    make_selector_handler
+      (set_selected_index s_m s_m_v options_month sig_month)
+      select_handler;
   (To_dom.of_element prev)##.onclick
-  := Dom_html.handler (fun _ ->
-         f_d (A.prev d `Month);
-         Js._false);
+  := make_span_handler s_m sig_month ( - ) (fun () -> f_d (A.prev d `Month));
   (To_dom.of_element next)##.onclick
-  := Dom_html.handler (fun _ ->
-         f_d (A.next d `Month);
-         Js._false);
+  := make_span_handler s_m sig_month ( + ) (fun () -> f_d (A.next d `Month));
   (To_dom.of_element prev_year)##.onclick
-  := Dom_html.handler (fun _ ->
-         f_d (A.prev d `Year);
-         Js._false);
+  := make_span_handler s_y sig_year ( - ) (fun () -> f_d (A.prev d `Year));
   (To_dom.of_element next_year)##.onclick
-  := Dom_html.handler (fun _ ->
-         f_d (A.next d `Year);
-         Js._false)
+  := make_span_handler s_y sig_year ( + ) (fun () -> f_d (A.next d `Year))
 
 let%client make
     :  ?init:int * int * int -> ?highlight:(int -> int -> int list Lwt.t)
@@ -384,7 +441,7 @@ let%client make
   CalendarLib.Printer.month_name := name_of_calendarlib_month intl;
   let d_ym, f_d_ym = React.S.create init_ym in
   let f d_ym =
-    let ((cal, _, _, _, _) as c) =
+    let ((cal, _, _, _, _, _, _) as c) =
       build_calendar ~intl ~button_labels ~prehilight:init d_ym
     in
     attach_behavior ?highlight ?click_non_highlighted ?action ~intl d_ym c
