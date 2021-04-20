@@ -47,6 +47,10 @@ let default_intl =
       ; "Dec" ]
   ; i_start = `Sun }
 
+type period = {start : int; limit : int}
+
+let default_period = {start = 1; limit = 3200}
+
 type button_labels =
   { b_prev_year : string
   ; b_prev_month : string
@@ -78,6 +82,64 @@ let int_of_dow = function
   | `Thu -> 4
   | `Fri -> 5
   | `Sat -> 6
+
+let string_of_month = function
+  | A.Jan -> "Jan"
+  | A.Feb -> "Feb"
+  | A.Mar -> "Mar"
+  | A.Apr -> "Apr"
+  | A.May -> "May"
+  | A.Jun -> "Jun"
+  | A.Jul -> "Jul"
+  | A.Aug -> "Aug"
+  | A.Sep -> "Sep"
+  | A.Oct -> "Oct"
+  | A.Nov -> "Nov"
+  | A.Dec -> "Dec"
+
+let int_of_month = function
+  | A.Jan -> 1
+  | A.Feb -> 2
+  | A.Mar -> 3
+  | A.Apr -> 4
+  | A.May -> 5
+  | A.Jun -> 6
+  | A.Jul -> 7
+  | A.Aug -> 8
+  | A.Sep -> 9
+  | A.Oct -> 10
+  | A.Nov -> 11
+  | A.Dec -> 12
+
+let month_of_string = function
+  | "Jan" -> A.Jan
+  | "Feb" -> A.Feb
+  | "Mar" -> A.Mar
+  | "Apr" -> A.Apr
+  | "May" -> A.May
+  | "Jun" -> A.Jun
+  | "Jul" -> A.Jul
+  | "Aug" -> A.Aug
+  | "Sep" -> A.Sep
+  | "Oct" -> A.Oct
+  | "Nov" -> A.Nov
+  | "Dec" -> A.Dec
+  | _ -> failwith "not_a_month"
+
+let int_of_strmonth = function
+  | "Jan" -> 1
+  | "Feb" -> 2
+  | "Mar" -> 3
+  | "Apr" -> 4
+  | "May" -> 5
+  | "Jun" -> 6
+  | "Jul" -> 7
+  | "Aug" -> 8
+  | "Sep" -> 9
+  | "Oct" -> 10
+  | "Nov" -> 11
+  | "Dec" -> 12
+  | _ -> failwith "not_a_month"
 
 let rec rotate_list ?(acc = []) l i =
   if i <= 0
@@ -138,6 +200,7 @@ let rec build_calendar ?prehilight
     ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year} ~intl
     day
   =
+  let today = A.today () in
   let fst_dow = fst_dow ~intl day
   and zero = zeroth_displayed_day ~intl day
   and prev_button = D.(span ~a:[a_class ["ot-c-prev-button"]] [txt b_prev_month])
@@ -146,6 +209,28 @@ let rec build_calendar ?prehilight
     D.(span ~a:[a_class ["ot-c-prev-year-button"]] [txt b_prev_year])
   and next_year_button =
     D.(span ~a:[a_class ["ot-c-next-year-button"]] [txt b_next_year])
+  and select_month =
+    let month = A.month today |> string_of_month in
+    let open D in
+    select
+      ~a:[a_name "ot-c-select-month"]
+      (default_intl.i_months
+      |> List.map (fun m ->
+             if month = m
+             then option ~a:[a_value m; a_selected ()] (txt m)
+             else option ~a:[a_value m] (txt m)))
+  and select_year =
+    let year = A.year today |> string_of_int in
+    let open D in
+    select
+      ~a:[a_name "ot-c-select-year"]
+      (List.init
+         (default_period.limit - default_period.start + 1)
+         (fun i ->
+           let y = string_of_int (default_period.limit - i) in
+           if year = y
+           then option ~a:[a_value y; a_selected ()] (txt y)
+           else option ~a:[a_value y] (txt y)))
   in
   let thead =
     let open D in
@@ -155,7 +240,8 @@ let rec build_calendar ?prehilight
               ~a:[a_colspan 7; a_class ["ot-c-header"]]
               [ prev_year_button
               ; prev_button
-              ; CalendarLib.Printer.Date.sprint "%B %Y" fst_dow |> txt
+              ; select_month
+              ; select_year
               ; next_button
               ; next_year_button ] ]
       ; tr (List.map (fun d -> th [txt d]) (get_rotated_days intl)) ]
