@@ -1022,10 +1022,14 @@ let%shared wheel_page_attribute pos z faces length ~vertical page_number =
   [ R.a_class cls; a_style style ]
 
 let%shared wheel ?(a = []) ?(vertical = true) ?(position = 0)
-    ?transition_duration ?inertia ?allow_overswipe ?update ?disabled
-    ?(faces = 20) ?(face_size = 25) content =
+    ?transition_duration ?inertia ?allow_overswipe ?update ?disabled ?faces
+    ?face_size content =
   let a = a_class [ "ot-wheel" ] :: a in
   let length = List.length content in
+  let faces = Option.value faces ~default:length in
+  let face_size =
+    Option.value face_size ~default:(int_of_float (0.8 *. float faces))
+  in
   let z =
     int_of_float (float face_size /. (2. *. tan (3.14159 /. float faces)))
   in
