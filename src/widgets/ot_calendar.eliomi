@@ -45,6 +45,9 @@ val make
   -> ?click_non_highlighted:bool
   -> ?update:(int * int * int) React.E.t Eliom_client_value.t
   -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
+  -> ?period:
+       CalendarLib.Date.field CalendarLib.Date.date
+       * CalendarLib.Date.field CalendarLib.Date.date
   -> ?button_labels:button_labels
   -> ?intl:intl
   -> unit
@@ -60,7 +63,11 @@ val make
     is provided) are clickable.
 
     If a client-side function [action] is provided, when the user
-    clicks on the date [d]:[m]:[y], [action y m d] is called. *)
+    clicks on the date [d]:[m]:[y], [action y m d] is called. 
+    
+    If [period] is provided, the calendar will have a period restriction
+    between the two dates given contained in [update].
+    *)
 
 val make_date_picker
   :  ?init:int * int * int

@@ -47,9 +47,10 @@ let default_intl =
       ; "Dec" ]
   ; i_start = `Sun }
 
-type period = {start : int; limit : int}
+type 'a period = {begin_p : 'a A.date; end_p : 'a A.date}
 
-let default_period = {start = 1; limit = 3200}
+let default_period =
+  {begin_p = A.lmake ~year:1 (); end_p = A.lmake ~year:3200 ~month:12 ~day:31 ()}
 
 type button_labels =
   { b_prev_year : string
@@ -198,7 +199,7 @@ let zeroth_displayed_day ~intl d =
 
 let rec build_calendar ?prehilight
     ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year} ~intl
-    day
+    ~period day
   =
   let today = A.today () in
   let fst_dow = fst_dow ~intl day
@@ -225,9 +226,9 @@ let rec build_calendar ?prehilight
     select
       ~a:[a_name "ot-c-select-year"]
       (List.init
-         (default_period.limit - default_period.start + 1)
+         A.(year period.end_p - year period.begin_p + 1)
          (fun i ->
-           let y = string_of_int (default_period.limit - i) in
+           let y = string_of_int (A.year period.end_p - i) in
            if year = y
            then option ~a:[a_value y; a_selected ()] (txt y)
            else option ~a:[a_value y] (txt y)))
@@ -252,7 +253,9 @@ let rec build_calendar ?prehilight
       let module C = CalendarLib.Calendar in
       let today = A.today () in
       let classes =
-        [ (if d < today
+        [ (if d < period.begin_p || d > period.end_p
+          then "ot-c-out-period"
+          else if d < today
           then "ot-c-past"
           else if d = today
           then "ot-c-today"
@@ -307,8 +310,19 @@ let%client update_classes cal zero d =
   in
   iter_interval 0 5 f
 
+let%client in_period ?(begin_p = default_period.begin_p)
+    ?(end_p = default_period.end_p) curr_date
+  =
+  curr_date >= begin_p && curr_date <= end_p
+
+let%client in_period_coerced ?(begin_p = default_period.begin_p)
+    ?(end_p = default_period.end_p) curr_date
+  =
+  curr_date >= (begin_p :> [`Month | `Year] A.date)
+  && curr_date <= (end_p :> [`Month | `Year] A.date)
+
 let%client attach_events ?action ?(click_non_highlighted = false) ?update ~intl
-    d cal highlight
+    ~period d cal highlight
   =
   let rows = (To_dom.of_table cal)##.rows in
   let fst_dow = fst_dow ~intl d and zero = zeroth_displayed_day ~intl d in
@@ -334,8 +348,11 @@ let%client attach_events ?action ?(click_non_highlighted = false) ?update ~intl
       | None -> fun _ r -> update_classes cal zero d; Lwt.return_unit
     in
     let set_onclick () =
-      let f () = Lwt_js_events.clicks c action in
-      Lwt.async f
+      if in_period d ~begin_p:period.begin_p ~end_p:period.end_p
+      then
+        let f () = Lwt_js_events.clicks c action in
+        Lwt.async f
+      else Lwt.async (fun () -> Lwt.return_unit)
     in
     if List.exists (( = ) dom) highlight
     then (
@@ -345,26 +362,29 @@ let%client attach_events ?action ?(click_non_highlighted = false) ?update ~intl
     then set_onclick ()
     else ()
 
-let%client attach_events_lwt ?action ?click_non_highlighted ~intl d cal
+let%client attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
     highlight
   =
   let f () =
     let m = A.(month d |> int_of_month) and y = A.year d in
     let%lwt highlight = highlight y m in
-    attach_events ?action ?click_non_highlighted ~intl d cal highlight;
+    attach_events ?action ?click_non_highlighted ~intl ~period d cal highlight;
     Lwt.return_unit
   in
   Lwt.async f
 
 let%client make_span_handler selector
     ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
-    apply fun_handler
+    apply condi fun_handler
   =
   Dom_html.handler (fun _ ->
-      fun_handler ();
-      set_sig (apply (React.S.value get_sig) 1);
-      selector##.selectedIndex := React.S.value get_sig;
-      Js._false)
+      if condi ()
+      then (
+        fun_handler ();
+        set_sig (apply (React.S.value get_sig) 1);
+        selector##.selectedIndex := React.S.value get_sig;
+        Js._false)
+      else Js._false)
 
 let%client set_selected_index selector selector_value options
     ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
@@ -377,57 +397,82 @@ let%client set_selected_index selector selector_value options
     selector##.selectedIndex := React.S.value get_sig
   with Not_found -> ()
 
-let%client make_selector_handler change_index fun_handler =
-  Dom_html.handler (fun _ -> fun_handler (); change_index (); Js._false)
+let%client make_selector_handler change_index condi fun_handler =
+  Dom_html.handler (fun _ ->
+      if condi ()
+      then (fun_handler (); change_index (); Js._false)
+      else Js._false)
 
-let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl d
-    (cal, prev, next, select_month, select_year, prev_year, next_year) f_d
+let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl
+    ~period d (cal, prev, next, select_month, select_year, prev_year, next_year)
+    f_d
   =
   (match highlight with
   | Some highlight ->
-      attach_events_lwt ?click_non_highlighted ?action ~intl d cal highlight
-  | None -> attach_events ?click_non_highlighted ?action ~intl d cal []);
+      attach_events_lwt ?click_non_highlighted ?action ~intl ~period d cal
+        highlight
+  | None -> attach_events ?click_non_highlighted ?action ~intl ~period d cal []);
   let s_y = To_dom.of_select select_year in
   let s_m = To_dom.of_select select_month in
   let s_y_v () = Js.to_string s_y##.value in
   let s_m_v () = Js.to_string s_m##.value in
   let options_year = get_options s_y in
   let options_month = get_options s_m in
+  let valid_period condi () =
+    in_period_coerced ~begin_p:period.begin_p ~end_p:period.end_p condi
+  in
+  let select_condi =
+    valid_period
+      (A.make_year_month
+         (s_y_v () |> int_of_string)
+         (s_m_v () |> int_of_strmonth))
+  in
   let select_handler () =
     f_d
       (A.make_year_month
          (s_y_v () |> int_of_string)
          (s_m_v () |> int_of_strmonth))
   in
-  let sig_year = React.S.create (default_period.limit - A.year d) in
+  let sig_year = React.S.create (A.year period.end_p - A.year d) in
   let sig_month = React.S.create ((A.month d |> int_of_month) - 1) in
   s_y##.selectedIndex := React.S.value (fst sig_year);
   s_m##.selectedIndex := React.S.value (fst sig_month);
   s_y##.onchange :=
     make_selector_handler
       (set_selected_index s_y s_y_v options_year sig_year)
-      select_handler;
+      select_condi select_handler;
   s_m##.onchange :=
     make_selector_handler
       (set_selected_index s_m s_m_v options_month sig_month)
-      select_handler;
+      select_condi select_handler;
   (To_dom.of_element prev)##.onclick
-  := make_span_handler s_m sig_month ( - ) (fun () -> f_d (A.prev d `Month));
+  := make_span_handler s_m sig_month ( - )
+       (valid_period (A.prev d `Month))
+       (fun () -> f_d (A.prev d `Month));
   (To_dom.of_element next)##.onclick
-  := make_span_handler s_m sig_month ( + ) (fun () -> f_d (A.next d `Month));
+  := make_span_handler s_m sig_month ( + )
+       (valid_period (A.next d `Month))
+       (fun () -> f_d (A.next d `Month));
   (To_dom.of_element prev_year)##.onclick
-  := make_span_handler s_y sig_year ( - ) (fun () -> f_d (A.prev d `Year));
+  := make_span_handler s_y sig_year ( - )
+       (valid_period (A.prev d `Year))
+       (fun () -> f_d (A.prev d `Year));
   (To_dom.of_element next_year)##.onclick
-  := make_span_handler s_y sig_year ( + ) (fun () -> f_d (A.next d `Year))
+  := make_span_handler s_y sig_year ( + )
+       (valid_period (A.next d `Year))
+       (fun () -> f_d (A.next d `Year))
 
 let%client make
     :  ?init:int * int * int -> ?highlight:(int -> int -> int list Lwt.t)
     -> ?click_non_highlighted:bool -> ?update:(int * int * int) React.E.t
-    -> ?action:(int -> int -> int -> unit Lwt.t) -> ?button_labels:button_labels
+    -> ?action:(int -> int -> int -> unit Lwt.t)
+    -> ?period:A.field A.date * A.field A.date -> ?button_labels:button_labels
     -> ?intl:intl -> unit -> [> Html_types.table] elt
   =
  fun ?init ?highlight ?click_non_highlighted ?update ?action
+     ?(period = default_period.begin_p, default_period.end_p)
      ?(button_labels = default_button_labels) ?(intl = default_intl) () ->
+  let period = {begin_p = fst period; end_p = snd period} in
   let init, init_ym =
     let y, m, d =
       match init with
@@ -442,10 +487,10 @@ let%client make
   let d_ym, f_d_ym = React.S.create init_ym in
   let f d_ym =
     let ((cal, _, _, _, _, _, _) as c) =
-      build_calendar ~intl ~button_labels ~prehilight:init d_ym
+      build_calendar ~intl ~button_labels ~prehilight:init ~period d_ym
     in
-    attach_behavior ?highlight ?click_non_highlighted ?action ~intl d_ym c
-      f_d_ym;
+    attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d_ym
+      c f_d_ym;
     cal
   in
   (match update with
@@ -466,16 +511,17 @@ let%server make
     -> ?click_non_highlighted:bool
     -> ?update:(int * int * int) React.E.t Eliom_client_value.t
     -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
-    -> ?button_labels:button_labels -> ?intl:intl -> unit
-    -> [> Html_types.table] elt
+    -> ?period:A.field A.date * A.field A.date -> ?button_labels:button_labels
+    -> ?intl:intl -> unit -> [> Html_types.table] elt
   =
- fun ?init ?highlight ?click_non_highlighted ?update ?action ?button_labels
-     ?intl () ->
+ fun ?init ?highlight ?click_non_highlighted ?update ?action ?period
+     ?button_labels ?intl () ->
   C.node
     [%client
       (make ?init:~%init ?highlight:~%highlight
          ?click_non_highlighted:~%click_non_highlighted ?update:~%update
-         ?action:~%action ?intl:~%intl ?button_labels:~%button_labels ()
+         ?action:~%action ?period:~%period ?intl:~%intl
+         ?button_labels:~%button_labels ()
         : [> Html_types.table] elt)]
 
 let make_date_picker ?init ?update ?button_labels ?intl () =
