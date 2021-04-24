@@ -2,6 +2,17 @@
 
 open Js_of_ocaml
 
+val bind
+  :  ?transition_duration:float
+  -> ?min:(unit -> int) Eliom_client_value.t
+  -> ?max:(unit -> int) Eliom_client_value.t
+  -> compute_final_pos:
+       (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t
+  -> ?onstart:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+  -> ?onmove:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+  -> ?onend:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
+  -> 'a Eliom_content.Html.elt
+  -> unit
 (**
    [bind ~compute_final_pos elt] makes [elt] left-right
    swipable on touch screens.
@@ -17,23 +28,19 @@ open Js_of_ocaml
    can be used to execute some side effect on touch start, touch move and
    touch end. The second parameter is the current move.
  *)
-val bind:
-  ?transition_duration : float ->
-  ?min : (unit -> int) Eliom_client_value.t ->
-  ?max : (unit -> int) Eliom_client_value.t ->
-  compute_final_pos: (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t ->
-  ?onstart: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
-  ?onmove: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
-  ?onend: (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t ->
-  'a Eliom_content.Html.elt ->
-  unit
 
 (**/**)
+
 [%%client.start]
+
 val clX : Dom_html.touchEvent Js.t -> int
 val clY : Dom_html.touchEvent Js.t -> int
 val threshold : int
-val dispatch_event :
-  ev:Dom_html.touchEvent Js.t ->
-  Dom_html.element Js.t ->
-  string -> int -> int -> unit
+
+val dispatch_event
+  :  ev:Dom_html.touchEvent Js.t
+  -> Dom_html.element Js.t
+  -> string
+  -> int
+  -> int
+  -> unit

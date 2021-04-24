@@ -19,11 +19,11 @@ val make
   -> ?scale:float
   -> ?dragThreshold:float
   -> ?refresh_timeout:float
-  -> ?header:(state option
-              -> ([< Html_types.div_content_fun > `Div] as 'a)
-                 Eliom_content.Html.elt
-                 list)
-             Eliom_shared.Value.t
+  -> ?header:
+       (state option
+        -> ([< Html_types.div_content_fun > `Div] as 'a) Eliom_content.Html.elt
+           list)
+       Eliom_shared.Value.t
   -> content:'a Eliom_content.Html.elt
   -> (unit -> bool Lwt.t) Eliom_client_value.t
   -> 'a Eliom_content.Html.elt

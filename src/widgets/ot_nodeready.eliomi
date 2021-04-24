@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 [%%client.start]
 
 open Js_of_ocaml
 
+val nodeready : #Dom.node Js.t -> unit Lwt.t
 (** Wait for a node to be inserted in the DOM.
 
     {3 Example}
@@ -34,4 +35,3 @@ open Js_of_ocaml
     make the node and the thread wakener kept in memory.  Also, note
     that nodeready is fired only once (except if you add a new
     listener to it after triggering the first one). *)
-val nodeready : #Dom.node Js.t -> unit Lwt.t

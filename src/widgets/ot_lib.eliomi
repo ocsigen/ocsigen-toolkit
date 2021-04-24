@@ -23,10 +23,14 @@
 
 open Js_of_ocaml
 
-val in_ancestors : elt:Dom_html.element Js.t -> ancestor:Dom_html.element Js.t -> bool
+val in_ancestors
+  :  elt:Dom_html.element Js.t
+  -> ancestor:Dom_html.element Js.t
+  -> bool
 
 val onloads : (unit -> unit) -> unit
 
+val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 (** NOTE: be careful when using the functions [onresizes],
     [window_scroll], and [window_scrolls]. They may be called before
     the new document is displayed (and thus the new window is there)
@@ -34,10 +38,14 @@ val onloads : (unit -> unit) -> unit
     replaced. In most use-cases you should have a line as follows
     before: let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element
     some_elt in *)
-val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
 
+val window_scrolls
+  :  ?ios_html_scroll_hack:bool
+  -> ?use_capture:bool
+  -> (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t)
+  -> unit Lwt.t
 (** If [ios_html_scroll_hack] then listen on window + html + body
     instead of only window.  On iOS (8 and 9), in WkWebView and in
     Safari, some CSS properties (e.g. html{overflow:scroll;
@@ -64,19 +72,18 @@ val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
     broken when ON.)  It's useful to listen on html even if it's only
     relevant when ON + capture=true, because we probably want, when
     capture=true, to capture the event as early as possible. *)
-val window_scrolls : ?ios_html_scroll_hack:bool -> ?use_capture:bool ->
-  (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 
+val click_outside
+  :  ?use_capture:bool
+  -> ?inside:Dom_html.element Js.t
+  -> #Dom_html.element Js.t
+  -> Dom_html.mouseEvent Js.t Lwt.t
 (** [click_outside e] returns when user clicks outside element [e].
     Will only catch clicks inside the element given as optional
     parameter [?inside] (default is [Dom_html.document##.body]). *)
-val click_outside :
-  ?use_capture:bool ->
-  ?inside:Dom_html.element Js.t ->
-  #Dom_html.element Js.t -> Dom_html.mouseEvent Js.t Lwt.t
-
 
 [%%shared.start]
+
 module List : sig
   val iteri2 : (int -> 'a -> 'b -> unit) -> 'a list -> 'b list -> unit
 end

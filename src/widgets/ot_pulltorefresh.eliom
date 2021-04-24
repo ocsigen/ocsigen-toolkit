@@ -2,8 +2,7 @@
 
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
-[%%client
-open Eliom_content.Html]
+[%%client open Eliom_content.Html]
 
 open Eliom_content.Html.D
 
@@ -82,8 +81,7 @@ module Make (Conf : CONF) = struct
               let dY = - !dragStart + target##.clientY in
               distance := Float.sqrt (float_of_int dY) *. scale;
               if !first_move
-              then
-                scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
+              then scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
           (*move the container if and only if at the top of the document and
             the page is scrolled down*)
           if !top && !distance > 0. && not !scrollingX

@@ -23,9 +23,11 @@
 
 (** This module implements a color picker.  *)
 
-val hsv_to_rgb : int -> float -> float -> (float * float * float)
+val hsv_to_rgb : int -> float -> float -> float * float * float
 (** [hsv_to_rgb h s v] converts HS(V/L) colors to RGB. *)
 
-val make : ?a: [< Html_types.div_attrib > `Class ] Eliom_content.Html.attrib list ->
-           [> `Div ] Eliom_content.Html.D.elt * (int * float * float) Eliom_shared.React.S.t
+val make
+  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+  -> [> `Div] Eliom_content.Html.D.elt
+     * (int * float * float) Eliom_shared.React.S.t
 (** [make ()] produces a color picker. *)

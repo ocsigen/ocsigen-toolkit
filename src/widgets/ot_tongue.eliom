@@ -1,11 +1,9 @@
-[%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F]
+[%%shared open Eliom_content.Html
+          open Eliom_content.Html.F]
 
-[%%client
-open Lwt.Infix
-open Js_of_ocaml
-open Js_of_ocaml_lwt]
+[%%client open Lwt.Infix
+          open Js_of_ocaml
+          open Js_of_ocaml_lwt]
 
 let%client inertia_parameter1 = 0.1
 (* WARNING: inertia_parameter1 must be adapted to cubic-bezier in CSS!
@@ -198,16 +196,16 @@ let%client disable_transition elt =
 
 let%client enable_transition ?duration elt =
   (match duration with
-   | None -> ()
-   | Some duration ->
-     let elt' = To_dom.of_element elt in
-     (Js.Unsafe.coerce elt'##.style)##.transitionDuration
-     := Js.string (Printf.sprintf "%.2fs" duration));
+  | None -> ()
+  | Some duration ->
+      let elt' = To_dom.of_element elt in
+      (Js.Unsafe.coerce elt'##.style)##.transitionDuration
+      := Js.string (Printf.sprintf "%.2fs" duration));
   Manip.Class.remove elt "notransition";
   Lwt_js_events.request_animation_frame ()
 
-let%client bind side stops init handle update set_before_signal
-    set_after_signal elt
+let%client bind side stops init handle update set_before_signal set_after_signal
+    elt
   =
   let open Lwt_js_events in
   let elt' = To_dom.of_element elt in
@@ -228,8 +226,7 @@ let%client bind side stops init handle update set_before_signal
     let duration =
       if is_attractor
       then None
-      else
-        Some Float.(pow (inertia_parameter2 *. abs speed) inertia_parameter3)
+      else Some Float.(pow (inertia_parameter2 *. abs speed) inertia_parameter3)
     in
     let%lwt () = enable_transition ?duration elt in
     elt'##.style##.transform := make_stop elt side stop;
@@ -309,7 +306,8 @@ let%client bind side stops init handle update set_before_signal
   in
   Lwt.async (fun () -> touchstarts handle' ontouchstart);
   match update with
-  | Some update -> ignore (React.E.map (fun stop -> set 0.0 (stop, true)) update)
+  | Some update ->
+      ignore (React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 
 let%shared tongue ?(a = []) ?(side = `Bottom)
@@ -353,8 +351,7 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
         : int React.S.t)]
   in
   { elt
-  ; stop_signal_before =
-      [%client (fst ~%before_signal : simple_stop React.S.t)]
+  ; stop_signal_before = [%client (fst ~%before_signal : simple_stop React.S.t)]
   ; stop_signal_after = [%client (fst ~%after_signal : simple_stop React.S.t)]
   ; px_signal_before
   ; px_signal_after }

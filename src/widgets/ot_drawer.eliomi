@@ -23,6 +23,23 @@
 
 (** {2 Drawer menu for mobile and Web applications} *)
 
+val drawer
+  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+  -> ?position:[`Top | `Right | `Bottom | `Left]
+  -> ?opened:bool
+  -> ?swipe:bool
+  -> ?onclose:(unit -> unit) Eliom_client_value.t
+  -> ?onopen:(unit -> unit) Eliom_client_value.t
+  -> ?wrap_close:
+       ((unit -> unit) Eliom_client_value.t
+        -> (unit -> unit) Eliom_client_value.t)
+  -> ?wrap_open:
+       ((unit -> unit) Eliom_client_value.t
+        -> (unit -> unit) Eliom_client_value.t)
+  -> [< Html_types.div_content] Eliom_content.Html.elt list
+  -> [> `Div] Eliom_content.Html.elt
+     * (unit -> unit) Eliom_client_value.t
+     * (unit -> unit) Eliom_client_value.t
 (** Build a drawer menu on the left, right, top or bottom of the screen.
     Returns the DOM element, and functions to open and close the menu.
     It is also possible to open or close the menu by clicking on a button,
@@ -41,18 +58,3 @@
     [open_] functions when the drawer closing or opening is triggered. For
     example, drawer closing can be disabled using [wrap_close].
 *)
-val drawer :
-  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list ->
-  ?position:[ `Top | `Right | `Bottom | `Left ] ->
-  ?opened:bool ->
-  ?swipe:bool ->
-  ?onclose:(unit -> unit) Eliom_client_value.t ->
-  ?onopen:(unit -> unit) Eliom_client_value.t ->
-  ?wrap_close:((unit -> unit) Eliom_client_value.t ->
-    (unit -> unit) Eliom_client_value.t) ->
-  ?wrap_open:((unit -> unit) Eliom_client_value.t ->
-    (unit -> unit) Eliom_client_value.t) ->
-  [< Html_types.div_content] Eliom_content.Html.elt list ->
-  [> `Div ] Eliom_content.Html.elt *
-  (unit -> unit) Eliom_client_value.t *
-  (unit -> unit) Eliom_client_value.t

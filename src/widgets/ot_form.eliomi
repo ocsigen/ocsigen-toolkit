@@ -23,23 +23,25 @@ open Eliom_content.Html
 open Html_types
 
 (** An HTML element which can be selected by pressing the tab key *)
-class type tabbable = object
-  inherit Dom_html.element
-  method tabIndex : int Js.prop
-end
+class type tabbable =
+  object
+    inherit Dom_html.element
 
+    method tabIndex : int Js.prop
+  end
+
+val setup_tabcycle : #tabbable Js.t list -> unit
 (** [setup_tabcycle] makes tab key loop over child elements of an element and
     only these elements. *)
-val setup_tabcycle : #tabbable Js.t list -> unit
 
+val setup_tabcycle_auto : Dom_html.element Js.t -> unit
 (** [setup_tabcycle_auto] scans an element for tabbable elements (buttons, inputs)
     and feeds them to [setup_tabcycle] *)
-val setup_tabcycle_auto : Dom_html.element Js.t -> unit
 
+val setup_form : Dom_html.element Js.t -> unit
 (** Scan for focusable elements apply [setup_tabcycle_auto] to them and
     focus the first. *)
-val setup_form : Dom_html.element Js.t -> unit
 
+val prevent_tab : Dom_html.element Js.t -> unit -> unit
 (** [prevent_tab e] prevents [e] (and its children) to be focused with tab key.
     A function to restore the initial status is returned. *)
-val prevent_tab : Dom_html.element Js.t -> (unit -> unit)

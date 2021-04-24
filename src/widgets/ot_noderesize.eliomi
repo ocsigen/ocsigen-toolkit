@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 (* This is a redo of [ResizeSensor.js] which is MIT licensed, with few
    patches
@@ -55,10 +55,10 @@ type resize_sensor
 
 val attach : #Dom_html.element Js.t -> resize_sensor
 
+val noderesize : ?safe:bool -> resize_sensor -> (unit -> unit) -> unit
 (** When [safe] is set to [true], [noderesize] will work whatever sized is
     the watched element. When set to [false] (which is the default),
     elements bigger than 9999px (width or height) will not detect resize,
     but noderesize will be more efficient (less computation/reading). *)
-val noderesize : ?safe:bool -> resize_sensor -> (unit -> unit) -> unit
 
 val detach : resize_sensor -> unit
