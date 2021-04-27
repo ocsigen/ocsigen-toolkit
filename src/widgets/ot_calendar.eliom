@@ -214,7 +214,7 @@ let rec build_calendar ?prehilight
     let month = A.month today |> string_of_month in
     let open D in
     select
-      ~a:[a_name "ot-c-select-month"]
+      ~a:[a_class ["ot-c-select-month"]]
       (default_intl.i_months
       |> List.map (fun m ->
              if month = m
@@ -224,7 +224,7 @@ let rec build_calendar ?prehilight
     let year = A.year today |> string_of_int in
     let open D in
     select
-      ~a:[a_name "ot-c-select-year"]
+      ~a:[a_class ["ot-c-select-year"]]
       (List.init
          A.(year period.end_p - year period.begin_p + 1)
          (fun i ->
@@ -239,12 +239,15 @@ let rec build_calendar ?prehilight
       [ tr
           [ th
               ~a:[a_colspan 7; a_class ["ot-c-header"]]
-              [ prev_year_button
-              ; prev_button
-              ; select_month
-              ; select_year
-              ; next_button
-              ; next_year_button ] ]
+              [ div
+                  ~a:[a_class ["ot-c-pv-nx-button"]]
+                  [prev_year_button; prev_button]
+              ; div
+                  ~a:[a_class ["ot-c-pv-nx-select"]]
+                  [select_month; select_year]
+              ; div
+                  ~a:[a_class ["ot-c-pv-nx-button"]]
+                  [next_button; next_year_button] ] ]
       ; tr (List.map (fun d -> th [txt d]) (get_rotated_days intl)) ]
   and f_cell i j =
     let d = CalendarLib.Calendar.Date.(add zero (Period.day (j + (7 * i)))) in
