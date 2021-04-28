@@ -142,6 +142,14 @@ let display ?a cp_sig =
   >|= [%shared display_aux ?a:~%a ~setter:~%setter]
   |> Eliom_content.Html.R.node
 
-let make ?a =
-  let cp_sig = Eliom_shared.React.S.create (255, 1.0, 0.0) in
-  display ?a cp_sig, fst cp_sig
+let make ?a ?hsv
+    ?(update = [%client (React.E.never : (int * float * float) React.E.t)]) ()
+  =
+  let ((cp_sig, cp_set) as cp_react) =
+    Eliom_shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
+  in
+  ignore
+    [%client
+      (* /!\ How to avoid the effectfull signal ? *)
+      (React.E.map (fun update -> ~%cp_set update) ~%update : unit React.event)];
+  display ?a cp_react, cp_sig
