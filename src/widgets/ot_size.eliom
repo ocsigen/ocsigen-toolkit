@@ -19,12 +19,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-
 [%%client.start]
 
 open Js_of_ocaml
 open Js_of_ocaml_lwt
-
 
 (* size and orientation *)
 type orientation = Portrait | Landscape
@@ -35,13 +33,10 @@ let get_screen_size () =
 
 let get_screen_orientation () =
   let width, height = get_screen_size () in
-  if (width <= height) then Portrait else Landscape
+  if width <= height then Portrait else Landscape
 
-let get_size dom_html =
-  dom_html##.clientWidth, dom_html##.clientHeight
-
-let get_document_size () =
-  get_size Dom_html.document##.documentElement
+let get_size dom_html = dom_html##.clientWidth, dom_html##.clientHeight
+let get_document_size () = get_size Dom_html.document##.documentElement
 
 (* No: this must be recomputed every time,
    otherwise it won't work after a change page
@@ -61,67 +56,73 @@ let update_width_height () =
 
 let width_height, width, height =
   (* TODO: MutationObserver? *)
-  Lwt_js_events.(async @@ fun () -> onresizes @@ fun _ _ ->
-    Lwt.return @@ update_width_height ());
+  (let open Lwt_js_events in
+  async @@ fun () ->
+  onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ());
   let w = React.S.l1 fst wh in
   let h = React.S.l1 snd wh in
   (* Make sure the signals are not destroyed indirectly
      by a call to React.S.stop *)
   ignore (React.S.map (fun _ -> ()) w);
   ignore (React.S.map (fun _ -> ()) h);
-  (wh, w, h)
+  wh, w, h
 
 let set_adaptative_width elt f =
   (*VVV Warning: it works only because we do not have weak pointers
     on client side, thus the signal is not garbage collected.
     If Weak is implemented on client side, we must keep a pointer
     on this signal in the element *)
-  ignore (React.S.map
-            (fun w -> elt##.style##.width :=
-              Js.string (string_of_int (f w)^"px")) height)
+  ignore
+    (React.S.map
+       (fun w -> elt##.style##.width := Js.string (string_of_int (f w) ^ "px"))
+       height)
 
 let set_adaptative_height elt f =
   (*VVV see above *)
   ignore
     (React.S.map
-       (fun w -> elt##.style##.height :=
-         Js.string (string_of_int (f w)^"px")) height)
+       (fun w -> elt##.style##.height := Js.string (string_of_int (f w) ^ "px"))
+       height)
 
-let of_opt elt =
-  Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
+let of_opt elt = Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
 
 let height_to_bottom offset elt =
   let page = Dom_html.document##.documentElement in
   let h = page##.clientHeight in
   try
-    let top = Js.to_float (of_opt (elt##getClientRects##(item (0))))##.top in
+    let top = Js.to_float (of_opt elt ## getClientRects ## (item 0))##.top in
     h - int_of_float top - offset
   with Failure _ -> h - offset
 
 let client_top ?(with_margin = false) elt =
-  Js.to_float elt##getBoundingClientRect##.top -.
-  if with_margin then Ot_style.marginTop elt else 0.0
+  Js.to_float elt##getBoundingClientRect##.top
+  -. if with_margin then Ot_style.marginTop elt else 0.0
+
 let client_bottom ?(with_margin = false) elt =
-  Js.to_float elt##getBoundingClientRect##.bottom +.
-  if with_margin then Ot_style.marginBottom elt else 0.0
+  Js.to_float elt##getBoundingClientRect##.bottom
+  +. if with_margin then Ot_style.marginBottom elt else 0.0
+
 let client_left ?(with_margin = false) elt =
-  Js.to_float elt##getBoundingClientRect##.left -.
-  if with_margin then Ot_style.marginLeft elt else 0.0
+  Js.to_float elt##getBoundingClientRect##.left
+  -. if with_margin then Ot_style.marginLeft elt else 0.0
+
 let client_right ?(with_margin = false) elt =
-  Js.to_float elt##getBoundingClientRect##.right +.
-  if with_margin then Ot_style.marginRight elt else 0.0
+  Js.to_float elt##getBoundingClientRect##.right
+  +. if with_margin then Ot_style.marginRight elt else 0.0
+
 let client_height ?(with_margin = false) elt =
   client_bottom ~with_margin elt -. client_top ~with_margin elt
+
 let client_width ?(with_margin = false) elt =
   client_right ~with_margin elt -. client_left ~with_margin elt
 
 let client_page_top ?with_margin elt =
-  client_top ?with_margin elt -.
-  Dom_html.document##.body##getBoundingClientRect##.top
+  client_top ?with_margin elt
+  -. Dom_html.document##.body##getBoundingClientRect##.top
 
 let client_page_left ?with_margin elt =
-  client_left elt ?with_margin -.
-  Dom_html.document##.body##getBoundingClientRect##.left
+  client_left elt ?with_margin
+  -. Dom_html.document##.body##getBoundingClientRect##.left
 
 let client_page_bottom ?with_margin elt =
   Dom_html.document##.body##getBoundingClientRect##.bottom
@@ -131,7 +132,8 @@ let client_page_right ?with_margin elt =
   Dom_html.document##.body##getBoundingClientRect##.left
   -. client_right elt ?with_margin
 
-let pageYOffset () = (* absolute vertical scroll position *)
+let pageYOffset () =
+  (* absolute vertical scroll position *)
   let get_clientHeight () =
     Dom_html.document##.documentElement##.clientHeight
   in
@@ -140,7 +142,8 @@ let pageYOffset () = (* absolute vertical scroll position *)
     try (Js.Unsafe.coerce Dom_html.window)##.innerHeight
     with _ -> get_clientHeight ()
   in
-  max 0 @@ (* overscroll at the top *)
-  min      (* overscroll at the bottom *)
+  max 0
+  @@ (* overscroll at the top *)
+  min (* overscroll at the bottom *)
     (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
-    ((Js.Unsafe.coerce Dom_html.window)##.pageYOffset)
+    (Js.Unsafe.coerce Dom_html.window)##.pageYOffset

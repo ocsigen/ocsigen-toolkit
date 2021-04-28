@@ -22,6 +22,16 @@
 
 (** This module implements a clock-style time picker. *)
 
+val make
+  :  ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
+  -> ?init:int * int
+  -> ?update:(int * int) React.E.t Eliom_client_value.t
+  -> ?round_5:bool
+  -> ?h24:bool
+  -> unit
+  -> [> `Div] Eliom_content.Html.elt
+     * (int * int) Eliom_shared.React.S.t
+     * (unit -> unit) Eliom_client_value.t
 (** [make ?action ?round_5 ?h24 ()] produces a clock-style time picker
     for hours and minutes. The user is first asked to pick hours, then
     minutes with a separate clock.
@@ -44,35 +54,15 @@
     output is a reactive signal [(h, m)] where [h] are the hours and
     [m] the minutes that the user picked. The third part of the output
     is a function that can be called to go back to hours selection. *)
-val make :
-  ?action :
-    (int * int -> unit Lwt.t) Eliom_client_value.t ->
-  ?init :
-    int * int ->
-  ?update :
-    (int * int) React.E.t Eliom_client_value.t ->
-  ?round_5 :
-    bool ->
-  ?h24 :
-    bool ->
-  unit ->
-  [> `Div] Eliom_content.Html.elt *
-  (int * int) Eliom_shared.React.S.t *
-  (unit -> unit) Eliom_client_value.t
 
+val make_hours_minutes_seq
+  :  ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
+  -> ?init:int * int
+  -> ?update:(int * int) React.E.t Eliom_client_value.t
+  -> ?round_5:bool
+  -> ?h24:bool
+  -> unit
+  -> [> `Div] Eliom_content.Html.elt
+     * (int * int) Eliom_shared.React.S.t
+     * (unit -> unit) Eliom_client_value.t
 (** Alias of [make]. Deprecated. *)
-val make_hours_minutes_seq :
-  ?action :
-    (int * int -> unit Lwt.t) Eliom_client_value.t ->
-  ?init :
-    int * int ->
-  ?update :
-    (int * int) React.E.t Eliom_client_value.t ->
-  ?round_5 :
-    bool ->
-  ?h24 :
-    bool ->
-  unit ->
-  [> `Div] Eliom_content.Html.elt *
-  (int * int) Eliom_shared.React.S.t *
-  (unit -> unit) Eliom_client_value.t

@@ -7,7 +7,7 @@
     the current page. [Backward] means going backward in history. In
     this case, the current page moves to the right side in order to
     display the page covered by it. *)
-type animation = Nil|Forward|Backward
+type animation = Nil | Forward | Backward
 
 (** Suppose that screenshots are stored in objects of type [screenshot].
     Users need to provide a module which specifies the type screenshot
@@ -16,8 +16,10 @@ type animation = Nil|Forward|Backward
 *)
 module type PAGE_TRANSITION_CONF = sig
   type screenshot
-  val screenshot_container :
-    screenshot option -> Html_types.div_content Eliom_content.Html.elt
+
+  val screenshot_container
+    :  screenshot option
+    -> Html_types.div_content Eliom_content.Html.elt
 end
 
 (** [install_global_handler t take_screenshot animation_type]
@@ -31,18 +33,22 @@ end
 
     TODO: we can avoid the callback function by transforming
     [take_screenshot] to a function of type [unit -> screenshot Lwt.t]*)
-module Make (Conf:PAGE_TRANSITION_CONF) : sig
+module Make (Conf : PAGE_TRANSITION_CONF) : sig
   type screenshot
-  val install_global_handler :
-    ?transition_duration : float ->
-    take_screenshot: ((screenshot -> unit) -> unit) ->
-    animation_type: (Eliom_client.changepage_event -> animation) -> unit
-end with type screenshot = Conf.screenshot
 
+  val install_global_handler
+    :  ?transition_duration:float
+    -> take_screenshot:((screenshot -> unit) -> unit)
+    -> animation_type:(Eliom_client.changepage_event -> animation)
+    -> unit
+end
+with type screenshot = Conf.screenshot
+
+val install_global_handler_withURI
+  :  ?transition_duration:float
+  -> take_screenshot:((string -> unit) -> unit)
+  -> animation_type:(Eliom_client.changepage_event -> animation)
+  -> unit
 (** [install_global_handler_withURI] enables you to skip the step of
     creating a module of type [PAGE_TRANSITION_CONF] when screenshots
     are stored as a data uri. *)
-val install_global_handler_withURI :
-  ?transition_duration:float ->
-  take_screenshot: ((string -> unit) -> unit) ->
-  animation_type: (Eliom_client.changepage_event -> animation) -> unit

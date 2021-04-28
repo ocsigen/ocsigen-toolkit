@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 [%%shared.start]
 
@@ -26,20 +26,30 @@
 open Eliom_content.Html
 open Html_types
 
+val hcf
+  :  ?a:[< div_attrib] attrib list
+  -> ?header:[< header_content_fun] elt list
+  -> ?footer:[< footer_content_fun] elt list
+  -> [< div_content] elt list
+  -> [> `Section] elt
 (** Section with header, content and footer.
     [header] and [footer] are empty by default
     This is just a short
     Header and footer can be empty (default) and
     have fix size. Content has scrollbar if too high. *)
-val hcf :
-  ?a:[< div_attrib ] attrib list ->
-  ?header:[< header_content_fun ] elt list ->
-  ?footer:[< footer_content_fun ] elt list ->
-  [< div_content ] elt list ->
-  [> `Section ] elt
 
 [%%client.start]
 
+val popup
+  :  ?a:[< div_attrib] attrib list
+  -> ?enable_scrolling_hack:bool
+  -> ?close_button:button_content elt list
+  -> ?confirmation_onclose:(unit -> bool Lwt.t)
+  -> ?onclose:(unit -> unit Lwt.t)
+  -> ?close_on_background_click:bool
+  -> ?close_on_escape:bool
+  -> ((unit -> unit Lwt.t) -> [< div_content] elt Lwt.t)
+  -> [> `Div] elt Lwt.t
 (** [ popup ?a ?enable_scrolling_hack
        ?close_button ?confirmation_onclose ?onclose gen_content ]
     Display a modal popup.
@@ -66,33 +76,28 @@ val hcf :
     If [close_on_escape] (default: true if [close_button] is supplied) then
     hitting the escape key will close the popup.
 *)
-val popup :
-  ?a:[< div_attrib ] attrib list
-  -> ?enable_scrolling_hack:bool
-  -> ?close_button:(button_content elt list)
-  -> ?confirmation_onclose:(unit -> bool Lwt.t)
-  -> ?onclose:(unit -> unit Lwt.t)
-  -> ?close_on_background_click:bool
-  -> ?close_on_escape:bool
-  -> ((unit -> unit Lwt.t) -> [< div_content ] elt Lwt.t)
-  -> [> `Div ] elt Lwt.t
 
+val ask_question
+  :  ?a:[< div_attrib] attrib list
+  -> ?a_hcf:[< div_attrib] attrib list
+  -> header:[< header_content] elt list
+  -> buttons:
+       ([< button_content_fun] elt list * (unit -> 'a Lwt.t) * string list) list
+  -> [< div_content] elt list
+  -> 'a Lwt.t
 (** [ask_question ?a ?a_hcf question buttons]
     Prompt a user, wait for its response and return the selected value.
     [question] is the content of the popup header
     [buttons] is the list of available answers. Each button is a triple
     of [(content, action, classes)]. [action ()] is called to return the
     value when the corresponding button is clicked. *)
-val ask_question :
-  ?a:[< div_attrib ] attrib list
-  -> ?a_hcf:[< div_attrib ] attrib list
-  -> header:[< header_content ] elt list
-  -> buttons:([< button_content_fun ] elt list
-              * (unit -> 'a Lwt.t)
-              * string list) list
-  -> [< div_content ] elt list
-  -> 'a Lwt.t
 
+val confirm
+  :  ?a:[< div_attrib] attrib list
+  -> [< header_content_fun] elt list
+  -> ([< button_content_fun] as 'a) elt list
+  -> 'a elt list
+  -> bool Lwt.t
 (** Shortcut using [ask_question] for prompting the user with a question
     and returning a boolean.
     [confirm ?a question yes no]
@@ -100,16 +105,9 @@ val ask_question :
     [question] is the content of the popup header
     [yes] is the content of the 'yes' button (returning true)
     [no] is the content of the 'no' button (returning false) *)
-val confirm :
-  ?a:[< div_attrib ] attrib list
-  -> [< header_content_fun ] elt list
-  -> ([< button_content_fun ] as 'a) elt list
-  -> 'a elt list
-  -> bool Lwt.t
 
-
-(** Allows to fix the body manually (see [?enable_scrolling_hack] above) *)
 val enable_page_scroll : unit -> unit
+(** Allows to fix the body manually (see [?enable_scrolling_hack] above) *)
 
-(** Disable body scrolling hack *)
 val disable_page_scroll : unit -> unit
+(** Disable body scrolling hack *)

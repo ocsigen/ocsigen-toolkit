@@ -21,7 +21,9 @@ module URI : PAGE_TRANSITION_CONF with type screenshot = string = struct
 
   let screenshot_container uri =
     let container = div ~a:[a_class ["ot-page-transition-ss-container"]] [] in
-    let str = match uri with None -> "" | Some u -> Printf.sprintf "url(%s)" u in
+    let str =
+      match uri with None -> "" | Some u -> Printf.sprintf "url(%s)" u
+    in
     Manip.SetCss.backgroundImage container str;
     container
 end
@@ -37,9 +39,7 @@ let cl_wrapper = "ot-page-transition-wrapper"
 let cl_screenshot_post_forward = "ot-page-transition-screenshot-post-forward"
 
 module Option = struct
-  let may f = function
-    | Some x -> f x
-    | None -> ()
+  let may f = function Some x -> f x | None -> ()
 end
 
 module Make (Conf : PAGE_TRANSITION_CONF) = struct
@@ -58,14 +58,14 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
     let initial_transition_duration = style##.transitionDuration in
     let screenshot_wrapper, screenshot_container =
       match screenshot with
-        | Some screenshot ->
+      | Some screenshot ->
           let screenshot_wrapper, screenshot_container =
             wrap_screenshot
               ~a:[a_class ["ot-page-transition-wrapper-forward"]]
               ~transition_duration ~screenshot:(Some screenshot)
           in
           Some screenshot_wrapper, Some screenshot_container
-        | None -> None, None
+      | None -> None, None
     in
     Eliom_client.lock_request_handling ();
     Option.may Manip.appendToBody screenshot_wrapper;
@@ -93,7 +93,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
       forward_animation_ transition_duration ss
     in
     let f screenshot = fa @@ Some screenshot in
-    (try take_screenshot f; with _ -> fa None);
+    (try take_screenshot f with _ -> fa None);
     Lwt.return_unit
 
   let backward_animation_ transition_duration screenshot =
@@ -122,7 +122,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
       backward_animation_ transition_duration ss
     in
     let f screenshot = ba @@ Some screenshot in
-    (try take_screenshot f; with _ -> ba None);
+    (try take_screenshot f with _ -> ba None);
     Lwt.return_unit
 
   let install_global_handler ?transition_duration ~take_screenshot

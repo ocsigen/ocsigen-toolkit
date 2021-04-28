@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 [%%client.start]
 
@@ -58,20 +58,23 @@ open Js_of_ocaml
  *)
 
 val display
-  : ?container_a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
-  -> ?filter_a:[< Html_types.div_attrib > `Class `OnClick]
-    Eliom_content.Html.attrib list
-  -> ?side:[ `Left | `Right | `Center ]
-  -> origin : Dom_html.element Js.t
-  -> ?onopen:([> Html_types.div ] Eliom_content.Html.elt
-              -> [> Html_types.div ] Eliom_content.Html.elt
-              -> unit)
-  -> ?onclose:([> Html_types.div ] Eliom_content.Html.elt
-              -> [> Html_types.div ] Eliom_content.Html.elt
-              -> unit)
-  -> content: ((unit -> unit)
-               -> [< Html_types.div_content_fun > `Div]
-                 Eliom_content.Html.elt list)
+  :  ?container_a:
+       [< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+  -> ?filter_a:
+       [< Html_types.div_attrib > `Class `OnClick] Eliom_content.Html.attrib
+       list
+  -> ?side:[`Left | `Right | `Center]
+  -> origin:Dom_html.element Js.t
+  -> ?onopen:
+       ([> Html_types.div] Eliom_content.Html.elt
+        -> [> Html_types.div] Eliom_content.Html.elt
+        -> unit)
+  -> ?onclose:
+       ([> Html_types.div] Eliom_content.Html.elt
+        -> [> Html_types.div] Eliom_content.Html.elt
+        -> unit)
+  -> content:
+       ((unit -> unit)
+        -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list)
   -> unit
-  -> ( [> Html_types.div ] Eliom_content.Html.elt
-       * (unit -> unit) )
+  -> [> Html_types.div] Eliom_content.Html.elt * (unit -> unit)
