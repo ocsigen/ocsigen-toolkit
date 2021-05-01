@@ -12,7 +12,7 @@ license: "LGPL-2.1-only with OCaml-LGPL-linking-exception"
 build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 depends: [
-  "ocaml" {>= "4.07.0"}
+  "ocaml" {>= "4.08.0"}
   "eliom" {>= "6.12.1"}
   "calendar"
 ]
