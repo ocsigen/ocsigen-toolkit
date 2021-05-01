@@ -16,3 +16,6 @@ depends: [
   "eliom" {>= "6.12.1"}
   "calendar"
 ]
+depexts: [
+  ["libgdbm-dev"] {os-family = "debian"}
+]
