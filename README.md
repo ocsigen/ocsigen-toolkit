@@ -1,4 +1,4 @@
-# Ocsigen Toolkit
+# Ocsigen Toolkit [![Build](https://github.com/ocsigen/ocsigen-toolkit/actions/workflows/build.yml/badge.svg)](https://github.com/ocsigen/ocsigen-toolkit/actions/workflows/build.yml)
 
 ## Introduction
 
