@@ -124,6 +124,30 @@ div.ot-tp-container div.ot-tp-display {
     padding: 6px;
     font-size: 22px;
 }
+.ot-c-pv-nx-button, .ot-c-pv-nx-select {
+    display: inline;
+    padding: 17px;
+}
+div.ot-c-pv-nx-button span, div.ot-c-pv-nx-select select {
+    padding: 10px;
+}
+.ot-c-select-month, .ot-c-select-year {
+    border: 0px;
+    outline: 0px;
+    width: 60px; 
+    text-align-last:center;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='-5 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0px center;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-weight: bold;
+}
+.ot-c-out-period {
+    background-color: #fcfcfc;
+    color: rgb(200, 200, 200);
+    pointer-events: none;
+}
 .ot-c-table {
     font-size: 14px;
     line-height: 22px;
