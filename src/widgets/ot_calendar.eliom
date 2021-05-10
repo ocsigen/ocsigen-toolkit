@@ -84,19 +84,19 @@ let int_of_dow = function
   | `Fri -> 5
   | `Sat -> 6
 
-let string_of_month = function
-  | CalendarLib.Date.Jan -> "Jan"
-  | CalendarLib.Date.Feb -> "Feb"
-  | CalendarLib.Date.Mar -> "Mar"
-  | CalendarLib.Date.Apr -> "Apr"
-  | CalendarLib.Date.May -> "May"
-  | CalendarLib.Date.Jun -> "Jun"
-  | CalendarLib.Date.Jul -> "Jul"
-  | CalendarLib.Date.Aug -> "Aug"
-  | CalendarLib.Date.Sep -> "Sep"
-  | CalendarLib.Date.Oct -> "Oct"
-  | CalendarLib.Date.Nov -> "Nov"
-  | CalendarLib.Date.Dec -> "Dec"
+let string_of_month intl_months = function
+  | CalendarLib.Date.Jan -> List.nth intl_months 0
+  | CalendarLib.Date.Feb -> List.nth intl_months 1
+  | CalendarLib.Date.Mar -> List.nth intl_months 2
+  | CalendarLib.Date.Apr -> List.nth intl_months 3
+  | CalendarLib.Date.May -> List.nth intl_months 4
+  | CalendarLib.Date.Jun -> List.nth intl_months 5
+  | CalendarLib.Date.Jul -> List.nth intl_months 6
+  | CalendarLib.Date.Aug -> List.nth intl_months 7
+  | CalendarLib.Date.Sep -> List.nth intl_months 8
+  | CalendarLib.Date.Oct -> List.nth intl_months 9
+  | CalendarLib.Date.Nov -> List.nth intl_months 10
+  | CalendarLib.Date.Dec -> List.nth intl_months 11
 
 let int_of_month = function
   | CalendarLib.Date.Jan -> 1
@@ -112,35 +112,12 @@ let int_of_month = function
   | CalendarLib.Date.Nov -> 11
   | CalendarLib.Date.Dec -> 12
 
-let month_of_string = function
-  | "Jan" -> CalendarLib.Date.Jan
-  | "Feb" -> CalendarLib.Date.Feb
-  | "Mar" -> CalendarLib.Date.Mar
-  | "Apr" -> CalendarLib.Date.Apr
-  | "May" -> CalendarLib.Date.May
-  | "Jun" -> CalendarLib.Date.Jun
-  | "Jul" -> CalendarLib.Date.Jul
-  | "Aug" -> CalendarLib.Date.Aug
-  | "Sep" -> CalendarLib.Date.Sep
-  | "Oct" -> CalendarLib.Date.Oct
-  | "Nov" -> CalendarLib.Date.Nov
-  | "Dec" -> CalendarLib.Date.Dec
-  | _ -> failwith "not_a_month"
-
-let int_of_strmonth = function
-  | "Jan" -> 1
-  | "Feb" -> 2
-  | "Mar" -> 3
-  | "Apr" -> 4
-  | "May" -> 5
-  | "Jun" -> 6
-  | "Jul" -> 7
-  | "Aug" -> 8
-  | "Sep" -> 9
-  | "Oct" -> 10
-  | "Nov" -> 11
-  | "Dec" -> 12
-  | _ -> failwith "not_a_month"
+let int_of_strmonth intl_months month =
+  let rec aux i =
+    try if month = List.nth intl_months i then i + 1 else aux (i + 1)
+    with _ -> failwith "not_a_month"
+  in
+  aux 0
 
 let rec rotate_list ?(acc = []) l i =
   if i <= 0
@@ -221,7 +198,7 @@ let rec build_calendar ?prehilight
   and next_year_button =
     D.(span ~a:[a_class ["ot-c-next-year-button"]] [txt b_next_year])
   and select_month =
-    let month = CalendarLib.Date.month today |> string_of_month in
+    let month = CalendarLib.Date.month today |> string_of_month intl.i_months in
     let open D in
     select
       ~a:[a_class ["ot-c-select-month"]]
@@ -449,13 +426,13 @@ let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl
     valid_period
       (CalendarLib.Date.make_year_month
          (s_y_v () |> int_of_string)
-         (s_m_v () |> int_of_strmonth))
+         (s_m_v () |> int_of_strmonth intl.i_months))
   in
   let select_handler () =
     f_d
       (CalendarLib.Date.make_year_month
          (s_y_v () |> int_of_string)
-         (s_m_v () |> int_of_strmonth))
+         (s_m_v () |> int_of_strmonth intl.i_months))
   in
   let sig_year =
     React.S.create (CalendarLib.Date.year period.end_p - CalendarLib.Date.year d)
