@@ -74,6 +74,9 @@ val make_date_picker
   -> ?update:(int * int * int) React.E.t Eliom_client_value.t
   -> ?button_labels:button_labels
   -> ?intl:intl
+  -> ?period:
+       CalendarLib.Date.field CalendarLib.Date.date
+       * CalendarLib.Date.field CalendarLib.Date.date
   -> unit
   -> [> `Table] Eliom_content.Html.elt
      * (int * int * int) Eliom_shared.React.S.t
