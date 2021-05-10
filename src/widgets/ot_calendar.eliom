@@ -200,6 +200,13 @@ let zeroth_displayed_day ~intl d =
   then o
   else CalendarLib.Date.prev o `Week
 
+let%client select_action ?(size = 1) selector action =
+  let dom_select = Eliom_content.Html.To_dom.of_select selector in
+  Lwt.async (fun () ->
+      action dom_select (fun _ _ ->
+          dom_select##.size := size;
+          Lwt.return_unit))
+
 let rec build_calendar ?prehilight
     ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year} ~intl
     ~period day
@@ -218,7 +225,7 @@ let rec build_calendar ?prehilight
     let open D in
     select
       ~a:[a_class ["ot-c-select-month"]]
-      (default_intl.i_months
+      (intl.i_months
       |> List.map (fun m ->
              if month = m
              then option ~a:[a_value m; a_selected ()] (txt m)
@@ -236,6 +243,17 @@ let rec build_calendar ?prehilight
            then option ~a:[a_value y; a_selected ()] (txt y)
            else option ~a:[a_value y] (txt y)))
   in
+  let (_ : unit Eliom_client_value.t) =
+    [%client
+      let open Lwt_js_events in
+      let size = 10 in
+      select_action ~%select_year mousedowns ~size;
+      select_action ~%select_year changes;
+      select_action ~%select_year blurs;
+      select_action ~%select_month mousedowns ~size;
+      select_action ~%select_month changes;
+      select_action ~%select_month blurs]
+  in
   let thead =
     let open D in
     thead
@@ -243,13 +261,11 @@ let rec build_calendar ?prehilight
           [ th
               ~a:[a_colspan 7; a_class ["ot-c-header"]]
               [ div
-                  ~a:[a_class ["ot-c-pv-nx-button"]]
+                  ~a:[a_class ["ot-c-pv-button"]]
                   [prev_year_button; prev_button]
+              ; div ~a:[a_class ["ot-c-select"]] [select_month; select_year]
               ; div
-                  ~a:[a_class ["ot-c-pv-nx-select"]]
-                  [select_month; select_year]
-              ; div
-                  ~a:[a_class ["ot-c-pv-nx-button"]]
+                  ~a:[a_class ["ot-c-nx-button"]]
                   [next_button; next_year_button] ] ]
       ; tr (List.map (fun d -> th [txt d]) (get_rotated_days intl)) ]
   and f_cell i j =
