@@ -41,9 +41,8 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
     @@ (div ~a:[a_class ["ot-tip-src"]] [] :: content (fun () -> !close ()))
   in
   let m = To_dom.of_element container in
-  let mb = b##getBoundingClientRect in
-  let w = mb##.right -. mb##.left in
   let bb = b##getBoundingClientRect in
+  let w = bb##.right -. bb##.left in
   let top = int_of_float bb##.top in
   let bottom =
     Dom_html.document##.documentElement##.clientHeight
