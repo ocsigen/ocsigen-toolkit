@@ -35,13 +35,12 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
        -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list) ()
   =
   let close = ref @@ fun () -> () in
-  let b = origin in
   let container =
     D.div ~a:container_a
     @@ (div ~a:[a_class ["ot-tip-src"]] [] :: content (fun () -> !close ()))
   in
   let m = To_dom.of_element container in
-  let bb = b##getBoundingClientRect in
+  let bb = origin##getBoundingClientRect in
   let w = bb##.right -. bb##.left in
   let top = int_of_float bb##.top in
   let bottom =
