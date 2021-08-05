@@ -53,30 +53,25 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
   m##.style##.minWidth := print_px w;
-  (if top < bottom
+  if top < bottom
   then (
-    let top = print_px bb##.bottom in
-    m##.style##.top := top;
+    m##.style##.top := print_px bb##.bottom;
     m##.classList##add (Js.string "ot-tip-top"))
-  else
-    let bottom =
-      print_px
-        (float_of_int Dom_html.document##.documentElement##.clientHeight
-        -. bb##.top)
-    in
-    m##.style##.bottom := bottom;
+  else (
+    m##.style##.bottom
+    := print_px
+         (float_of_int Dom_html.document##.documentElement##.clientHeight
+         -. bb##.top);
     m##.classList##add (Js.string "ot-tip-bottom"));
   (match side with
   | `Left ->
-      let right =
-        float_of_int Dom_html.document##.documentElement##.clientWidth
-        -. bb##.right
-      in
-      m##.style##.right := print_px right;
+      m##.style##.right
+      := print_px
+           (float_of_int Dom_html.document##.documentElement##.clientWidth
+           -. bb##.right);
       Manip.Class.add container "ot-tip-left"
   | `Right ->
-      let left = bb##.left in
-      m##.style##.left := print_px left;
+      m##.style##.left := print_px bb##.left;
       Manip.Class.add container "ot-tip-right"
   | `Center ->
       if right < left
