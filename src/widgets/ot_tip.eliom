@@ -42,14 +42,14 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   let m = To_dom.of_element container in
   let bb = origin##getBoundingClientRect in
   let w = bb##.right -. bb##.left in
-  let top = int_of_float bb##.top in
+  let top = bb##.top in
   let bottom =
-    Dom_html.document##.documentElement##.clientHeight
-    - int_of_float bb##.bottom
+    float_of_int Dom_html.document##.documentElement##.clientHeight
+    -. bb##.bottom
   in
-  let left = int_of_float bb##.left in
+  let left = bb##.left in
   let right =
-    Dom_html.document##.documentElement##.clientWidth - int_of_float bb##.right
+    float_of_int Dom_html.document##.documentElement##.clientWidth -. bb##.right
   in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
   m##.style##.minWidth := print_px w;
