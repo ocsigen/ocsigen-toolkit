@@ -39,7 +39,19 @@ open Js_of_ocaml
     [menu_a]: menu attributes default is [ [ a_class ["ot-drp-menu"] ] ]
     and will be overriden if you provide this argument.
 
-    [side]: specify how the tip whould be positioned with respect to
+    [position]: specify how the tip whould be positioned horizontally with respect
+    to the [origin] element. By default, the tip is above the [origin] element
+    when there is more space above than below the [origin] element and vice versa.
+    When position is [`Forced_top] or [`Forced_bottom], the tip is always
+    above (resp. the below) the [origin] element.
+    When position is [`Top] or [`Bottom], the tip is above (resp. the below)
+    the [origin] element unless the tip is off the screen and in this case
+    the tip will be below (resp. the above) the [origin] element.
+    When position is [`Ratio r], the tip is below the [origin] element if
+    the [origin] element is on the top [r] part of the screen otherwise the tip
+    will be above the [origin] element.
+
+    [side]: specify how the tip whould be positioned vertically with respect to
     the [origin] element. By default, the tip is centered; if it would
     not fit on screen, its right hand side or left hand side is aligned
     with the middle of the [origin] element. When side is [`Left] or
@@ -63,6 +75,7 @@ val display
   -> ?filter_a:
        [< Html_types.div_attrib > `Class `OnClick] Eliom_content.Html.attrib
        list
+  -> ?position:[`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom]
   -> ?side:[`Left | `Right | `Center]
   -> origin:Dom_html.element Js.t
   -> ?onopen:

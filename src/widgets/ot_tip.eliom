@@ -27,7 +27,9 @@ open Js_of_ocaml]
 
 let%client display ?(container_a = [a_class ["ot-tip-container"]])
     ?(filter_a = [a_class ["ot-tip-filter"]])
-    ?(side : [`Center | `Left | `Right] = `Center)
+    ?(position :
+        [`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom] =
+      `Ratio 0.5) ?(side : [`Center | `Left | `Right] = `Center)
     ~(origin : Dom_html.element Js.t) ?(onopen = fun _ _ -> ())
     ?(onclose = fun _ _ -> ())
     ~(content :
@@ -85,8 +87,16 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
     | true, false -> put_c_below_o ()
     | true, true -> f ()
   in
-  when_container_ready_and_in (fun () ->
-      if o_top < o_to_bottom then put_c_below_o () else put_c_above_o ());
+  (match position with
+  | `Forced_top -> put_c_above_o ()
+  | `Top -> when_container_ready_and_in put_c_above_o
+  | `Ratio r ->
+      when_container_ready_and_in (fun () ->
+          if (1. -. r) *. o_top < r *. o_to_bottom
+          then put_c_below_o ()
+          else put_c_above_o ())
+  | `Bottom -> when_container_ready_and_in put_c_below_o
+  | `Forced_bottom -> put_c_below_o ());
   (match side with
   | `Left ->
       c_style##.right := print_px o_to_right;
