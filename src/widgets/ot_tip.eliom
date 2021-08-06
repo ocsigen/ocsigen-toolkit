@@ -62,13 +62,15 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
   let c_add_class class_ = Manip.Class.add container class_ in
   c_style##.minWidth := print_px o_width;
-  if o_top < o_to_bottom
-  then (
+  let put_c_below_o () =
     c_style##.top := print_px o_bottom;
-    c_add_class "ot-tip-top")
-  else (
+    c_add_class "ot-tip-top"
+  in
+  let put_c_above_o () =
     c_style##.bottom := print_px o_to_top;
-    c_add_class "ot-tip-bottom");
+    c_add_class "ot-tip-bottom"
+  in
+  if o_top < o_to_bottom then put_c_below_o () else put_c_above_o ();
   (match side with
   | `Left ->
       c_style##.right := print_px o_to_right;
