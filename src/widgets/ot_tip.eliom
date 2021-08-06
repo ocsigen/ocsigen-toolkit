@@ -53,10 +53,11 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   let o_width = o_right -. o_left in
   let o_center_to_left = (o_right +. o_left) /. 2. in
   let o_center_to_right = d_width -. o_center_to_left in
-  let half_c_width =
-    let%lwt () = Ot_nodeready.nodeready container_elt in
-    Lwt.return @@ float (container_elt##.offsetWidth / 2)
+  let container_ready = Ot_nodeready.nodeready container_elt in
+  let when_container_ready get_from_container use_it =
+    Lwt.(async @@ fun () -> container_ready >|= get_from_container >|= use_it)
   in
+  let get_half_c_width () = float (container_elt##.offsetWidth / 2) in
   let c_style = container_elt##.style in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
   let c_add_class class_ = Manip.Class.add container class_ in
@@ -79,24 +80,20 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
       if o_to_right < o_left
       then (
         c_style##.right := print_px o_center_to_right;
-        Lwt.async @@ fun () ->
-        let%lwt half_c_width = half_c_width in
-        if half_c_width <= o_center_to_right -. 1.
-        then (
-          c_style##.right := print_px (o_center_to_right -. half_c_width);
-          c_add_class "ot-tip-center")
-        else c_add_class "ot-tip-left";
-        Lwt.return_unit)
+        when_container_ready get_half_c_width (fun half_c_width ->
+            if half_c_width <= o_center_to_right -. 1.
+            then (
+              c_style##.right := print_px (o_center_to_right -. half_c_width);
+              c_add_class "ot-tip-center")
+            else c_add_class "ot-tip-left"))
       else (
         c_style##.left := print_px o_center_to_left;
-        Lwt.async @@ fun () ->
-        let%lwt half_c_width = half_c_width in
-        if half_c_width <= o_center_to_left -. 1.
-        then (
-          c_style##.left := print_px (o_center_to_left -. half_c_width);
-          c_add_class "ot-tip-center")
-        else c_add_class "ot-tip-right";
-        Lwt.return_unit));
+        when_container_ready get_half_c_width (fun half_c_width ->
+            if half_c_width <= o_center_to_left -. 1.
+            then (
+              c_style##.left := print_px (o_center_to_left -. half_c_width);
+              c_add_class "ot-tip-center")
+            else c_add_class "ot-tip-right")));
   let filter =
     D.div ~a:(a_onclick (fun _ -> !close ()) :: filter_a) [container]
   in
