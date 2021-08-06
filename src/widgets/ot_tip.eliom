@@ -75,7 +75,18 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
     c_style##.bottom := print_px o_to_top;
     c_add_class "ot-tip-bottom"
   in
-  if o_top < o_to_bottom then put_c_below_o () else put_c_above_o ();
+  let when_container_ready_and_in f =
+    when_container_ready get_c_height @@ fun c_height ->
+    let enough_space_below_o = c_height < o_to_bottom in
+    let enough_space_above_o = c_height < o_top in
+    match enough_space_below_o, enough_space_above_o with
+    | false, false -> put_on_top ()
+    | false, true -> put_c_above_o ()
+    | true, false -> put_c_below_o ()
+    | true, true -> f ()
+  in
+  when_container_ready_and_in (fun () ->
+      if o_top < o_to_bottom then put_c_below_o () else put_c_above_o ());
   (match side with
   | `Left ->
       c_style##.right := print_px o_to_right;
