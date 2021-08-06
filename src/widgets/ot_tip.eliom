@@ -57,6 +57,7 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   let when_container_ready get_from_container use_it =
     Lwt.(async @@ fun () -> container_ready >|= get_from_container >|= use_it)
   in
+  let get_c_height () = float container_elt##.offsetHeight in
   let get_half_c_width () = float (container_elt##.offsetWidth / 2) in
   let c_style = container_elt##.style in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
