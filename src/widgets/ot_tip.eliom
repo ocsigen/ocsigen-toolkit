@@ -59,21 +59,22 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   in
   let c_style = container_elt##.style in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
+  let c_add_class class_ = Manip.Class.add container class_ in
   c_style##.minWidth := print_px o_width;
   if o_top < o_to_bottom
   then (
     c_style##.top := print_px o_bottom;
-    container_elt##.classList##add (Js.string "ot-tip-top"))
+    c_add_class "ot-tip-top")
   else (
     c_style##.bottom := print_px o_to_top;
-    container_elt##.classList##add (Js.string "ot-tip-bottom"));
+    c_add_class "ot-tip-bottom");
   (match side with
   | `Left ->
       c_style##.right := print_px o_to_right;
-      Manip.Class.add container "ot-tip-left"
+      c_add_class "ot-tip-left"
   | `Right ->
       c_style##.left := print_px o_left;
-      Manip.Class.add container "ot-tip-right"
+      c_add_class "ot-tip-right"
   | `Center ->
       if o_to_right < o_left
       then (
@@ -83,8 +84,8 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
         if half_c_width <= o_center_to_right -. 1.
         then (
           c_style##.right := print_px (o_center_to_right -. half_c_width);
-          Manip.Class.add container "ot-tip-center")
-        else Manip.Class.add container "ot-tip-left";
+          c_add_class "ot-tip-center")
+        else c_add_class "ot-tip-left";
         Lwt.return_unit)
       else (
         c_style##.left := print_px o_center_to_left;
@@ -93,8 +94,8 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
         if half_c_width <= o_center_to_left -. 1.
         then (
           c_style##.left := print_px (o_center_to_left -. half_c_width);
-          Manip.Class.add container "ot-tip-center")
-        else Manip.Class.add container "ot-tip-right";
+          c_add_class "ot-tip-center")
+        else c_add_class "ot-tip-right";
         Lwt.return_unit));
   let filter =
     D.div ~a:(a_onclick (fun _ -> !close ()) :: filter_a) [container]
