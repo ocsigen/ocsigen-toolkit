@@ -42,8 +42,16 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
     @@ (div ~a:[a_class ["ot-tip-src"]] [] :: content (fun () -> !close ()))
   in
   let container_elt = To_dom.of_element container in
-  let d_height = float Dom_html.document##.documentElement##.clientHeight in
-  let d_width = float Dom_html.document##.documentElement##.clientWidth in
+  let d_height =
+    float
+    @@ Js.Optdef.get Dom_html.window##.innerHeight
+    @@ fun () -> Dom_html.document##.documentElement##.clientHeight
+  in
+  let d_width =
+    float
+    @@ Js.Optdef.get Dom_html.window##.innerWidth
+    @@ fun () -> Dom_html.document##.documentElement##.clientWidth
+  in
   let o_bounds = origin##getBoundingClientRect in
   let o_left = o_bounds##.left in
   let o_right = o_bounds##.right in
