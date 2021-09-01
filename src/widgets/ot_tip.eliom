@@ -27,7 +27,9 @@ open Js_of_ocaml]
 
 let%client display ?(container_a = [a_class ["ot-tip-container"]])
     ?(filter_a = [a_class ["ot-tip-filter"]])
-    ?(side : [`Center | `Left | `Right] = `Center)
+    ?(position :
+        [`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom] =
+      `Ratio 0.5) ?(side : [`Center | `Left | `Right] = `Center)
     ~(origin : Dom_html.element Js.t) ?(onopen = fun _ _ -> ())
     ?(onclose = fun _ _ -> ())
     ~(content :
@@ -35,80 +37,99 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
        -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list) ()
   =
   let close = ref @@ fun () -> () in
-  let b = origin in
   let container =
     D.div ~a:container_a
     @@ (div ~a:[a_class ["ot-tip-src"]] [] :: content (fun () -> !close ()))
   in
-  let m = To_dom.of_element container in
-  let mb = b##getBoundingClientRect in
-  let w = mb##.right -. mb##.left in
-  let bb = b##getBoundingClientRect in
-  let top = int_of_float bb##.top in
-  let bottom =
-    Dom_html.document##.documentElement##.clientHeight
-    - int_of_float bb##.bottom
+  let container_elt = To_dom.of_element container in
+  let d_height =
+    float
+    @@ Js.Optdef.get Dom_html.window##.innerHeight
+    @@ fun () -> Dom_html.document##.documentElement##.clientHeight
   in
-  let left = int_of_float bb##.left in
-  let right =
-    Dom_html.document##.documentElement##.clientWidth - int_of_float bb##.right
+  let d_width =
+    float
+    @@ Js.Optdef.get Dom_html.window##.innerWidth
+    @@ fun () -> Dom_html.document##.documentElement##.clientWidth
   in
+  let o_bounds = origin##getBoundingClientRect in
+  let o_left = o_bounds##.left in
+  let o_right = o_bounds##.right in
+  let o_to_right = d_width -. o_right in
+  let o_top = o_bounds##.top in
+  let o_to_top = d_height -. o_top in
+  let o_bottom = o_bounds##.bottom in
+  let o_to_bottom = d_height -. o_bottom in
+  let o_width = o_right -. o_left in
+  let o_center_to_left = (o_right +. o_left) /. 2. in
+  let o_center_to_right = d_width -. o_center_to_left in
+  let container_ready = Ot_nodeready.nodeready container_elt in
+  let when_container_ready get_from_container use_it =
+    Lwt.(async @@ fun () -> container_ready >|= get_from_container >|= use_it)
+  in
+  let get_c_height () = float container_elt##.offsetHeight in
+  let get_half_c_width () = float (container_elt##.offsetWidth / 2) in
+  let c_style = container_elt##.style in
   let print_px x = Js.string (Printf.sprintf "%gpx" x) in
-  m##.style##.minWidth := print_px w;
-  (if top < bottom
-  then (
-    let top = print_px bb##.bottom in
-    m##.style##.top := top;
-    m##.classList##add (Js.string "ot-tip-top"))
-  else
-    let bottom =
-      print_px
-        (float_of_int Dom_html.document##.documentElement##.clientHeight
-        -. bb##.top)
-    in
-    m##.style##.bottom := bottom;
-    m##.classList##add (Js.string "ot-tip-bottom"));
+  let c_add_class class_ = Manip.Class.add container class_ in
+  c_style##.minWidth := print_px o_width;
+  let put_on_top () =
+    c_style##.top := print_px 0.;
+    c_add_class "ot-tip-bottom"
+  in
+  let put_c_below_o () =
+    c_style##.top := print_px o_bottom;
+    c_add_class "ot-tip-top"
+  in
+  let put_c_above_o () =
+    c_style##.bottom := print_px o_to_top;
+    c_add_class "ot-tip-bottom"
+  in
+  let when_container_ready_and_in f =
+    when_container_ready get_c_height @@ fun c_height ->
+    let enough_space_below_o = c_height < o_to_bottom in
+    let enough_space_above_o = c_height < o_top in
+    match enough_space_below_o, enough_space_above_o with
+    | false, false -> put_on_top ()
+    | false, true -> put_c_above_o ()
+    | true, false -> put_c_below_o ()
+    | true, true -> f ()
+  in
+  (match position with
+  | `Forced_top -> put_c_above_o ()
+  | `Top -> when_container_ready_and_in put_c_above_o
+  | `Ratio r ->
+      when_container_ready_and_in (fun () ->
+          if (1. -. r) *. o_top < r *. o_to_bottom
+          then put_c_below_o ()
+          else put_c_above_o ())
+  | `Bottom -> when_container_ready_and_in put_c_below_o
+  | `Forced_bottom -> put_c_below_o ());
   (match side with
   | `Left ->
-      let right =
-        float_of_int Dom_html.document##.documentElement##.clientWidth
-        -. bb##.right
-      in
-      m##.style##.right := print_px right;
-      Manip.Class.add container "ot-tip-left"
+      c_style##.right := print_px o_to_right;
+      c_add_class "ot-tip-left"
   | `Right ->
-      let left = bb##.left in
-      m##.style##.left := print_px left;
-      Manip.Class.add container "ot-tip-right"
+      c_style##.left := print_px o_left;
+      c_add_class "ot-tip-right"
   | `Center ->
-      if right < left
+      if o_to_right < o_left
       then (
-        let right =
-          float_of_int Dom_html.document##.documentElement##.clientWidth
-          -. ((bb##.right +. bb##.left) /. 2.)
-        in
-        m##.style##.right := print_px right;
-        Lwt.async @@ fun () ->
-        let%lwt () = Ot_nodeready.nodeready m in
-        let off = float (m##.offsetWidth / 2) in
-        if off <= right -. 1.
-        then (
-          m##.style##.right := print_px (right -. off);
-          Manip.Class.add container "ot-tip-center")
-        else Manip.Class.add container "ot-tip-left";
-        Lwt.return_unit)
-      else
-        let left = (bb##.right +. bb##.left) /. 2. in
-        m##.style##.left := print_px left;
-        Lwt.async @@ fun () ->
-        let%lwt () = Ot_nodeready.nodeready m in
-        let off = float (m##.offsetWidth / 2) in
-        if off <= left -. 1.
-        then (
-          m##.style##.left := print_px (left -. off);
-          Manip.Class.add container "ot-tip-center")
-        else Manip.Class.add container "ot-tip-right";
-        Lwt.return_unit);
+        c_style##.right := print_px o_center_to_right;
+        when_container_ready get_half_c_width (fun half_c_width ->
+            if half_c_width <= o_center_to_right -. 1.
+            then (
+              c_style##.right := print_px (o_center_to_right -. half_c_width);
+              c_add_class "ot-tip-center")
+            else c_add_class "ot-tip-left"))
+      else (
+        c_style##.left := print_px o_center_to_left;
+        when_container_ready get_half_c_width (fun half_c_width ->
+            if half_c_width <= o_center_to_left -. 1.
+            then (
+              c_style##.left := print_px (o_center_to_left -. half_c_width);
+              c_add_class "ot-tip-center")
+            else c_add_class "ot-tip-right")));
   let filter =
     D.div ~a:(a_onclick (fun _ -> !close ()) :: filter_a) [container]
   in
