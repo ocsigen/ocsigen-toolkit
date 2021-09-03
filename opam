@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-toolkit"
-version: "2.12.2"
+version: "2.13.0"
 maintainer: "dev@ocsigen.org"
 synopsis: "Reusable UI components for Eliom applications (client only, or client-server)"
 description: "The Ocsigen Toolkit is a set of user interface widgets that facilitate the development of Eliom applications."
@@ -14,8 +14,5 @@ install: [ make "install" ]
 depends: [
   "ocaml" {>= "4.08.0"}
   "eliom" {>= "6.12.1"}
-  "calendar"
-]
-depexts: [
-  ["libgdbm-dev"] {os-family = "debian"}
+  "calendar" {>= "2.0.0"}
 ]
