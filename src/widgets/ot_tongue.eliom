@@ -222,6 +222,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let startsize = ref 0 (* height or width of visible part in pixel *) in
   let animation_frame_requested = ref false in
   let set speed (stop, is_attractor) =
+    let previousstop = !currentstop in
     currentstop := stop;
     let duration =
       if is_attractor
@@ -232,7 +233,11 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
     Lwt.async (fun () ->
-        let%lwt _ = Lwt_js_events.transitionend elt' in
+        let%lwt () =
+          if stop <> previousstop
+          then Lwt_js_events.transitionend elt'
+          else Lwt.return_unit
+        in
         set_after_signal stop; Lwt.return_unit);
     Lwt.return_unit
   in
