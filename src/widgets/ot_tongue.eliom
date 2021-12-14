@@ -154,6 +154,7 @@ let%client closest_stop ~speed ~maxsize size stops =
           *. inertia_parameter1 /. inertia_parameter2))
   in
   match
+    (* Computes the stop with the minimum distance *)
     List.fold_left
       (fun ((closest_d, _, _, _) as closest) (px, stop, interval_info) ->
         let d = abs (size - px) in
@@ -165,8 +166,10 @@ let%client closest_stop ~speed ~maxsize size stops =
       (max_int, 0, (`Px 0, true), `Point)
       stops
   with
-  | _, px, _, `Start when size >= px -> `Px size, false
-  | _, px, _, `End when size <= px -> `Px size, false
+  (* If we are in an interval we will return the number of pixels *)
+  | _, px, _, `Start when size > px -> `Px size, false
+  | _, px, _, `End when size < px -> `Px size, false
+  (* Otherwise we will return the stop *)
   | _, _, s, _ -> s
 
 let%client rec stop_after ~maxsize ~speed size stops =
