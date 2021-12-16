@@ -42,6 +42,7 @@ type%shared tongue =
   { elt : Html_types.div Eliom_content.Html.D.elt
   ; stop_signal_before : simple_stop React.S.t Eliom_client_value.t
   ; stop_signal_after : simple_stop React.S.t Eliom_client_value.t
+  ; swipe_pos : int React.S.t Eliom_client_value.t
   ; px_signal_before : int React.S.t Eliom_client_value.t
   ; px_signal_after : int React.S.t Eliom_client_value.t }
 
@@ -209,7 +210,7 @@ let%client enable_transition ?duration elt =
   Lwt_js_events.request_animation_frame ()
 
 let%client bind side stops init handle update set_before_signal set_after_signal
-    elt
+    set_swipe_pos elt
   =
   let open Lwt_js_events in
   let elt' = To_dom.of_element elt in
@@ -283,6 +284,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       let d = sign * (!startpos - !currentpos) in
       let maxsize = full_size elt vert in
       let size = min (!startsize + d) maxsize in
+      set_swipe_pos size;
       (elt'##.style##.transform
       := Js.string
          @@
@@ -338,13 +340,19 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
       (React.S.create ~%init
         : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
   in
+  let swipe_pos =
+    [%client
+      (let vert = ~%side = `Top || ~%side = `Bottom in
+       React.S.create (px_of_simple_stop vert ~%elt ~%init)
+        : int React.S.t * (?step:React.step -> int -> unit))]
+  in
   ignore
     [%client
       (Lwt.async (fun () ->
            let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
            bind ~%side ~%stops ~%init ~%handle
              ~%(update : simple_stop React.E.t Eliom_client_value.t option)
-             (snd ~%before_signal) (snd ~%after_signal) ~%elt;
+             (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
            Lwt.return_unit)
         : unit)];
   let px_signal_before =
@@ -362,5 +370,6 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
   { elt
   ; stop_signal_before = [%client (fst ~%before_signal : simple_stop React.S.t)]
   ; stop_signal_after = [%client (fst ~%after_signal : simple_stop React.S.t)]
+  ; swipe_pos = [%client (fst ~%swipe_pos : int React.S.t)]
   ; px_signal_before
   ; px_signal_after }
