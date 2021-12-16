@@ -30,6 +30,7 @@ let%client inertia_parameter3 = 0.5
    If large (1.0) high duration for high initial speed.
    dt = (inertia_parameter2 * speed)^inertia_parameter3
 *)
+let%client average_time = 0.1
 type%shared simple_stop = [`Percent of int | `Px of int | `Full_content]
 
 type%shared stop =
@@ -219,6 +220,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let vert = side = `Top || side = `Bottom in
   let sign = match side with `Top | `Left -> -1 | _ -> 1 in
   let cl = if vert then clY else clX in
+  let prev_speed = ref 0. in
   let currentstop = ref init in
   let startpos = ref 0 in
   let currentpos = ref 0 in
@@ -257,8 +259,23 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     (* Firefox (at least on Linux) fails to get touchend touchlist ...
        I catch the exception and use !currentpos in that case ... *)
   in
-  let speed pos =
-    -.float (sign * (pos - !previouspos)) /. (now () -. !previoustimestamp)
+  let compute_speed prev_speed prev_delta prev_timestamp delta =
+    let timestamp = now () in
+    let delta_t = timestamp -. prev_timestamp in
+    let speed =
+      if delta_t = 0.
+      then prev_speed
+      else
+        let cur_speed =
+          -.(float sign *. (float delta -. float prev_delta)) /. delta_t
+        in
+        if delta_t >= average_time
+        then cur_speed
+        else
+          (((average_time -. delta_t) *. prev_speed) +. (delta_t *. cur_speed))
+          /. average_time
+    in
+    timestamp, speed
   in
   let next_stop speed pos =
     let dpos = sign * (pos - !previouspos) in
@@ -273,8 +290,12 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     let pos = cl ev in
     if pos <> !currentpos
     then (
+      let timestamp, speed =
+        compute_speed !prev_speed !currentpos !previoustimestamp pos
+      in
+      prev_speed := speed;
       previouspos := !currentpos;
-      previoustimestamp := now ();
+      previoustimestamp := timestamp;
       currentpos := pos);
     if not !animation_frame_requested
     then (
@@ -298,10 +319,18 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   in
   let ontouchend ev =
     let pos = pos ev in
-    let speed = speed pos in
+    let _, speed =
+      compute_speed !prev_speed !currentpos !previoustimestamp pos
+    in
     set speed (next_stop speed pos)
   in
-  let ontouchcancel ev = set (speed (pos ev)) (!currentstop, true) in
+  let ontouchcancel ev =
+    let pos = pos ev in
+    let _, speed =
+      compute_speed !prev_speed !currentpos !previoustimestamp pos
+    in
+    set speed (!currentstop, true)
+  in
   let ontouchstart ev _ =
     startpos := cl ev;
     currentpos := !startpos;
