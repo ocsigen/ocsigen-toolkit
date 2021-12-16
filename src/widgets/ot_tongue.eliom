@@ -1,9 +1,11 @@
-[%%shared open Eliom_content.Html
-          open Eliom_content.Html.F]
+[%%shared
+open Eliom_content.Html
+open Eliom_content.Html.F]
 
-[%%client open Lwt.Infix
-          open Js_of_ocaml
-          open Js_of_ocaml_lwt]
+[%%client
+open Lwt.Infix
+open Js_of_ocaml
+open Js_of_ocaml_lwt]
 
 let%client inertia_parameter1 = 0.1
 (* WARNING: inertia_parameter1 must be adapted to cubic-bezier in CSS!
@@ -28,7 +30,6 @@ let%client inertia_parameter3 = 0.5
    If large (1.0) high duration for high initial speed.
    dt = (inertia_parameter2 * speed)^inertia_parameter3
 *)
-
 type%shared simple_stop = [`Percent of int | `Px of int | `Full_content]
 
 type%shared stop =
