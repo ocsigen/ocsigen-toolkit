@@ -21,7 +21,7 @@ let%client inertia_parameter1 = 0.1
    dx = average_speed * dt
    dx = initial_speed * dt / inertia_parameter1
 *)
-let%client inertia_parameter2 = 0.0001
+let%client inertia_parameter2 = 0.1
 (* Controls the movement duration, which depends on initial speed.
    Higher value, longer movement.
 *)
