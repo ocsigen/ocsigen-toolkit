@@ -286,6 +286,16 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     then stop_after ~speed ~maxsize newsize stops
     else stop_before ~speed ~maxsize newsize stops
   in
+  let set_tongue_position pos =
+    elt'##.style##.transform
+    := Js.string
+       @@
+       match side with
+       | `Bottom -> pxb pos
+       | `Top -> pxt pos
+       | `Left -> pxl pos
+       | `Right -> pxr pos
+  in
   let ontouchmove ev _ =
     let pos = cl ev in
     if pos <> !currentpos
@@ -305,16 +315,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       let d = sign * (!startpos - !currentpos) in
       let maxsize = full_size elt vert in
       let size = min (!startsize + d) maxsize in
-      set_swipe_pos size;
-      (elt'##.style##.transform
-      := Js.string
-         @@
-         match side with
-         | `Bottom -> pxb size
-         | `Top -> pxt size
-         | `Left -> pxl size
-         | `Right -> pxr size);
-      Lwt.return_unit)
+      set_swipe_pos size; set_tongue_position size; Lwt.return_unit)
     else Lwt.return_unit
   in
   let ontouchend ev =
@@ -337,6 +338,9 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     previouspos := !startpos;
     previoustimestamp := now ();
     startsize := get_size ~side elt';
+    (* To allow the user to stop the transition at the current position *)
+    (* FIXME: This doesn't work too well when an adress bar appears while swiping *)
+    set_tongue_position !startsize;
     let a = touchmoves elt' ontouchmove in
     let b = touchend elt' >>= ontouchend in
     let c = touchcancel elt' >>= ontouchcancel in
