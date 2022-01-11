@@ -1,9 +1,11 @@
-[%%shared open Eliom_content.Html
-          open Eliom_content.Html.F]
+[%%shared
+open Eliom_content.Html
+open Eliom_content.Html.F]
 
-[%%client open Lwt.Infix
-          open Js_of_ocaml
-          open Js_of_ocaml_lwt]
+[%%client
+open Lwt.Infix
+open Js_of_ocaml
+open Js_of_ocaml_lwt]
 
 let%client inertia_parameter1 = 0.1
 (* WARNING: inertia_parameter1 must be adapted to cubic-bezier in CSS!
@@ -19,7 +21,7 @@ let%client inertia_parameter1 = 0.1
    dx = average_speed * dt
    dx = initial_speed * dt / inertia_parameter1
 *)
-let%client inertia_parameter2 = 0.0001
+let%client inertia_parameter2 = 0.1
 (* Controls the movement duration, which depends on initial speed.
    Higher value, longer movement.
 *)
@@ -28,7 +30,7 @@ let%client inertia_parameter3 = 0.5
    If large (1.0) high duration for high initial speed.
    dt = (inertia_parameter2 * speed)^inertia_parameter3
 *)
-
+let%client average_time = 0.1
 type%shared simple_stop = [`Percent of int | `Px of int | `Full_content]
 
 type%shared stop =
@@ -41,6 +43,7 @@ type%shared tongue =
   { elt : Html_types.div Eliom_content.Html.D.elt
   ; stop_signal_before : simple_stop React.S.t Eliom_client_value.t
   ; stop_signal_after : simple_stop React.S.t Eliom_client_value.t
+  ; swipe_pos : int React.S.t Eliom_client_value.t
   ; px_signal_before : int React.S.t Eliom_client_value.t
   ; px_signal_after : int React.S.t Eliom_client_value.t }
 
@@ -154,6 +157,7 @@ let%client closest_stop ~speed ~maxsize size stops =
           *. inertia_parameter1 /. inertia_parameter2))
   in
   match
+    (* Computes the stop with the minimum distance *)
     List.fold_left
       (fun ((closest_d, _, _, _) as closest) (px, stop, interval_info) ->
         let d = abs (size - px) in
@@ -165,8 +169,10 @@ let%client closest_stop ~speed ~maxsize size stops =
       (max_int, 0, (`Px 0, true), `Point)
       stops
   with
-  | _, px, _, `Start when size >= px -> `Px size, false
-  | _, px, _, `End when size <= px -> `Px size, false
+  (* If we are in an interval we will return the number of pixels *)
+  | _, px, _, `Start when size > px -> `Px size, false
+  | _, px, _, `End when size < px -> `Px size, false
+  (* Otherwise we will return the stop *)
   | _, _, s, _ -> s
 
 let%client rec stop_after ~maxsize ~speed size stops =
@@ -205,7 +211,7 @@ let%client enable_transition ?duration elt =
   Lwt_js_events.request_animation_frame ()
 
 let%client bind side stops init handle update set_before_signal set_after_signal
-    elt
+    set_swipe_pos elt
   =
   let open Lwt_js_events in
   let elt' = To_dom.of_element elt in
@@ -214,6 +220,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let vert = side = `Top || side = `Bottom in
   let sign = match side with `Top | `Left -> -1 | _ -> 1 in
   let cl = if vert then clY else clX in
+  let prev_speed = ref 0. in
   let currentstop = ref init in
   let startpos = ref 0 in
   let currentpos = ref 0 in
@@ -222,6 +229,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let startsize = ref 0 (* height or width of visible part in pixel *) in
   let animation_frame_requested = ref false in
   let set speed (stop, is_attractor) =
+    let previousstop = !currentstop in
     currentstop := stop;
     let duration =
       if is_attractor
@@ -232,7 +240,11 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
     Lwt.async (fun () ->
-        let%lwt _ = Lwt_js_events.transitionend elt' in
+        let%lwt () =
+          if stop <> previousstop
+          then Lwt_js_events.transitionend elt'
+          else Lwt.return_unit
+        in
         set_after_signal stop; Lwt.return_unit);
     Lwt.return_unit
   in
@@ -247,8 +259,23 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     (* Firefox (at least on Linux) fails to get touchend touchlist ...
        I catch the exception and use !currentpos in that case ... *)
   in
-  let speed pos =
-    -.float (sign * (pos - !previouspos)) /. (now () -. !previoustimestamp)
+  let compute_speed prev_speed prev_delta prev_timestamp delta =
+    let timestamp = now () in
+    let delta_t = timestamp -. prev_timestamp in
+    let speed =
+      if delta_t = 0.
+      then prev_speed
+      else
+        let cur_speed =
+          -.(float sign *. (float delta -. float prev_delta)) /. delta_t
+        in
+        if delta_t >= average_time
+        then cur_speed
+        else
+          (((average_time -. delta_t) *. prev_speed) +. (delta_t *. cur_speed))
+          /. average_time
+    in
+    timestamp, speed
   in
   let next_stop speed pos =
     let dpos = sign * (pos - !previouspos) in
@@ -259,12 +286,26 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     then stop_after ~speed ~maxsize newsize stops
     else stop_before ~speed ~maxsize newsize stops
   in
+  let set_tongue_position pos =
+    elt'##.style##.transform
+    := Js.string
+       @@
+       match side with
+       | `Bottom -> pxb pos
+       | `Top -> pxt pos
+       | `Left -> pxl pos
+       | `Right -> pxr pos
+  in
   let ontouchmove ev _ =
     let pos = cl ev in
     if pos <> !currentpos
     then (
+      let timestamp, speed =
+        compute_speed !prev_speed !currentpos !previoustimestamp pos
+      in
+      prev_speed := speed;
       previouspos := !currentpos;
-      previoustimestamp := now ();
+      previoustimestamp := timestamp;
       currentpos := pos);
     if not !animation_frame_requested
     then (
@@ -274,29 +315,32 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       let d = sign * (!startpos - !currentpos) in
       let maxsize = full_size elt vert in
       let size = min (!startsize + d) maxsize in
-      (elt'##.style##.transform
-      := Js.string
-         @@
-         match side with
-         | `Bottom -> pxb size
-         | `Top -> pxt size
-         | `Left -> pxl size
-         | `Right -> pxr size);
-      Lwt.return_unit)
+      set_swipe_pos size; set_tongue_position size; Lwt.return_unit)
     else Lwt.return_unit
   in
   let ontouchend ev =
     let pos = pos ev in
-    let speed = speed pos in
+    let _, speed =
+      compute_speed !prev_speed !currentpos !previoustimestamp pos
+    in
     set speed (next_stop speed pos)
   in
-  let ontouchcancel ev = set (speed (pos ev)) (!currentstop, true) in
+  let ontouchcancel ev =
+    let pos = pos ev in
+    let _, speed =
+      compute_speed !prev_speed !currentpos !previoustimestamp pos
+    in
+    set speed (!currentstop, true)
+  in
   let ontouchstart ev _ =
     startpos := cl ev;
     currentpos := !startpos;
     previouspos := !startpos;
     previoustimestamp := now ();
     startsize := get_size ~side elt';
+    (* To allow the user to stop the transition at the current position *)
+    (* FIXME: This doesn't work too well when an adress bar appears while swiping *)
+    set_tongue_position !startsize;
     let a = touchmoves elt' ontouchmove in
     let b = touchend elt' >>= ontouchend in
     let c = touchcancel elt' >>= ontouchcancel in
@@ -329,13 +373,19 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
       (React.S.create ~%init
         : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
   in
+  let swipe_pos =
+    [%client
+      (let vert = ~%side = `Top || ~%side = `Bottom in
+       React.S.create (px_of_simple_stop vert ~%elt ~%init)
+        : int React.S.t * (?step:React.step -> int -> unit))]
+  in
   ignore
     [%client
       (Lwt.async (fun () ->
            let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
            bind ~%side ~%stops ~%init ~%handle
              ~%(update : simple_stop React.E.t Eliom_client_value.t option)
-             (snd ~%before_signal) (snd ~%after_signal) ~%elt;
+             (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
            Lwt.return_unit)
         : unit)];
   let px_signal_before =
@@ -353,5 +403,6 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
   { elt
   ; stop_signal_before = [%client (fst ~%before_signal : simple_stop React.S.t)]
   ; stop_signal_after = [%client (fst ~%after_signal : simple_stop React.S.t)]
+  ; swipe_pos = [%client (fst ~%swipe_pos : int React.S.t)]
   ; px_signal_before
   ; px_signal_after }

@@ -12,11 +12,13 @@ type tongue =
   { elt : Html_types.div Eliom_content.Html.D.elt
   ; stop_signal_before : simple_stop React.S.t Eliom_client_value.t
   ; stop_signal_after : simple_stop React.S.t Eliom_client_value.t
+  ; swipe_pos : int React.S.t Eliom_client_value.t
   ; px_signal_before : int React.S.t Eliom_client_value.t
   ; px_signal_after : int React.S.t Eliom_client_value.t }
 (** Signals contain the current
     position of the tongue, as a [simple_stop] or as [int].
-    Before (resp. after) signals are triggered before (resp. after) transition. *)
+    Before (resp. after) signals are triggered before (resp. after) transition.
+    [swipe_pos] represents the position during the swipe of the user *)
 
 val tongue
   :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
