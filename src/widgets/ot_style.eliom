@@ -3,7 +3,7 @@
 
 (* This module is all about easier access to getComputedStyle *)
 (* See: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration *)
-(* See: https://ocsigen.org/js_of_ocaml/api/type_Dom_html.cssStyleDeclaration *)
+(* See: https://ocsigen.org/js_of_ocaml/latest/api/js_of_ocaml/Js_of_ocaml/Dom_html/class-type-cssStyleDeclaration/index.html *)
 
 (*
 val marginTop    : Dom_html.element Js.t -> float
