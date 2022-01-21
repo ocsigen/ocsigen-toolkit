@@ -64,13 +64,13 @@ let%client clY ev =
 let%client documentsize vert =
   (if vert then snd else fst) (Ot_size.get_document_size ())
 
-let%client pxb v = Printf.sprintf "translateY(%dpx)" (-v)
+let%client pxb v = Printf.sprintf "translateY(%dpx)" (documentsize true - v)
 let%client pxr v = Printf.sprintf "translateX(%dpx)" (-v)
 let%client pxt v = Printf.sprintf "translateY(%dpx)" v
 let%client pxl v = Printf.sprintf "translateX(%dpx)" v
 
 let%client perb v =
-  Printf.sprintf "translateY(%dpx)" (documentsize true * -v / 100)
+  Printf.sprintf "translateY(%dpx)" (documentsize true * (100 - v) / 100)
 
 let%client perr v =
   Printf.sprintf "translateX(%dpx)" (documentsize false * -v / 100)
