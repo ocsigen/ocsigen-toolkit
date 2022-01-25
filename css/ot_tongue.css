@@ -57,7 +57,7 @@
   padding-top: 70px;
   border-radius: 5px 5px 0 0;
   top: 0;
-  transform: translateY(100%);
+  transform: translateY(100vh);
   left: 0;
 }
 .ot-tongue-bottom::after {
