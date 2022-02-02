@@ -22,15 +22,11 @@
 
 open Eliom_shared.React.S.Infix
 open Eliom_content.Html
-open Js_of_ocaml
 
+open%client Js_of_ocaml
 [%%client open Js_of_ocaml_lwt]
 
-type polar = int * int
-type cartesian = int * int
-type time_receiver = (int -> int -> unit) Eliom_client_value.t
 type 'a rf = ?step:React.step -> 'a -> unit
-type 'a rp = 'a React.signal * 'a rf
 
 (* utils *)
 
@@ -272,13 +268,13 @@ let clock_html_wrap ?(classes = []) s (f : (int * bool) rf Eliom_client_value.t)
       (let e = Eliom_content.Html.To_dom.of_element ~%e in
        ( Lwt.async @@ fun () ->
          Lwt_js_events.touchends e @@ fun ev _ ->
-         Lwt.return (wrap_touch true ev ~%f) );
+         Lwt.return (wrap_touch ~ends:true ev ~%f) );
        ( Lwt.async @@ fun () ->
          Lwt_js_events.touchcancels e @@ fun ev _ ->
-         Lwt.return (wrap_touch true ev ~%f) );
+         Lwt.return (wrap_touch ~ends:true ev ~%f) );
        Lwt.async @@ fun () ->
        Lwt_js_events.touchmoves e @@ fun ev _ ->
-       Lwt.return (wrap_touch false ev ~%f)
+       Lwt.return (wrap_touch ~ends:false ev ~%f)
         : unit)]
   in
   e
@@ -313,11 +309,13 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
           React.Step.execute step
         and e = Eliom_content.Html.To_dom.of_element ~%e in
         ( Lwt.async @@ fun () ->
-          Lwt_js_events.touchends e @@ fun ev _ -> Lwt.return (f true ev) );
+          Lwt_js_events.touchends e @@ fun ev _ -> Lwt.return (f ~ends:true ev)
+        );
         ( Lwt.async @@ fun () ->
-          Lwt_js_events.touchcancels e @@ fun ev _ -> Lwt.return (f true ev) );
+          Lwt_js_events.touchcancels e @@ fun ev _ ->
+          Lwt.return (f ~ends:true ev) );
         Lwt.async @@ fun () ->
-        Lwt_js_events.touchmoves e @@ fun ev _ -> Lwt.return (f false ev)
+        Lwt_js_events.touchmoves e @@ fun ev _ -> Lwt.return (f ~ends:false ev)
          : unit)];
   e
 
@@ -372,13 +370,6 @@ let combine_inputs_hours_minutes ?round_5 e_h e_m z_e_h z_e_m is_am =
         and m = angle_to_minutes ?round_5:~%round_5 e_m in
         h, m]
     e_h e_m is_am
-
-let angle_signal_of_hours' =
-  Eliom_shared.React.S.map
-    [%shared fun (h, _) -> (if h >= 12 then h - 12 else h) * 30]
-
-let angle_signal_of_minutes' =
-  Eliom_shared.React.S.map [%shared fun (_, m) -> m * 6]
 
 let display_hours_minutes_seq ?h24 f =
   Eliom_shared.React.S.l2 [%shared display_hours_minutes_seq ?h24:~%h24 ~%f]

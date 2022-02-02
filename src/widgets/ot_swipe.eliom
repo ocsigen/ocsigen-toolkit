@@ -2,7 +2,7 @@
 
 [%%shared open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
-[%%shared open Eliom_content.Html]
+open%client Eliom_content.Html
 [%%shared open Eliom_content.Html.F]
 
 (** sensibility for detecting swipe left/right or up/down *)
@@ -48,11 +48,8 @@ let%client dispatch_event ~ev elt name x y =
             new%js touch
               (object%js
                  val identifier = identifier ev
-
                  val target = target
-
                  val clientX = x
-
                  val clientY = y
               end)
           in
@@ -60,7 +57,6 @@ let%client dispatch_event ~ev elt name x y =
           let opt =
             object%js
               val bubbles = Js._true
-
               val changedTouches = Js.array [|touch|]
             end
           in
@@ -79,11 +75,8 @@ let%client dispatch_event ~ev elt name x y =
           let touch =
             object%js
               val identifier = identifier ev
-
               val target = target
-
               val clientX = x
-
               val clientY = y
             end
           in

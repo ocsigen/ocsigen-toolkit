@@ -1,4 +1,3 @@
-[%%shared
 (* Ocsigen
  * http://www.ocsigen.org
  *
@@ -19,7 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 (*
 
 TODO:
@@ -38,8 +36,7 @@ TODO:
 
 *)
 
-open Js_of_ocaml]
-
+open%client Js_of_ocaml
 [%%client open Js_of_ocaml_lwt]
 [%%shared open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
@@ -65,7 +62,7 @@ let%shared default_make_transform ~vertical ?(delta = 0) pos =
 (* But causing troubles ...
    For example some content cannot have border-radius on Chrome ... *)
 
-let%shared ot_swiping = "ot-swiping"
+let%client ot_swiping = "ot-swiping"
 
 [%%client
 let now () = (new%js Js.date_now)##getTime /. 1000.
@@ -553,7 +550,7 @@ let%shared default_fail e =
     : Html_types.div_content Eliom_content.Html.elt
     :> [< Html_types.div_content] Eliom_content.Html.elt)
 
-let%shared set_default_fail f =
+let%client set_default_fail f =
   default_fail_ref :=
     (f
       : exn -> [< Html_types.div_content] Eliom_content.Html.elt
@@ -697,7 +694,7 @@ let%shared ribbon ?(a = [])
   let the_ul = D.ul ~a:[a_class ["ot-car-ribbon-list"]] l in
   let cursor_elt =
     Eliom_lib.Option.map
-      (fun c -> D.div ~a:[a_class ["ot-car-cursor"]] [])
+      (fun _ -> D.div ~a:[a_class ["ot-car-cursor"]] [])
       cursor
   in
   let cursor_l = match cursor_elt with None -> [] | Some c -> [c] in
@@ -1002,7 +999,7 @@ let%shared wheel_make_transform z faces face_size ~vertical ?(delta = 0) pos =
   then Printf.sprintf "translateZ(%dpx) rotateX(%.3fdeg)" (-z) angle
   else Printf.sprintf "translateZ(%dpx) rotateY(%.3fdeg)" (-z) angle
 
-let%shared wheel_page_attribute pos z faces length ~vertical page_number =
+let%shared wheel_page_attribute pos z faces ~vertical page_number =
   let v = if vertical then "X" else "Y" in
   let angle = -.float page_number *. 360. /. float faces in
   let style =
@@ -1029,7 +1026,6 @@ let%shared wheel ?(a = []) ?(vertical = true) ?(position = 0)
     ?(faces = 20) ?(face_size = 25) content
   =
   let a = a_class ["ot-wheel"] :: a in
-  let length = List.length content in
   let z =
     int_of_float (float face_size /. (2. *. tan (3.14159 /. float faces)))
   in
@@ -1040,8 +1036,7 @@ let%shared wheel ?(a = []) ?(vertical = true) ?(position = 0)
     make ~a ~vertical ~position ?transition_duration ?inertia ?allow_overswipe
       ?update ?disabled
       ~make_transform:[%shared wheel_make_transform ~%z ~%faces ~%face_size]
-      ~make_page_attribute:
-        [%shared wheel_page_attribute ~%pos2 ~%z ~%faces ~%length]
+      ~make_page_attribute:[%shared wheel_page_attribute ~%pos2 ~%z ~%faces]
       content
   in
   let _ =

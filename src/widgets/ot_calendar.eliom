@@ -21,12 +21,20 @@
 [%%shared.start] (* shared by default, override as necessary *)
 
 open Eliom_content.Html
-open Js_of_ocaml
-
-[%%client open Js_of_ocaml_lwt]
 
 type dow = [`Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat]
 type intl = {i_days : string list; i_months : string list; i_start : dow}
+
+type button_labels =
+  { b_prev_year : string
+  ; b_prev_month : string
+  ; b_next_month : string
+  ; b_next_year : string }
+
+[%%client.start]
+
+open Js_of_ocaml
+open Js_of_ocaml_lwt
 
 let default_intl =
   { i_days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
@@ -51,12 +59,6 @@ type 'a period =
 let default_period =
   { begin_p = CalendarLib.Date.lmake ~year:1 ()
   ; end_p = CalendarLib.Date.lmake ~year:3200 ~month:12 ~day:31 () }
-
-type button_labels =
-  { b_prev_year : string
-  ; b_prev_month : string
-  ; b_next_month : string
-  ; b_next_year : string }
 
 let default_button_labels =
   { b_prev_year = "<<"
@@ -137,12 +139,10 @@ let name_of_calendarlib_month {i_months} m =
   then invalid_arg "intl.i_months"
   else List.nth i_months (CalendarLib.Date.int_of_month m - 1)
 
-let%client timezone_offset =
+let timezone_offset =
   truncate (-.float (new%js Js.date_now)##getTimezoneOffset /. 60.)
 
-let%client ( >>! ) = Js.Opt.iter
-let%server timezone_offset = 0
-
+let ( >>! ) = Js.Opt.iter
 let user_tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
 let to_local date = CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz date)
 let to_utc date = CalendarLib.(Time_Zone.on Calendar.to_gmt user_tz date)
@@ -177,7 +177,7 @@ let zeroth_displayed_day ~intl d =
   then o
   else CalendarLib.Date.prev o `Week
 
-let%client select_action ?(size = 1) selector action =
+let select_action ?(size = 1) selector action =
   let dom_select = Eliom_content.Html.To_dom.of_select selector in
   Lwt.async (fun () ->
       action dom_select (fun _ _ ->
@@ -191,8 +191,10 @@ let rec build_calendar ?prehilight
   let today = CalendarLib.Date.today () in
   let fst_dow = fst_dow ~intl day
   and zero = zeroth_displayed_day ~intl day
-  and prev_button = D.(span ~a:[a_class ["ot-c-prev-button"]] [txt b_prev_month])
-  and next_button = D.(span ~a:[a_class ["ot-c-next-button"]] [txt b_next_month])
+  and prev_button =
+    D.(span ~a:[a_class ["ot-c-prev-button"]] [txt b_prev_month])
+  and next_button =
+    D.(span ~a:[a_class ["ot-c-next-button"]] [txt b_next_month])
   and prev_year_button =
     D.(span ~a:[a_class ["ot-c-prev-year-button"]] [txt b_prev_year])
   and next_year_button =
@@ -220,16 +222,15 @@ let rec build_calendar ?prehilight
            then option ~a:[a_value y; a_selected ()] (txt y)
            else option ~a:[a_value y] (txt y)))
   in
-  let (_ : unit Eliom_client_value.t) =
-    [%client
-      let open Lwt_js_events in
-      let size = 10 in
-      select_action ~%select_year mousedowns ~size;
-      select_action ~%select_year changes;
-      select_action ~%select_year blurs;
-      select_action ~%select_month mousedowns ~size;
-      select_action ~%select_month changes;
-      select_action ~%select_month blurs]
+  let () =
+    let open Lwt_js_events in
+    let size = 10 in
+    select_action select_year mousedowns ~size;
+    select_action select_year changes;
+    select_action select_year blurs;
+    select_action select_month mousedowns ~size;
+    select_action select_month changes;
+    select_action select_month blurs
   in
   let thead =
     let open D in
@@ -277,7 +278,7 @@ let rec build_calendar ?prehilight
   , prev_year_button
   , next_year_button )
 
-let%client get_options selector =
+let get_options selector =
   let options = selector##.options in
   let size = selector##.options##.length - 1 in
   let rec aux i acc =
@@ -292,7 +293,7 @@ let%client get_options selector =
   in
   aux size []
 
-let%client update_classes cal zero d =
+let update_classes cal zero d =
   let rows = (To_dom.of_table cal)##.rows in
   let f i =
     rows ## (item (i + 2)) >>! fun r ->
@@ -310,19 +311,19 @@ let%client update_classes cal zero d =
   in
   iter_interval 0 5 f
 
-let%client in_period ?(begin_p = default_period.begin_p)
+let in_period ?(begin_p = default_period.begin_p)
     ?(end_p = default_period.end_p) curr_date
   =
   curr_date >= begin_p && curr_date <= end_p
 
-let%client in_period_coerced ?(begin_p = default_period.begin_p)
+let in_period_coerced ?(begin_p = default_period.begin_p)
     ?(end_p = default_period.end_p) curr_date
   =
   curr_date >= (begin_p :> [`Month | `Year] CalendarLib.Date.date)
   && curr_date <= (end_p :> [`Month | `Year] CalendarLib.Date.date)
 
-let%client attach_events ?action ?(click_non_highlighted = false) ?update ~intl
-    ~period d cal highlight
+let attach_events ?action ?(click_non_highlighted = false) ?update ~intl ~period
+    d cal highlight
   =
   let rows = (To_dom.of_table cal)##.rows in
   let fst_dow = fst_dow ~intl d and zero = zeroth_displayed_day ~intl d in
@@ -362,7 +363,7 @@ let%client attach_events ?action ?(click_non_highlighted = false) ?update ~intl
     then set_onclick ()
     else ()
 
-let%client attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
+let attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
     highlight
   =
   let f () =
@@ -374,7 +375,7 @@ let%client attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
   in
   Lwt.async f
 
-let%client make_span_handler selector
+let make_span_handler selector
     ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
     apply condi fun_handler
   =
@@ -387,7 +388,7 @@ let%client make_span_handler selector
         Js._false)
       else Js._false)
 
-let%client set_selected_index selector selector_value options
+let set_selected_index selector selector_value options
     ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
     ()
   =
@@ -398,15 +399,14 @@ let%client set_selected_index selector selector_value options
     selector##.selectedIndex := React.S.value get_sig
   with Not_found -> ()
 
-let%client make_selector_handler change_index condi fun_handler =
+let make_selector_handler change_index condi fun_handler =
   Dom_html.handler (fun _ ->
       if condi ()
       then (fun_handler (); change_index (); Js._false)
       else Js._false)
 
-let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl
-    ~period d (cal, prev, next, select_month, select_year, prev_year, next_year)
-    f_d
+let attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d
+    (cal, prev, next, select_month, select_year, prev_year, next_year) f_d
   =
   (match highlight with
   | Some highlight ->
@@ -467,7 +467,7 @@ let%client attach_behavior ?highlight ?click_non_highlighted ?action ~intl
        (valid_period (CalendarLib.Date.next d `Year))
        (fun () -> f_d (CalendarLib.Date.next d `Year))
 
-let%client make
+let make
     :  ?init:int * int * int -> ?highlight:(int -> int -> int list Lwt.t)
     -> ?click_non_highlighted:bool -> ?update:(int * int * int) React.E.t
     -> ?action:(int -> int -> int -> unit Lwt.t)
@@ -535,7 +535,7 @@ let%server make
          ?button_labels:~%button_labels ()
         : [> Html_types.table] elt)]
 
-let make_date_picker ?init ?update ?button_labels ?intl ?period () =
+let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
   let init =
     match init with
     | Some init -> init
