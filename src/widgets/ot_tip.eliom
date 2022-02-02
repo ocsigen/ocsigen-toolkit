@@ -19,7 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 open Js_of_ocaml]
 
 [%%client open Eliom_content.Html]
@@ -42,11 +41,7 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
     @@ (div ~a:[a_class ["ot-tip-src"]] [] :: content (fun () -> !close ()))
   in
   let container_elt = To_dom.of_element container in
-  let d_height =
-    float
-    @@ Js.Optdef.get Dom_html.window##.innerHeight
-    @@ fun () -> Dom_html.document##.documentElement##.clientHeight
-  in
+  let d_height = float @@ Dom_html.window##.innerHeight in
   let d_width = float Dom_html.document##.documentElement##.clientWidth in
   let o_bounds = origin##getBoundingClientRect in
   let o_left = o_bounds##.left in
