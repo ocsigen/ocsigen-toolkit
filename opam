@@ -13,6 +13,7 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 depends: [
   "ocaml" {>= "4.08.0"}
+  "js_of_ocaml" {>= "3.6.0" & < "4.0.0"}
   "eliom" {>= "6.12.1"}
   "calendar" {>= "2.0.0"}
 ]
