@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ocsigen-toolkit"
-version: "3.1.0"
+version: "3.1.1"
 maintainer: "dev@ocsigen.org"
 synopsis: "Reusable UI components for Eliom applications (client only, or client-server)"
 description: "The Ocsigen Toolkit is a set of user interface widgets that facilitate the development of Eliom applications."
