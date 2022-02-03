@@ -1,4 +1,3 @@
-[%%shared
 (* Ocsigen Toolkit
  * http://www.ocsigen.org/ocsigen-toolkit
  *
@@ -20,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-open Js_of_ocaml]
-
+open%client Js_of_ocaml
 [%%shared open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
 [%%client open Eliom_shared]
@@ -48,7 +46,7 @@ let%shared default_fail e =
     : Html_types.div_content Eliom_content.Html.elt list
     :> [< Html_types.div_content] Eliom_content.Html.elt list)
 
-let%shared set_default_fail f =
+let%client set_default_fail f =
   default_fail_ref :=
     (f
       : exn -> [< Html_types.div_content] Eliom_content.Html.elt list

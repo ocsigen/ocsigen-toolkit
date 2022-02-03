@@ -45,7 +45,7 @@ let rgb_to_css (r, g, b) =
   Printf.sprintf "rgb(%d, %d, %d)" (int_of_float r) (int_of_float g)
     (int_of_float b)
 
-let display_hue_selector ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
+let display_hue_selector ~setter (sel_hue, sel_sat, sel_ltn) =
   let open Eliom_content.Html in
   let dim = 111 in
   let irange = Array.init dim (fun x -> x) in
@@ -83,13 +83,11 @@ let display_hue_selector ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
 (**
   * TODO: use a CSS3 gradient in each cell to make the grid look smoother
   *)
-let display_sl_grid ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
+let display_sl_grid ~setter (sel_hue, sel_sat, sel_ltn) =
   let open Eliom_content.Html in
   let hue = float_of_int sel_hue in
   let dim = 51 in
-  let step = 1.0 /. float_of_int dim in
   let irange = Array.init (dim * dim) (fun x -> x) in
-  let cell_dim = Printf.sprintf "%.3f%%" (1.0 /. float_of_int dim *. 100.0) in
   let rows = Array.init dim (fun _ -> []) in
   let () =
     Array.iter
@@ -130,7 +128,7 @@ let display_sl_grid ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
   in
   D.(div ~a:[a_class ["ot-color-picker-sl-picker"]] (Array.to_list rows))
 
-let display_aux ?(a = []) ~setter ((sel_hue, sel_sat, sel_ltn) as sel) =
+let display_aux ?(a = []) ~setter sel =
   let open Eliom_content.Html in
   D.div
     ~a:(D.a_class ["ot-color-picker"] :: a)

@@ -21,6 +21,7 @@ jobs:
           - 4.10.x
           - 4.11.x
           - 4.12.x
+          - 4.13.x
 
     runs-on: ${{ matrix.os }}
 
@@ -36,9 +37,9 @@ jobs:
           opam-depext: false
           opam-pin: false
 
-      - run: opam pin add ocsigen-toolkit.dev . --no-action
-
-      - run: opam depext ocsigen-toolkit
+      - name: Install OpenSSL on MacOS
+        run: brew install openssl@3
+        if: ${{ matrix.os == 'macos-latest' }}
 
       - run: opam install . --deps-only
 

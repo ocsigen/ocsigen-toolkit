@@ -19,11 +19,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 open Eliom_content.Html]
 
 [%%shared open Eliom_content.Html.F]
-[%%shared open Js_of_ocaml]
+open%client Js_of_ocaml
 [%%client open Js_of_ocaml_lwt]
 type%client status = Stopped | Start | Aborted | In_progress
 

@@ -22,7 +22,6 @@
 
 open Eliom_content.Html
 open Eliom_shared.React.S.Infix
-open Js_of_ocaml
 
 let display_aux (_, _, a) v =
   let v = match a with Some a -> a.(v) | None -> string_of_int v

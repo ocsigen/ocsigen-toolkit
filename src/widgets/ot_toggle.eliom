@@ -22,11 +22,10 @@
 
 open Eliom_content.Html
 open Eliom_shared.React.S.Infix
-open Js_of_ocaml
 
 type t = T_Up | T_Down
 
-let up_for_true = function true -> T_Up | _ -> T_Down
+let%client up_for_true = function true -> T_Up | _ -> T_Down
 
 let display_toggle ?(up_txt = "up") ?(down_txt = "down") f =
   let open D in
