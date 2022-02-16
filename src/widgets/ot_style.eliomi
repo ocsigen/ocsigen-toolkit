@@ -56,10 +56,16 @@ val top : #Dom_html.element Js.t -> float option
 val bottom : #Dom_html.element Js.t -> float option
 val left : #Dom_html.element Js.t -> float option
 val right : #Dom_html.element Js.t -> float option
+val height : #Dom_html.element Js.t -> float
+val width : #Dom_html.element Js.t -> float
 val marginTop : #Dom_html.element Js.t -> float
 val marginBottom : #Dom_html.element Js.t -> float
 val marginLeft : #Dom_html.element Js.t -> float
 val marginRight : #Dom_html.element Js.t -> float
+val paddingTop : #Dom_html.element Js.t -> float
+val paddingBottom : #Dom_html.element Js.t -> float
+val paddingLeft : #Dom_html.element Js.t -> float
+val paddingRight : #Dom_html.element Js.t -> float
 val set_top : 'a elt -> float -> unit
 val set_bottom : 'a elt -> float -> unit
 val set_left : 'a elt -> float -> unit

@@ -1,4 +1,3 @@
-(*TODO: interface file*)
 (*TODO: reactive programming*)
 
 (* This module is all about easier access to getComputedStyle *)
@@ -134,10 +133,16 @@ let top elt = parse_px (style elt)##.top
 let bottom elt = parse_px (style elt)##.bottom
 let left elt = parse_px (style elt)##.left
 let right elt = parse_px (style elt)##.right
+let height e = float_of_px (style e)##.height
+let width e = float_of_px (style e)##.width
 let marginTop e = float_of_px (style e)##.marginTop
 let marginBottom e = float_of_px (style e)##.marginBottom
 let marginLeft e = float_of_px (style e)##.marginLeft
 let marginRight e = float_of_px (style e)##.marginRight
+let paddingTop e = float_of_px (style e)##.paddingTop
+let paddingBottom e = float_of_px (style e)##.paddingBottom
+let paddingLeft e = float_of_px (style e)##.paddingLeft
+let paddingRight e = float_of_px (style e)##.paddingRight
 let set_top e v = Manip.SetCss.top e @@ px_of_float v
 let set_bottom e v = Manip.SetCss.bottom e @@ px_of_float v
 let set_left e v = Manip.SetCss.left e @@ px_of_float v
