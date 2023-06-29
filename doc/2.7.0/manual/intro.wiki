@@ -18,8 +18,12 @@ You may want to use Ocsigen Toolkit in conjunction with
 [[site:/ocsigen-start|Ocsigen Start]], which provides an application
 template for quickly getting started with Ocsigen. The template
 provides various runnable examples of Ocsigen Toolkit widgets. See the
-<<a_manual project="ocsigen-toolkit" chapter="intro" | Ocsigen Start
+<<a_manual project="ocsigen-start" chapter="intro" | Ocsigen Start
 manual >> for details.
+
+See the widgets in action in
+[[wiki("ocsigen-start"):demo/|Ocsigen Start's demo application]]
+(also available for Android and iOS, or in your mobile browser).
 
 ==Programming style
 
