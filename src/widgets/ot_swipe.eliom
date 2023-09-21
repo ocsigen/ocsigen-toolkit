@@ -119,7 +119,7 @@ let%shared bind ?(transition_duration = 0.3)
            elt'##.style##.left := px_of_int left;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
            Lwt.async (fun () ->
-             let%lwt () = Lwt_js_events.transitionend elt' in
+             let%lwt _ = Lwt_js_events.transitionend elt' in
              Manip.Class.remove elt "ot-swiping";
              Lwt.return_unit));
          status := Stopped;

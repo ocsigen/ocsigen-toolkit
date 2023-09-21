@@ -246,7 +246,9 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     Lwt.async (fun () ->
       let%lwt () =
         if stop <> previousstop
-        then Lwt_js_events.transitionend elt'
+        then
+          let%lwt _ = Lwt_js_events.transitionend elt' in
+          Lwt.return_unit
         else Lwt.return_unit
       in
       set_after_signal stop; Lwt.return_unit);

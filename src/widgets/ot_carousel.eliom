@@ -294,7 +294,11 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          set_active ();
          Lwt.async (fun () ->
            let%lwt () =
-             if move then Lwt_js_events.transitionend d2' else Lwt.return_unit
+             if move
+             then
+               let%lwt _ = Lwt_js_events.transitionend d2' in
+               Lwt.return_unit
+             else Lwt.return_unit
            in
            Eliom_lib.Option.iter (fun f -> f ()) transitionend;
            Manip.Class.remove ~%d2 ot_swiping;

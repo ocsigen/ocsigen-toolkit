@@ -130,7 +130,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          add_class ~%bckgrnd "closing";
          Lwt.cancel !(~%touch_thread);
          Lwt_js_events.async (fun () ->
-           let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           let%lwt _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "closing";
            Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
            Lwt.return_unit)
@@ -154,7 +154,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
            (fun () -> html_ManipClass_add "ot-drawer-open");
          Lwt_js_events.async (fun () ->
-           let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           let%lwt _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "opening";
            Lwt.return_unit)
        : unit -> unit)]
@@ -225,7 +225,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                     let%lwt () = Lwt_js_events.transitionend dr in
+                     let%lwt _ = Lwt_js_events.transitionend dr in
                      Manip.Class.remove ~%bckgrnd "ot-swiping";
                      Lwt.return_unit);
                    cl ()
@@ -234,7 +234,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                     let%lwt () = Lwt_js_events.transitionend dr in
+                     let%lwt _ = Lwt_js_events.transitionend dr in
                      Manip.Class.remove ~%bckgrnd "ot-swiping";
                      Lwt.return_unit)
                | `Abort ->
