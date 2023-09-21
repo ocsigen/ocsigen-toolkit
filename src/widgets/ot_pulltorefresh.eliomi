@@ -13,8 +13,8 @@
  *)
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
-val make
-  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+val make :
+   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?app_only:bool
   -> ?scale:float
   -> ?dragThreshold:float
@@ -22,8 +22,8 @@ val make
   -> ?header:
        (state option
         -> ([< Html_types.div_content_fun > `Div] as 'a) Eliom_content.Html.elt
-           list)
-       Eliom_shared.Value.t
+             list)
+         Eliom_shared.Value.t
   -> content:'a Eliom_content.Html.elt
   -> (unit -> bool Lwt.t) Eliom_client_value.t
   -> 'a Eliom_content.Html.elt

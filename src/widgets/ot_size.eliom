@@ -57,8 +57,8 @@ let update_width_height () =
 let width_height, width, height =
   (* TODO: MutationObserver? *)
   (let open Lwt_js_events in
-  async @@ fun () ->
-  onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ());
+   async @@ fun () ->
+   onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ());
   let w = React.S.l1 fst wh in
   let h = React.S.l1 snd wh in
   (* Make sure the signals are not destroyed indirectly

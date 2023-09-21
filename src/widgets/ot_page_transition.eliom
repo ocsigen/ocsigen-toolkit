@@ -11,8 +11,8 @@ type animation = Nil | Forward | Backward
 module type PAGE_TRANSITION_CONF = sig
   type screenshot
 
-  val screenshot_container
-    :  screenshot option
+  val screenshot_container :
+     screenshot option
     -> Html_types.div_content Eliom_content.Html.elt
 end
 
@@ -86,7 +86,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
   let forward_animation ?(transition_duration = 0.5) take_screenshot =
     let wait_for_page_change, trigger_page_change = Lwt.wait () in
     Eliom_client.Page_status.oninactive ~once:true (fun () ->
-        Lwt.wakeup trigger_page_change ());
+      Lwt.wakeup trigger_page_change ());
     let fa ss =
       Lwt.async @@ fun () ->
       let%lwt () = wait_for_page_change in
@@ -115,7 +115,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
   let backward_animation ?(transition_duration = 0.5) take_screenshot =
     let wait_for_page_change, trigger_page_change = Lwt.wait () in
     Eliom_client.Page_status.oninactive ~once:true (fun () ->
-        Lwt.wakeup trigger_page_change ());
+      Lwt.wakeup trigger_page_change ());
     let ba ss =
       Lwt.async @@ fun () ->
       let%lwt () = wait_for_page_change in

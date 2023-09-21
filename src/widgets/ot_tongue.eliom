@@ -8,6 +8,7 @@ open Js_of_ocaml
 open Js_of_ocaml_lwt]
 
 let%client inertia_parameter1 = 0.1
+
 (* WARNING: inertia_parameter1 must be adapted to cubic-bezier in CSS!
    If small (0.1), the elt will slow down very progressively and the movement will
    last for a long time (for a given distance).
@@ -22,15 +23,18 @@ let%client inertia_parameter1 = 0.1
    dx = initial_speed * dt / inertia_parameter1
 *)
 let%client inertia_parameter2 = 0.1
+
 (* Controls the movement duration, which depends on initial speed.
    Higher value, longer movement.
 *)
 let%client inertia_parameter3 = 0.5
+
 (* Controls the movement duration.
    If large (1.0) high duration for high initial speed.
    dt = (inertia_parameter2 * speed)^inertia_parameter3
 *)
 let%client average_time = 0.1
+
 type%shared simple_stop = [`Percent of int | `Px of int | `Full_content]
 
 type%shared stop =
@@ -160,12 +164,12 @@ let%client closest_stop ~speed ~maxsize size stops =
     (* Computes the stop with the minimum distance *)
     List.fold_left
       (fun ((closest_d, _, _, _) as closest) (px, stop, interval_info) ->
-        let d = abs (size - px) in
-        if closest_d < d
-        then closest
-        else if px <= maxsize
-        then d, px, (stop, true), interval_info
-        else abs (size - maxsize), maxsize, (`Px maxsize, true), `Point)
+         let d = abs (size - px) in
+         if closest_d < d
+         then closest
+         else if px <= maxsize
+         then d, px, (stop, true), interval_info
+         else abs (size - maxsize), maxsize, (`Px maxsize, true), `Point)
       (max_int, 0, (`Px 0, true), `Point)
       stops
   with
@@ -240,20 +244,20 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
     Lwt.async (fun () ->
-        let%lwt () =
-          if stop <> previousstop
-          then Lwt_js_events.transitionend elt'
-          else Lwt.return_unit
-        in
-        set_after_signal stop; Lwt.return_unit);
+      let%lwt () =
+        if stop <> previousstop
+        then Lwt_js_events.transitionend elt'
+        else Lwt.return_unit
+      in
+      set_after_signal stop; Lwt.return_unit);
     Lwt.return_unit
   in
   Lwt.async (fun () ->
-      (* Initialize size *)
-      let maxsize = full_size elt vert in
-      let px = px_of_simple_stop vert elt init in
-      let stop = if px > maxsize then `Px maxsize else init in
-      set 0. (stop, true));
+    (* Initialize size *)
+    let maxsize = full_size elt vert in
+    let px = px_of_simple_stop vert elt init in
+    let stop = if px > maxsize then `Px maxsize else init in
+    set 0. (stop, true));
   let pos ev =
     try cl ev with _ -> !currentpos
     (* Firefox (at least on Linux) fails to get touchend touchlist ...
@@ -366,39 +370,39 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
   let before_signal =
     [%client
       (React.S.create ~%init
-        : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
+       : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
   in
   let after_signal =
     [%client
       (React.S.create ~%init
-        : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
+       : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
   in
   let swipe_pos =
     [%client
       (let vert = ~%side = `Top || ~%side = `Bottom in
        React.S.create (px_of_simple_stop vert ~%elt ~%init)
-        : int React.S.t * (?step:React.step -> int -> unit))]
+       : int React.S.t * (?step:React.step -> int -> unit))]
   in
   ignore
     [%client
       (Lwt.async (fun () ->
-           let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
-           bind ~%side ~%stops ~%init ~%handle
-             ~%(update : simple_stop React.E.t Eliom_client_value.t option)
-             (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
-           Lwt.return_unit)
-        : unit)];
+         let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
+         bind ~%side ~%stops ~%init ~%handle
+           ~%(update : simple_stop React.E.t Eliom_client_value.t option)
+           (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
+         Lwt.return_unit)
+       : unit)];
   let px_signal_before =
     [%client
       (let vert = ~%side = `Top || ~%side = `Bottom in
        React.S.map (px_of_simple_stop vert ~%elt) (fst ~%before_signal)
-        : int React.S.t)]
+       : int React.S.t)]
   in
   let px_signal_after =
     [%client
       (let vert = ~%side = `Top || ~%side = `Bottom in
        React.S.map (px_of_simple_stop vert ~%elt) (fst ~%after_signal)
-        : int React.S.t)]
+       : int React.S.t)]
   in
   { elt
   ; stop_signal_before = [%client (fst ~%before_signal : simple_stop React.S.t)]

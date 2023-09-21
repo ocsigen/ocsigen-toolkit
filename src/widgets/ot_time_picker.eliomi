@@ -22,8 +22,8 @@
 
 (** This module implements a clock-style time picker. *)
 
-val make
-  :  ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
+val make :
+   ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
   -> ?init:int * int
   -> ?update:(int * int) React.E.t Eliom_client_value.t
   -> ?round_5:bool
@@ -55,8 +55,8 @@ val make
     [m] the minutes that the user picked. The third part of the output
     is a function that can be called to go back to hours selection. *)
 
-val make_hours_minutes_seq
-  :  ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
+val make_hours_minutes_seq :
+   ?action:(int * int -> unit Lwt.t) Eliom_client_value.t
   -> ?init:int * int
   -> ?update:(int * int) React.E.t Eliom_client_value.t
   -> ?round_5:bool

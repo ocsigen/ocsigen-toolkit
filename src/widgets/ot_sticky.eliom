@@ -119,7 +119,7 @@ let update_state ?force g =
 (* TODO: ensure compatibility with DOM caching *)
 let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
     ?((*TODO: `Bottom and `Right *)
-    ios_html_scroll_hack = false) ?(force = false) elt
+      ios_html_scroll_hack = false) ?(force = false) elt
   =
   let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   if (not force) && supports_position_sticky elt
@@ -210,8 +210,8 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
         Lwt.async (fun () ->
-            let%lwt _ = Lwt_js.sleep 0.5 in
-            Lwt.return @@ doIt ());
+          let%lwt _ = Lwt_js.sleep 0.5 in
+          Lwt.return @@ doIt ());
         doIt ()
       in
       init ();

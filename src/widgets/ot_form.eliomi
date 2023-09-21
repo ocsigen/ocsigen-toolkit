@@ -23,12 +23,10 @@ open Eliom_content.Html
 open Html_types
 
 (** An HTML element which can be selected by pressing the tab key *)
-class type tabbable =
-  object
-    inherit Dom_html.element
-
-    method tabIndex : int Js.prop
-  end
+class type tabbable = object
+  inherit Dom_html.element
+  method tabIndex : int Js.prop
+end
 
 val setup_tabcycle : #tabbable Js.t list -> unit
 (** [setup_tabcycle] makes tab key loop over child elements of an element and

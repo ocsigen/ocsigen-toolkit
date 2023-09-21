@@ -39,8 +39,8 @@ type button_labels =
 (** An instance of [button_labels] is used to customize the button
     labels. The defaults are "<<", "<", ">", and ">>". *)
 
-val make
-  :  ?init:int * int * int
+val make :
+   ?init:int * int * int
   -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
   -> ?click_non_highlighted:bool
   -> ?update:(int * int * int) React.E.t Eliom_client_value.t
@@ -69,8 +69,8 @@ val make
     between the two dates given contained in [update].
     *)
 
-val make_date_picker
-  :  ?init:int * int * int
+val make_date_picker :
+   ?init:int * int * int
   -> ?update:(int * int * int) React.E.t Eliom_client_value.t
   -> ?button_labels:button_labels
   -> ?intl:intl

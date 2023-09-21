@@ -91,9 +91,9 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
   | `Top -> when_container_ready_and_in put_c_above_o
   | `Ratio r ->
       when_container_ready_and_in (fun () ->
-          if (1. -. r) *. o_top < r *. o_to_bottom
-          then put_c_below_o ()
-          else put_c_above_o ())
+        if (1. -. r) *. o_top < r *. o_to_bottom
+        then put_c_below_o ()
+        else put_c_above_o ())
   | `Bottom -> when_container_ready_and_in put_c_below_o
   | `Forced_bottom -> put_c_below_o ());
   (match side with
@@ -108,19 +108,19 @@ let%client display ?(container_a = [a_class ["ot-tip-container"]])
       then (
         c_style##.right := print_px o_center_to_right;
         when_container_ready get_half_c_width (fun half_c_width ->
-            if half_c_width <= o_center_to_right -. 1.
-            then (
-              c_style##.right := print_px (o_center_to_right -. half_c_width);
-              c_add_class "ot-tip-center")
-            else c_add_class "ot-tip-left"))
+          if half_c_width <= o_center_to_right -. 1.
+          then (
+            c_style##.right := print_px (o_center_to_right -. half_c_width);
+            c_add_class "ot-tip-center")
+          else c_add_class "ot-tip-left"))
       else (
         c_style##.left := print_px o_center_to_left;
         when_container_ready get_half_c_width (fun half_c_width ->
-            if half_c_width <= o_center_to_left -. 1.
-            then (
-              c_style##.left := print_px (o_center_to_left -. half_c_width);
-              c_add_class "ot-tip-center")
-            else c_add_class "ot-tip-right")));
+          if half_c_width <= o_center_to_left -. 1.
+          then (
+            c_style##.left := print_px (o_center_to_left -. half_c_width);
+            c_add_class "ot-tip-center")
+          else c_add_class "ot-tip-right")));
   let filter =
     D.div ~a:(a_onclick (fun _ -> !close ()) :: filter_a) [container]
   in

@@ -18,7 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 open Js_of_ocaml]
 
 [%%client open Eliom_content.Html]
@@ -57,7 +56,7 @@ let%client attach watched =
   if (Dom_html.window##getComputedStyle watched)##.position = Js.string "static"
   then watched##.style##.position := Js.string "relative";
   Dom.appendChild watched sensor;
-  { watched = (watched :> Dom_html.element Js.t)
+  { watched :> Dom_html.element Js.t
   ; grow
   ; grow_child
   ; shrink
@@ -93,19 +92,19 @@ let%client noderesize_aux reset sensor f =
     let throttle = ref false in
     Dom.addEventListener element Dom_html.Event.scroll
       (Dom.handler (fun _ ->
-           if not !throttle
-           then (
-             throttle := true;
-             Dom_html._requestAnimationFrame
-               ( Js.wrap_callback @@ fun _ ->
-                 let w' = element##.offsetWidth in
-                 let h' = element##.offsetHeight in
-                 if w' <> !w || h' <> !h then f ();
-                 w := w';
-                 h := h';
-                 reset sensor;
-                 throttle := false ));
-           Js.bool true))
+         if not !throttle
+         then (
+           throttle := true;
+           Dom_html._requestAnimationFrame
+             ( Js.wrap_callback @@ fun _ ->
+               let w' = element##.offsetWidth in
+               let h' = element##.offsetHeight in
+               if w' <> !w || h' <> !h then f ();
+               w := w';
+               h := h';
+               reset sensor;
+               throttle := false ));
+         Js.bool true))
       (Js.bool false)
   in
   reset sensor;

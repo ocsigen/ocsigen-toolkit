@@ -40,14 +40,14 @@ let%client clY ev =
 
 let%client bind_click_outside bckgrnd elt close =
   Lwt.async (fun () ->
-      let%lwt ev =
-        Ot_lib.click_outside ~use_capture:true
-          ~inside:(To_dom.of_element bckgrnd)
-          (To_dom.of_element elt)
-      in
-      Dom_html.stopPropagation ev;
-      close ();
-      Lwt.return_unit)
+    let%lwt ev =
+      Ot_lib.click_outside ~use_capture:true
+        ~inside:(To_dom.of_element bckgrnd)
+        (To_dom.of_element elt)
+    in
+    Dom_html.stopPropagation ev;
+    close ();
+    Lwt.return_unit)
 
 let%client html () =
   Js.Opt.to_option
@@ -101,8 +101,8 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
   let bckgrnd =
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
-  let bind_touch
-      : ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
+  let bind_touch :
+      ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
     =
     [%client Lwt.wait ()]
   in
@@ -112,7 +112,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
       (fun () ->
          Dom_html.document##.body##.style##.top := Js.string "";
          Dom_html.window##scroll 0 !(~%scroll_pos)
-        : unit -> unit)]
+       : unit -> unit)]
   in
   let stop_open_event =
     [%client
@@ -130,11 +130,11 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          add_class ~%bckgrnd "closing";
          Lwt.cancel !(~%touch_thread);
          Lwt_js_events.async (fun () ->
-             let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-             remove_class ~%bckgrnd "closing";
-             Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
-             Lwt.return_unit)
-        : unit -> unit)]
+           let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           remove_class ~%bckgrnd "closing";
+           Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
+           Lwt.return_unit)
+       : unit -> unit)]
   in
   let close = wrap_close close in
   let open_ =
@@ -148,27 +148,27 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          add_class ~%bckgrnd "opening";
          Lwt.cancel !(~%touch_thread);
          Lwt.async (fun () ->
-             let%lwt bind_touch = fst ~%bind_touch in
-             bind_touch (); Lwt.return_unit);
+           let%lwt bind_touch = fst ~%bind_touch in
+           bind_touch (); Lwt.return_unit);
          bind_click_outside ~%bckgrnd ~%d ~%close;
          Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
            (fun () -> html_ManipClass_add "ot-drawer-open");
          Lwt_js_events.async (fun () ->
-             let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-             remove_class ~%bckgrnd "opening";
-             Lwt.return_unit)
-        : unit -> unit)]
+           let%lwt () = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           remove_class ~%bckgrnd "opening";
+           Lwt.return_unit)
+       : unit -> unit)]
   in
   let open_ = wrap_open open_ in
   let _ =
     [%client
       (Eliom_client.Page_status.oninactive (fun () ->
-           ~%reset_scroll_pos ();
-           html_ManipClass_remove "ot-drawer-opening";
-           html_ManipClass_remove "ot-drawer-open";
-           html_ManipClass_remove "ot-drawer-closing");
+         ~%reset_scroll_pos ();
+         html_ManipClass_remove "ot-drawer-opening";
+         html_ManipClass_remove "ot-drawer-open";
+         html_ManipClass_remove "ot-drawer-closing");
        Lwt.return_unit
-        : unit Lwt.t)]
+       : unit Lwt.t)]
   in
   let _ =
     [%client
@@ -178,12 +178,12 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          else ~%open_ ()
        in
        Lwt_js_events.async (fun () ->
-           Lwt_js_events.clicks (To_dom.of_element ~%toggle_button) (fun ev _ ->
-               Dom.preventDefault ev;
-               Dom_html.stopPropagation ev;
-               toggle ();
-               Lwt.return_unit))
-        : unit)]
+         Lwt_js_events.clicks (To_dom.of_element ~%toggle_button) (fun ev _ ->
+           Dom.preventDefault ev;
+           Dom_html.stopPropagation ev;
+           toggle ();
+           Lwt.return_unit))
+       : unit)]
   in
   let _ =
     if swipe
@@ -211,10 +211,10 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                | `Move delta ->
                    let s =
                      (match ~%position with
-                     | `Top -> "translateY(calc(100% + "
-                     | `Right -> "translateX(calc(-100% + "
-                     | `Bottom -> "translateY(calc(-100% + "
-                     | `Left -> "translateX(calc(100% + ")
+                       | `Top -> "translateY(calc(100% + "
+                       | `Right -> "translateX(calc(-100% + "
+                       | `Bottom -> "translateY(calc(-100% + "
+                       | `Left -> "translateX(calc(100% + ")
                      |> (fun t -> Printf.sprintf "%s%dpx" t delta)
                      |> Js.string
                    in
@@ -225,18 +225,18 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                       let%lwt () = Lwt_js_events.transitionend dr in
-                       Manip.Class.remove ~%bckgrnd "ot-swiping";
-                       Lwt.return_unit);
+                     let%lwt () = Lwt_js_events.transitionend dr in
+                     Manip.Class.remove ~%bckgrnd "ot-swiping";
+                     Lwt.return_unit);
                    cl ()
                | `Open ->
                    (Js.Unsafe.coerce dr##.style)##.transform := Js.string "";
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                       let%lwt () = Lwt_js_events.transitionend dr in
-                       Manip.Class.remove ~%bckgrnd "ot-swiping";
-                       Lwt.return_unit)
+                     let%lwt () = Lwt_js_events.transitionend dr in
+                     Manip.Class.remove ~%bckgrnd "ot-swiping";
+                     Lwt.return_unit)
                | `Abort ->
                    (Js.Unsafe.coerce dr##.style)##.transform := Js.string "";
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
@@ -276,23 +276,19 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              Dom.preventDefault ev;
              Dom_html.stopPropagation ev;
              let move = ref 0 in
-             if ~%position = `Top
-                && top <= 0
+             if ~%position = `Top && top <= 0
                 &&
                 (move := top;
                  true)
-                || ~%position = `Right
-                   && left >= 0
+                || ~%position = `Right && left >= 0
                    &&
                    (move := left;
                     true)
-                || ~%position = `Bottom
-                   && top >= 0
+                || ~%position = `Bottom && top >= 0
                    &&
                    (move := top;
                     true)
-                || ~%position = `Left
-                   && left <= 0
+                || ~%position = `Left && left <= 0
                    &&
                    (move := left;
                     true)
@@ -362,15 +358,15 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
            Lwt.pick [a; b; c]
          in
          Lwt.wakeup (snd ~%bind_touch) (fun () ->
-             let t = Lwt_js_events.touchstarts bckgrnd' onpanstart in
-             ~%touch_thread := t)
+           let t = Lwt_js_events.touchstarts bckgrnd' onpanstart in
+           ~%touch_thread := t)
          (* Hammer.bind_callback hammer "panstart" onpanstart; *)
          (* Hammer.bind_callback hammer "panmove" onpan; *)
          (* Hammer.bind_callback hammer "panend" onpanend; *)
          (* Hammer.bind_callback hammer *)
          (*   (if ~%position = `Left then "swipeleft" else "swiperight") *)
          (*   (fun _ -> Lwt.async (fun () -> perform_animation `Close)) *)
-          : unit)]
+         : unit)]
     else [%client ()]
   in
   bckgrnd, open_, close

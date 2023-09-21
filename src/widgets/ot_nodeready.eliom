@@ -50,7 +50,7 @@ let handler records observer =
   let changes = ref false in
   for i = 0 to records##.length - 1 do
     Js.Optdef.iter (Js.array_get records i) (fun r ->
-        if r##.addedNodes##.length > 0 then changes := true)
+      if r##.addedNodes##.length > 0 then changes := true)
   done;
   if !changes
   then (
@@ -61,7 +61,7 @@ let handler records observer =
     if not_ready = [] then observer##disconnect;
     ready
     |> List.iter (fun {resolver; stop_ondead} ->
-           stop_ondead (); Lwt.wakeup resolver ()))
+      stop_ondead (); Lwt.wakeup resolver ()))
 
 let observer =
   new%js MutationObserver.mutationObserver (Js.wrap_callback handler)
@@ -92,13 +92,13 @@ let nodeready n =
         stop_ondead ()
       in
       Eliom_client.Page_status.ondead ~stop (fun () ->
-          let instances_of_node, rest =
-            List.partition (fun {node} -> n == node) !watched
-          in
-          watched := rest;
-          instances_of_node
-          |> List.iter (fun {resolver} ->
-                 log ~n "deinstalled"; Lwt.wakeup resolver ()));
+        let instances_of_node, rest =
+          List.partition (fun {node} -> n == node) !watched
+        in
+        watched := rest;
+        instances_of_node
+        |> List.iter (fun {resolver} ->
+          log ~n "deinstalled"; Lwt.wakeup resolver ()));
       watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
       log ~n "installed";
       t)

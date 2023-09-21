@@ -19,7 +19,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 open Js_of_ocaml]
 
 [%%client open Js_of_ocaml_lwt]
@@ -31,7 +30,7 @@ let%client onloads handler =
 let%client onresizes handler =
   let stop, stop_thread = React.E.create () in
   Eliom_client.Page_status.while_active ~stop (fun () ->
-      Lwt_js_events.onresizes handler);
+    Lwt_js_events.onresizes handler);
   Lwt.finalize
     (fun () -> fst @@ Lwt.wait ())
     (fun () -> stop_thread (); Lwt.return_unit)
@@ -43,37 +42,37 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
   let stop, stop_thread = React.E.create () in
   let cur = ref Lwt.return_unit in
   Eliom_client.Page_status.while_active ~stop (fun () ->
-      cur :=
-        if ios_html_scroll_hack
-        then
-          let rec loop () =
-            let%lwt e =
-              Lwt.pick
-                (List.map
-                   (* We listen to several elements because scroll events are
+    cur :=
+      if ios_html_scroll_hack
+      then
+        let rec loop () =
+          let%lwt e =
+            Lwt.pick
+              (List.map
+                 (* We listen to several elements because scroll events are
                    not happening on the same element on every platform. *)
-                     (fun element -> Lwt_js_events.scroll ?use_capture element)
-                   [ (Dom_html.window :> Dom_html.eventTarget Js.t)
-                   ; (Dom_html.document##.documentElement
-                       :> Dom_html.eventTarget Js.t)
-                   ; (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ])
-            in
-            let continue = ref true in
-            let w =
-              try%lwt fst (Lwt.task ())
-              with Lwt.Canceled ->
-                continue := false;
-                Lwt.return_unit
-            in
-            let%lwt () = handler e w in
-            if !continue then loop () else Lwt.return_unit
+                    (fun element -> Lwt_js_events.scroll ?use_capture element)
+                 [ (Dom_html.window :> Dom_html.eventTarget Js.t)
+                 ; (Dom_html.document##.documentElement
+                     :> Dom_html.eventTarget Js.t)
+                 ; (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ])
           in
-          loop ()
-        else
-          Lwt_js_events.seq_loop
-            (Lwt_js_events.make_event Dom_html.Event.scroll)
-            ?use_capture Dom_html.window handler;
-      !cur);
+          let continue = ref true in
+          let w =
+            try%lwt fst (Lwt.task ())
+            with Lwt.Canceled ->
+              continue := false;
+              Lwt.return_unit
+          in
+          let%lwt () = handler e w in
+          if !continue then loop () else Lwt.return_unit
+        in
+        loop ()
+      else
+        Lwt_js_events.seq_loop
+          (Lwt_js_events.make_event Dom_html.Event.scroll)
+          ?use_capture Dom_html.window handler;
+    !cur);
   Lwt.finalize
     (fun () -> fst @@ Lwt.task ())
     (fun () -> stop_thread (); Lwt.cancel !cur; Lwt.return_unit)
@@ -84,10 +83,10 @@ let%client rec in_ancestors ~elt ~ancestor =
      && Js.Opt.case elt##.parentNode
           (fun () -> false)
           (fun parent ->
-            Js.Opt.case
-              (Dom_html.CoerceTo.element parent)
-              (fun () -> false)
-              (fun elt -> in_ancestors ~elt ~ancestor))
+             Js.Opt.case
+               (Dom_html.CoerceTo.element parent)
+               (fun () -> false)
+               (fun elt -> in_ancestors ~elt ~ancestor))
 
 let%client rec click_outside ?use_capture
     ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t)) elt
@@ -96,9 +95,9 @@ let%client rec click_outside ?use_capture
   Js.Opt.case ev##.target
     (fun () -> click_outside ?use_capture elt)
     (fun target ->
-      if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
-      then click_outside ?use_capture ~inside elt
-      else Lwt.return ev)
+       if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
+       then click_outside ?use_capture ~inside elt
+       else Lwt.return ev)
 
 [%%shared
 module List = struct
