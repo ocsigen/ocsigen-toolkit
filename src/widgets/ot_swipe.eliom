@@ -39,57 +39,57 @@ type%client status = Stopped | Start | Below | Above | Aborted | In_progress
 
 let%client dispatch_event ~ev elt name x y =
   Js.Opt.iter elt##.parentNode (fun target ->
-      let event =
-        try
-          (* Better version, but unsupported on iOS and Android: *)
-          let touchevent = Js.Unsafe.global ##. TouchEvent in
-          let touch = Js.Unsafe.global ##. Touch in
-          let touch =
-            new%js touch
-              (object%js
-                 val identifier = identifier ev
-                 val target = target
-                 val clientX = x
-                 val clientY = y
-              end)
-          in
-          if touch##.target = Js.null then failwith "new Touch() not supported";
-          let opt =
-            object%js
-              val bubbles = Js._true
-              val changedTouches = Js.array [|touch|]
-            end
-          in
-          new%js touchevent (Js.string name) opt
-        with e ->
-          Printf.eprintf "%s\n"
-            ("exn: " ^ Printexc.to_string e ^ " - switching to workaround. ");
-          (* HACK *)
-          let customEvent = Js.Unsafe.global ##. CustomEvent in
-          let opt =
-            object%js
-              val bubbles = Js._true
-            end
-          in
-          let event = new%js customEvent (Js.string name) opt in
-          let touch =
-            object%js
-              val identifier = identifier ev
-              val target = target
-              val clientX = x
-              val clientY = y
-            end
-          in
-          let touches =
-            object%js
-              val item = Js.wrap_callback (fun _ -> Js.def touch)
-            end
-          in
-          (Js.Unsafe.coerce event)##.changedTouches := touches;
-          (* END HACK *)
-          event
-      in
-      (Js.Unsafe.coerce target)##dispatchEvent event)
+    let event =
+      try
+        (* Better version, but unsupported on iOS and Android: *)
+        let touchevent = Js.Unsafe.global ##. TouchEvent in
+        let touch = Js.Unsafe.global ##. Touch in
+        let touch =
+          new%js touch
+            (object%js
+               val identifier = identifier ev
+               val target = target
+               val clientX = x
+               val clientY = y
+            end)
+        in
+        if touch##.target = Js.null then failwith "new Touch() not supported";
+        let opt =
+          object%js
+            val bubbles = Js._true
+            val changedTouches = Js.array [|touch|]
+          end
+        in
+        new%js touchevent (Js.string name) opt
+      with e ->
+        Printf.eprintf "%s\n"
+          ("exn: " ^ Printexc.to_string e ^ " - switching to workaround. ");
+        (* HACK *)
+        let customEvent = Js.Unsafe.global ##. CustomEvent in
+        let opt =
+          object%js
+            val bubbles = Js._true
+          end
+        in
+        let event = new%js customEvent (Js.string name) opt in
+        let touch =
+          object%js
+            val identifier = identifier ev
+            val target = target
+            val clientX = x
+            val clientY = y
+          end
+        in
+        let touches =
+          object%js
+            val item = Js.wrap_callback (fun _ -> Js.def touch)
+          end
+        in
+        (Js.Unsafe.coerce event)##.changedTouches := touches;
+        (* END HACK *)
+        event
+    in
+    (Js.Unsafe.coerce target)##dispatchEvent event)
 
 let%shared bind ?(transition_duration = 0.3)
     ?(min : (unit -> int) Eliom_client_value.t option)
@@ -119,9 +119,9 @@ let%shared bind ?(transition_duration = 0.3)
            elt'##.style##.left := px_of_int left;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
            Lwt.async (fun () ->
-               let%lwt () = Lwt_js_events.transitionend elt' in
-               Manip.Class.remove elt "ot-swiping";
-               Lwt.return_unit));
+             let%lwt _ = Lwt_js_events.transitionend elt' in
+             Manip.Class.remove elt "ot-swiping";
+             Lwt.return_unit));
          status := Stopped;
          Lwt.return_unit
        in
@@ -209,4 +209,4 @@ let%shared bind ?(transition_duration = 0.3)
        Lwt.async (fun () -> Lwt_js_events.touchmoves elt' onpan);
        Lwt.async (fun () -> Lwt_js_events.touchends elt' onpanend);
        Lwt.async (fun () -> Lwt_js_events.touchcancels elt' onpanend)
-        : unit)]
+       : unit)]

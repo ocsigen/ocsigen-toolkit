@@ -18,6 +18,6 @@ let%shared dropdown ?(a = []) ~menu content =
     [%client
       (Lwt.async @@ fun () ->
        Lwt_js_events.clicks (To_dom.of_element ~%dropdown) (fun ev _ ->
-           Lwt.return_unit)
-        : _)];
+         Lwt.return_unit)
+       : _)];
   dropdown

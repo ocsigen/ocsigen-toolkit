@@ -18,7 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-
 open Js_of_ocaml]
 
 [%%client open Js_of_ocaml_lwt]
@@ -27,43 +26,43 @@ open Js_of_ocaml]
 
 type%shared ('a, 'b) service =
   ( unit
-  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-  , Eliom_service.post
-  , Eliom_service.non_att
-  , Eliom_service.co
-  , Eliom_service.non_ext
-  , Eliom_service.reg
-  , [`WithoutSuffix]
-  , unit
-  , [`One of 'a Eliom_parameter.ocaml] Eliom_parameter.param_name
-    * ([`One of (float * float * float * float) option Eliom_parameter.ocaml]
-       Eliom_parameter.param_name
-      * [`One of Eliom_lib.file_info] Eliom_parameter.param_name)
-  , 'b Eliom_service.ocaml )
-  Eliom_service.t
+    , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+    , Eliom_service.post
+    , Eliom_service.non_att
+    , Eliom_service.co
+    , Eliom_service.non_ext
+    , Eliom_service.reg
+    , [`WithoutSuffix]
+    , unit
+    , [`One of 'a Eliom_parameter.ocaml] Eliom_parameter.param_name
+      * ([`One of (float * float * float * float) option Eliom_parameter.ocaml]
+           Eliom_parameter.param_name
+        * [`One of Eliom_lib.file_info] Eliom_parameter.param_name)
+    , 'b Eliom_service.ocaml )
+    Eliom_service.t
 
 let%client process_file input callback =
   Js.Optdef.case input##.files
     (fun () -> Lwt.return_unit)
     (function
-      | files ->
-          Js.Opt.case
-            files ## (item 0)
-            (fun () -> Lwt.return_unit)
-            (fun x -> callback x))
+       | files ->
+           Js.Opt.case
+             files ## (item 0)
+             (fun () -> Lwt.return_unit)
+             (fun x -> callback x))
 
 let%client file_reader file callback =
   let reader = new%js File.fileReader in
   let () =
     reader##.onload :=
       Dom.handler (fun e ->
-          Js.Opt.case e##.target
-            (fun () -> Js.bool false)
-            (fun target ->
-              let result = File.CoerceTo.string target##.result in
-              Js.Opt.case result
-                (fun () -> Js.bool false)
-                (fun blob -> callback blob; Js.bool false)))
+        Js.Opt.case e##.target
+          (fun () -> Js.bool false)
+          (fun target ->
+             let result = File.CoerceTo.string target##.result in
+             Js.Opt.case result
+               (fun () -> Js.bool false)
+               (fun blob -> callback blob; Js.bool false)))
   in
   let () = reader##readAsDataURL file in
   ()
@@ -75,11 +74,11 @@ let%client on_animation_frame f =
     then
       Dom_html._requestAnimationFrame
         (Js.wrap_callback (fun () ->
-             match !last with
-             | None -> assert false
-             | Some x ->
-                 last := None;
-                 f x));
+           match !last with
+           | None -> assert false
+           | Some x ->
+               last := None;
+               f x));
     last := Some x
 
 let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
@@ -279,22 +278,21 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
        in
        let bind_handler add_trigger event rm_trigger get_x get_y (dom, handler) =
          Lwt.async (fun () ->
-             add_trigger (To_dom.of_element dom) (fun ev _ ->
-                 Dom.preventDefault ev;
-                 Dom_html.stopPropagation ev;
-                 let () = x := get_x ev in
-                 let () = y := get_y ev in
-                 let x =
-                   Dom_html.addEventListener Dom_html.document event
-                     (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)))
-                     (Js.bool false)
-                 in
-                 let%lwt _ =
-                   Lwt.pick
-                   @@ List.map (fun e -> e Dom_html.document) rm_trigger
-                 in
-                 Dom_html.removeEventListener x;
-                 Lwt.return_unit))
+           add_trigger (To_dom.of_element dom) (fun ev _ ->
+             Dom.preventDefault ev;
+             Dom_html.stopPropagation ev;
+             let () = x := get_x ev in
+             let () = y := get_y ev in
+             let x =
+               Dom_html.addEventListener Dom_html.document event
+                 (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)))
+                 (Js.bool false)
+             in
+             let%lwt _ =
+               Lwt.pick @@ List.map (fun e -> e Dom_html.document) rm_trigger
+             in
+             Dom_html.removeEventListener x;
+             Lwt.return_unit))
        in
        let listeners =
          match ~%ratio with
@@ -322,33 +320,33 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
        in
        List.iter2
          (fun x y ->
-           bind_handler mousedowns Dom_html.Event.mousemove
-             [Lwt_js_events.mouseup]
-             (fun ev -> float_of_int ev##.clientX)
-             (fun ev -> float_of_int ev##.clientY)
-             (x, y))
+            bind_handler mousedowns Dom_html.Event.mousemove
+              [Lwt_js_events.mouseup]
+              (fun ev -> float_of_int ev##.clientX)
+              (fun ev -> float_of_int ev##.clientY)
+              (x, y))
          [~%crop; ~%t_c; ~%tr_c; ~%r_c; ~%br_c; ~%b_c; ~%bl_c; ~%l_c; ~%tl_c]
          listeners;
        List.iter2
          (fun x y ->
-           List.iter
-             (fun x ->
-               bind_handler touchstarts Dom_html.Event.touchmove
-                 [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
-                 (fun ev ->
-                   float_of_int
-                   @@ Js.Optdef.case
-                        (ev##.touches##item 0)
-                        (fun () -> assert false)
-                        (fun x -> x##.clientX))
-                 (fun ev ->
-                   float_of_int
-                   @@ Js.Optdef.case
-                        (ev##.touches##item 0)
-                        (fun () -> assert false)
-                        (fun x -> x##.clientY))
-                 (x, y))
-             x)
+            List.iter
+              (fun x ->
+                 bind_handler touchstarts Dom_html.Event.touchmove
+                   [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
+                   (fun ev ->
+                      float_of_int
+                      @@ Js.Optdef.case
+                           (ev##.touches##item 0)
+                           (fun () -> assert false)
+                           (fun x -> x##.clientX))
+                   (fun ev ->
+                      float_of_int
+                      @@ Js.Optdef.case
+                           (ev##.touches##item 0)
+                           (fun () -> assert false)
+                           (fun x -> x##.clientY))
+                   (x, y))
+              x)
          [ [~%crop]
          ; [~%t_f; ~%t_c]
          ; [~%tr_f; ~%tr_c]
@@ -359,7 +357,7 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
          ; [~%l_f; ~%l_c]
          ; [~%tl_f; ~%tl_c] ]
          listeners
-        : unit)]
+       : unit)]
   in
   let reset =
     [%client
@@ -381,7 +379,7 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
          ~%set_right ((bb_w -. w) /. (bb_w /. 100.));
          ~%set_bottom ((bb_h -. h) /. (bb_h /. 100.));
          ~%set_left 0.
-        : unit -> unit)]
+       : unit -> unit)]
   in
   ( reset
   , Eliom_shared.React.S.l4
@@ -422,25 +420,24 @@ let%client bind_input input preview ?container ?reset () =
   in
   Eliom_lib.Option.iter
     (fun f ->
-      Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
+       Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
     reset;
   Lwt.async (fun () ->
-      Lwt_js_events.changes input (fun _ _ ->
-          Js.Optdef.case input##.files onerror (fun files ->
-              Js.Opt.case
-                (files##item 0)
-                onerror
-                (fun file ->
-                  let () =
-                    file_reader (Js.Unsafe.coerce file) (fun data ->
-                        preview##.src := data;
-                        Eliom_lib.Option.iter
-                          (fun container ->
-                            container##.classList##remove
-                              (Js.string "ot-no-file"))
-                          container)
-                  in
-                  Lwt.return_unit))))
+    Lwt_js_events.changes input (fun _ _ ->
+      Js.Optdef.case input##.files onerror (fun files ->
+        Js.Opt.case
+          (files##item 0)
+          onerror
+          (fun file ->
+             let () =
+               file_reader (Js.Unsafe.coerce file) (fun data ->
+                 preview##.src := data;
+                 Eliom_lib.Option.iter
+                   (fun container ->
+                      container##.classList##remove (Js.string "ot-no-file"))
+                   container)
+             in
+             Lwt.return_unit))))
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t
@@ -464,11 +461,11 @@ let%client bind_submit (input : Dom_html.inputElement Js.t Eliom_client_value.t)
     button ?cropping ~upload ~after_submit ()
   =
   Lwt.async (fun () ->
-      Lwt_js_events.clicks button (fun ev _ ->
-          Dom.preventDefault ev;
-          Dom_html.stopPropagation ev;
-          let%lwt () = do_submit input ?cropping ~upload () in
-          after_submit ()))
+    Lwt_js_events.clicks button (fun ev _ ->
+      Dom.preventDefault ev;
+      Dom_html.stopPropagation ev;
+      let%lwt () = do_submit input ?cropping ~upload () in
+      after_submit ()))
 
 let%client bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit
     ()
@@ -520,6 +517,6 @@ let%shared mk_form ?(after_submit = fun () -> Lwt.return_unit) ?crop
          ~preview:(To_dom.of_img ~%preview) ?crop:~%crop
          ~submit:(To_dom.of_button ~%submit)
          ~upload:~%upload ~after_submit:~%after_submit ()
-        : unit)]
+       : unit)]
   in
   Lwt.return form

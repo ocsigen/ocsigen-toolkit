@@ -26,18 +26,18 @@ open%client Js_of_ocaml
 
 let%shared default_fail_fun e =
   [ (if Eliom_config.get_debugmode ()
-    then em [txt (Printexc.to_string e)]
-    else
-      let e = Printexc.to_string e in
-      ignore
-        [%client
-          (Firebug.console##error
-             (Js.string ("Ot_spinner content failed with " ^ ~%e))
+     then em [txt (Printexc.to_string e)]
+     else
+       let e = Printexc.to_string e in
+       ignore
+         [%client
+           (Firebug.console##error
+              (Js.string ("Ot_spinner content failed with " ^ ~%e))
             : unit)];
-      em ~a:[a_class ["ot-icon-error"]] []) ]
+       em ~a:[a_class ["ot-icon-error"]] []) ]
 
-let%shared default_fail_ref
-    : (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
+let%shared default_fail_ref :
+    (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
   =
   ref default_fail_fun
 
@@ -55,9 +55,9 @@ let%client set_default_fail f =
 let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in
   let fail =
-    (match fail with
+    ((match fail with
      | Some fail -> (fail :> exn -> Html_types.div_content elt list Lwt.t)
-     | None -> fun e -> Lwt.return (default_fail e)
+     | None -> fun e -> Lwt.return (default_fail e))
       :> exn -> Html_types.div_content elt list Lwt.t)
   in
   let%lwt v =
@@ -118,12 +118,12 @@ let replace_content ?fail elt thread =
   Lwt.return_unit
 
 module Make (A : sig
-  type +'a t
+    type +'a t
 
-  val bind : 'a t -> ('a -> 'b t) -> 'b t
-  val bind2 : 'a t -> ('a -> 'b Lwt.t) -> 'b Lwt.t
-  val return : 'a -> 'a t
-end) =
+    val bind : 'a t -> ('a -> 'b t) -> 'b t
+    val bind2 : 'a t -> ('a -> 'b Lwt.t) -> 'b Lwt.t
+    val return : 'a -> 'a t
+  end) =
 struct
   let with_spinner ?(a = []) ?spinner ?fail thread =
     let a = (a :> Html_types.div_attrib attrib list) in
@@ -148,37 +148,37 @@ struct
             (match spinner with None -> [] | Some s -> s)
         in
         Lwt.async (fun () ->
-            let%lwt v =
-              try%lwt
-                let%lwt v = thread in
-                Lwt.return (v :> Html_types.div_content_fun F.elt list)
-              with e ->
-                A.bind2 (fail e) (fun v ->
-                    dec_active_spinners ();
-                    Lwt.return (v :> Html_types.div_content_fun F.elt list))
-            in
-            Manip.replaceChildren d v;
-            Manip.Class.remove d cl_spinning;
-            Manip.Class.remove d cl_spinner;
-            dec_active_spinners ();
-            Lwt.return_unit);
+          let%lwt v =
+            try%lwt
+              let%lwt v = thread in
+              Lwt.return (v :> Html_types.div_content_fun F.elt list)
+            with e ->
+              A.bind2 (fail e) (fun v ->
+                dec_active_spinners ();
+                Lwt.return (v :> Html_types.div_content_fun F.elt list))
+          in
+          Manip.replaceChildren d v;
+          Manip.Class.remove d cl_spinning;
+          Manip.Class.remove d cl_spinner;
+          dec_active_spinners ();
+          Lwt.return_unit);
         A.return d
     | Lwt.Fail e -> A.bind (fail e) (fun c -> A.return (D.div ~a c))
 end
 
 module N = Make (struct
-  type +'a t = 'a
+    type +'a t = 'a
 
-  let bind a f = f a
-  let bind2 a f = f a
-  let return a = a
-end)
+    let bind a f = f a
+    let bind2 a f = f a
+    let return a = a
+  end)
 
 module L = Make (struct
-  include Lwt
+    include Lwt
 
-  let bind2 = bind
-end)
+    let bind2 = bind
+  end)
 
 let with_spinner_no_lwt = N.with_spinner
 let with_spinner = L.with_spinner]

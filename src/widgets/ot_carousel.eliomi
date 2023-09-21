@@ -55,8 +55,8 @@ type 'a t =
   ; swipe_pos : float React.S.t Eliom_client_value.t }
 (** see [make] *)
 
-val make
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val make :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -73,7 +73,7 @@ val make
        (vertical:bool
         -> int
         -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
-       Eliom_shared.Value.t
+         Eliom_shared.Value.t
   -> [< Html_types.div_content] Eliom_content.Html.elt list
   -> [> `Div] t
 (**
@@ -128,8 +128,8 @@ val make
     and +1.0 to next page.
 *)
 
-val make_lazy
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val make_lazy :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -146,11 +146,11 @@ val make_lazy
        (vertical:bool
         -> int
         -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
-       Eliom_shared.Value.t
+         Eliom_shared.Value.t
   -> ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt)
   -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
-     Eliom_shared.Value.t
-     list
+       Eliom_shared.Value.t
+       list
   -> [> `Div] t Lwt.t
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
@@ -162,8 +162,8 @@ val make_lazy
     that is displayed while page is loading.
 *)
 
-val wheel
-  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+val wheel :
+   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -191,8 +191,8 @@ val wheel
     and +1.0 to next page.
  *)
 
-val bullets
-  :  ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
+val bullets :
+   ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
   -> ?attributes:[< Html_types.li_attrib] Eliom_content.Html.attrib list list
   -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t
   -> pos:int Eliom_shared.React.S.t
@@ -215,8 +215,8 @@ val bullets
     elements.
  *)
 
-val ribbon
-  :  ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
+val ribbon :
+   ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
   -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t
   -> pos:int Eliom_shared.React.S.t
   -> ?size:int Eliom_shared.React.S.t
@@ -241,8 +241,8 @@ val ribbon
     signal returned by [make].
  *)
 
-val previous
-  :  ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
+val previous :
+   ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
   -> change:([> `Prev | `Goto of int] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
@@ -250,8 +250,8 @@ val previous
   -> [> `Button] Eliom_content.Html.elt
 (** Button to go to the previous page (or mores page if [offset] is present). *)
 
-val next
-  :  ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
+val next :
+   ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
   -> change:([> `Next | `Goto of int] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
@@ -275,14 +275,14 @@ val next
 
 (*  Make arrow keys cause event change.
     Returns a thread that never stops until you call [Lwt.cancel] on it. *)
-val bind_arrow_keys
-  :  ?use_capture:bool
+val bind_arrow_keys :
+   ?use_capture:bool
   -> ?vertical:bool
   -> change:([> `Goto of int | `Next | `Prev] -> unit)
   -> #Dom_html.eventTarget Js.t
   -> unit Lwt.t
 
-val set_default_fail
-  :  (exn -> [< Html_types.div_content] Eliom_content.Html.elt)
+val set_default_fail :
+   (exn -> [< Html_types.div_content] Eliom_content.Html.elt)
   -> unit
 (** Change the default function used to display error messages *)

@@ -6,7 +6,7 @@
 (* See: https://ocsigen.org/js_of_ocaml/latest/api/js_of_ocaml/Js_of_ocaml/Dom_html/class-type-cssStyleDeclaration/index.html *)
 
 (*
-val marginTop    : Dom_html.element Js.t -> float
+   val marginTop    : Dom_html.element Js.t -> float
 val marginBottom : Dom_html.element Js.t -> float
 val marginLeft   : Dom_html.element Js.t -> float
 val marginRight  : Dom_html.element Js.t -> float

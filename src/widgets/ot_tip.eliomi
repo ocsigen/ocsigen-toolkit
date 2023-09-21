@@ -69,12 +69,11 @@ open Js_of_ocaml
 
  *)
 
-val display
-  :  ?container_a:
-       [< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+val display :
+   ?container_a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?filter_a:
        [< Html_types.div_attrib > `Class `OnClick] Eliom_content.Html.attrib
-       list
+         list
   -> ?position:[`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom]
   -> ?side:[`Left | `Right | `Center]
   -> origin:Dom_html.element Js.t

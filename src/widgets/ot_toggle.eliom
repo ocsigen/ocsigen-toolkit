@@ -59,7 +59,7 @@ let make ?(init_up = false) ?up_txt ?down_txt
       @@ [%client
            (let f b = ~%f (up_for_true b) in
             Eliom_shared.React.E.map f ~%update |> ignore
-             : unit)]
+            : unit)]
   | None -> ());
   ( e
     >|= [%shared display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt]

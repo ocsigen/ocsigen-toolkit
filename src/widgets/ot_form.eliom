@@ -25,12 +25,10 @@ open Js_of_ocaml
 open Eliom_content.Html
 open Eliom_content.Html.F
 
-class type tabbable =
-  object
-    inherit Dom_html.element
-
-    method tabIndex : int Js.prop
-  end
+class type tabbable = object
+  inherit Dom_html.element
+  method tabIndex : int Js.prop
+end
 
 let only_if_active' elt v = if Ot_style.invisible elt then None else Some v
 
@@ -64,10 +62,10 @@ let setup_tabcycle (elts : #tabbable Js.t list) : unit =
     | [x] ->
         x##.tabIndex := n;
         (let open Lwt_js_events in
-        async @@ fun () ->
-        focuses x @@ fun _ _ ->
-        x##.tabIndex := 1;
-        Lwt.return_unit);
+         async @@ fun () ->
+         focuses x @@ fun _ _ ->
+         x##.tabIndex := 1;
+         Lwt.return_unit);
         let open Lwt_js_events in
         async @@ fun () ->
         blurs x @@ fun _ _ ->

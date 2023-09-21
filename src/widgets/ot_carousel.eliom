@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 (*
-
-TODO:
+   TODO:
  - Make it possible to have a non integer number of visible pages,
    (with last page aligned to the right of carousel).
  - Make it possible to change the number of pages dynamically
@@ -33,13 +32,13 @@ TODO:
     the current version will return 2)
    and add first/last (partially)
    visible elements.
-
 *)
 
 open%client Js_of_ocaml
 [%%client open Js_of_ocaml_lwt]
 [%%shared open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
+
 let%client clX = Ot_swipe.clX
 let%client clY = Ot_swipe.clY
 
@@ -84,7 +83,7 @@ type status =
                        current speed average over average_time,
                        previous position,
                        previous timestamp)
-    *)]
+*)]
 
 type%shared 'a t =
   { elt : 'a Eliom_content.Html.elt
@@ -108,7 +107,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
   let swipe_pos_sig =
     [%client
       (React.S.create 0.
-        : float React.S.t * (?step:React.step -> float -> unit))]
+       : float React.S.t * (?step:React.step -> float -> unit))]
   in
   let swipe_pos = [%client (fst ~%swipe_pos_sig : float React.S.t)] in
   let swipe_pos_set =
@@ -119,16 +118,16 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
   let pages =
     List.mapi
       (fun i e ->
-        let clss =
-          if i >= position && i < position + 1
-          then ["ot-carpage"; "ot-active"]
-          else ["ot-carpage"]
-        in
-        D.div
-          ~a:
-            (a_class clss
-            :: Eliom_shared.Value.local make_page_attribute ~vertical i)
-          [e])
+         let clss =
+           if i >= position && i < position + 1
+           then ["ot-carpage"; "ot-active"]
+           else ["ot-carpage"]
+         in
+         D.div
+           ~a:
+             (a_class clss
+             :: Eliom_shared.Value.local make_page_attribute ~vertical i)
+           [e])
       l
   in
   let initial_translation =
@@ -182,9 +181,9 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
            max 1 (truncate (float (width_carousel + 1) /. float width_element))
        in
        Lwt.async (fun () ->
-           let%lwt () = Ot_nodeready.nodeready d2' in
-           ~%set_nb_visible_elements (comp_nb_visible_elements ());
-           Lwt.return_unit);
+         let%lwt () = Ot_nodeready.nodeready d2' in
+         ~%set_nb_visible_elements (comp_nb_visible_elements ());
+         Lwt.return_unit);
        let maxi () = ~%maxi - React.S.value ~%nb_visible_elements + 1 in
        let pos_signal = ~%pos_signal in
        let pos_set = ~%pos_set in
@@ -192,21 +191,21 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
        let animation_frame_requested = ref false in
        (**********************
        setting class active on visible pages (only)
-    *)
+       *)
        let set_active () =
          (* Adding class "ot-active" to all visible pages *)
          List.iteri
            (fun i page ->
-             Manip.Class.remove page "ot-active";
-             let pos = React.S.value pos_signal in
-             if i >= pos && i < pos + React.S.value ~%nb_visible_elements
-             then (* Page is visible *) Manip.Class.add page "ot-active")
+              Manip.Class.remove page "ot-active";
+              let pos = React.S.value pos_signal in
+              if i >= pos && i < pos + React.S.value ~%nb_visible_elements
+              then (* Page is visible *) Manip.Class.add page "ot-active")
            ~%pages
        in
        (********************** end *)
        (**********************
        full_height
-    *)
+       *)
        let set_top_margin () =
          if not vertical
          then
@@ -215,26 +214,28 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
              (* In full height mode, just before swiping,
              we add margin on top of columns,
              to adapt it to the current scroll position of page.
-          *)
+             *)
              | `No -> None
              | `No_header -> Some 0
              | `Header (f : unit -> int) -> Some (f ())
            in
            Eliom_lib.Option.iter
              (fun dist ->
-               let delta = max 0 (dist - int_of_float (Ot_size.client_top d)) in
-               let pos = React.S.value pos_signal in
-               Ot_lib.List.iteri2
-                 (fun i coli scrolli ->
-                   if i <> pos
-                   then
-                     let coli' = To_dom.of_element coli in
-                     coli'##.style##.marginTop
-                     := Js.string (string_of_int (delta - !scrolli) ^ "px")
-                   else
-                     (* we save the scroll position of active column: *)
-                     scrolli := delta)
-                 ~%pages scroll_pages)
+                let delta =
+                  max 0 (dist - int_of_float (Ot_size.client_top d))
+                in
+                let pos = React.S.value pos_signal in
+                Ot_lib.List.iteri2
+                  (fun i coli scrolli ->
+                     if i <> pos
+                     then
+                       let coli' = To_dom.of_element coli in
+                       coli'##.style##.marginTop
+                       := Js.string (string_of_int (delta - !scrolli) ^ "px")
+                     else
+                       (* we save the scroll position of active column: *)
+                       scrolli := delta)
+                  ~%pages scroll_pages)
              dist
        in
        let unset_top_margin () =
@@ -246,7 +247,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
            (* In full height mode, during swipe,
            we add margin on top of columns,
            to adapt it to the current scroll position of page.
-        *)
+           *)
            | _, true -> None
            | `No, _ -> None
            | `No_header, _ -> Some 0
@@ -254,17 +255,17 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          in
          Eliom_lib.Option.iter
            (fun dist ->
-             let delta = -max 0 (dist - int_of_float (Ot_size.client_top d)) in
-             let pos = React.S.value pos_signal in
-             Ot_lib.List.iteri2
-               (fun i coli scrolli ->
-                 let coli' = To_dom.of_element coli in
-                 coli'##.style##.marginTop := Js.string "0px";
-                 if i = pos
-                 then
-                   (Js.Unsafe.coerce Dom_html.window)##scrollBy
-                     0 (!scrolli + delta))
-               ~%pages scroll_pages)
+              let delta = -max 0 (dist - int_of_float (Ot_size.client_top d)) in
+              let pos = React.S.value pos_signal in
+              Ot_lib.List.iteri2
+                (fun i coli scrolli ->
+                   let coli' = To_dom.of_element coli in
+                   coli'##.style##.marginTop := Js.string "0px";
+                   if i = pos
+                   then
+                     (Js.Unsafe.coerce Dom_html.window)##scrollBy
+                       0 (!scrolli + delta))
+                ~%pages scroll_pages)
            dist
        in
        (********************** end *)
@@ -292,15 +293,19 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          React.Step.execute step;
          set_active ();
          Lwt.async (fun () ->
-             let%lwt () =
-               if move then Lwt_js_events.transitionend d2' else Lwt.return_unit
-             in
-             Eliom_lib.Option.iter (fun f -> f ()) transitionend;
-             Manip.Class.remove ~%d2 ot_swiping;
-             ~%pos_post_set pos;
-             (* Remove swiping after calling f,
+           let%lwt () =
+             if move
+             then
+               let%lwt _ = Lwt_js_events.transitionend d2' in
+               Lwt.return_unit
+             else Lwt.return_unit
+           in
+           Eliom_lib.Option.iter (fun f -> f ()) transitionend;
+           Manip.Class.remove ~%d2 ot_swiping;
+           ~%pos_post_set pos;
+           (* Remove swiping after calling f,
            because f will possibly change the scrolling position of the page *)
-             Lwt.return_unit)
+           Lwt.return_unit)
        in
        (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).
@@ -312,12 +317,11 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
            (if vertical then Ot_size.height else Ot_size.width)
        in
        Lwt.async (fun () ->
-           let%lwt () = Ot_nodeready.nodeready d2' in
-           set_position ~%position;
-           add_transition d2';
-           Eliom_client.onunload (fun () ->
-               React.S.stop ~strong:true update_size);
-           Lwt.return_unit);
+         let%lwt () = Ot_nodeready.nodeready d2' in
+         set_position ~%position;
+         add_transition d2';
+         Eliom_client.onunload (fun () -> React.S.stop ~strong:true update_size);
+         Lwt.return_unit);
        let perform_animation a =
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
          if not (React.S.value ~%disabled)
@@ -428,7 +432,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
              status :=
                Ongoing (startx, starty, width_element, speed, delta, timestamp);
              Lwt.async (fun () ->
-                 perform_animation (`Move (delta, width_element)))
+               perform_animation (`Move (delta, width_element)))
          | _ -> ());
          Lwt.return_unit
        in
@@ -488,37 +492,41 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
        if ~%swipeable
        then (
          Lwt.async (fun () ->
-             Lwt_js_events.touchstarts d (fun ev aa ->
-                 status := Start (clX ev, clY ev, now ());
-                 Lwt.return_unit));
+           Lwt_js_events.touchstarts d (fun ev aa ->
+             status := Start (clX ev, clY ev, now ());
+             Lwt.return_unit));
          Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
          Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
          Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel));
        ignore
          (Eliom_lib.Option.map
             (fun update ->
-              React.E.map
-                (fun v ->
-                  let maxi = maxi () in
-                  match v with
-                  | `Goto pos ->
-                      let pos =
-                        if pos < 0 then 0 else if pos > maxi then maxi else pos
-                      in
-                      perform_animation (`Change pos)
-                  | `Next ->
-                      let curpos = Eliom_shared.React.S.value pos_signal in
-                      if curpos < maxi
-                      then perform_animation (`Change (curpos + 1))
-                      else Lwt.return_unit
-                  | `Prev ->
-                      let curpos = Eliom_shared.React.S.value pos_signal in
-                      if curpos > 0
-                      then perform_animation (`Change (curpos - 1))
-                      else Lwt.return_unit)
-                update)
+               React.E.map
+                 (fun v ->
+                    let maxi = maxi () in
+                    match v with
+                    | `Goto pos ->
+                        let pos =
+                          if pos < 0
+                          then 0
+                          else if pos > maxi
+                          then maxi
+                          else pos
+                        in
+                        perform_animation (`Change pos)
+                    | `Next ->
+                        let curpos = Eliom_shared.React.S.value pos_signal in
+                        if curpos < maxi
+                        then perform_animation (`Change (curpos + 1))
+                        else Lwt.return_unit
+                    | `Prev ->
+                        let curpos = Eliom_shared.React.S.value pos_signal in
+                        if curpos > 0
+                        then perform_animation (`Change (curpos - 1))
+                        else Lwt.return_unit)
+                 update)
             ~%update)
-        : unit)]
+       : unit)]
   in
   { elt = d
   ; pos = pos_signal
@@ -537,11 +545,11 @@ let%shared default_fail_fun e =
       [%client
         (Firebug.console##error
            (Js.string ("Ot_carousel content failed with " ^ ~%e))
-          : unit)];
+         : unit)];
     em ~a:[a_class ["ot-icon-error"]] []
 
-let%shared default_fail_ref
-    : (exn -> Html_types.div_content Eliom_content.Html.elt) ref
+let%shared default_fail_ref :
+    (exn -> Html_types.div_content Eliom_content.Html.elt) ref
   =
   ref default_fail_fun
 
@@ -631,7 +639,7 @@ let%shared make_lazy ?a ?vertical ?(position = 0) ?transition_duration ?inertia
               | None -> Lwt.return ()
          in
          ()
-        : unit)]
+       : unit)]
   in
   Lwt.return carousel
 
@@ -716,155 +724,153 @@ let%shared ribbon ?(a = [])
        in
        let curleft, set_curleft = React.S.create initial_gap in
        Lwt.async (fun () ->
-           let%lwt () = Ot_nodeready.nodeready container' in
-           (* Ribbon position: *)
-           set_containerwidth container'##.offsetWidth;
-           Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
-               set_containerwidth container'##.offsetWidth);
-           (* noderesize is not very reliable, for example if we remove the
+         let%lwt () = Ot_nodeready.nodeready container' in
+         (* Ribbon position: *)
+         set_containerwidth container'##.offsetWidth;
+         Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
+           set_containerwidth container'##.offsetWidth);
+         (* noderesize is not very reliable, for example if we remove the
          node from page and put it back.
          As a temporary workaround, a also update containerwidth
          when the browser window's size changes: *)
-           let watch_width =
-             Ot_size.width
-             |> React.S.map @@ fun _ ->
-                (* This delay is a hack to make the ribbon work when it is inside of a
+         let watch_width =
+           Ot_size.width
+           |> React.S.map @@ fun _ ->
+              (* This delay is a hack to make the ribbon work when it is inside of a
            container that is sticky due to [Ot_sticky.make_sticky]. The problem
            is that Ot_sticky functions by moving around the contents of the
            container in the DOM when the window is resized. This destroys the
            noderesize but there is also a race condition with this code here
            that runs on window resizing. So we make sure the ribbon code runs
            AFTER it has been placed into the fixed container by Ot_sticky. *)
-                Lwt.async @@ fun () ->
-                let%lwt _ = Lwt_js.sleep 0.05 in
-                set_containerwidth container'##.offsetWidth;
-                Lwt.return_unit
-           in
-           Eliom_client.onunload (fun () ->
-               React.S.stop ~strong:true watch_width);
-           (* Changing the position of the ribbon when the carousel position
+              Lwt.async @@ fun () ->
+              let%lwt _ = Lwt_js.sleep 0.05 in
+              set_containerwidth container'##.offsetWidth;
+              Lwt.return_unit
+         in
+         Eliom_client.onunload (fun () -> React.S.stop ~strong:true watch_width);
+         (* Changing the position of the ribbon when the carousel position
          changes or when the size of the window changes: *)
-           ignore
-             (React.S.l3
-                (fun pos size containerwidth ->
-                  let firstelt = Manip.nth the_ul 0 in
-                  let firstselectedelt = Manip.nth the_ul pos in
-                  let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
-                  match firstelt, firstselectedelt, lastselectedelt with
-                  | Some _, Some firstselectedelt, Some lastselectedelt ->
-                      let firstselectedelt =
-                        To_dom.of_element firstselectedelt
-                      in
-                      let lastselectedelt = To_dom.of_element lastselectedelt in
-                      let left = firstselectedelt##.offsetLeft in
-                      let right =
-                        lastselectedelt##.offsetLeft
-                        + lastselectedelt##.offsetWidth
-                      in
-                      (* We try to center the active columns *)
-                      let newleft = -(left + right - containerwidth) / 2 in
-                      (* If there is space before but not after,
+         ignore
+           (React.S.l3
+              (fun pos size containerwidth ->
+                 let firstelt = Manip.nth the_ul 0 in
+                 let firstselectedelt = Manip.nth the_ul pos in
+                 let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+                 match firstelt, firstselectedelt, lastselectedelt with
+                 | Some _, Some firstselectedelt, Some lastselectedelt ->
+                     let firstselectedelt =
+                       To_dom.of_element firstselectedelt
+                     in
+                     let lastselectedelt = To_dom.of_element lastselectedelt in
+                     let left = firstselectedelt##.offsetLeft in
+                     let right =
+                       lastselectedelt##.offsetLeft
+                       + lastselectedelt##.offsetWidth
+                     in
+                     (* We try to center the active columns *)
+                     let newleft = -(left + right - containerwidth) / 2 in
+                     (* If there is space before but not after,
                       or vice-versa,
                       we prefer balancing the whole: *)
-                      let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
-                      let newleft =
-                        if newleft > 0
-                        then max initial_gap ((containerwidth - ul_width) / 2)
-                        else if newleft + ul_width < containerwidth
-                        then
-                          min
-                            (containerwidth - ul_width - initial_gap)
-                            ((containerwidth - ul_width) / 2)
-                        else newleft
-                      in
-                      set_curleft newleft;
-                      the_ul'##.style##.left
-                      := Js.string (string_of_int newleft ^ "px")
-                  | _ -> ())
-                ~%pos ~%size containerwidth);
-           (* Cursor: *)
-           (match ~%cursor_elt, ~%cursor with
-           | Some cursor_elt, Some cursor ->
-               let moving = ref false in
-               ignore
-                 (React.S.l5
-                    (fun pos offset size curleft _ ->
-                      if (not !moving) && offset <> 0.
-                      then (
-                        (* Carousel is being swiped.
+                     let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
+                     let newleft =
+                       if newleft > 0
+                       then max initial_gap ((containerwidth - ul_width) / 2)
+                       else if newleft + ul_width < containerwidth
+                       then
+                         min
+                           (containerwidth - ul_width - initial_gap)
+                           ((containerwidth - ul_width) / 2)
+                       else newleft
+                     in
+                     set_curleft newleft;
+                     the_ul'##.style##.left
+                     := Js.string (string_of_int newleft ^ "px")
+                 | _ -> ())
+              ~%pos ~%size containerwidth);
+         (* Cursor: *)
+         (match ~%cursor_elt, ~%cursor with
+         | Some cursor_elt, Some cursor ->
+             let moving = ref false in
+             ignore
+               (React.S.l5
+                  (fun pos offset size curleft _ ->
+                     if (not !moving) && offset <> 0.
+                     then (
+                       (* Carousel is being swiped.
                       Removing transition on cursor. *)
-                        moving := true;
-                        Eliom_lib.Option.iter remove_transition cursor_elt');
-                      if offset = 0. && !moving
-                      then (
-                        moving := false;
-                        Eliom_lib.Option.iter add_transition cursor_elt');
-                      let firstselectedelt = Manip.nth the_ul pos in
-                      let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
-                      let previouselt =
-                        if pos > 0 then Manip.nth the_ul (pos - 1) else None
-                      in
-                      let nextelt =
-                        if pos + size < nb_pages
-                        then Manip.nth the_ul (pos + size)
-                        else None
-                      in
-                      match firstselectedelt, lastselectedelt with
-                      | Some firstselectedelt, Some lastselectedelt ->
-                          let firstselectedelt =
-                            To_dom.of_element firstselectedelt
-                          in
-                          let lastselectedelt =
-                            To_dom.of_element lastselectedelt
-                          in
-                          let offset_left =
-                            if offset >= 0.
-                            then offset *. float firstselectedelt##.offsetWidth
-                            else
-                              match previouselt with
-                              | None -> 0.
-                              | Some elt ->
-                                  offset
-                                  *. float (To_dom.of_element elt)##.offsetWidth
-                          in
-                          let offset_right =
-                            if offset <= 0.
-                            then offset *. float lastselectedelt##.offsetWidth
-                            else
-                              match nextelt with
-                              | None -> 0.
-                              | Some elt ->
-                                  offset
-                                  *. float (To_dom.of_element elt)##.offsetWidth
-                          in
-                          let left = firstselectedelt##.offsetLeft + curleft in
-                          let width =
-                            lastselectedelt##.offsetLeft
-                            + lastselectedelt##.offsetWidth
-                            - firstselectedelt##.offsetLeft
-                            + truncate (offset_right -. offset_left +. 0.5)
-                          in
-                          let transform =
-                            Js.string
-                              (Printf.sprintf "translateX(%dpx)"
-                                 (left + truncate (offset_left +. 0.5)))
-                          in
-                          let width = Js.string (string_of_int width ^ "px") in
-                          let style = (To_dom.of_element cursor_elt)##.style in
-                          (Js.Unsafe.coerce style)##.transform := transform;
-                          (Js.Unsafe.coerce style)##.webkitTransform
-                          := transform;
-                          style##.width := width
-                      | _ -> ())
-                    ~%pos cursor ~%size curleft containerwidth)
-           | _ -> ());
-           Lwt.return_unit);
+                       moving := true;
+                       Eliom_lib.Option.iter remove_transition cursor_elt');
+                     if offset = 0. && !moving
+                     then (
+                       moving := false;
+                       Eliom_lib.Option.iter add_transition cursor_elt');
+                     let firstselectedelt = Manip.nth the_ul pos in
+                     let lastselectedelt = Manip.nth the_ul (pos + size - 1) in
+                     let previouselt =
+                       if pos > 0 then Manip.nth the_ul (pos - 1) else None
+                     in
+                     let nextelt =
+                       if pos + size < nb_pages
+                       then Manip.nth the_ul (pos + size)
+                       else None
+                     in
+                     match firstselectedelt, lastselectedelt with
+                     | Some firstselectedelt, Some lastselectedelt ->
+                         let firstselectedelt =
+                           To_dom.of_element firstselectedelt
+                         in
+                         let lastselectedelt =
+                           To_dom.of_element lastselectedelt
+                         in
+                         let offset_left =
+                           if offset >= 0.
+                           then offset *. float firstselectedelt##.offsetWidth
+                           else
+                             match previouselt with
+                             | None -> 0.
+                             | Some elt ->
+                                 offset
+                                 *. float (To_dom.of_element elt)##.offsetWidth
+                         in
+                         let offset_right =
+                           if offset <= 0.
+                           then offset *. float lastselectedelt##.offsetWidth
+                           else
+                             match nextelt with
+                             | None -> 0.
+                             | Some elt ->
+                                 offset
+                                 *. float (To_dom.of_element elt)##.offsetWidth
+                         in
+                         let left = firstselectedelt##.offsetLeft + curleft in
+                         let width =
+                           lastselectedelt##.offsetLeft
+                           + lastselectedelt##.offsetWidth
+                           - firstselectedelt##.offsetLeft
+                           + truncate (offset_right -. offset_left +. 0.5)
+                         in
+                         let transform =
+                           Js.string
+                             (Printf.sprintf "translateX(%dpx)"
+                                (left + truncate (offset_left +. 0.5)))
+                         in
+                         let width = Js.string (string_of_int width ^ "px") in
+                         let style = (To_dom.of_element cursor_elt)##.style in
+                         (Js.Unsafe.coerce style)##.transform := transform;
+                         (Js.Unsafe.coerce style)##.webkitTransform := transform;
+                         style##.width := width
+                     | _ -> ())
+                  ~%pos cursor ~%size curleft containerwidth)
+         | _ -> ());
+         Lwt.return_unit);
        Lwt.async (fun () ->
-           let%lwt () = Ot_nodeready.nodeready container' in
-           let%lwt () = Lwt_js_events.request_animation_frame () in
-           add_transition the_ul';
-           Eliom_lib.Option.iter add_transition cursor_elt';
-           Lwt.return_unit);
+         let%lwt () = Ot_nodeready.nodeready container' in
+         let%lwt () = Lwt_js_events.request_animation_frame () in
+         add_transition the_ul';
+         Eliom_lib.Option.iter add_transition cursor_elt';
+         Lwt.return_unit);
        (* Moving the ribbon with fingers: *)
        let fmax () = initial_gap in
        let fmin () =
@@ -893,7 +899,7 @@ let%shared ribbon ?(a = [])
          ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
          the_ul;
        Lwt.return_unit
-        : _)];
+       : _)];
   container
 
 let%shared blur = function true -> ["ot-blurred"] | false -> []
@@ -912,8 +918,8 @@ let%shared previous ?(a = [])
                let offset = React.S.value ~%offset in
                ~%change
                  (if offset > 1
-                 then `Goto (React.S.value ~%pos - offset)
-                 else `Prev)]
+                  then `Goto (React.S.value ~%pos - offset)
+                  else `Prev)]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
@@ -934,8 +940,8 @@ let%shared next ?(a = [])
                let offset = React.S.value ~%offset in
                ~%change
                  (if offset > 1
-                 then `Goto (React.S.value ~%pos + offset)
-                 else `Next)]
+                  then `Goto (React.S.value ~%pos + offset)
+                  else `Next)]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
@@ -958,35 +964,35 @@ let%shared next ?(a = [])
 
 let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
   Lwt_js_events.keydowns ?use_capture elt (fun ev _ ->
-      let change d =
-        Dom_html.stopPropagation ev;
-        Dom.preventDefault ev;
-        change d
-      in
-      let on_text_input =
-        match Dom_html.opt_tagged ev##.target with
-        | Some (Dom_html.Textarea _) -> true
-        | Some (Dom_html.Input _) -> true
-        | _ ->
-            Js.Opt.case ev##.target
-              (fun () -> false)
-              (fun x ->
-                Js.to_bool (x##hasAttribute (Js.string "contenteditable")))
-      in
-      let key = ev##.keyCode in
-      if on_text_input
-      then ()
-      else if vertical
-      then (
-        if key = 40 (* down *)
-        then change `Next
-        else if key = 38 (* up *)
-        then change `Prev)
-      else if key = 39 (* right *)
+    let change d =
+      Dom_html.stopPropagation ev;
+      Dom.preventDefault ev;
+      change d
+    in
+    let on_text_input =
+      match Dom_html.opt_tagged ev##.target with
+      | Some (Dom_html.Textarea _) -> true
+      | Some (Dom_html.Input _) -> true
+      | _ ->
+          Js.Opt.case ev##.target
+            (fun () -> false)
+            (fun x ->
+               Js.to_bool (x##hasAttribute (Js.string "contenteditable")))
+    in
+    let key = ev##.keyCode in
+    if on_text_input
+    then ()
+    else if vertical
+    then (
+      if key = 40 (* down *)
       then change `Next
-      else if key = 37 (* left *)
-      then change `Prev;
-      Lwt.return_unit)
+      else if key = 38 (* up *)
+      then change `Prev)
+    else if key = 39 (* right *)
+    then change `Next
+    else if key = 37 (* left *)
+    then change `Prev;
+    Lwt.return_unit)
 
 let%shared wheel_compute_angle pos faces swipe_pos =
   (float pos +. swipe_pos) *. (360. /. float faces)
@@ -1015,8 +1021,8 @@ let%shared wheel_page_attribute pos z faces ~vertical page_number =
                 <= float pos +. swipe_pos -. (float faces /. 2.)
                 || float page_number
                    > float pos +. swipe_pos +. (float faces /. 2.)
-            then "ot-hidden-wheel-face"
-            else "") ]]
+             then "ot-hidden-wheel-face"
+             else "") ]]
       pos
   in
   [R.a_class cls; a_style style]
@@ -1042,7 +1048,7 @@ let%shared wheel ?(a = []) ?(vertical = true) ?(position = 0)
   let _ =
     [%client
       (React.S.l2 (fun pos sp -> ~%set_pos2 (pos, sp)) ~%(c.pos) ~%(c.swipe_pos)
-        : _ React.S.t)]
+       : _ React.S.t)]
   in
   c.elt, c.pos, c.swipe_pos
 

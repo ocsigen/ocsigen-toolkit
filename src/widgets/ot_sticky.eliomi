@@ -37,8 +37,8 @@ type glue =
                 and remove [fixed] from the DOM tree.
 *)
 
-val make_sticky
-  :  dir:[`Left | `Top]
+val make_sticky :
+   dir:[`Left | `Top]
   -> ?ios_html_scroll_hack:bool
   -> ?force:bool
   -> div_content elt
@@ -63,8 +63,8 @@ val make_sticky
     See in {!Ot_lib} for documentation of [~ios_html_scroll_hack].
 *)
 
-val keep_in_sight
-  :  dir:[`Left | `Top]
+val keep_in_sight :
+   dir:[`Left | `Top]
   -> ?ios_html_scroll_hack:bool
   -> div_content elt
   -> (unit -> unit) Lwt.t

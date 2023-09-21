@@ -40,28 +40,28 @@ type 'a upload =
 
 type ('a, 'b) service =
   ( unit
-  , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-  , Eliom_service.post
-  , Eliom_service.non_att
-  , Eliom_service.co
-  , Eliom_service.non_ext
-  , Eliom_service.reg
-  , [`WithoutSuffix]
-  , unit
-  , [`One of 'a Eliom_parameter.ocaml] Eliom_parameter.param_name
-    * ([`One of (float * float * float * float) option Eliom_parameter.ocaml]
-       Eliom_parameter.param_name
-      * [`One of Eliom_lib.file_info] Eliom_parameter.param_name)
-  , 'b Eliom_service.ocaml )
-  Eliom_service.t
+    , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
+    , Eliom_service.post
+    , Eliom_service.non_att
+    , Eliom_service.co
+    , Eliom_service.non_ext
+    , Eliom_service.reg
+    , [`WithoutSuffix]
+    , unit
+    , [`One of 'a Eliom_parameter.ocaml] Eliom_parameter.param_name
+      * ([`One of (float * float * float * float) option Eliom_parameter.ocaml]
+           Eliom_parameter.param_name
+        * [`One of Eliom_lib.file_info] Eliom_parameter.param_name)
+    , 'b Eliom_service.ocaml )
+    Eliom_service.t
 (** a service that implements a function with type ['a -> 'b] *)
 
 [%%client.start]
 
 val ocaml_service_upload : service:('a, 'b) service -> arg:'a -> 'b upload
 
-val cropper
-  :  image:Dom_html.element Js.t Eliom_client_value.t
+val cropper :
+   image:Dom_html.element Js.t Eliom_client_value.t
   -> ?ratio:float
   -> unit
   -> (unit -> unit) * cropping * [> `Div] Eliom_content.Html.elt
@@ -70,8 +70,8 @@ val cropper
     [ cropping ] are current cropping parameters
     [ cropper_dom ] is the div containing cropping controllers *)
 
-val bind_input
-  :  Dom_html.inputElement Js.t Eliom_client_value.t
+val bind_input :
+   Dom_html.inputElement Js.t Eliom_client_value.t
   -> Dom_html.imageElement Js.t Eliom_client_value.t
   -> ?container:#Dom_html.element Js.t Eliom_client_value.t
   -> ?reset:(unit -> unit)
@@ -83,8 +83,8 @@ val bind_input
     [?container] is used to toggle [ot-no-file] class.
     [?reset] is called when the [input] value changes. *)
 
-val do_submit
-  :  Dom_html.inputElement Js.t Eliom_client_value.t
+val do_submit :
+   Dom_html.inputElement Js.t Eliom_client_value.t
   -> ?progress:(int -> int -> unit)
   -> ?cropping:cropping
   -> upload:'a upload
@@ -95,8 +95,8 @@ val do_submit
     [cropping] are cropping info
     [upload] function to upload the file *)
 
-val bind_submit
-  :  Dom_html.inputElement Js.t Eliom_client_value.t
+val bind_submit :
+   Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
   -> upload:'a upload
@@ -107,8 +107,8 @@ val bind_submit
     binds the following two actions to [ button ] when it is being clicked:
     call [ do_submit ] which uploads the file; then call [ after_submit ] *)
 
-val bind
-  :  ?container:#Dom_html.element Js.t Eliom_client_value.t
+val bind :
+   ?container:#Dom_html.element Js.t Eliom_client_value.t
   -> input:Dom_html.inputElement Js.t Eliom_client_value.t
   -> preview:Dom_html.imageElement Js.t
   -> ?crop:(unit -> unit) * cropping
@@ -121,28 +121,28 @@ val bind
 
 [%%shared.start]
 
-val input
-  :  ?a:[< Html_types.label_attrib > `Class] Eliom_content.Html.attrib list
+val input :
+   ?a:[< Html_types.label_attrib > `Class] Eliom_content.Html.attrib list
   -> [< Html_types.label_content_fun] Eliom_content.Html.elt list
   -> [> `Input] Eliom_content.Html.elt * [> `Label] Eliom_content.Html.elt
 (** Create a file input element with good input type [ot-pup-input] class
     and wrap it into a label.
     Return (input node, label node) *)
 
-val preview
-  :  ?a:[< Html_types.img_attrib > `Class] Eliom_content.Html.attrib list
+val preview :
+   ?a:[< Html_types.img_attrib > `Class] Eliom_content.Html.attrib list
   -> unit
   -> [> `Img] Eliom_content.Html.elt
 (** Create a img element with no src, no alt and [ot-pup-preview] class. *)
 
-val submit
-  :  ?a:[< Html_types.button_attrib > `Class] Eliom_content.Html.attrib list
+val submit :
+   ?a:[< Html_types.button_attrib > `Class] Eliom_content.Html.attrib list
   -> [< Html_types.button_content] Eliom_content.Html.elt list
   -> [> `Button] Eliom_content.Html.elt
 (** Create a button with [ot-pup-sumit] clas *)
 
-val mk_form
-  :  ?after_submit:(unit -> unit Lwt.t)
+val mk_form :
+   ?after_submit:(unit -> unit Lwt.t)
   -> ?crop:float option
   -> ?input:
        [< Html_types.label_attrib > `Class] Eliom_content.Html.attrib list

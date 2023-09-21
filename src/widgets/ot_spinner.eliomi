@@ -23,8 +23,8 @@
 
 (** {2 Spinner widget} *)
 
-val with_spinner
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val with_spinner :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?spinner:[< Html_types.div_content] Eliom_content.Html.elt list
   -> ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t)
   -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t
@@ -50,8 +50,8 @@ val with_spinner
 
 [%%client.start]
 
-val with_spinner_no_lwt
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val with_spinner_no_lwt :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?spinner:[< Html_types.div_content] Eliom_content.Html.elt list
   -> ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list)
   -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t
@@ -60,8 +60,8 @@ val with_spinner_no_lwt
     Client only (as we must wait for the thread to terminate on server
     before sending the page). *)
 
-val replace_content
-  :  ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t)
+val replace_content :
+   ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t)
   -> 'a Eliom_content.Html.elt
   -> Html_types.div_content Eliom_content.Html.elt list Lwt.t
   -> unit Lwt.t
@@ -79,7 +79,7 @@ val onloaded : unit Eliom_shared.React.E.t
 val when_loaded : (unit -> unit) -> unit
 (**  do an action once no spinners are spinning (could be right away) *)
 
-val set_default_fail
-  :  (exn -> [< Html_types.div_content] Eliom_content.Html.elt list)
+val set_default_fail :
+   (exn -> [< Html_types.div_content] Eliom_content.Html.elt list)
   -> unit
 (** Change the default function used to display error messages *)

@@ -22,8 +22,8 @@
 
 (** Range selection widget *)
 
-val make
-  :  ?txt_up:string
+val make :
+   ?txt_up:string
   -> ?txt_down:string
   -> ?f:(int -> string)
   -> ?lb:int

@@ -180,9 +180,9 @@ let zeroth_displayed_day ~intl d =
 let select_action ?(size = 1) selector action =
   let dom_select = Eliom_content.Html.To_dom.of_select selector in
   Lwt.async (fun () ->
-      action dom_select (fun _ _ ->
-          dom_select##.size := size;
-          Lwt.return_unit))
+    action dom_select (fun _ _ ->
+      dom_select##.size := size;
+      Lwt.return_unit))
 
 let rec build_calendar ?prehilight
     ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year} ~intl
@@ -206,9 +206,9 @@ let rec build_calendar ?prehilight
       ~a:[a_class ["ot-c-select-month"]]
       (intl.i_months
       |> List.map (fun m ->
-             if month = m
-             then option ~a:[a_value m; a_selected ()] (txt m)
-             else option ~a:[a_value m] (txt m)))
+        if month = m
+        then option ~a:[a_value m; a_selected ()] (txt m)
+        else option ~a:[a_value m] (txt m)))
   and select_year =
     let year = CalendarLib.Date.year today |> string_of_int in
     let open D in
@@ -217,10 +217,10 @@ let rec build_calendar ?prehilight
       (List.init
          CalendarLib.Date.(year period.end_p - year period.begin_p + 1)
          (fun i ->
-           let y = string_of_int (CalendarLib.Date.year period.end_p - i) in
-           if year = y
-           then option ~a:[a_value y; a_selected ()] (txt y)
-           else option ~a:[a_value y] (txt y)))
+            let y = string_of_int (CalendarLib.Date.year period.end_p - i) in
+            if year = y
+            then option ~a:[a_value y; a_selected ()] (txt y)
+            else option ~a:[a_value y] (txt y)))
   in
   let () =
     let open Lwt_js_events in
@@ -254,12 +254,12 @@ let rec build_calendar ?prehilight
       let today = CalendarLib.Date.today () in
       let classes =
         [ (if d < period.begin_p || d > period.end_p
-          then "ot-c-out-period"
-          else if d < today
-          then "ot-c-past"
-          else if d = today
-          then "ot-c-today"
-          else "ot-c-future") ]
+           then "ot-c-out-period"
+           else if d < today
+           then "ot-c-past"
+           else if d = today
+           then "ot-c-today"
+           else "ot-c-future") ]
       in
       let classes =
         match prehilight with
@@ -380,13 +380,13 @@ let make_span_handler selector
     apply condi fun_handler
   =
   Dom_html.handler (fun _ ->
-      if condi ()
-      then (
-        fun_handler ();
-        set_sig (apply (React.S.value get_sig) 1);
-        selector##.selectedIndex := React.S.value get_sig;
-        Js._false)
-      else Js._false)
+    if condi ()
+    then (
+      fun_handler ();
+      set_sig (apply (React.S.value get_sig) 1);
+      selector##.selectedIndex := React.S.value get_sig;
+      Js._false)
+    else Js._false)
 
 let set_selected_index selector selector_value options
     ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
@@ -401,9 +401,7 @@ let set_selected_index selector selector_value options
 
 let make_selector_handler change_index condi fun_handler =
   Dom_html.handler (fun _ ->
-      if condi ()
-      then (fun_handler (); change_index (); Js._false)
-      else Js._false)
+    if condi () then (fun_handler (); change_index (); Js._false) else Js._false)
 
 let attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d
     (cal, prev, next, select_month, select_year, prev_year, next_year) f_d
@@ -467,19 +465,29 @@ let attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d
        (valid_period (CalendarLib.Date.next d `Year))
        (fun () -> f_d (CalendarLib.Date.next d `Year))
 
-let make
-    :  ?init:int * int * int -> ?highlight:(int -> int -> int list Lwt.t)
-    -> ?click_non_highlighted:bool -> ?update:(int * int * int) React.E.t
+let make :
+     ?init:int * int * int
+    -> ?highlight:(int -> int -> int list Lwt.t)
+    -> ?click_non_highlighted:bool
+    -> ?update:(int * int * int) React.E.t
     -> ?action:(int -> int -> int -> unit Lwt.t)
     -> ?period:
          CalendarLib.Date.field CalendarLib.Date.date
          * CalendarLib.Date.field CalendarLib.Date.date
-    -> ?button_labels:button_labels -> ?intl:intl -> unit
+    -> ?button_labels:button_labels
+    -> ?intl:intl
+    -> unit
     -> [> Html_types.table] elt
   =
- fun ?init ?highlight ?click_non_highlighted ?update ?action
-     ?(period = default_period.begin_p, default_period.end_p)
-     ?(button_labels = default_button_labels) ?(intl = default_intl) () ->
+ fun ?init
+   ?highlight
+   ?click_non_highlighted
+   ?update
+   ?action
+   ?(period = default_period.begin_p, default_period.end_p)
+   ?(button_labels = default_button_labels)
+   ?(intl = default_intl)
+   () ->
   let period = {begin_p = fst period; end_p = snd period} in
   let init, init_ym =
     let y, m, d =
@@ -513,8 +521,8 @@ let make
   | None -> ());
   React.S.map f d_ym |> R.node
 
-let%server make
-    :  ?init:int * int * int
+let%server make :
+     ?init:int * int * int
     -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
     -> ?click_non_highlighted:bool
     -> ?update:(int * int * int) React.E.t Eliom_client_value.t
@@ -522,18 +530,27 @@ let%server make
     -> ?period:
          CalendarLib.Date.field CalendarLib.Date.date
          * CalendarLib.Date.field CalendarLib.Date.date
-    -> ?button_labels:button_labels -> ?intl:intl -> unit
+    -> ?button_labels:button_labels
+    -> ?intl:intl
+    -> unit
     -> [> Html_types.table] elt
   =
- fun ?init ?highlight ?click_non_highlighted ?update ?action ?period
-     ?button_labels ?intl () ->
+ fun ?init
+   ?highlight
+   ?click_non_highlighted
+   ?update
+   ?action
+   ?period
+   ?button_labels
+   ?intl
+   () ->
   C.node
     [%client
       (make ?init:~%init ?highlight:~%highlight
          ?click_non_highlighted:~%click_non_highlighted ?update:~%update
          ?action:~%action ?period:~%period ?intl:~%intl
          ?button_labels:~%button_labels ()
-        : [> Html_types.table] elt)]
+       : [> Html_types.table] elt)]
 
 let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
   let init =

@@ -23,8 +23,8 @@
 
 (** {2 Drawer menu for mobile and Web applications} *)
 
-val drawer
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val drawer :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?position:[`Top | `Right | `Bottom | `Left]
   -> ?opened:bool
   -> ?swipe:bool

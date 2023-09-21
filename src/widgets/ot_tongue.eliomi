@@ -20,8 +20,8 @@ type tongue =
     Before (resp. after) signals are triggered before (resp. after) transition.
     [swipe_pos] represents the position during the swipe of the user *)
 
-val tongue
-  :  ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+val tongue :
+   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?side:[`Bottom | `Left | `Right | `Top]
   -> ?stops:stop list
   -> ?init:simple_stop

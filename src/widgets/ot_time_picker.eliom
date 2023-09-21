@@ -126,7 +126,7 @@ let clock_reactive_hand ?(radius = Eliom_shared.React.S.const 31) e =
           (fun r e ->
              let x, y = polar_to_cartesian (r, e) in
              Printf.sprintf "M %d %d L %d %d" ~%center_x ~%center_y x y
-            : int -> int -> string)]
+           : int -> int -> string)]
         radius e
     in
     Eliom_content.Svg.[D.a_class ["ot-tp-hand"]; R.a_d d]
@@ -143,7 +143,7 @@ let clock_reactive_hand_circle ?(radius = 9)
           (fun r e ->
              let x, _ = polar_to_cartesian (r, e) in
              float_of_int x, Some `Px
-            : int -> int -> Svg_types.Unit.length)]
+           : int -> int -> Svg_types.Unit.length)]
         at_radius e
     and cy =
       Eliom_shared.React.S.l2
@@ -151,7 +151,7 @@ let clock_reactive_hand_circle ?(radius = 9)
           (fun r e ->
              let _, y = polar_to_cartesian (r, e) in
              float_of_int y, Some `Px
-            : int -> int -> Svg_types.Unit.length)]
+           : int -> int -> Svg_types.Unit.length)]
         at_radius e
     in
     let open Eliom_content.Svg in
@@ -202,7 +202,6 @@ let clock_svg_24h ?(extra_attributes = []) b h =
   Eliom_content.Svg.D.g ((h1 :: h2 :: l1) @ l2)
 
 let convert_24h is_am h = if is_am then h else h + 12
-
 let%client ( >>! ) = Js.Opt.iter
 
 let%client wrap_touch_aux ev f =
@@ -226,8 +225,8 @@ let%client wrap_touch ~ends ev (f : _ rf) =
 
 let%client wrap_touch_24h ~ends ev f_e f_b =
   wrap_touch_aux ev (fun (r, e) ->
-      f_b (r, ends);
-      f_e (e, ends))
+    f_b (r, ends);
+    f_e (e, ends))
 
 let%client wrap_click_aux ev f =
   ev##.currentTarget >>! fun a ->
@@ -249,8 +248,8 @@ let%client wrap_click ev (f : _ rf) =
 
 let%client wrap_click_24h ev f_e f_b =
   wrap_click_aux ev (fun (r, e) ->
-      f_b r;
-      f_e (e, true))
+    f_b r;
+    f_e (e, true))
 
 let clock_html_wrap ?(classes = []) s (f : (int * bool) rf Eliom_client_value.t)
   =
@@ -275,7 +274,7 @@ let clock_html_wrap ?(classes = []) s (f : (int * bool) rf Eliom_client_value.t)
        Lwt.async @@ fun () ->
        Lwt_js_events.touchmoves e @@ fun ev _ ->
        Lwt.return (wrap_touch ~ends:false ev ~%f)
-        : unit)]
+       : unit)]
   in
   e
 
@@ -316,7 +315,7 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
           Lwt.return (f ~ends:true ev) );
         Lwt.async @@ fun () ->
         Lwt_js_events.touchmoves e @@ fun ev _ -> Lwt.return (f ~ends:false ev)
-         : unit)];
+        : unit)];
   e
 
 let container = D.(div ~a:[a_class ["ot-tp-container"]])
@@ -388,7 +387,7 @@ let show_minutes_aux
              let v = React.S.value ~%hm in
              Lwt.async (fun () -> action v)
          | None -> ()
-        : (int * bool) rf)]
+       : (int * bool) rf)]
 
 let get_angle_signal ?round =
   Eliom_shared.React.S.map
@@ -422,7 +421,7 @@ let make_hours_minutes_seq_24h
              ~%f_is_am (b, true)
            in
            React.E.map f ~%update
-            : unit)]
+           : unit)]
   | None -> ());
   let b, f_b = Eliom_shared.React.S.create true in
   let hm =
@@ -476,7 +475,7 @@ let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
                ~%f_e_m (m * 6, true)
              in
              React.E.map f ~%update |> ignore
-              : unit)]
+             : unit)]
           |> ignore;
           Some
             [%client

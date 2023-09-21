@@ -26,8 +26,8 @@
 val hsv_to_rgb : int -> float -> float -> float * float * float
 (** [hsv_to_rgb h s v] converts HS(V/L) colors to RGB. *)
 
-val make
-  :  ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+val make :
+   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
   -> ?hsv:int * float * float
   -> ?update:(int * float * float) React.E.t Eliom_client_value.t
   -> unit
