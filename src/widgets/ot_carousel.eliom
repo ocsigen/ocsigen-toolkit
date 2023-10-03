@@ -64,7 +64,7 @@ let%shared default_make_transform ~vertical ?(delta = 0) pos =
 let%client ot_swiping = "ot-swiping"
 
 [%%client
-let now () = (new%js Js.date_now)##getTime /. 1000.
+let now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 let average_time = 0.1
 
 (* the time, in seconds,

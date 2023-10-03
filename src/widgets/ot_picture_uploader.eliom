@@ -367,8 +367,8 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
     [%client
       (fun () ->
          let bb = ~%image##getBoundingClientRect in
-         let bb_w = bb##.right -. bb##.left in
-         let bb_h = bb##.bottom -. bb##.top in
+         let bb_w = Js.to_float bb##.right -. Js.to_float bb##.left in
+         let bb_h = Js.to_float bb##.bottom -. Js.to_float bb##.top in
          let w, h =
            match ~%ratio with
            | Some ratio ->
