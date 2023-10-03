@@ -284,8 +284,9 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          (Js.Unsafe.coerce d2'##.style)##.webkitTransform := s;
          let move =
            not
-             (before == (Js.Unsafe.coerce d2'##.style)##.transform
-             || before == (Js.Unsafe.coerce d2'##.style)##.webkitTransform)
+             (Js.strict_equals before (Js.Unsafe.coerce d2'##.style)##.transform
+             || Js.strict_equals before
+                  (Js.Unsafe.coerce d2'##.style)##.webkitTransform)
          in
          let step = React.Step.create () in
          pos_set ~step pos;
