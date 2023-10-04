@@ -408,21 +408,6 @@ let make_hours_minutes_seq_24h
   let e_h, f_e_h = Eliom_shared.React.S.create (z_e_h, true)
   and e_m, f_e_m = Eliom_shared.React.S.create (z_e_m, true)
   and is_am, f_is_am = Eliom_shared.React.S.create (z_am, true) in
-  (match update with
-  | Some update ->
-      ignore
-        [%client
-          (ignore
-           @@
-           let f (h, m) =
-             let h, b = if h >= 12 then h - 12, false else h, true in
-             ~%f_e_h (h * 30, true);
-             ~%f_e_m (m * 6, true);
-             ~%f_is_am (b, true)
-           in
-           React.E.map f ~%update
-           : unit)]
-  | None -> ());
   let b, f_b = Eliom_shared.React.S.create true in
   let hm =
     let is_am =
@@ -455,7 +440,22 @@ let make_hours_minutes_seq_24h
             else show_minutes_aux ?action:~%action ~%e_m ~%hm ~%f_e_m]
     |> R.node
   and d = display_hours_minutes_seq ~h24:true f_b hm b |> R.node in
-  container [d; g], hm, [%client (fun () -> ~%f_b true : unit -> unit)]
+  let elt = container [d; g] in
+  (match update with
+  | Some update ->
+      ignore
+        [%client
+          (let f (h, m) =
+             let h, b = if h >= 12 then h - 12, false else h, true in
+             ~%f_e_h (h * 30, true);
+             ~%f_e_m (m * 6, true);
+             ~%f_is_am (b, true)
+           in
+           Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
+             ~keep:(React.E.map f ~%update)
+           : unit)]
+  | None -> ());
+  elt, hm, [%client (fun () -> ~%f_b true : unit -> unit)]
 
 let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
   let i_h, i_m = init in
@@ -464,6 +464,7 @@ let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
   let e_h, f_e_h = Eliom_shared.React.S.create (z_e_h, true)
   and e_m, f_e_m = Eliom_shared.React.S.create (z_e_m, true)
   and b, f_b = Eliom_shared.React.S.create true in
+  let witness = D.div [] in
   let c, is_am =
     let update =
       match update with
@@ -474,7 +475,9 @@ let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
                 ~%f_e_h (h * 30, true));
                ~%f_e_m (m * 6, true)
              in
-             React.E.map f ~%update |> ignore
+             Eliom_lib.Dom_reference.retain
+               (To_dom.of_element ~%witness)
+               ~keep:(React.E.map f ~%update)
              : unit)]
           |> ignore;
           Some
@@ -507,7 +510,9 @@ let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
             else show_minutes_aux ?action:~%action ~%e_m ~%hm ~%f_e_m]
     |> R.node
   and d = display_hours_minutes_seq ~h24:false f_b hm b |> R.node in
-  container [d; g; c], hm, [%client (fun () -> ~%f_b true : unit -> unit)]
+  ( container [d; g; c; witness]
+  , hm
+  , [%client (fun () -> ~%f_b true : unit -> unit)] )
 
 let make_hours_minutes_seq ?action ?init ?update ?round_5 ?(h24 = true) () =
   (if h24 then make_hours_minutes_seq_24h else make_hours_minutes_seq)

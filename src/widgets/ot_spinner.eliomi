@@ -76,9 +76,6 @@ val onloaded : unit Eliom_shared.React.E.t
 (**  [onloaded] is an event that fires when all spinners have finished loading.
     This can occur multiple times. *)
 
-val when_loaded : (unit -> unit) -> unit
-(**  do an action once no spinners are spinning (could be right away) *)
-
 val set_default_fail :
    (exn -> [< Html_types.div_content] Eliom_content.Html.elt list)
   -> unit

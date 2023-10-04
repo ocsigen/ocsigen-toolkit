@@ -357,7 +357,8 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   Lwt.async (fun () -> touchstarts handle' ontouchstart);
   match update with
   | Some update ->
-      ignore (React.E.map (fun stop -> set 0.0 (stop, true)) update)
+      Eliom_lib.Dom_reference.retain elt'
+        ~keep:(React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 
 let%shared tongue ?(a = []) ?(side = `Bottom)

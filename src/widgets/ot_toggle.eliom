@@ -53,15 +53,19 @@ let make ?(init_up = false) ?up_txt ?down_txt
     ?(update : bool React.E.t Eliom_client_value.t option) ()
   =
   let e, f = Eliom_shared.React.S.create (if init_up then T_Up else T_Down) in
+  let elt =
+    D.div
+      [ e
+        >|= [%shared display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt]
+        |> R.node ]
+  in
   (match update with
   | Some update ->
       ignore
       @@ [%client
            (let f b = ~%f (up_for_true b) in
-            Eliom_shared.React.E.map f ~%update |> ignore
+            Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
+              ~keep:(Eliom_shared.React.E.map f ~%update)
             : unit)]
   | None -> ());
-  ( e
-    >|= [%shared display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt]
-    |> R.node
-  , e >|= [%shared function T_Up -> true | _ -> false] )
+  elt, e >|= [%shared function T_Up -> true | _ -> false]
