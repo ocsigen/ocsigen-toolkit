@@ -477,7 +477,7 @@ let make :
     -> ?button_labels:button_labels
     -> ?intl:intl
     -> unit
-    -> [> Html_types.table] elt
+    -> [> `Div] elt
   =
  fun ?init
    ?highlight
@@ -509,6 +509,7 @@ let make :
       c f_d_ym;
     cal
   in
+  let elt = D.div [React.S.map f d_ym |> R.node] in
   (match update with
   | Some update ->
       let f (y, m, d) =
@@ -517,9 +518,10 @@ let make :
         | Some action -> Lwt.async (fun () -> action y m d)
         | None -> ()
       in
-      React.E.map f update |> ignore
+      Eliom_lib.Dom_reference.retain (To_dom.of_element elt)
+        ~keep:(React.E.map f update)
   | None -> ());
-  React.S.map f d_ym |> R.node
+  elt
 
 let%server make :
      ?init:int * int * int
@@ -533,7 +535,7 @@ let%server make :
     -> ?button_labels:button_labels
     -> ?intl:intl
     -> unit
-    -> [> Html_types.table] elt
+    -> [> `Div] elt
   =
  fun ?init
    ?highlight
@@ -550,7 +552,7 @@ let%server make :
          ?click_non_highlighted:~%click_non_highlighted ?update:~%update
          ?action:~%action ?period:~%period ?intl:~%intl
          ?button_labels:~%button_labels ()
-       : [> Html_types.table] elt)]
+       : [> `Div] elt)]
 
 let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
   let init =

@@ -68,21 +68,20 @@ let width_height, width, height =
   wh, w, h
 
 let set_adaptative_width elt f =
-  (*VVV Warning: it works only because we do not have weak pointers
-    on client side, thus the signal is not garbage collected.
-    If Weak is implemented on client side, we must keep a pointer
-    on this signal in the element *)
-  ignore
-    (React.S.map
-       (fun w -> elt##.style##.width := Js.string (string_of_int (f w) ^ "px"))
-       height)
+  Eliom_lib.Dom_reference.retain elt
+    ~keep:
+      (React.S.map
+         (fun w ->
+            elt##.style##.width := Js.string (string_of_int (f w) ^ "px"))
+         height)
 
 let set_adaptative_height elt f =
-  (*VVV see above *)
-  ignore
-    (React.S.map
-       (fun w -> elt##.style##.height := Js.string (string_of_int (f w) ^ "px"))
-       height)
+  Eliom_lib.Dom_reference.retain elt
+    ~keep:
+      (React.S.map
+         (fun w ->
+            elt##.style##.height := Js.string (string_of_int (f w) ^ "px"))
+         height)
 
 let of_opt elt = Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
 

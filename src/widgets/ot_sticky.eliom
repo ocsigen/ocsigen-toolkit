@@ -151,6 +151,8 @@ let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
     in
     init ();
     let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
+    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed)
+      ~keep:onloaded_thread;
     let scroll_thread =
       Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return_unit
@@ -160,6 +162,7 @@ let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
       |> React.S.map @@ fun (width, height) ->
          synchronise glue; update_state glue; width, height
     in
+    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed) ~keep:resize_thread;
     let dissolve () =
       Lwt.cancel scroll_thread;
       React.S.stop resize_thread;
@@ -205,6 +208,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         | None -> Ot_size.width_height
         | Some glue -> glue.resize_thread
       in
+      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_thread;
       let init () =
         let doIt () = compute_top_left @@ React.S.value Ot_size.width_height in
         (* the additional initialisation after some delay is due to the inexplicable
@@ -216,6 +220,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
       in
       init ();
       let onload_thread = React.E.map init Ot_spinner.onloaded in
+      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_thread;
       let stop () =
         React.E.stop onload_thread;
         React.S.stop resize_thread;

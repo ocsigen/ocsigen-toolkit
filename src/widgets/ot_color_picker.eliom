@@ -147,8 +147,15 @@ let make ?a ?hsv
   let ((cp_sig, cp_set) as cp_react) =
     Eliom_shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
   in
+  let elt, signal = display ?a cp_react, cp_sig in
+  let elt = Eliom_content.Html.D.div [elt] in
   ignore
     [%client
-      (* /!\ How to avoid the effectfull signal ? *)
-      (React.E.map (fun update -> ~%cp_set update) ~%update : unit React.event)];
-  display ?a cp_react, cp_sig
+      (* /!\ How to avoid the effectful signal ? *)
+      (Eliom_lib.Dom_reference.retain
+         (Eliom_content.Html.To_dom.of_element ~%elt)
+         ~keep:
+           (React.E.map (fun update -> ~%cp_set update) ~%update
+            : unit React.event)
+       : unit)];
+  elt, signal

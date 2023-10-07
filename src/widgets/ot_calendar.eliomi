@@ -51,7 +51,7 @@ val make :
   -> ?button_labels:button_labels
   -> ?intl:intl
   -> unit
-  -> [> `Table] Eliom_content.Html.elt
+  -> [> `Div] Eliom_content.Html.elt
 (** [make ?highlight ?click_any ?action] produces a calendar.
 
     If a client-side function [highlight] is provided, [highlight y m]
@@ -78,8 +78,7 @@ val make_date_picker :
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date
   -> unit
-  -> [> `Table] Eliom_content.Html.elt
-     * (int * int * int) Eliom_shared.React.S.t
+  -> [> `Div] Eliom_content.Html.elt * (int * int * int) Eliom_shared.React.S.t
 (** [make_date_picker ?init ()] returns a client-side reactive signal
     [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
     clicks on. The optional parameter [init] provides an initial value

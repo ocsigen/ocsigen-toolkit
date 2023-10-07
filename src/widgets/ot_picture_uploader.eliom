@@ -131,50 +131,54 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
        let tl_f = To_dom.of_element ~%tl_f in
        let x = ref 0. in
        let y = ref 0. in
-       ignore
-       @@ React.S.map
-            ( on_animation_frame @@ fun x ->
-              let top = Js.string (Printf.sprintf "%g%%" x) in
-              let () = t_f##.style##.height := top in
-              let () = tr_f##.style##.height := top in
-              let () = tl_f##.style##.height := top in
-              let () = l_f##.style##.top := top in
-              let () = r_f##.style##.top := top in
-              crop##.style##.top := top )
-            ~%top;
-       ignore
-       @@ React.S.map
-            ( on_animation_frame @@ fun x ->
-              let bottom = Js.string (Printf.sprintf "%g%%" x) in
-              let () = b_f##.style##.height := bottom in
-              let () = br_f##.style##.height := bottom in
-              let () = bl_f##.style##.height := bottom in
-              let () = l_f##.style##.bottom := bottom in
-              let () = r_f##.style##.bottom := bottom in
-              crop##.style##.bottom := bottom )
-            ~%bottom;
-       ignore
-       @@ React.S.map
-            ( on_animation_frame @@ fun x ->
-              let right = Js.string (Printf.sprintf "%g%%" x) in
-              let () = r_f##.style##.width := right in
-              let () = tr_f##.style##.width := right in
-              let () = br_f##.style##.width := right in
-              let () = t_f##.style##.right := right in
-              let () = b_f##.style##.right := right in
-              crop##.style##.right := right )
-            ~%right;
-       ignore
-       @@ React.S.map
-            ( on_animation_frame @@ fun x ->
-              let left = Js.string (Printf.sprintf "%g%%" x) in
-              let () = l_f##.style##.width := left in
-              let () = tl_f##.style##.width := left in
-              let () = bl_f##.style##.width := left in
-              let () = t_f##.style##.left := left in
-              let () = b_f##.style##.left := left in
-              crop##.style##.left := left )
-            ~%left;
+       Eliom_lib.Dom_reference.retain crop
+         ~keep:
+           (React.S.map
+              ( on_animation_frame @@ fun x ->
+                let top = Js.string (Printf.sprintf "%g%%" x) in
+                let () = t_f##.style##.height := top in
+                let () = tr_f##.style##.height := top in
+                let () = tl_f##.style##.height := top in
+                let () = l_f##.style##.top := top in
+                let () = r_f##.style##.top := top in
+                crop##.style##.top := top )
+              ~%top);
+       Eliom_lib.Dom_reference.retain crop
+         ~keep:
+           (React.S.map
+              ( on_animation_frame @@ fun x ->
+                let bottom = Js.string (Printf.sprintf "%g%%" x) in
+                let () = b_f##.style##.height := bottom in
+                let () = br_f##.style##.height := bottom in
+                let () = bl_f##.style##.height := bottom in
+                let () = l_f##.style##.bottom := bottom in
+                let () = r_f##.style##.bottom := bottom in
+                crop##.style##.bottom := bottom )
+              ~%bottom);
+       Eliom_lib.Dom_reference.retain crop
+         ~keep:
+           (React.S.map
+              ( on_animation_frame @@ fun x ->
+                let right = Js.string (Printf.sprintf "%g%%" x) in
+                let () = r_f##.style##.width := right in
+                let () = tr_f##.style##.width := right in
+                let () = br_f##.style##.width := right in
+                let () = t_f##.style##.right := right in
+                let () = b_f##.style##.right := right in
+                crop##.style##.right := right )
+              ~%right);
+       Eliom_lib.Dom_reference.retain crop
+         ~keep:
+           (React.S.map
+              ( on_animation_frame @@ fun x ->
+                let left = Js.string (Printf.sprintf "%g%%" x) in
+                let () = l_f##.style##.width := left in
+                let () = tl_f##.style##.width := left in
+                let () = bl_f##.style##.width := left in
+                let () = t_f##.style##.left := left in
+                let () = b_f##.style##.left := left in
+                crop##.style##.left := left )
+              ~%left);
        let update_top dy =
          ~%set_top
          @@ min (100. -. React.S.value ~%bottom)
