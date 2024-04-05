@@ -51,7 +51,7 @@ type%shared tongue =
   ; px_signal_before : int React.S.t Eliom_client_value.t
   ; px_signal_after : int React.S.t Eliom_client_value.t }
 
-let%client now () = (new%js Js.date_now)##getTime /. 1000.
+let%client now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 
 let%client clX ev =
   Js.Optdef.case

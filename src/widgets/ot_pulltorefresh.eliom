@@ -113,7 +113,7 @@ module Make (Conf : CONF) = struct
                 Conf.set_state @@ Some Succeeded;
                 js_container##.style##.transform := Js.string "translateY(0)";
                 refreshFlag := false))
-             700.)
+             (Js.float 700.))
         (*if the page refreshing finishes instantaneously,
               setTimeout is used to show the animation*)
       else (
@@ -123,7 +123,7 @@ module Make (Conf : CONF) = struct
         ignore
           (Dom_html.window##setTimeout
              (Js.wrap_callback (fun () -> refreshFlag := false))
-             500.));
+             (Js.float 500.)));
       Lwt.return_unit)
 
   let scroll_back () =
@@ -136,7 +136,7 @@ module Make (Conf : CONF) = struct
       ignore
         (Dom_html.window##setTimeout
            (Js.wrap_callback (fun () -> refreshFlag := false))
-           500.))
+           (Js.float 500.)))
 
   let touchend_handler ev _ =
     if !top && !distance > 0. && !dragStart >= 0

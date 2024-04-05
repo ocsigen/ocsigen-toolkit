@@ -78,8 +78,8 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
     (fun () -> stop_thread (); Lwt.cancel !cur; Lwt.return_unit)
 
 let%client rec in_ancestors ~elt ~ancestor =
-  elt == (ancestor : Dom_html.element Js.t)
-  || (not (elt == Dom_html.document##.body))
+  Js.strict_equals elt (ancestor : Dom_html.element Js.t)
+  || (not (Js.strict_equals elt Dom_html.document##.body))
      && Js.Opt.case elt##.parentNode
           (fun () -> false)
           (fun parent ->
