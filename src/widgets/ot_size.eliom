@@ -117,18 +117,18 @@ let client_width ?(with_margin = false) elt =
 
 let client_page_top ?with_margin elt =
   client_top ?with_margin elt
-  -. Dom_html.document##.body##getBoundingClientRect##.top
+  -. Js.to_float Dom_html.document##.body##getBoundingClientRect##.top
 
 let client_page_left ?with_margin elt =
   client_left elt ?with_margin
-  -. Dom_html.document##.body##getBoundingClientRect##.left
+  -. Js.to_float Dom_html.document##.body##getBoundingClientRect##.left
 
 let client_page_bottom ?with_margin elt =
-  Dom_html.document##.body##getBoundingClientRect##.bottom
+  Js.to_float Dom_html.document##.body##getBoundingClientRect##.bottom
   -. client_bottom ?with_margin elt
 
 let client_page_right ?with_margin elt =
-  Dom_html.document##.body##getBoundingClientRect##.left
+  Js.to_float Dom_html.document##.body##getBoundingClientRect##.left
   -. client_right elt ?with_margin
 
 let pageYOffset () =

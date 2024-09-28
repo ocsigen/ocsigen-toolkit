@@ -207,7 +207,10 @@ let%client ( >>! ) = Js.Opt.iter
 let%client wrap_touch_aux ev f =
   ev##.currentTarget >>! fun a ->
   let r = a##getBoundingClientRect in
-  let ox = r##.left and ox' = r##.right and oy = r##.top and oy' = r##.bottom in
+  let ox = Js.to_float r##.left
+  and ox' = Js.to_float r##.right
+  and oy = Js.to_float r##.top
+  and oy' = Js.to_float r##.bottom in
   assert (ox' >= ox);
   assert (oy' >= oy);
   Js.Optdef.iter ev ##. changedTouches ## (item 0) @@ fun touch0 ->
@@ -231,10 +234,10 @@ let%client wrap_touch_24h ~ends ev f_e f_b =
 let%client wrap_click_aux ev f =
   ev##.currentTarget >>! fun a ->
   let r = a##getBoundingClientRect in
-  let ox = r##.left
-  and ox' = r##.right
-  and oy = r##.top
-  and oy' = r##.bottom
+  let ox = Js.to_float r##.left
+  and ox' = Js.to_float r##.right
+  and oy = Js.to_float r##.top
+  and oy' = Js.to_float r##.bottom
   and x = ev##.clientX
   and y = ev##.clientY in
   assert (ox' > ox);

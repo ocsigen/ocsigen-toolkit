@@ -25,7 +25,7 @@ open Js_of_ocaml
 let debug = false
 
 let rec node_in_document node =
-  node == (Dom_html.document :> Dom.node Js.t)
+  Js.strict_equals node (Dom_html.document :> Dom.node Js.t)
   || Js.Opt.case node##.parentNode (fun () -> false) node_in_document
 
 type t =
@@ -81,7 +81,9 @@ let nodeready n =
   else (
     if !watched = [] then observer##observe Dom_html.document config;
     try
-      let {thread} = List.find (fun {node} -> n == node) !watched in
+      let {thread} =
+        List.find (fun {node} -> Js.strict_equals n node) !watched
+      in
       log ~n "already being watched";
       thread
     with Not_found ->
@@ -93,7 +95,7 @@ let nodeready n =
       in
       Eliom_client.Page_status.ondead ~stop (fun () ->
         let instances_of_node, rest =
-          List.partition (fun {node} -> n == node) !watched
+          List.partition (fun {node} -> Js.strict_equals n node) !watched
         in
         watched := rest;
         instances_of_node
