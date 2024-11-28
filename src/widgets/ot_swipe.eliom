@@ -8,7 +8,7 @@ open%client Lwt.Syntax
 
 (** sensibility for detecting swipe left/right or up/down *)
 
-let%client threshold = 0
+let%client threshold = 0.
 let%client px_of_int v = Js.string (string_of_int v ^ "px")
 
 let%client identifier ev =
@@ -20,14 +20,14 @@ let%client identifier ev =
 let%client clX ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientX)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientY)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientY)
 
 let%client add_transition transition_duration =
   let s = Js.string (Printf.sprintf "%.2fs" transition_duration) in
@@ -109,14 +109,14 @@ let%shared bind ?(transition_duration = 0.3)
     [%client
       (let elt = ~%elt in
        let elt' = To_dom.of_element elt in
-       let startx = ref 0 (* position when touch starts *) in
-       let starty = ref 0 (* position when touch starts *) in
+       let startx = ref 0. (* position when touch starts *) in
+       let starty = ref 0. (* position when touch starts *) in
        let status = ref Stopped in
        let onpanend ev aa =
          if !status <> Start
          then (
            add_transition ~%transition_duration elt';
-           let left = ~%compute_final_pos ev (clX ev - !startx) in
+           let left = ~%compute_final_pos ev (truncate (clX ev -. !startx)) in
            elt'##.style##.left := px_of_int left;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
            Lwt.async (fun () ->
@@ -128,25 +128,25 @@ let%shared bind ?(transition_duration = 0.3)
        in
        let onpanstart0 () = status := Start in
        let onpanstart ev _ =
-         startx := clX ev - elt'##.offsetLeft;
+         startx := clX ev -. float elt'##.offsetLeft;
          starty := clY ev;
          onpanstart0 ();
          Lwt.return_unit
        in
        let onpan ev aa =
-         let left = clX ev - !startx in
+         let left = clX ev -. !startx in
          let do_pan left = elt'##.style##.left := px_of_int left in
          if !status = Start
          then
            status :=
-             if abs (clY ev - !starty) >= abs left
+             if abs_float (clY ev -. !starty) >= abs_float left
              then Aborted (* vertical scrolling *)
-             else if abs left > threshold
+             else if abs_float left > threshold
              then (
                (* We decide to take the event *)
                Manip.Class.add elt "ot-swiping";
                remove_transition elt';
-               Eliom_lib.Option.iter (fun f -> f ev left) ~%onstart;
+               Eliom_lib.Option.iter (fun f -> f ev (truncate left)) ~%onstart;
                (* We send a touchcancel to the parent (who received the start) *)
                dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
                In_progress)
@@ -156,7 +156,7 @@ let%shared bind ?(transition_duration = 0.3)
          if !status = In_progress
          then (
            match min, max with
-           | Some min, _ when left < min ->
+           | Some min, _ when left < float min ->
                (* min reached.
                     We stop the movement of this element
                     and dispatch it to the parent. *)
@@ -164,10 +164,12 @@ let%shared bind ?(transition_duration = 0.3)
                Eliom_lib.Option.iter (fun f -> f ev min) ~%onmove;
                do_pan min;
                (* We send a touchstart event to the parent *)
-               dispatch_event ~ev elt' "touchstart" (min + !startx) (clY ev);
+               dispatch_event ~ev elt' "touchstart"
+                 (float min +. !startx)
+                 (clY ev);
                (* We propagate *)
                Lwt.return_unit
-           | _, Some max when left > max ->
+           | _, Some max when left > float max ->
                (* max reached.
                     We stop the movement of this element
                     and dispatch it to the parent. *)
@@ -175,21 +177,23 @@ let%shared bind ?(transition_duration = 0.3)
                Eliom_lib.Option.iter (fun f -> f ev max) ~%onmove;
                do_pan max;
                (* We send a touchstart event to the parent *)
-               dispatch_event ~ev elt' "touchstart" (max + !startx) (clY ev);
+               dispatch_event ~ev elt' "touchstart"
+                 (float max +. !startx)
+                 (clY ev);
                (* We propagate *)
                Lwt.return_unit
            | _ ->
                Dom_html.stopPropagation ev;
                Dom.preventDefault ev;
-               Eliom_lib.Option.iter (fun f -> f ev left) ~%onmove;
-               do_pan left;
+               Eliom_lib.Option.iter (fun f -> f ev (truncate left)) ~%onmove;
+               do_pan (int_of_float (left +. 0.5));
                Lwt.return_unit)
          else
            (* Shall we restart swiping this element? *)
            let restart_pos =
              match !status, min, max with
-             | Below, Some min, _ when left >= min -> Some min
-             | Above, _, Some max when left <= max -> Some max
+             | Below, Some min, _ when left >= float min -> Some min
+             | Above, _, Some max when left <= float max -> Some max
              | _ -> None
            in
            match restart_pos with
@@ -198,11 +202,12 @@ let%shared bind ?(transition_duration = 0.3)
                (* We send a touchmove event to the parent to fix
                     its position precisely,
                     but no touchend because it would possibly trigger a transition. *)
-               dispatch_event ~ev elt' "touchmove" (restart_pos + !startx)
+               dispatch_event ~ev elt' "touchmove"
+                 (float restart_pos +. !startx)
                  (clY ev);
                onpanstart0 ( (* restart_pos + !startx *) );
                Dom_html.stopPropagation ev;
-               do_pan left;
+               do_pan (int_of_float (left +. 0.5));
                Lwt.return_unit
            | None -> (* We propagate *) Lwt.return_unit
        in

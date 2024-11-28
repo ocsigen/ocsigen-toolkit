@@ -61,7 +61,7 @@ let%client disable_page_scroll, enable_page_scroll =
       | Some pos ->
           html_ManipClass_remove (html ()) "ot-with-popup";
           Dom_html.document##.body##.style##.top := Js.string "";
-          Dom_html.window##scroll 0 pos;
+          Dom_html.window##scrollTo (Js.float 0.) (Js.float (float pos));
           scroll_pos := None )
 
 let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button

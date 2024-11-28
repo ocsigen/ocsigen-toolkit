@@ -70,20 +70,20 @@ let%client detach {watched; sensor; shrink_listener_id; grow_listener_id; _} =
   match shrink_listener_id with Some x -> Dom.removeEventListener x | _ -> ()
 
 let%client reset {grow; grow_child; shrink; _} =
-  shrink##.scrollLeft := shrink##.scrollWidth;
-  shrink##.scrollTop := shrink##.scrollHeight;
+  shrink##.scrollLeft := Js.float (float shrink##.scrollWidth);
+  shrink##.scrollTop := Js.float (float shrink##.scrollHeight);
   grow_child##.style##.width
   := Js.string (string_of_int (grow##.offsetWidth + 1) ^ "px");
   grow_child##.style##.height
   := Js.string (string_of_int (grow##.offsetHeight + 1) ^ "px");
-  grow##.scrollLeft := grow##.scrollWidth;
-  grow##.scrollTop := grow##.scrollHeight
+  grow##.scrollLeft := Js.float (float grow##.scrollWidth);
+  grow##.scrollTop := Js.float (float grow##.scrollHeight)
 
 let%client reset_opt {grow; grow_child; shrink; _} =
-  shrink##.scrollLeft := 9999;
-  shrink##.scrollTop := 9999;
-  grow##.scrollLeft := 9999;
-  grow##.scrollTop := 9999
+  shrink##.scrollLeft := Js.float 9999.;
+  shrink##.scrollTop := Js.float 9999.;
+  grow##.scrollLeft := Js.float 9999.;
+  grow##.scrollTop := Js.float 9999.
 
 let%client noderesize_aux reset sensor f =
   let bind element =

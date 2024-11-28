@@ -43,14 +43,10 @@ type%shared ('a, 'b) service =
     Eliom_service.t
 
 let%client process_file input callback =
-  Js.Optdef.case input##.files
+  Js.Opt.case
+    input ##. files ## (item 0)
     (fun () -> Lwt.return_unit)
-    (function
-       | files ->
-           Js.Opt.case
-             files ## (item 0)
-             (fun () -> Lwt.return_unit)
-             (fun x -> callback x))
+    (fun x -> callback x)
 
 let%client file_reader file callback =
   let reader = new%js File.fileReader in
@@ -73,13 +69,14 @@ let%client on_animation_frame f =
   fun x ->
     if !last = None
     then
-      Dom_html._requestAnimationFrame
-        (Js.wrap_callback (fun () ->
-           match !last with
-           | None -> assert false
-           | Some x ->
-               last := None;
-               f x));
+      ignore
+        (Dom_html.window##requestAnimationFrame
+           (Js.wrap_callback (fun _ ->
+              match !last with
+              | None -> assert false
+              | Some x ->
+                  last := None;
+                  f x)));
     last := Some x
 
 let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
@@ -327,8 +324,8 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
          (fun x y ->
             bind_handler mousedowns Dom_html.Event.mousemove
               [Lwt_js_events.mouseup]
-              (fun ev -> float_of_int ev##.clientX)
-              (fun ev -> float_of_int ev##.clientY)
+              (fun ev -> Js.to_float ev##.clientX)
+              (fun ev -> Js.to_float ev##.clientY)
               (x, y))
          [~%crop; ~%t_c; ~%tr_c; ~%r_c; ~%br_c; ~%b_c; ~%bl_c; ~%l_c; ~%tl_c]
          listeners;
@@ -339,17 +336,15 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
                  bind_handler touchstarts Dom_html.Event.touchmove
                    [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
                    (fun ev ->
-                      float_of_int
-                      @@ Js.Optdef.case
-                           (ev##.touches##item 0)
-                           (fun () -> assert false)
-                           (fun x -> x##.clientX))
+                      Js.Optdef.case
+                        (ev##.touches##item 0)
+                        (fun () -> assert false)
+                        (fun x -> Js.to_float x##.clientX))
                    (fun ev ->
-                      float_of_int
-                      @@ Js.Optdef.case
-                           (ev##.touches##item 0)
-                           (fun () -> assert false)
-                           (fun x -> x##.clientY))
+                      Js.Optdef.case
+                        (ev##.touches##item 0)
+                        (fun () -> assert false)
+                        (fun x -> Js.to_float x##.clientY))
                    (x, y))
               x)
          [ [~%crop]
@@ -429,20 +424,19 @@ let%client bind_input input preview ?container ?reset () =
     reset;
   Lwt.async (fun () ->
     Lwt_js_events.changes input (fun _ _ ->
-      Js.Optdef.case input##.files onerror (fun files ->
-        Js.Opt.case
-          (files##item 0)
-          onerror
-          (fun file ->
-             let () =
-               file_reader (Js.Unsafe.coerce file) (fun data ->
-                 preview##.src := data;
-                 Eliom_lib.Option.iter
-                   (fun container ->
-                      container##.classList##remove (Js.string "ot-no-file"))
-                   container)
-             in
-             Lwt.return_unit))))
+      Js.Opt.case
+        (input##.files##item 0)
+        onerror
+        (fun file ->
+           let () =
+             file_reader (Js.Unsafe.coerce file) (fun data ->
+               preview##.src := data;
+               Eliom_lib.Option.iter
+                 (fun container ->
+                    container##.classList##remove (Js.string "ot-no-file"))
+                 container)
+           in
+           Lwt.return_unit)))
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t

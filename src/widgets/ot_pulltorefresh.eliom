@@ -27,8 +27,8 @@ end
 
 module Make (Conf : CONF) = struct
   let dragThreshold = Conf.dragThreshold
-  let dragStart = ref (-1)
-  let scrollXStart = ref (-1)
+  let dragStart = ref (-1.)
+  let scrollXStart = ref (-1.)
   let distance = ref 0.
   let scale = Conf.scale
   let top = ref true
@@ -41,7 +41,7 @@ module Make (Conf : CONF) = struct
 
   let scroll_handler () =
     let _, y = Dom_html.getDocumentScroll () in
-    if y > 0 then top := false else top := true
+    if y > 0. then top := false else top := true
 
   let touchstart_handler ev _ =
     Dom_html.stopPropagation ev;
@@ -50,8 +50,8 @@ module Make (Conf : CONF) = struct
      else
        let touch = ev##.changedTouches##item 0 in
        Js.Optdef.iter touch (fun touch ->
-         dragStart := touch##.clientY;
-         scrollXStart := touch##.clientX);
+         dragStart := Js.to_float touch##.clientY;
+         scrollXStart := Js.to_float touch##.clientX);
        first_move := true;
        Manip.Class.remove container "ot-pull-refresh-transition-on");
     Lwt.return_unit
@@ -71,7 +71,7 @@ module Make (Conf : CONF) = struct
     if not !scrollingX
     then (
       Dom_html.stopPropagation ev;
-      if !dragStart >= 0
+      if !dragStart >= 0.
       then
         if !refreshFlag
         then Dom.preventDefault ev
@@ -79,10 +79,13 @@ module Make (Conf : CONF) = struct
         then (
           let target = ev##.changedTouches##item 0 in
           Js.Optdef.iter target (fun target ->
-            let dY = - !dragStart + target##.clientY in
-            distance := Float.sqrt (float_of_int dY) *. scale;
+            let dY = -. !dragStart +. Js.to_float target##.clientY in
+            distance := Float.sqrt dY *. scale;
             if !first_move
-            then scrollingX := abs (!scrollXStart - target##.clientX) > abs dY);
+            then
+              scrollingX :=
+                abs_float (!scrollXStart -. Js.to_float target##.clientX)
+                > abs_float dY);
           (*move the container if and only if at the top of the document and
             the page is scrolled down*)
           if !top && !distance > 0. && not !scrollingX
@@ -140,7 +143,7 @@ module Make (Conf : CONF) = struct
            (Js.float 500.)))
 
   let touchend_handler ev _ =
-    if !top && !distance > 0. && !dragStart >= 0
+    if !top && !distance > 0. && !dragStart >= 0.
     then
       if !refreshFlag
       then Dom.preventDefault ev
@@ -150,9 +153,9 @@ module Make (Conf : CONF) = struct
         else scroll_back ();
         (*reinitialize paramaters*)
         joinRefreshFlag := false;
-        dragStart := -1;
+        dragStart := -1.;
         distance := 0.);
-    scrollXStart := -1;
+    scrollXStart := -1.;
     scrollingX := false;
     Lwt.return_unit
 

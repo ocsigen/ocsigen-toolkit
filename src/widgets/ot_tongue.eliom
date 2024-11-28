@@ -57,14 +57,14 @@ let%client now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 let%client clX ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientX)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientY)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientY)
 
 let%client documentsize vert =
   (if vert then snd else fst) (Ot_size.get_document_size ())
@@ -118,10 +118,10 @@ let%shared class_of_side = function
 let%client get_size ~side elt =
   let w, h = Ot_size.get_document_size () in
   match side with
-  | `Top -> int_of_float (Ot_size.client_bottom elt)
-  | `Bottom -> h - int_of_float (Ot_size.client_top elt)
-  | `Left -> int_of_float (Ot_size.client_right elt)
-  | `Right -> w - int_of_float (Ot_size.client_left elt)
+  | `Top -> Ot_size.client_bottom elt
+  | `Bottom -> float h -. Ot_size.client_top elt
+  | `Left -> Ot_size.client_right elt
+  | `Right -> float w -. Ot_size.client_left elt
 
 let%client px_of_simple_stop vert tongue_elt stop =
   let docsize = documentsize vert in
@@ -223,15 +223,15 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let defaultduration = (Js.Unsafe.coerce elt'##.style)##.transitionDuration in
   let handle' = To_dom.of_element handle in
   let vert = side = `Top || side = `Bottom in
-  let sign = match side with `Top | `Left -> -1 | _ -> 1 in
+  let sign = match side with `Top | `Left -> -1. | _ -> 1. in
   let cl = if vert then clY else clX in
   let prev_speed = ref 0. in
   let currentstop = ref init in
-  let startpos = ref 0 in
-  let currentpos = ref 0 in
-  let previouspos = ref 0 in
+  let startpos = ref 0. in
+  let currentpos = ref 0. in
+  let previouspos = ref 0. in
   let previoustimestamp = ref 0. in
-  let startsize = ref 0 (* height or width of visible part in pixel *) in
+  let startsize = ref 0. (* height or width of visible part in pixel *) in
   let animation_frame_requested = ref false in
   let set speed (stop, is_attractor) =
     let previousstop = !currentstop in
@@ -273,9 +273,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       if delta_t = 0.
       then prev_speed
       else
-        let cur_speed =
-          -.(float sign *. (float delta -. float prev_delta)) /. delta_t
-        in
+        let cur_speed = -.(sign *. (delta -. prev_delta)) /. delta_t in
         if delta_t >= average_time
         then cur_speed
         else
@@ -285,11 +283,13 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     timestamp, speed
   in
   let next_stop speed pos =
-    let dpos = sign * (pos - !previouspos) in
+    let dpos = sign *. (pos -. !previouspos) in
     let stops = px_of_stops elt vert stops in
-    let newsize = !startsize + (sign * (!startpos - !currentpos)) in
+    let newsize =
+      truncate (!startsize +. (sign *. (!startpos -. !currentpos)))
+    in
     let maxsize = full_size elt vert in
-    if dpos < 0
+    if dpos < 0.
     then stop_after ~speed ~maxsize newsize stops
     else stop_before ~speed ~maxsize newsize stops
   in
@@ -319,9 +319,9 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       animation_frame_requested := true;
       let* () = Lwt_js_events.request_animation_frame () in
       animation_frame_requested := false;
-      let d = sign * (!startpos - !currentpos) in
+      let d = sign *. (!startpos -. !currentpos) in
       let maxsize = full_size elt vert in
-      let size = min (!startsize + d) maxsize in
+      let size = min (truncate (!startsize +. d)) maxsize in
       set_swipe_pos size; set_tongue_position size; Lwt.return_unit)
     else Lwt.return_unit
   in
@@ -347,7 +347,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     startsize := get_size ~side elt';
     (* To allow the user to stop the transition at the current position *)
     (* FIXME: This doesn't work too well when an adress bar appears while swiping *)
-    set_tongue_position !startsize;
+    set_tongue_position (truncate !startsize);
     let a = touchmoves elt' ontouchmove in
     let b = touchend elt' >>= ontouchend in
     let c = touchcancel elt' >>= ontouchcancel in

@@ -215,11 +215,9 @@ let%client wrap_touch_aux ev f =
   assert (oy' >= oy);
   Js.Optdef.iter ev ##. changedTouches ## (item 0) @@ fun touch0 ->
   let x =
-    float_of_int (touch0##.clientX - truncate ox) *. 100. /. (ox' -. ox)
-    |> truncate
+    (Js.to_float touch0##.clientX -. ox) *. 100. /. (ox' -. ox) |> truncate
   and y =
-    float_of_int (touch0##.clientY - truncate oy) *. 100. /. (oy' -. oy)
-    |> truncate
+    (Js.to_float touch0##.clientY -. oy) *. 100. /. (oy' -. oy) |> truncate
   in
   f (cartesian_to_polar (x, y))
 
@@ -238,12 +236,12 @@ let%client wrap_click_aux ev f =
   and ox' = Js.to_float r##.right
   and oy = Js.to_float r##.top
   and oy' = Js.to_float r##.bottom
-  and x = ev##.clientX
-  and y = ev##.clientY in
+  and x = Js.to_float ev##.clientX
+  and y = Js.to_float ev##.clientY in
   assert (ox' > ox);
   assert (oy' > oy);
-  let x = float_of_int (x - truncate ox) *. 100. /. (ox' -. ox) |> truncate
-  and y = float_of_int (y - truncate oy) *. 100. /. (oy' -. oy) |> truncate in
+  let x = (x -. ox) *. 100. /. (ox' -. ox) |> truncate
+  and y = (y -. oy) *. 100. /. (oy' -. oy) |> truncate in
   f (cartesian_to_polar (x, y))
 
 let%client wrap_click ev (f : _ rf) =
