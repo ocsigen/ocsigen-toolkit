@@ -19,7 +19,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Js_of_ocaml]
+open Js_of_ocaml
+open Lwt.Syntax]
 
 [%%client open Js_of_ocaml_lwt]
 
@@ -46,7 +47,7 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
       if ios_html_scroll_hack
       then
         let rec loop () =
-          let%lwt e =
+          let* e =
             Lwt.pick
               (List.map
                  (* We listen to several elements because scroll events are
@@ -59,12 +60,15 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
           in
           let continue = ref true in
           let w =
-            try%lwt fst (Lwt.task ())
-            with Lwt.Canceled ->
-              continue := false;
-              Lwt.return_unit
+            Lwt.catch
+              (fun () -> fst (Lwt.task ()))
+              (function
+                | Lwt.Canceled ->
+                    continue := false;
+                    Lwt.return_unit
+                | exc -> Lwt.reraise exc)
           in
-          let%lwt () = handler e w in
+          let* () = handler e w in
           if !continue then loop () else Lwt.return_unit
         in
         loop ()
@@ -91,7 +95,7 @@ let%client rec in_ancestors ~elt ~ancestor =
 let%client rec click_outside ?use_capture
     ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t)) elt
   =
-  let%lwt ev = Lwt_js_events.click ?use_capture inside in
+  let* ev = Lwt_js_events.click ?use_capture inside in
   Js.Opt.case ev##.target
     (fun () -> click_outside ?use_capture elt)
     (fun target ->

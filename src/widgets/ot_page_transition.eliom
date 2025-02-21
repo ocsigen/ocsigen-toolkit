@@ -5,6 +5,7 @@ open Js_of_ocaml_lwt
 open Eliom_content
 open Html
 open Html.D
+open Lwt.Syntax
 
 type animation = Nil | Forward | Backward
 
@@ -70,14 +71,14 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
     Eliom_client.lock_request_handling ();
     Option.may Manip.appendToBody screenshot_wrapper;
     Manip.Class.add body cl_body_pre_forward;
-    let%lwt () = Lwt_js_events.request_animation_frame () in
-    let%lwt () = Lwt_js_events.request_animation_frame () in
+    let* () = Lwt_js_events.request_animation_frame () in
+    let* () = Lwt_js_events.request_animation_frame () in
     set_transition_duration body transition_duration;
     Option.may
       (fun sc -> Manip.Class.add sc cl_screenshot_post_forward)
       screenshot_container;
     Manip.Class.remove body cl_body_pre_forward;
-    let%lwt () = Lwt_js.sleep transition_duration in
+    let* () = Lwt_js.sleep transition_duration in
     Option.may Manip.removeSelf screenshot_wrapper;
     style##.transitionDuration := initial_transition_duration;
     Eliom_client.unlock_request_handling ();
@@ -89,7 +90,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
       Lwt.wakeup trigger_page_change ());
     let fa ss =
       Lwt.async @@ fun () ->
-      let%lwt () = wait_for_page_change in
+      let* () = wait_for_page_change in
       forward_animation_ transition_duration ss
     in
     let f screenshot = fa @@ Some screenshot in
@@ -104,10 +105,10 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
     in
     Eliom_client.lock_request_handling ();
     Manip.appendToBody screenshot_wrapper;
-    let%lwt () = Lwt_js_events.request_animation_frame () in
-    let%lwt () = Lwt_js_events.request_animation_frame () in
+    let* () = Lwt_js_events.request_animation_frame () in
+    let* () = Lwt_js_events.request_animation_frame () in
     Manip.Class.add screenshot_wrapper cl_wrapper_post_backward;
-    let%lwt () = Lwt_js.sleep transition_duration in
+    let* () = Lwt_js.sleep transition_duration in
     Manip.removeSelf screenshot_wrapper;
     Eliom_client.unlock_request_handling ();
     Lwt.return_unit
@@ -118,7 +119,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
       Lwt.wakeup trigger_page_change ());
     let ba ss =
       Lwt.async @@ fun () ->
-      let%lwt () = wait_for_page_change in
+      let* () = wait_for_page_change in
       backward_animation_ transition_duration ss
     in
     let f screenshot = ba @@ Some screenshot in

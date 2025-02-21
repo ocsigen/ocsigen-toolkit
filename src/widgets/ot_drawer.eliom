@@ -23,6 +23,7 @@ open Eliom_content.Html]
 
 [%%shared open Eliom_content.Html.F]
 open%client Js_of_ocaml
+open%client Lwt.Syntax
 [%%client open Js_of_ocaml_lwt]
 type%client status = Stopped | Start | Aborted | In_progress
 
@@ -40,7 +41,7 @@ let%client clY ev =
 
 let%client bind_click_outside bckgrnd elt close =
   Lwt.async (fun () ->
-    let%lwt ev =
+    let* ev =
       Ot_lib.click_outside ~use_capture:true
         ~inside:(To_dom.of_element bckgrnd)
         (To_dom.of_element elt)
@@ -130,7 +131,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          add_class ~%bckgrnd "closing";
          Lwt.cancel !(~%touch_thread);
          Lwt_js_events.async (fun () ->
-           let%lwt _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "closing";
            Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
            Lwt.return_unit)
@@ -148,13 +149,13 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          add_class ~%bckgrnd "opening";
          Lwt.cancel !(~%touch_thread);
          Lwt.async (fun () ->
-           let%lwt bind_touch = fst ~%bind_touch in
+           let* bind_touch = fst ~%bind_touch in
            bind_touch (); Lwt.return_unit);
          bind_click_outside ~%bckgrnd ~%d ~%close;
          Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
            (fun () -> html_ManipClass_add "ot-drawer-open");
          Lwt_js_events.async (fun () ->
-           let%lwt _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+           let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "opening";
            Lwt.return_unit)
        : unit -> unit)]
@@ -205,7 +206,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              if not !animation_frame_requested
              then (
                animation_frame_requested := true;
-               let%lwt () = Lwt_js_events.request_animation_frame () in
+               let* () = Lwt_js_events.request_animation_frame () in
                animation_frame_requested := false;
                (match !action with
                | `Move delta ->
@@ -225,7 +226,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                     let%lwt _ = Lwt_js_events.transitionend dr in
+                     let* _ = Lwt_js_events.transitionend dr in
                      Manip.Class.remove ~%bckgrnd "ot-swiping";
                      Lwt.return_unit);
                    cl ()
@@ -234,7 +235,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
                    Lwt.async (fun () ->
-                     let%lwt _ = Lwt_js_events.transitionend dr in
+                     let* _ = Lwt_js_events.transitionend dr in
                      Manip.Class.remove ~%bckgrnd "ot-swiping";
                      Lwt.return_unit)
                | `Abort ->
@@ -324,36 +325,40 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
            status := Start;
            startx := clX ev;
            starty := clY ev;
-           let%lwt () = onpan ev a in
+           let* () = onpan ev a in
            (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
            This wrapping is an attempt to understand why. *)
            let a =
-             try%lwt Lwt_js_events.touchmoves bckgrnd' onpan with
-             | Lwt.Canceled -> Lwt.return_unit
-             | e ->
-                 let s = Printexc.to_string e in
-                 Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
-                 Lwt.fail e
+             Lwt.catch
+               (fun () -> Lwt_js_events.touchmoves bckgrnd' onpan)
+               (function
+                 | Lwt.Canceled -> Lwt.return_unit
+                 | e ->
+                     let s = Printexc.to_string e in
+                     Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
+                     Lwt.fail e)
            and b =
-             try%lwt
-               let%lwt ev = Lwt_js_events.touchend bckgrnd' in
-               onpanend ev ()
-             with
-             | Lwt.Canceled -> Lwt.return_unit
-             | e ->
-                 let s = Printexc.to_string e in
-                 Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
-                 Lwt.fail e
+             Lwt.catch
+               (fun () ->
+                  let* ev = Lwt_js_events.touchend bckgrnd' in
+                  onpanend ev ())
+               (function
+                 | Lwt.Canceled -> Lwt.return_unit
+                 | e ->
+                     let s = Printexc.to_string e in
+                     Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
+                     Lwt.fail e)
            and c =
-             try%lwt
-               let%lwt ev = Lwt_js_events.touchcancel bckgrnd' in
-               onpanend ev ()
-             with
-             | Lwt.Canceled -> Lwt.return_unit
-             | e ->
-                 let s = Printexc.to_string e in
-                 Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
-                 Lwt.fail e
+             Lwt.catch
+               (fun () ->
+                  let* ev = Lwt_js_events.touchcancel bckgrnd' in
+                  onpanend ev ())
+               (function
+                 | Lwt.Canceled -> Lwt.return_unit
+                 | e ->
+                     let s = Printexc.to_string e in
+                     Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
+                     Lwt.fail e)
            in
            Lwt.pick [a; b; c]
          in

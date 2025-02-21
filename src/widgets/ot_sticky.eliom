@@ -4,6 +4,7 @@ open Eliom_content.Html
 open Html_types
 open Js_of_ocaml
 open Js_of_ocaml_lwt
+open Lwt.Syntax
 
 (* This is about the real "position: sticky" *)
 
@@ -121,7 +122,7 @@ let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
     ?((*TODO: `Bottom and `Right *)
       ios_html_scroll_hack = false) ?(force = false) elt
   =
-  let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   if (not force) && supports_position_sticky elt
   then Lwt.return_none
   else
@@ -133,7 +134,7 @@ let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
     in
     let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
     Manip.insertBefore ~before:elt fixed;
-    let%lwt () = Ot_nodeready.nodeready fixed_dom in
+    let* () = Ot_nodeready.nodeready fixed_dom in
     Manip.Class.add fixed "ot-sticky-fixed";
     Manip.Class.add elt "ot-sticky-inline";
     let glue =
@@ -178,13 +179,13 @@ let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
 
 (* TODO: ensure compatibility with DOM caching *)
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
-  let%lwt () = Ot_nodeready.nodeready (To_dom.of_element elt) in
-  let%lwt glue = make_sticky ?ios_html_scroll_hack ~dir elt in
+  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  let* glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with None -> elt | Some g -> g.fixed in
   match Manip.parentNode elt with
   | None -> Lwt.return (fun () -> ())
   | Some parent ->
-      let%lwt () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+      let* () = Ot_nodeready.nodeready (To_dom.of_element parent) in
       let compute_top_left (_, win_height) =
         match dir with
         | `Top ->
@@ -214,7 +215,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
         Lwt.async (fun () ->
-          let%lwt _ = Lwt_js.sleep 0.5 in
+          let* _ = Lwt_js.sleep 0.5 in
           Lwt.return @@ doIt ());
         doIt ()
       in

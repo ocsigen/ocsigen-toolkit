@@ -23,6 +23,7 @@ open Eliom_content.Html]
 
 [%%shared open Eliom_content.Html.F]
 open%client Js_of_ocaml
+open%client Lwt.Syntax
 [%%client open Js_of_ocaml_lwt]
 
 let%shared hcf ?(a = []) ?(header = []) ?(footer = []) content =
@@ -88,11 +89,13 @@ let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button
   let close () =
     match confirmation_onclose with
     | None -> do_close ()
-    | Some f -> (
-        match%lwt f () with true -> do_close () | false -> Lwt.return_unit)
+    | Some f ->
+        Lwt.bind (f ()) (function
+          | true -> do_close ()
+          | false -> Lwt.return_unit)
   in
   (* FIXME: use a list for gen_content return type *)
-  let%lwt c =
+  let* c =
     Ot_spinner.with_spinner
       ~a:[a_class ["ot-popup-content"]]
       (Lwt.map (fun x -> [x]) (gen_content do_close))
@@ -117,7 +120,7 @@ let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button
   then
     Eliom_client.Page_status.while_active ~stop (fun () ->
       (* Close the popup when user clicks on background *)
-      let%lwt event = Lwt_js_events.click box_dom in
+      let* event = Lwt_js_events.click box_dom in
       if event##.target = Js.some box_dom then close () else Lwt.return_unit);
   if close_on_escape
   then
@@ -130,7 +133,7 @@ let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button
 
 let%client ask_question ?a ?a_hcf ~header ~buttons contents =
   let t, w = Lwt.wait () in
-  let%lwt _ =
+  let* _ =
     popup ?a (fun do_close ->
       let answers =
         List.map
@@ -140,8 +143,8 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
                 and close question popup. *)
              Lwt.async (fun () ->
                Lwt_js_events.clicks (To_dom.of_element btn) (fun _ _ ->
-                 let%lwt r = action () in
-                 let%lwt result = do_close () in
+                 let* r = action () in
+                 let* result = do_close () in
                  Lwt.wakeup w r; Lwt.return result));
              btn)
           buttons

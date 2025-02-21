@@ -4,6 +4,7 @@ open Eliom_content.Html.F]
 
 [%%client
 open Lwt.Infix
+open Lwt.Syntax
 open Js_of_ocaml
 open Js_of_ocaml_lwt]
 
@@ -240,14 +241,14 @@ let%client bind side stops init handle update set_before_signal set_after_signal
       then None
       else Some Float.(pow (inertia_parameter2 *. abs speed) inertia_parameter3)
     in
-    let%lwt () = enable_transition ?duration elt in
+    let* () = enable_transition ?duration elt in
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
     Lwt.async (fun () ->
-      let%lwt () =
+      let* () =
         if stop <> previousstop
         then
-          let%lwt _ = Lwt_js_events.transitionend elt' in
+          let* _ = Lwt_js_events.transitionend elt' in
           Lwt.return_unit
         else Lwt.return_unit
       in
@@ -316,7 +317,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     if not !animation_frame_requested
     then (
       animation_frame_requested := true;
-      let%lwt () = Lwt_js_events.request_animation_frame () in
+      let* () = Lwt_js_events.request_animation_frame () in
       animation_frame_requested := false;
       let d = sign * (!startpos - !currentpos) in
       let maxsize = full_size elt vert in
@@ -350,7 +351,7 @@ let%client bind side stops init handle update set_before_signal set_after_signal
     let a = touchmoves elt' ontouchmove in
     let b = touchend elt' >>= ontouchend in
     let c = touchcancel elt' >>= ontouchcancel in
-    let%lwt () = disable_transition elt in
+    let* () = disable_transition elt in
     (Js.Unsafe.coerce elt'##.style)##.transitionDuration := defaultduration;
     Lwt.pick [a; b; c]
   in
@@ -389,7 +390,7 @@ let%shared tongue ?(a = []) ?(side = `Bottom)
   ignore
     [%client
       (Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
+         let* () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
          bind ~%side ~%stops ~%init ~%handle
            ~%(update : simple_stop React.E.t Eliom_client_value.t option)
            (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;

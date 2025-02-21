@@ -33,6 +33,7 @@ type button_labels =
 
 [%%client.start]
 
+open Lwt.Syntax
 open Js_of_ocaml
 open Js_of_ocaml_lwt
 
@@ -344,7 +345,7 @@ let attach_events ?action ?(click_non_highlighted = false) ?update ~intl ~period
       | Some action ->
           fun _ r ->
             update_classes cal zero d;
-            let%lwt _ = action y m dom in
+            let* _ = action y m dom in
             Lwt.return_unit
       | None -> fun _ r -> update_classes cal zero d; Lwt.return_unit
     in
@@ -369,7 +370,7 @@ let attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
   let f () =
     let m = CalendarLib.Date.(month d |> int_of_month)
     and y = CalendarLib.Date.year d in
-    let%lwt highlight = highlight y m in
+    let* highlight = highlight y m in
     attach_events ?action ?click_non_highlighted ~intl ~period d cal highlight;
     Lwt.return_unit
   in
