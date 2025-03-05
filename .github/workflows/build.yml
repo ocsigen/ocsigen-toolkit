@@ -44,6 +44,8 @@ jobs:
         if: runner.os == 'macOS'
         run: brew update && brew reinstall openssl@3
 
+      - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
+
       - run: opam install . --deps-only
 
       - run: opam exec -- make
