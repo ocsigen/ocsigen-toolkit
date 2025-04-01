@@ -41,10 +41,10 @@ TEMPLATE_NAME := none.pgocaml
 
 # OCamlfind packages for the server
 SERVER_PACKAGES := calendar
-SERVER_PPX_PACKAGES := lwt_ppx js_of_ocaml-ppx_deriving_json
+SERVER_PPX_PACKAGES := js_of_ocaml-ppx_deriving_json
 # OCamlfind packages for the client
 CLIENT_PACKAGES := calendar js_of_ocaml js_of_ocaml-lwt
-CLIENT_PPX_PACKAGES := js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json
+CLIENT_PPX_PACKAGES := js_of_ocaml-ppx js_of_ocaml-ppx_deriving_json
 
 # Debug package (yes/no): Debugging info in compilation
 DEBUG := yes

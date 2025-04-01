@@ -14,6 +14,7 @@ let%shared default_header =
 
 [%%client
 open Js_of_ocaml
+open Lwt.Syntax
 
 module type CONF = sig
   val dragThreshold : float
@@ -98,10 +99,10 @@ module Make (Conf : CONF) = struct
          ("translateY(" ^ (string_of_float @@ Conf.dragThreshold) ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
-      let%lwt b =
+      let* b =
         Lwt.pick
           [ Conf.afterPull ()
-          ; (let%lwt () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
+          ; (let* () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
              Lwt.return_false) ]
       in
       if b

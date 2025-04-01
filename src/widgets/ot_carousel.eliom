@@ -35,9 +35,11 @@
 *)
 
 open%client Js_of_ocaml
+
 [%%client open Js_of_ocaml_lwt]
 [%%shared open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
+[%%shared open Lwt.Syntax]
 
 let%client clX = Ot_swipe.clX
 let%client clY = Ot_swipe.clY
@@ -181,7 +183,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
            max 1 (truncate (float (width_carousel + 1) /. float width_element))
        in
        Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready d2' in
+         let* () = Ot_nodeready.nodeready d2' in
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
          Lwt.return_unit);
        let maxi () = ~%maxi - React.S.value ~%nb_visible_elements + 1 in
@@ -294,10 +296,10 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          React.Step.execute step;
          set_active ();
          Lwt.async (fun () ->
-           let%lwt () =
+           let* () =
              if move
              then
-               let%lwt _ = Lwt_js_events.transitionend d2' in
+               let* _ = Lwt_js_events.transitionend d2' in
                Lwt.return_unit
              else Lwt.return_unit
            in
@@ -318,7 +320,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
               (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
               (if vertical then Ot_size.height else Ot_size.width));
        Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready d2' in
+         let* () = Ot_nodeready.nodeready d2' in
          set_position ~%position; add_transition d2'; Lwt.return_unit);
        let perform_animation a =
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
@@ -335,7 +337,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
                if not !animation_frame_requested
                then (
                  animation_frame_requested := true;
-                 let%lwt () = Lwt_js_events.request_animation_frame () in
+                 let* () = Lwt_js_events.request_animation_frame () in
                  animation_frame_requested := false;
                  (match !action with
                  | `Move (delta, width_element) ->
@@ -569,17 +571,18 @@ let%client set_default_fail f =
       :> exn -> Html_types.div_content Eliom_content.Html.elt)
 
 let%shared generate_content generator =
-  try%lwt Eliom_shared.Value.local generator ()
-  with e -> Lwt.return (default_fail e)
+  Lwt.catch
+    (fun () -> Eliom_shared.Value.local generator ())
+    (fun e -> Lwt.return (default_fail e))
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
 let%client generate_initial_contents ~spinner sleeper gen =
   let s = spinner () in
   ( Lwt.async @@ fun () ->
-    let%lwt contents = generate_content gen in
+    let* contents = generate_content gen in
     (* wait until DOM elements are created before attempting to replace them *)
-    let%lwt parent = sleeper in
+    let* parent = sleeper in
     ignore @@ To_dom.of_element parent;
     Manip.replaceSelf s contents;
     Lwt.return () );
@@ -587,7 +590,7 @@ let%client generate_initial_contents ~spinner sleeper gen =
 
 (* on the server side we generate all the visible contents right away *)
 let%server generate_initial_contents ~spinner:_ _ gen =
-  let%lwt contents = generate_content gen in
+  let* contents = generate_content gen in
   Lwt.return (contents, ref @@ None)
 
 let%shared make_lazy ?a ?vertical ?(position = 0) ?transition_duration ?inertia
@@ -609,7 +612,7 @@ let%shared make_lazy ?a ?vertical ?(position = 0) ?transition_duration ?inertia
       let s = spinner () in
       s, ref @@ Some (s, gen)
   in
-  let%lwt contents, spinners_and_generators =
+  let* contents, spinners_and_generators =
     Lwt.map List.split
     @@ Lwt_list.map_s (fun x -> x)
     @@ List.mapi mk_contents gen_contents
@@ -639,7 +642,7 @@ let%shared make_lazy ?a ?vertical ?(position = 0) ?transition_duration ?inertia
                 match !spinner_and_generator with
                 | Some (spinner, gen_content) ->
                     spinner_and_generator := None;
-                    let%lwt content = generate_content gen_content in
+                    let* content = generate_content gen_content in
                     Manip.replaceSelf spinner content;
                     Lwt.return_unit
                 | None -> Lwt.return ())
@@ -728,7 +731,7 @@ let%shared ribbon ?(a = [])
        in
        let curleft, set_curleft = React.S.create initial_gap in
        Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready container' in
+         let* () = Ot_nodeready.nodeready container' in
          (* Ribbon position: *)
          set_containerwidth container'##.offsetWidth;
          Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
@@ -749,7 +752,7 @@ let%shared ribbon ?(a = [])
            that runs on window resizing. So we make sure the ribbon code runs
            AFTER it has been placed into the fixed container by Ot_sticky. *)
                 Lwt.async @@ fun () ->
-                let%lwt _ = Lwt_js.sleep 0.05 in
+                let* _ = Lwt_js.sleep 0.05 in
                 set_containerwidth container'##.offsetWidth;
                 Lwt.return_unit);
          (* Changing the position of the ribbon when the carousel position
@@ -880,8 +883,8 @@ let%shared ribbon ?(a = [])
          | _ -> ());
          Lwt.return_unit);
        Lwt.async (fun () ->
-         let%lwt () = Ot_nodeready.nodeready container' in
-         let%lwt () = Lwt_js_events.request_animation_frame () in
+         let* () = Ot_nodeready.nodeready container' in
+         let* () = Lwt_js_events.request_animation_frame () in
          add_transition the_ul';
          Eliom_lib.Option.iter add_transition cursor_elt';
          Lwt.return_unit);

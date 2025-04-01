@@ -3,6 +3,7 @@
 [%%shared open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
 open%client Eliom_content.Html
+open%client Lwt.Syntax
 [%%shared open Eliom_content.Html.F]
 
 (** sensibility for detecting swipe left/right or up/down *)
@@ -119,7 +120,7 @@ let%shared bind ?(transition_duration = 0.3)
            elt'##.style##.left := px_of_int left;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
            Lwt.async (fun () ->
-             let%lwt _ = Lwt_js_events.transitionend elt' in
+             let* _ = Lwt_js_events.transitionend elt' in
              Manip.Class.remove elt "ot-swiping";
              Lwt.return_unit));
          status := Stopped;

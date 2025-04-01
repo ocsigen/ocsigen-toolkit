@@ -21,6 +21,7 @@
 
 open%client Js_of_ocaml
 [%%shared open Eliom_content.Html]
+[%%shared open Lwt.Syntax]
 [%%shared open Eliom_content.Html.F]
 [%%client open Eliom_shared]
 
@@ -60,13 +61,14 @@ let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
      | None -> fun e -> Lwt.return (default_fail e))
       :> exn -> Html_types.div_content elt list Lwt.t)
   in
-  let%lwt v =
-    try%lwt
-      let%lwt v = thread in
-      Lwt.return (v :> Html_types.div_content_fun F.elt list)
-    with e ->
-      let%lwt v = fail e in
-      Lwt.return (v :> Html_types.div_content_fun F.elt list)
+  let* v =
+    Lwt.catch
+      (fun () ->
+         let* v = thread in
+         Lwt.return (v :> Html_types.div_content_fun F.elt list))
+      (fun e ->
+         let* v = fail e in
+         Lwt.return (v :> Html_types.div_content_fun F.elt list))
   in
   Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
 
@@ -105,7 +107,7 @@ let replace_content ?fail elt thread =
   Manip.replaceChildren elt [];
   Manip.Class.add elt cl_spinning;
   Manip.Class.add elt cl_spinner;
-  let%lwt new_content = try%lwt thread with e -> fail e in
+  let* new_content = Lwt.catch (fun () -> thread) (fun e -> fail e) in
   Manip.replaceChildren elt new_content;
   Manip.Class.remove elt cl_spinning;
   Manip.Class.remove elt cl_spinner;
@@ -143,14 +145,15 @@ struct
             (match spinner with None -> [] | Some s -> s)
         in
         Lwt.async (fun () ->
-          let%lwt v =
-            try%lwt
-              let%lwt v = thread in
-              Lwt.return (v :> Html_types.div_content_fun F.elt list)
-            with e ->
-              A.bind2 (fail e) (fun v ->
-                dec_active_spinners ();
-                Lwt.return (v :> Html_types.div_content_fun F.elt list))
+          let* v =
+            Lwt.catch
+              (fun () ->
+                 let* v = thread in
+                 Lwt.return (v :> Html_types.div_content_fun F.elt list))
+              (fun e ->
+                 A.bind2 (fail e) (fun v ->
+                   dec_active_spinners ();
+                   Lwt.return (v :> Html_types.div_content_fun F.elt list)))
           in
           Manip.replaceChildren d v;
           Manip.Class.remove d cl_spinning;

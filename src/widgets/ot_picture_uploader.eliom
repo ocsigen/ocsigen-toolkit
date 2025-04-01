@@ -21,6 +21,7 @@
 open Js_of_ocaml]
 
 [%%client open Js_of_ocaml_lwt]
+[%%client open Lwt.Syntax]
 [%%shared open Eliom_content.Html]
 [%%shared open Eliom_content.Html.F]
 
@@ -292,7 +293,7 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
                  (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)))
                  (Js.bool false)
              in
-             let%lwt _ =
+             let* _ =
                Lwt.pick @@ List.map (fun e -> e Dom_html.document) rm_trigger
              in
              Dom_html.removeEventListener x;
@@ -458,7 +459,7 @@ let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
 
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
-  let%lwt _ = upload ?progress ?cropping file in
+  let* _ = upload ?progress ?cropping file in
   Lwt.return_unit
 
 let%client bind_submit (input : Dom_html.inputElement Js.t Eliom_client_value.t)
@@ -468,7 +469,7 @@ let%client bind_submit (input : Dom_html.inputElement Js.t Eliom_client_value.t)
     Lwt_js_events.clicks button (fun ev _ ->
       Dom.preventDefault ev;
       Dom_html.stopPropagation ev;
-      let%lwt () = do_submit input ?cropping ~upload () in
+      let* () = do_submit input ?cropping ~upload () in
       after_submit ()))
 
 let%client bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit
