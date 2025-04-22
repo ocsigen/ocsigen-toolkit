@@ -40,7 +40,7 @@ let log ~n:node s =
   if not debug
   then ()
   else (
-    (* Firebug.console##log(node); *)
+    (* Console.console##log(node); *)
     ignore node;
     print_endline
     @@ Printf.sprintf "Ot_nodeready: %s; watching %n elements" s

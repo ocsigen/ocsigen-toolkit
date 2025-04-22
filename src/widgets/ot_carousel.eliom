@@ -76,8 +76,9 @@ let average_time = 0.1
 
 type status =
   | Stopped
-  | Start of (int * int * float) (* Just started, x, y positions, timestamp *)
-  | Ongoing of (int * int * int * float * int * float)
+  | Start of (float * float * float)
+    (* Just started, x, y positions, timestamp *)
+  | Ongoing of (float * float * int * float * float * float)
 
 (* Ongoing swipe, (x start position,
                        y start position,
@@ -189,7 +190,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
        let maxi () = ~%maxi - React.S.value ~%nb_visible_elements + 1 in
        let pos_signal = ~%pos_signal in
        let pos_set = ~%pos_set in
-       let action = ref (`Move (0, 0)) in
+       let action = ref (`Move (0., 0)) in
        let animation_frame_requested = ref false in
        (**********************
        setting class active on visible pages (only)
@@ -349,17 +350,21 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
                            React.S.value ~%pos_signal * width_element
                          in
                          let m = (-width_element * maxi ()) + global_delta in
-                         min global_delta (max delta m)
+                         min (float global_delta) (max delta (float m))
                      in
                      let pos = Eliom_shared.React.S.value pos_signal in
-                     ~%swipe_pos_set (-.float delta /. float width_element);
-                     let s = ~%make_transform ~vertical ~delta pos in
+                     ~%swipe_pos_set (-.delta /. float width_element);
+                     let s =
+                       ~%make_transform ~vertical
+                         ~delta:(int_of_float (delta +. 0.5))
+                         pos
+                     in
                      (Js.Unsafe.coerce d2'##.style)##.transform := s;
                      (Js.Unsafe.coerce d2'##.style)##.webkitTransform := s
                  | `Goback position | `Change position ->
                      Manip.Class.add ~%d2 ot_swiping;
                      set_top_margin ();
-                     action := `Move (0, 0);
+                     action := `Move (0., 0);
                      set_position ~transitionend:unset_top_margin position);
                  Lwt.return_unit)
                else Lwt.return_unit)
@@ -373,7 +378,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
            if delta_t = 0.
            then prev_speed
            else
-             let cur_speed = (float delta -. float prev_delta) /. delta_t in
+             let cur_speed = (delta -. prev_delta) /. delta_t in
              if delta_t >= average_time
              then cur_speed
              else
@@ -386,14 +391,17 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
        let onpan ev _ =
          (match !status with
          | Start (startx, starty, prev_timestamp) ->
-             let move = if vertical then clY ev - starty else clX ev - startx in
+             let move =
+               if vertical then clY ev -. starty else clX ev -. startx
+             in
              status :=
-               if abs (if vertical then clX ev - startx else clY ev - starty)
-                  >= abs move
+               if abs_float
+                    (if vertical then clX ev -. startx else clY ev -. starty)
+                  >= abs_float move
                then
                  Stopped
                  (* swiping in wrong direction (vertical/horizontal) *)
-               else if abs move > Ot_swipe.threshold
+               else if abs_float move > Ot_swipe.threshold
                then (
                  (* We decide to take the event *)
                  (* We send a touchcancel to the parent
@@ -404,9 +412,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
                  remove_transition d2';
                  let timestamp = now () in
                  let delta_t = timestamp -. prev_timestamp in
-                 let speed =
-                   if delta_t = 0. then 0. else float move /. delta_t
-                 in
+                 let speed = if delta_t = 0. then 0. else move /. delta_t in
                  Ongoing
                    (startx, starty, width_element (), speed, move, timestamp))
                else !status
@@ -424,7 +430,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
              (* in case there is a carousel
                                          in a carousel, e.g. *)
              let delta =
-               if vertical then clY ev - starty else clX ev - startx
+               if vertical then clY ev -. starty else clX ev -. startx
              in
              let timestamp, speed =
                compute_speed prev_speed prev_delta prev_timestamp delta
@@ -445,16 +451,18 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
          status := Stopped;
          let width, delta =
            if vertical
-           then d2'##.offsetHeight, clY ev - starty
-           else d2'##.offsetWidth, clX ev - startx
+           then d2'##.offsetHeight, clY ev -. starty
+           else d2'##.offsetWidth, clX ev -. startx
          in
          let timestamp, speed =
            compute_speed prev_speed prev_delta prev_timestamp delta
          in
          let pos = Eliom_shared.React.S.value pos_signal in
          let delta =
-           delta
-           + (int_of_float (speed *. ~%transition_duration *. ~%inertia) / 2)
+           int_of_float
+             (delta
+             +. (speed *. ~%transition_duration *. ~%inertia /. 2.)
+             +. 0.5)
          in
          let rem = delta mod width in
          let nbpages =
@@ -475,7 +483,7 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
        let touchend ev _ =
          match !status with
          | Start (startx, starty, timestamp) ->
-             do_end ev startx starty 0. 0 timestamp
+             do_end ev startx starty 0. 0. timestamp
          | Ongoing (startx, starty, _width, speed, delta, timestamp) ->
              do_end ev startx starty speed delta timestamp
          | _ -> Lwt.return_unit
@@ -549,7 +557,7 @@ let%shared default_fail_fun e =
     let e = Printexc.to_string e in
     ignore
       [%client
-        (Firebug.console##error
+        (Console.console##error
            (Js.string ("Ot_carousel content failed with " ^ ~%e))
          : unit)];
     em ~a:[a_class ["ot-icon-error"]] []

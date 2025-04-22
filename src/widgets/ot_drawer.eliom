@@ -30,14 +30,14 @@ type%client status = Stopped | Start | Aborted | In_progress
 let%client clX ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientX)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
     ev ##. changedTouches ## (item 0)
-    (fun () -> 0)
-    (fun a -> a##.clientY)
+    (fun () -> 0.)
+    (fun a -> Js.to_float a##.clientY)
 
 let%client bind_click_outside bckgrnd elt close =
   Lwt.async (fun () ->
@@ -79,7 +79,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
     ?(onopen : (unit -> unit) Eliom_client_value.t option)
     ?(wrap_close = fun f -> f) ?(wrap_open = fun f -> f) content
   =
-  let scroll_pos = ref 0 in
+  let scroll_pos = ref 0. in
   let a = (a :> Html_types.div_attrib attrib list) in
   let toggle_button =
     D.Form.button_no_value ~button_type:`Button
@@ -112,7 +112,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
     [%client
       (fun () ->
          Dom_html.document##.body##.style##.top := Js.string "";
-         Dom_html.window##scroll 0 !(~%scroll_pos)
+         Dom_html.window##scrollTo (Js.float 0.) (Js.float !(~%scroll_pos))
        : unit -> unit)]
   in
   let stop_open_event =
@@ -141,11 +141,11 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
   let open_ =
     [%client
       (fun () ->
-         ~%scroll_pos := (Js.Unsafe.coerce Dom_html.window)##.pageYOffset;
+         ~%scroll_pos := Js.to_float Dom_html.window##.scrollY;
          add_class ~%bckgrnd "open";
          Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
          Dom_html.document##.body##.style##.top
-         := Js.string (Printf.sprintf "%dpx" (- !(~%scroll_pos)));
+         := Js.string (Printf.sprintf "%.2fpx" (-. !(~%scroll_pos)));
          add_class ~%bckgrnd "opening";
          Lwt.cancel !(~%touch_thread);
          Lwt.async (fun () ->
@@ -195,7 +195,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
          let bckgrnd' = To_dom.of_element ~%bckgrnd in
          let cl = ~%close in
          let animation_frame_requested = ref false in
-         let action = ref (`Move 0) in
+         let action = ref (`Move 0.) in
          let perform_animation a =
            if !action = `Close && a = `Open
            then
@@ -216,7 +216,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
                        | `Right -> "translateX(calc(-100% + "
                        | `Bottom -> "translateY(calc(-100% + "
                        | `Left -> "translateX(calc(100% + ")
-                     |> (fun t -> Printf.sprintf "%s%dpx" t delta)
+                     |> (fun t -> Printf.sprintf "%s%.2fdpx" t delta)
                      |> Js.string
                    in
                    (Js.Unsafe.coerce dr##.style)##.transform := s;
@@ -247,24 +247,24 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              else Lwt.return_unit)
          in
          (* let hammer = Hammer.make_hammer bckgrnd in *)
-         let startx = ref 0 (* position when touch starts *) in
-         let starty = ref 0 (* position when touch starts *) in
+         let startx = ref 0. (* position when touch starts *) in
+         let starty = ref 0. (* position when touch starts *) in
          let status = ref Stopped in
          let onpan ev _ =
-           let left = clX ev - !startx in
-           let top = clY ev - !starty in
+           let left = clX ev -. !startx in
+           let top = clY ev -. !starty in
            if !status = Start
            then
              status :=
                if (~%position = `Top || ~%position = `Bottom)
-                  && abs left > abs top
+                  && abs_float left > abs_float top
                   || (~%position = `Left || ~%position = `Right)
-                     && abs top > abs left
+                     && abs_float top > abs_float left
                then Aborted (* Orthogonal scrolling *)
                else if (~%position = `Top || ~%position = `Bottom)
-                       && abs top <= Ot_swipe.threshold
+                       && abs_float top <= Ot_swipe.threshold
                        || (~%position = `Left || ~%position = `Right)
-                          && abs left <= Ot_swipe.threshold
+                          && abs_float left <= Ot_swipe.threshold
                then !status
                else (
                  (* We decide to take the event *)
@@ -276,20 +276,20 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
            then (
              Dom.preventDefault ev;
              Dom_html.stopPropagation ev;
-             let move = ref 0 in
-             if ~%position = `Top && top <= 0
+             let move = ref 0. in
+             if ~%position = `Top && top <= 0.
                 &&
                 (move := top;
                  true)
-                || ~%position = `Right && left >= 0
+                || ~%position = `Right && left >= 0.
                    &&
                    (move := left;
                     true)
-                || ~%position = `Bottom && top >= 0
+                || ~%position = `Bottom && top >= 0.
                    &&
                    (move := top;
                     true)
-                || ~%position = `Left && left <= 0
+                || ~%position = `Left && left <= 0.
                    &&
                    (move := left;
                     true)
@@ -304,8 +304,8 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              (Js.Unsafe.coerce dr##.style)##.transition
              := Js.string "-webkit-transform .35s, transform .35s";
              let width = dr##.offsetWidth in
-             let deltaX = float_of_int (clX ev - !startx) in
-             let deltaY = float_of_int (clY ev - !starty) in
+             let deltaX = clX ev -. !startx in
+             let deltaY = clY ev -. !starty in
              if (~%position = `Top && deltaY < -0.3 *. float width)
                 || (~%position = `Right && deltaX > 0.3 *. float width)
                 || (~%position = `Bottom && deltaY > 0.3 *. float width)
