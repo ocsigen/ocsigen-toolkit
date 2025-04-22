@@ -95,15 +95,16 @@ let%client noderesize_aux reset sensor f =
          if not !throttle
          then (
            throttle := true;
-           Dom_html._requestAnimationFrame
-             ( Js.wrap_callback @@ fun _ ->
-               let w' = element##.offsetWidth in
-               let h' = element##.offsetHeight in
-               if w' <> !w || h' <> !h then f ();
-               w := w';
-               h := h';
-               reset sensor;
-               throttle := false ));
+           ignore
+             (Dom_html.window##requestAnimationFrame
+                ( Js.wrap_callback @@ fun _ ->
+                  let w' = element##.offsetWidth in
+                  let h' = element##.offsetHeight in
+                  if w' <> !w || h' <> !h then f ();
+                  w := w';
+                  h := h';
+                  reset sensor;
+                  throttle := false )));
          Js.bool true))
       (Js.bool false)
   in
