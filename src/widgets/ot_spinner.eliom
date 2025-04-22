@@ -32,7 +32,7 @@ let%shared default_fail_fun e =
        let e = Printexc.to_string e in
        ignore
          [%client
-           (Firebug.console##error
+           (Console.console##error
               (Js.string ("Ot_spinner content failed with " ^ ~%e))
             : unit)];
        em ~a:[a_class ["ot-icon-error"]] []) ]

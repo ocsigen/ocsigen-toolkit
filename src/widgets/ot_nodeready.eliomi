@@ -27,7 +27,7 @@ val nodeready : #Dom.node Js.t -> unit Lwt.t
 
     {3 Example}
 
-    [let _ = nodeready node in Firebug.console##debug node]
+    [let _ = nodeready node in Console.console##debug node]
 
     {3 Known issues}
 
