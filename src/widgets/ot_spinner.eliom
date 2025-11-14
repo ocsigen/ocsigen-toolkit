@@ -22,7 +22,7 @@
 open%client Js_of_ocaml
 
 [%%shared open Eliom_content.Html]
-[%%shared open Lwt.Syntax]
+[%%shared]
 [%%shared open Eliom_content.Html.F]
 [%%client open Eliom_shared]
 
@@ -58,20 +58,19 @@ let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in
   let fail =
     ((match fail with
-     | Some fail -> (fail :> exn -> Html_types.div_content elt list Lwt.t)
-     | None -> fun e -> Lwt.return (default_fail e))
-      :> exn -> Html_types.div_content elt list Lwt.t)
+     | Some fail -> (fail :> exn -> Html_types.div_content elt list)
+     | None -> fun e -> default_fail e)
+      :> exn -> Html_types.div_content elt list)
   in
-  let* v =
-    Lwt.catch
-      (fun () ->
-         let* v = thread in
-         Lwt.return (v :> Html_types.div_content_fun F.elt list))
-      (fun e ->
-         let* v = fail e in
-         Lwt.return (v :> Html_types.div_content_fun F.elt list))
+  let v =
+    try
+      let v = thread in
+      (v :> Html_types.div_content_fun F.elt list)
+    with e ->
+      let v = fail e in
+      (v :> Html_types.div_content_fun F.elt list)
   in
-  Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
+  D.div ~a:(a_class ["ot-spinner"] :: a) v
 
 [%%client
 let num_active_spinners, set_num_active_spinners = React.S.create 0

@@ -175,7 +175,7 @@ let make
       ?(refresh_timeout = 20.)
       ?(header = [%shared default_header])
       ~content
-      (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
+      (afterPull : (unit -> bool) Eliom_client_value.t)
   =
   if app_only && not (Eliom_client.is_client_app ())
   then div ~a [content]

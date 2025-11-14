@@ -1,3 +1,5 @@
+open Eio.Std
+
 (* Ocsigen Toolkit
  * http://www.ocsigen.org/ocsigen-toolkit
  *
@@ -26,9 +28,9 @@
 val with_spinner :
    ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
   -> ?spinner:[< Html_types.div_content] Eliom_content.Html.elt list
-  -> ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t)
-  -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t
-  -> [> `Div] Eliom_content.Html.elt Lwt.t
+  -> ?fail:(exn -> [< Html_types.div_content] Eliom_content.Html.elt list)
+  -> [< Html_types.div_content] Eliom_content.Html.elt list Promise.t
+  -> [> `Div] Eliom_content.Html.elt
 (** On client side, [with_spinner th] returns immediately a spinner
     while Lwt thread [th] is not finished, that will automatically
     be replaced by the result of [th] when finished.

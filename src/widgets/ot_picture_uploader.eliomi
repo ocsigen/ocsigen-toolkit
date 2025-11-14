@@ -33,10 +33,7 @@ open Js_of_ocaml
 type cropping = (float * float * float * float) React.S.t
 
 type 'a upload =
-  ?progress:(int -> int -> unit)
-  -> ?cropping:cropping
-  -> File.file Js.t
-  -> 'a Lwt.t
+  ?progress:(int -> int -> unit) -> ?cropping:cropping -> File.file Js.t -> 'a
 
 type ('a, 'b) service =
   ( unit
@@ -142,7 +139,7 @@ val submit :
 (** Create a button with [ot-pup-sumit] clas *)
 
 val mk_form :
-   ?after_submit:(unit -> unit Lwt.t)
+   ?after_submit:(unit -> unit)
   -> ?crop:float option
   -> ?input:
        [< Html_types.label_attrib > `Class] Eliom_content.Html.attrib list
@@ -151,7 +148,7 @@ val mk_form :
        [< Html_types.button_attrib > `Class] Eliom_content.Html.attrib list
        * [< Html_types.button_content_fun] Eliom_content.Html.elt list
   -> 'a upload
-  -> [> `Form] Eliom_content.Html.elt Lwt.t
+  -> [> `Form] Eliom_content.Html.elt
 (** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
     If [crop] is present, cropping is enable, with the optional ratio it is.

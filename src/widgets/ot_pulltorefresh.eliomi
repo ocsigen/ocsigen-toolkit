@@ -25,7 +25,7 @@ val make :
              list)
          Eliom_shared.Value.t
   -> content:'a Eliom_content.Html.elt
-  -> (unit -> bool Lwt.t) Eliom_client_value.t
+  -> (unit -> bool) Eliom_client_value.t
   -> 'a Eliom_content.Html.elt
 (**
    Creates a pull-to-refresh container from an html element.

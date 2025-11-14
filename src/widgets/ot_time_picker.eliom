@@ -381,7 +381,7 @@ let display_hours_minutes_seq ?h24 f =
   Eliom_shared.React.S.l2 [%shared display_hours_minutes_seq ?h24:~%h24 ~%f]
 
 let show_minutes_aux
-      ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+      ?(action : (int * int -> unit) Eliom_client_value.t option)
       e_m
       hm
       f_e_m
@@ -407,7 +407,7 @@ let get_angle_signal ?round =
         | _, _ -> e]
 
 let make_hours_minutes_seq_24h
-      ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+      ?(action : (int * int -> unit) Eliom_client_value.t option)
       ?(init = 0, 0)
       ?(update : (int * int) React.E.t Eliom_client_value.t option)
       ?round_5
