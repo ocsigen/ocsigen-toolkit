@@ -126,8 +126,10 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
     (try take_screenshot f with _ -> ba None);
     Lwt.return_unit
 
-  let install_global_handler ?transition_duration ~take_screenshot
-      ~animation_type
+  let install_global_handler
+        ?transition_duration
+        ~take_screenshot
+        ~animation_type
     =
     let rec hc_handler ev =
       Eliom_client.onchangepage hc_handler;

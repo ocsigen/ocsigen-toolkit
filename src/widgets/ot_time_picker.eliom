@@ -22,8 +22,8 @@
 
 open Eliom_shared.React.S.Infix
 open Eliom_content.Html
-
 open%client Js_of_ocaml
+
 [%%client open Js_of_ocaml_lwt]
 
 type 'a rf = ?step:React.step -> 'a -> unit
@@ -133,8 +133,10 @@ let clock_reactive_hand ?(radius = Eliom_shared.React.S.const 31) e =
   in
   Eliom_content.Svg.D.path ~a []
 
-let clock_reactive_hand_circle ?(radius = 9)
-    ?(at_radius = Eliom_shared.React.S.const 40) e
+let clock_reactive_hand_circle
+      ?(radius = 9)
+      ?(at_radius = Eliom_shared.React.S.const 40)
+      e
   =
   let a =
     let cx =
@@ -175,8 +177,12 @@ let make_clock_point ?(zero_is_12 = false) extra_attributes radius de step i =
   and msg = if i = 0 && zero_is_12 then "12" else string_of_int (step * i) in
   text ~a [txt msg]
 
-let clock_svg ?zero_is_12 ?(extra_attributes = []) ?(n = 12) ?(step = 1)
-    (e : int Eliom_shared.React.S.t)
+let clock_svg
+      ?zero_is_12
+      ?(extra_attributes = [])
+      ?(n = 12)
+      ?(step = 1)
+      (e : int Eliom_shared.React.S.t)
   =
   assert (n >= 0 && 360 mod n = 0);
   let de = 360 / n in
@@ -213,7 +219,7 @@ let%client wrap_touch_aux ev f =
   and oy' = Js.to_float r##.bottom in
   assert (ox' >= ox);
   assert (oy' >= oy);
-  Js.Optdef.iter ev ##. changedTouches ## (item 0) @@ fun touch0 ->
+  Js.Optdef.iter ev##.changedTouches##(item 0) @@ fun touch0 ->
   let x =
     (Js.to_float touch0##.clientX -. ox) *. 100. /. (ox' -. ox) |> truncate
   and y =
@@ -375,8 +381,10 @@ let display_hours_minutes_seq ?h24 f =
   Eliom_shared.React.S.l2 [%shared display_hours_minutes_seq ?h24:~%h24 ~%f]
 
 let show_minutes_aux
-    ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option) e_m hm
-    f_e_m
+      ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+      e_m
+      hm
+      f_e_m
   =
   clock_html_wrap ~classes:["ot-tp-clock-min"]
     (clock_svg ~n:12 ~step:5 e_m)
@@ -399,9 +407,11 @@ let get_angle_signal ?round =
         | _, _ -> e]
 
 let make_hours_minutes_seq_24h
-    ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
-    ?(init = 0, 0) ?(update : (int * int) React.E.t Eliom_client_value.t option)
-    ?round_5 ()
+      ?(action : (int * int -> unit Lwt.t) Eliom_client_value.t option)
+      ?(init = 0, 0)
+      ?(update : (int * int) React.E.t Eliom_client_value.t option)
+      ?round_5
+      ()
   =
   let i_h, i_m = init in
   let i_m = round_5_minutes ?round_5 i_m in

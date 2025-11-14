@@ -24,16 +24,21 @@ open Js_of_ocaml]
 [%%client open Eliom_content.Html]
 [%%client open Eliom_content.Html.F]
 
-let%client display ?(container_a = [a_class ["ot-tip-container"]])
-    ?(filter_a = [a_class ["ot-tip-filter"]])
-    ?(position :
-        [`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom] =
-      `Ratio 0.5) ?(side : [`Center | `Left | `Right] = `Center)
-    ~(origin : Dom_html.element Js.t) ?(onopen = fun _ _ -> ())
-    ?(onclose = fun _ _ -> ())
-    ~(content :
-       (unit -> unit)
-       -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list) ()
+let%client
+    display
+      ?(container_a = [a_class ["ot-tip-container"]])
+      ?(filter_a = [a_class ["ot-tip-filter"]])
+      ?(position :
+          [`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom] =
+        `Ratio 0.5)
+      ?(side : [`Center | `Left | `Right] = `Center)
+      ~(origin : Dom_html.element Js.t)
+      ?(onopen = fun _ _ -> ())
+      ?(onclose = fun _ _ -> ())
+      ~(content :
+         (unit -> unit)
+         -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list)
+      ()
   =
   let close = ref @@ fun () -> () in
   let container =

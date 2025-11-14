@@ -20,6 +20,7 @@
  *)
 
 open%client Js_of_ocaml
+
 [%%shared open Eliom_content.Html]
 [%%shared open Lwt.Syntax]
 [%%shared open Eliom_content.Html.F]
@@ -38,7 +39,7 @@ let%shared default_fail_fun e =
        em ~a:[a_class ["ot-icon-error"]] []) ]
 
 let%shared default_fail_ref :
-    (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
+  (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
   =
   ref default_fail_fun
 

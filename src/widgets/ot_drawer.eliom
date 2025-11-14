@@ -22,20 +22,23 @@
 open Eliom_content.Html]
 
 [%%shared open Eliom_content.Html.F]
+
 open%client Js_of_ocaml
 open%client Lwt.Syntax
+
 [%%client open Js_of_ocaml_lwt]
+
 type%client status = Stopped | Start | Aborted | In_progress
 
 let%client clX ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientY)
 
@@ -74,10 +77,17 @@ let%client remove_class elt str =
  * [ drawer ] DOM element
  * [ open_drawer ] function to open the drawer
  * [ close_drawer ] function to close the drawer *)
-let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
-    ?(swipe = true) ?(onclose : (unit -> unit) Eliom_client_value.t option)
-    ?(onopen : (unit -> unit) Eliom_client_value.t option)
-    ?(wrap_close = fun f -> f) ?(wrap_open = fun f -> f) content
+let%shared
+    drawer
+      ?(a = [])
+      ?(position = `Left)
+      ?(opened = false)
+      ?(swipe = true)
+      ?(onclose : (unit -> unit) Eliom_client_value.t option)
+      ?(onopen : (unit -> unit) Eliom_client_value.t option)
+      ?(wrap_close = fun f -> f)
+      ?(wrap_open = fun f -> f)
+      content
   =
   let scroll_pos = ref 0. in
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -103,7 +113,7 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
   let bind_touch :
-      ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
+    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
     =
     [%client Lwt.wait ()]
   in
@@ -247,8 +257,14 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              else Lwt.return_unit)
          in
          (* let hammer = Hammer.make_hammer bckgrnd in *)
-         let startx = ref 0. (* position when touch starts *) in
-         let starty = ref 0. (* position when touch starts *) in
+         let startx =
+           ref 0.
+           (* position when touch starts *)
+         in
+         let starty =
+           ref 0.
+           (* position when touch starts *)
+         in
          let status = ref Stopped in
          let onpan ev _ =
            let left = clX ev -. !startx in
@@ -256,15 +272,17 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
            if !status = Start
            then
              status :=
-               if (~%position = `Top || ~%position = `Bottom)
-                  && abs_float left > abs_float top
-                  || (~%position = `Left || ~%position = `Right)
-                     && abs_float top > abs_float left
+               if
+                 (~%position = `Top || ~%position = `Bottom)
+                 && abs_float left > abs_float top
+                 || (~%position = `Left || ~%position = `Right)
+                    && abs_float top > abs_float left
                then Aborted (* Orthogonal scrolling *)
-               else if (~%position = `Top || ~%position = `Bottom)
-                       && abs_float top <= Ot_swipe.threshold
-                       || (~%position = `Left || ~%position = `Right)
-                          && abs_float left <= Ot_swipe.threshold
+               else if
+                 (~%position = `Top || ~%position = `Bottom)
+                 && abs_float top <= Ot_swipe.threshold
+                 || (~%position = `Left || ~%position = `Right)
+                    && abs_float left <= Ot_swipe.threshold
                then !status
                else (
                  (* We decide to take the event *)
@@ -277,22 +295,23 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              Dom.preventDefault ev;
              Dom_html.stopPropagation ev;
              let move = ref 0. in
-             if ~%position = `Top && top <= 0.
-                &&
-                (move := top;
-                 true)
-                || ~%position = `Right && left >= 0.
-                   &&
-                   (move := left;
-                    true)
-                || ~%position = `Bottom && top >= 0.
-                   &&
-                   (move := top;
-                    true)
-                || ~%position = `Left && left <= 0.
-                   &&
-                   (move := left;
-                    true)
+             if
+               ~%position = `Top && top <= 0.
+               &&
+               (move := top;
+                true)
+               || ~%position = `Right && left >= 0.
+                  &&
+                  (move := left;
+                   true)
+               || ~%position = `Bottom && top >= 0.
+                  &&
+                  (move := top;
+                   true)
+               || ~%position = `Left && left <= 0.
+                  &&
+                  (move := left;
+                   true)
              then perform_animation (`Move !move)
              else Lwt.return_unit)
            else Lwt.return_unit
@@ -306,15 +325,17 @@ let%shared drawer ?(a = []) ?(position = `Left) ?(opened = false)
              let width = dr##.offsetWidth in
              let deltaX = clX ev -. !startx in
              let deltaY = clY ev -. !starty in
-             if (~%position = `Top && deltaY < -0.3 *. float width)
-                || (~%position = `Right && deltaX > 0.3 *. float width)
-                || (~%position = `Bottom && deltaY > 0.3 *. float width)
-                || (~%position = `Left && deltaX < -0.3 *. float width)
+             if
+               (~%position = `Top && deltaY < -0.3 *. float width)
+               || (~%position = `Right && deltaX > 0.3 *. float width)
+               || (~%position = `Bottom && deltaY > 0.3 *. float width)
+               || (~%position = `Left && deltaX < -0.3 *. float width)
              then perform_animation `Close
-             else if (~%position = `Top && deltaY >= 0.)
-                     || (~%position = `Right && deltaX <= 0.)
-                     || (~%position = `Bottom && deltaY <= 0.)
-                     || (~%position = `Left && deltaX >= 0.)
+             else if
+               (~%position = `Top && deltaY >= 0.)
+               || (~%position = `Right && deltaX <= 0.)
+               || (~%position = `Bottom && deltaY <= 0.)
+               || (~%position = `Left && deltaX >= 0.)
              then perform_animation `Abort
              else perform_animation `Open)
            else (

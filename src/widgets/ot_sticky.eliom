@@ -118,9 +118,12 @@ let update_state ?force g =
       else unstick ?force g
 
 (* TODO: ensure compatibility with DOM caching *)
-let make_sticky ~dir (* TODO: detect based on CSS attribute? *)
-    ?((*TODO: `Bottom and `Right *)
-      ios_html_scroll_hack = false) ?(force = false) elt
+let make_sticky
+      ~dir (* TODO: detect based on CSS attribute? *)
+      ?((*TODO: `Bottom and `Right *)
+        ios_html_scroll_hack = false)
+      ?(force = false)
+      elt
   =
   let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
   if (not force) && supports_position_sticky elt
