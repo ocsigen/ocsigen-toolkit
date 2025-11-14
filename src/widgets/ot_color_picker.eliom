@@ -141,8 +141,11 @@ let display ?a cp_sig =
   >|= [%shared display_aux ?a:~%a ~setter:~%setter]
   |> Eliom_content.Html.R.node
 
-let make ?a ?hsv
-    ?(update = [%client (React.E.never : (int * float * float) React.E.t)]) ()
+let make
+      ?a
+      ?hsv
+      ?(update = [%client (React.E.never : (int * float * float) React.E.t)])
+      ()
   =
   let ((cp_sig, cp_set) as cp_react) =
     Eliom_shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))

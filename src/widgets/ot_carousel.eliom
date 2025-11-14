@@ -54,10 +54,10 @@ let%client remove_transition elt =
 let%shared default_make_transform ~vertical ?(delta = 0) pos =
   let p = -pos * 100 in
   if vertical
-     (* then Printf.sprintf "translate3d(0, %.3f%%, 0)" d *)
-     (* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" d *)
   then Printf.sprintf "translateY(%d%%) translateY(%dpx)" p delta
   else Printf.sprintf "translateX(%d%%) translateX(%dpx)" p delta
+(* then Printf.sprintf "translate3d(0, %.3f%%, 0)" d *)
+(* else Printf.sprintf "translate3d(%.3f%%, 0, 0)" d *)
 
 (* translate3d possibly more efficient on some devices ... *)
 (* But causing troubles ...
@@ -95,14 +95,22 @@ type%shared 'a t =
   ; vis_elts : int Eliom_shared.React.S.t
   ; swipe_pos : float React.S.t Eliom_client_value.t }
 
-let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
-    ?(transition_duration = 0.6) ?(inertia = 1.0) ?(swipeable = true)
-    ?(allow_overswipe = false)
-    ?(update :
-       [`Goto of int | `Next | `Prev] React.event Eliom_client_value.t option)
-    ?(disabled = Eliom_shared.React.S.const false) ?(full_height = `No)
-    ?(make_transform = [%shared default_make_transform])
-    ?(make_page_attribute = [%shared fun ~vertical:_ _ -> []]) l
+let%shared
+    make
+      ?(a = [])
+      ?(vertical = false)
+      ?(position = 0)
+      ?(transition_duration = 0.6)
+      ?(inertia = 1.0)
+      ?(swipeable = true)
+      ?(allow_overswipe = false)
+      ?(update :
+         [`Goto of int | `Next | `Prev] React.event Eliom_client_value.t option)
+      ?(disabled = Eliom_shared.React.S.const false)
+      ?(full_height = `No)
+      ?(make_transform = [%shared default_make_transform])
+      ?(make_page_attribute = [%shared fun ~vertical:_ _ -> []])
+      l
   =
   let a = (a :> Html_types.div_attrib attrib list) in
   let pos_signal, pos_set = Eliom_shared.React.S.create position in
@@ -395,12 +403,12 @@ let%shared make ?(a = []) ?(vertical = false) ?(position = 0)
                if vertical then clY ev -. starty else clX ev -. startx
              in
              status :=
-               if abs_float
-                    (if vertical then clX ev -. startx else clY ev -. starty)
-                  >= abs_float move
+               if
+                 abs_float
+                   (if vertical then clX ev -. startx else clY ev -. starty)
+                 >= abs_float move
                then
-                 Stopped
-                 (* swiping in wrong direction (vertical/horizontal) *)
+                 Stopped (* swiping in wrong direction (vertical/horizontal) *)
                else if abs_float move > Ot_swipe.threshold
                then (
                  (* We decide to take the event *)
@@ -563,7 +571,7 @@ let%shared default_fail_fun e =
     em ~a:[a_class ["ot-icon-error"]] []
 
 let%shared default_fail_ref :
-    (exn -> Html_types.div_content Eliom_content.Html.elt) ref
+  (exn -> Html_types.div_content Eliom_content.Html.elt) ref
   =
   ref default_fail_fun
 
@@ -601,9 +609,22 @@ let%server generate_initial_contents ~spinner:_ _ gen =
   let* contents = generate_content gen in
   Lwt.return (contents, ref @@ None)
 
-let%shared make_lazy ?a ?vertical ?(position = 0) ?transition_duration ?inertia
-    ?swipeable ?allow_overswipe ?update ?disabled ?full_height ?make_transform
-    ?make_page_attribute ?(spinner = spinner) gen_contents
+let%shared
+    make_lazy
+      ?a
+      ?vertical
+      ?(position = 0)
+      ?transition_duration
+      ?inertia
+      ?swipeable
+      ?allow_overswipe
+      ?update
+      ?disabled
+      ?full_height
+      ?make_transform
+      ?make_page_attribute
+      ?(spinner = spinner)
+      gen_contents
   =
   let gen_contents =
     (gen_contents
@@ -664,9 +685,17 @@ let%shared bullet_class i pos size =
       fun p size -> if ~%i >= p && ~%i < p + size then ["ot-active"] else []]
     pos size
 
-let%shared bullets ?(a = []) ?attributes
-    ~(change : ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
-    ~pos ~length ?(size = Eliom_shared.React.S.const 1) ?content ()
+let%shared
+    bullets
+      ?(a = [])
+      ?attributes
+      ~(change :
+         ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+      ~pos
+      ~length
+      ?(size = Eliom_shared.React.S.const 1)
+      ?content
+      ()
   =
   let a = (a :> Html_types.ul_attrib attrib list) in
   let bullet i c =
@@ -696,11 +725,17 @@ let%shared bullets ?(a = []) ?attributes
   in
   ul ~a:(a_class ["ot-bullet-nav"] :: a) (List.mapi bullet content)
 
-let%shared ribbon ?(a = [])
-    ~(change : ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
-    ~pos ?(size = Eliom_shared.React.S.const 1) ?(initial_gap = 0)
-    ?(transition_duration = 0.6)
-    ?(cursor : float React.S.t Eliom_client_value.t option) l
+let%shared
+    ribbon
+      ?(a = [])
+      ~(change :
+         ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+      ~pos
+      ?(size = Eliom_shared.React.S.const 1)
+      ?(initial_gap = 0)
+      ?(transition_duration = 0.6)
+      ?(cursor : float React.S.t Eliom_client_value.t option)
+      l
   =
   let a = (a :> Html_types.div_attrib attrib list) in
   let item i c =
@@ -929,9 +964,13 @@ let%shared ribbon ?(a = [])
 
 let%shared blur = function true -> ["ot-blurred"] | false -> []
 
-let%shared previous ?(a = [])
-    ~(change : ([> `Prev | `Goto of int] -> unit) Eliom_client_value.t)
-    ?(offset = Eliom_shared.React.S.const 1) ~pos content
+let%shared
+    previous
+      ?(a = [])
+      ~(change : ([> `Prev | `Goto of int] -> unit) Eliom_client_value.t)
+      ?(offset = Eliom_shared.React.S.const 1)
+      ~pos
+      content
   =
   Form.button_no_value ~button_type:`Button
     ~a:
@@ -948,9 +987,15 @@ let%shared previous ?(a = [])
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
-let%shared next ?(a = [])
-    ~(change : ([> `Next | `Goto of int] -> unit) Eliom_client_value.t)
-    ?(offset = Eliom_shared.React.S.const 1) ~pos ~vis_elts ~length content
+let%shared
+    next
+      ?(a = [])
+      ~(change : ([> `Next | `Goto of int] -> unit) Eliom_client_value.t)
+      ?(offset = Eliom_shared.React.S.const 1)
+      ~pos
+      ~vis_elts
+      ~length
+      content
   =
   Form.button_no_value ~button_type:`Button
     ~a:
@@ -1042,19 +1087,29 @@ let%shared wheel_page_attribute pos z faces ~vertical page_number =
         fun (pos, swipe_pos) ->
           let faces = ~%faces in
           let page_number = ~%page_number in
-          [ (if float page_number
-                <= float pos +. swipe_pos -. (float faces /. 2.)
-                || float page_number
-                   > float pos +. swipe_pos +. (float faces /. 2.)
+          [ (if
+               float page_number <= float pos +. swipe_pos -. (float faces /. 2.)
+               || float page_number
+                  > float pos +. swipe_pos +. (float faces /. 2.)
              then "ot-hidden-wheel-face"
              else "") ]]
       pos
   in
   [R.a_class cls; a_style style]
 
-let%shared wheel ?(a = []) ?(vertical = true) ?(position = 0)
-    ?transition_duration ?inertia ?allow_overswipe ?update ?disabled
-    ?(faces = 20) ?(face_size = 25) content
+let%shared
+    wheel
+      ?(a = [])
+      ?(vertical = true)
+      ?(position = 0)
+      ?transition_duration
+      ?inertia
+      ?allow_overswipe
+      ?update
+      ?disabled
+      ?(faces = 20)
+      ?(face_size = 25)
+      content
   =
   let a = a_class ["ot-wheel"] :: a in
   let z =

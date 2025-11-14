@@ -89,7 +89,7 @@ let height_to_bottom offset elt =
   let page = Dom_html.document##.documentElement in
   let h = page##.clientHeight in
   try
-    let top = Js.to_float (of_opt elt ## getClientRects ## (item 0))##.top in
+    let top = Js.to_float (of_opt elt##getClientRects##(item 0))##.top in
     h - int_of_float top - offset
   with Failure _ -> h - offset
 
@@ -142,7 +142,8 @@ let pageYOffset () =
     with _ -> get_clientHeight ()
   in
   max 0
-  @@ (* overscroll at the top *)
+  @@
+  (* overscroll at the top *)
   min (* overscroll at the bottom *)
     (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
     (Js.Unsafe.coerce Dom_html.window)##.pageYOffset

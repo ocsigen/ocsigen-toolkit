@@ -185,9 +185,12 @@ let select_action ?(size = 1) selector action =
       dom_select##.size := size;
       Lwt.return_unit))
 
-let rec build_calendar ?prehilight
-    ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year} ~intl
-    ~period day
+let rec build_calendar
+          ?prehilight
+          ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year}
+          ~intl
+          ~period
+          day
   =
   let today = CalendarLib.Date.today () in
   let fst_dow = fst_dow ~intl day
@@ -297,43 +300,54 @@ let get_options selector =
 let update_classes cal zero d =
   let rows = (To_dom.of_table cal)##.rows in
   let f i =
-    rows ## (item (i + 2)) >>! fun r ->
+    rows##(item (i + 2)) >>! fun r ->
     let cells = r##.cells in
     let f j =
-      cells ## (item j) >>! fun c ->
+      cells##(item j) >>! fun c ->
       let d' =
         CalendarLib.Calendar.Date.(j + (7 * i) |> Period.day |> add zero)
       in
       if d = d'
-      then c ##. classList ## (add (Js.string "ot-c-current"))
-      else c ##. classList ## (remove (Js.string "ot-c-current"))
+      then c##.classList##(add (Js.string "ot-c-current"))
+      else c##.classList##(remove (Js.string "ot-c-current"))
     in
     iter_interval 0 6 f
   in
   iter_interval 0 5 f
 
-let in_period ?(begin_p = default_period.begin_p)
-    ?(end_p = default_period.end_p) curr_date
+let in_period
+      ?(begin_p = default_period.begin_p)
+      ?(end_p = default_period.end_p)
+      curr_date
   =
   curr_date >= begin_p && curr_date <= end_p
 
-let in_period_coerced ?(begin_p = default_period.begin_p)
-    ?(end_p = default_period.end_p) curr_date
+let in_period_coerced
+      ?(begin_p = default_period.begin_p)
+      ?(end_p = default_period.end_p)
+      curr_date
   =
   curr_date >= (begin_p :> [`Month | `Year] CalendarLib.Date.date)
   && curr_date <= (end_p :> [`Month | `Year] CalendarLib.Date.date)
 
-let attach_events ?action ?(click_non_highlighted = false) ?update ~intl ~period
-    d cal highlight
+let attach_events
+      ?action
+      ?(click_non_highlighted = false)
+      ?update
+      ~intl
+      ~period
+      d
+      cal
+      highlight
   =
   let rows = (To_dom.of_table cal)##.rows in
   let fst_dow = fst_dow ~intl d and zero = zeroth_displayed_day ~intl d in
   let mnth = CalendarLib.Date.month fst_dow in
   iter_interval 0 5 @@ fun i ->
-  rows ## (item (i + 2)) >>! fun r ->
+  rows##(item (i + 2)) >>! fun r ->
   let cells = r##.cells in
   iter_interval 0 6 @@ fun j ->
-  cells ## (item j) >>! fun c ->
+  cells##(item j) >>! fun c ->
   let d = CalendarLib.Calendar.Date.(j + (7 * i) |> Period.day |> add zero) in
   if mnth = CalendarLib.Date.month d
   then
@@ -358,14 +372,20 @@ let attach_events ?action ?(click_non_highlighted = false) ?update ~intl ~period
     in
     if List.exists (( = ) dom) highlight
     then (
-      c ##. classList ## (add (Js.string "ot-c-highlight"));
+      c##.classList##(add (Js.string "ot-c-highlight"));
       set_onclick ())
     else if click_non_highlighted
     then set_onclick ()
     else ()
 
-let attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
-    highlight
+let attach_events_lwt
+      ?action
+      ?click_non_highlighted
+      ~intl
+      ~period
+      d
+      cal
+      highlight
   =
   let f () =
     let m = CalendarLib.Date.(month d |> int_of_month)
@@ -376,9 +396,13 @@ let attach_events_lwt ?action ?click_non_highlighted ~intl ~period d cal
   in
   Lwt.async f
 
-let make_span_handler selector
-    ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
-    apply condi fun_handler
+let make_span_handler
+      selector
+      ((get_sig, set_sig) :
+        int React.signal * (?step:React.step -> int -> unit))
+      apply
+      condi
+      fun_handler
   =
   Dom_html.handler (fun _ ->
     if condi ()
@@ -389,9 +413,13 @@ let make_span_handler selector
       Js._false)
     else Js._false)
 
-let set_selected_index selector selector_value options
-    ((get_sig, set_sig) : int React.signal * (?step:React.step -> int -> unit))
-    ()
+let set_selected_index
+      selector
+      selector_value
+      options
+      ((get_sig, set_sig) :
+        int React.signal * (?step:React.step -> int -> unit))
+      ()
   =
   let value = selector_value () in
   try
@@ -404,8 +432,15 @@ let make_selector_handler change_index condi fun_handler =
   Dom_html.handler (fun _ ->
     if condi () then (fun_handler (); change_index (); Js._false) else Js._false)
 
-let attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d
-    (cal, prev, next, select_month, select_year, prev_year, next_year) f_d
+let attach_behavior
+      ?highlight
+      ?click_non_highlighted
+      ?action
+      ~intl
+      ~period
+      d
+      (cal, prev, next, select_month, select_year, prev_year, next_year)
+      f_d
   =
   (match highlight with
   | Some highlight ->
@@ -467,18 +502,18 @@ let attach_behavior ?highlight ?click_non_highlighted ?action ~intl ~period d
        (fun () -> f_d (CalendarLib.Date.next d `Year))
 
 let make :
-     ?init:int * int * int
-    -> ?highlight:(int -> int -> int list Lwt.t)
-    -> ?click_non_highlighted:bool
-    -> ?update:(int * int * int) React.E.t
-    -> ?action:(int -> int -> int -> unit Lwt.t)
-    -> ?period:
-         CalendarLib.Date.field CalendarLib.Date.date
-         * CalendarLib.Date.field CalendarLib.Date.date
-    -> ?button_labels:button_labels
-    -> ?intl:intl
-    -> unit
-    -> [> `Div] elt
+   ?init:int * int * int
+  -> ?highlight:(int -> int -> int list Lwt.t)
+  -> ?click_non_highlighted:bool
+  -> ?update:(int * int * int) React.E.t
+  -> ?action:(int -> int -> int -> unit Lwt.t)
+  -> ?period:
+       CalendarLib.Date.field CalendarLib.Date.date
+       * CalendarLib.Date.field CalendarLib.Date.date
+  -> ?button_labels:button_labels
+  -> ?intl:intl
+  -> unit
+  -> [> `Div] elt
   =
  fun ?init
    ?highlight
@@ -525,18 +560,18 @@ let make :
   elt
 
 let%server make :
-     ?init:int * int * int
-    -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
-    -> ?click_non_highlighted:bool
-    -> ?update:(int * int * int) React.E.t Eliom_client_value.t
-    -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
-    -> ?period:
-         CalendarLib.Date.field CalendarLib.Date.date
-         * CalendarLib.Date.field CalendarLib.Date.date
-    -> ?button_labels:button_labels
-    -> ?intl:intl
-    -> unit
-    -> [> `Div] elt
+   ?init:int * int * int
+  -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
+  -> ?click_non_highlighted:bool
+  -> ?update:(int * int * int) React.E.t Eliom_client_value.t
+  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
+  -> ?period:
+       CalendarLib.Date.field CalendarLib.Date.date
+       * CalendarLib.Date.field CalendarLib.Date.date
+  -> ?button_labels:button_labels
+  -> ?intl:intl
+  -> unit
+  -> [> `Div] elt
   =
  fun ?init
    ?highlight

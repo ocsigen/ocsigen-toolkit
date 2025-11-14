@@ -44,7 +44,7 @@ type%shared ('a, 'b) service =
 
 let%client process_file input callback =
   Js.Opt.case
-    input ##. files ## (item 0)
+    input##.files##(item 0)
     (fun () -> Lwt.return_unit)
     (fun x -> callback x)
 
@@ -79,8 +79,11 @@ let%client on_animation_frame f =
                   f x)));
     last := Some x
 
-let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
-    ?(ratio : float option) ()
+let%shared
+    cropper
+      ~(image : Dom_html.element Js.t Eliom_client_value.t)
+      ?(ratio : float option)
+      ()
   =
   let mk_controller style =
     D.div ~a:[a_class ["ot-pup-ctrl"; "ot-pup-ctrl-" ^ style]] []
@@ -246,10 +249,11 @@ let%shared cropper ~(image : Dom_html.element Js.t Eliom_client_value.t)
            | `L -> 0.5, 0., 0.5, 1.
            | `TL -> 1., 0., 0., 1.
          in
-         if React.S.value ~%right >= r *. dx
-            && React.S.value ~%left >= l *. dx
-            && React.S.value ~%top >= t *. dy
-            && React.S.value ~%bottom >= b *. dy
+         if
+           React.S.value ~%right >= r *. dx
+           && React.S.value ~%left >= l *. dx
+           && React.S.value ~%top >= t *. dy
+           && React.S.value ~%bottom >= b *. dy
          then (
            update_top (-.t *. dy);
            update_bottom (b *. dy);
@@ -456,8 +460,14 @@ let%client do_submit input ?progress ?cropping ~upload () =
   let* _ = upload ?progress ?cropping file in
   Lwt.return_unit
 
-let%client bind_submit (input : Dom_html.inputElement Js.t Eliom_client_value.t)
-    button ?cropping ~upload ~after_submit ()
+let%client
+    bind_submit
+      (input : Dom_html.inputElement Js.t Eliom_client_value.t)
+      button
+      ?cropping
+      ~upload
+      ~after_submit
+      ()
   =
   Lwt.async (fun () ->
     Lwt_js_events.clicks button (fun ev _ ->
@@ -466,8 +476,8 @@ let%client bind_submit (input : Dom_html.inputElement Js.t Eliom_client_value.t)
       let* () = do_submit input ?cropping ~upload () in
       after_submit ()))
 
-let%client bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit
-    ()
+let%client
+    bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit ()
   =
   let reset, cropping =
     match crop with Some (x, y) -> Some x, Some y | _ -> None, None
@@ -487,9 +497,13 @@ let%server mk_service name arg_deriver =
            ** file "f" ))
     ()
 
-let%shared mk_form ?(after_submit = fun () -> Lwt.return_unit) ?crop
-    ?input:(input_a, input_content = [], [])
-    ?submit:(submit_a, submit_content = [], []) (upload : 'a upload)
+let%shared
+    mk_form
+      ?(after_submit = fun () -> Lwt.return_unit)
+      ?crop
+      ?input:(input_a, input_content = [], [])
+      ?submit:(submit_a, submit_content = [], [])
+      (upload : 'a upload)
   =
   let preview = preview () in
   let input, input_label = input ~a:input_a input_content in

@@ -22,8 +22,10 @@
 open Eliom_content.Html]
 
 [%%shared open Eliom_content.Html.F]
+
 open%client Js_of_ocaml
 open%client Lwt.Syntax
+
 [%%client open Js_of_ocaml_lwt]
 
 let%shared hcf ?(a = []) ?(header = []) ?(footer = []) content =
@@ -64,10 +66,16 @@ let%client disable_page_scroll, enable_page_scroll =
           Dom_html.window##scrollTo (Js.float 0.) (Js.float (float pos));
           scroll_pos := None )
 
-let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button
-    ?confirmation_onclose ?(onclose = fun () -> Lwt.return_unit)
-    ?(close_on_background_click = false)
-    ?(close_on_escape = close_button <> None) gen_content
+let%client
+    popup
+      ?(a = [])
+      ?(enable_scrolling_hack = true)
+      ?close_button
+      ?confirmation_onclose
+      ?(onclose = fun () -> Lwt.return_unit)
+      ?(close_on_background_click = false)
+      ?(close_on_escape = close_button <> None)
+      gen_content
   =
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
@@ -79,8 +87,9 @@ let%client popup ?(a = []) ?(enable_scrolling_hack = true) ?close_button
     if enable_scrolling_hack then disable_page_scroll ());
   let reset () = if enable_scrolling_hack then enable_page_scroll () in
   let do_close () =
-    if (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))##.length
-       = 1
+    if
+      (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))##.length
+      = 1
     then reset ();
     let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
     stop_thread (); onclose ()

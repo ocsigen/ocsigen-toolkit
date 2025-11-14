@@ -167,9 +167,15 @@ module Make (Conf : CONF) = struct
     Lwt.async (fun () -> touchcancels js_container touchend_handler)
 end]
 
-let make ?(a = []) ?(app_only = true) ?(scale = 5.) ?(dragThreshold = 80.)
-    ?(refresh_timeout = 20.) ?(header = [%shared default_header]) ~content
-    (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
+let make
+      ?(a = [])
+      ?(app_only = true)
+      ?(scale = 5.)
+      ?(dragThreshold = 80.)
+      ?(refresh_timeout = 20.)
+      ?(header = [%shared default_header])
+      ~content
+      (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
   if app_only && not (Eliom_client.is_client_app ())
   then div ~a [content]

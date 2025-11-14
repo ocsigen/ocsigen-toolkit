@@ -2,8 +2,10 @@
 
 [%%shared open Js_of_ocaml]
 [%%client open Js_of_ocaml_lwt]
+
 open%client Eliom_content.Html
 open%client Lwt.Syntax
+
 [%%shared open Eliom_content.Html.F]
 
 (** sensibility for detecting swipe left/right or up/down *)
@@ -13,19 +15,19 @@ let%client px_of_int v = Js.string (string_of_int v ^ "px")
 
 let%client identifier ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0)
     (fun a -> a##.identifier)
 
 let%client clX ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientY)
 
@@ -43,8 +45,8 @@ let%client dispatch_event ~ev elt name x y =
     let event =
       try
         (* Better version, but unsupported on iOS and Android: *)
-        let touchevent = Js.Unsafe.global ##. TouchEvent in
-        let touch = Js.Unsafe.global ##. Touch in
+        let touchevent = Js.Unsafe.global##.TouchEvent in
+        let touch = Js.Unsafe.global##.Touch in
         let touch =
           new%js touch
             (object%js
@@ -66,7 +68,7 @@ let%client dispatch_event ~ev elt name x y =
         Printf.eprintf "%s\n"
           ("exn: " ^ Printexc.to_string e ^ " - switching to workaround. ");
         (* HACK *)
-        let customEvent = Js.Unsafe.global ##. CustomEvent in
+        let customEvent = Js.Unsafe.global##.CustomEvent in
         let opt =
           object%js
             val bubbles = Js._true
@@ -92,25 +94,33 @@ let%client dispatch_event ~ev elt name x y =
     in
     (Js.Unsafe.coerce target)##dispatchEvent event)
 
-let%shared bind ?(transition_duration = 0.3)
-    ?(min : (unit -> int) Eliom_client_value.t option)
-    ?(max : (unit -> int) Eliom_client_value.t option)
-    ~(compute_final_pos :
-       (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t)
-    ?(onstart :
-       (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
-    ?(onmove :
-       (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
-    ?(onend :
-       (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
-    (elt : _ elt)
+let%shared
+    bind
+      ?(transition_duration = 0.3)
+      ?(min : (unit -> int) Eliom_client_value.t option)
+      ?(max : (unit -> int) Eliom_client_value.t option)
+      ~(compute_final_pos :
+         (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t)
+      ?(onstart :
+         (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
+      ?(onmove :
+         (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
+      ?(onend :
+         (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
+      (elt : _ elt)
   =
   ignore
     [%client
       (let elt = ~%elt in
        let elt' = To_dom.of_element elt in
-       let startx = ref 0. (* position when touch starts *) in
-       let starty = ref 0. (* position when touch starts *) in
+       let startx =
+         ref 0.
+         (* position when touch starts *)
+       in
+       let starty =
+         ref 0.
+         (* position when touch starts *)
+       in
        let status = ref Stopped in
        let onpanend ev aa =
          if !status <> Start

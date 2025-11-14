@@ -52,7 +52,7 @@ let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
               (List.map
                  (* We listen to several elements because scroll events are
                    not happening on the same element on every platform. *)
-                    (fun element -> Lwt_js_events.scroll ?use_capture element)
+                 (fun element -> Lwt_js_events.scroll ?use_capture element)
                  [ (Dom_html.window :> Dom_html.eventTarget Js.t)
                  ; (Dom_html.document##.documentElement
                      :> Dom_html.eventTarget Js.t)
@@ -92,8 +92,11 @@ let%client rec in_ancestors ~elt ~ancestor =
                (fun () -> false)
                (fun elt -> in_ancestors ~elt ~ancestor))
 
-let%client rec click_outside ?use_capture
-    ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t)) elt
+let%client rec
+    click_outside
+      ?use_capture
+      ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t))
+      elt
   =
   let* ev = Lwt_js_events.click ?use_capture inside in
   Js.Opt.case ev##.target

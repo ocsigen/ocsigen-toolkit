@@ -56,13 +56,13 @@ let%client now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 
 let%client clX ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientX)
 
 let%client clY ev =
   Js.Optdef.case
-    ev ##. changedTouches ## (item 0)
+    ev##.changedTouches##(item 0)
     (fun () -> 0.)
     (fun a -> Js.to_float a##.clientY)
 
@@ -215,8 +215,17 @@ let%client enable_transition ?duration elt =
   Manip.Class.remove elt "notransition";
   Lwt_js_events.request_animation_frame ()
 
-let%client bind side stops init handle update set_before_signal set_after_signal
-    set_swipe_pos elt
+let%client
+    bind
+      side
+      stops
+      init
+      handle
+      update
+      set_before_signal
+      set_after_signal
+      set_swipe_pos
+      elt
   =
   let open Lwt_js_events in
   let elt' = To_dom.of_element elt in
@@ -231,7 +240,10 @@ let%client bind side stops init handle update set_before_signal set_after_signal
   let currentpos = ref 0. in
   let previouspos = ref 0. in
   let previoustimestamp = ref 0. in
-  let startsize = ref 0. (* height or width of visible part in pixel *) in
+  let startsize =
+    ref 0.
+    (* height or width of visible part in pixel *)
+  in
   let animation_frame_requested = ref false in
   let set speed (stop, is_attractor) =
     let previousstop = !currentstop in
@@ -362,10 +374,16 @@ let%client bind side stops init handle update set_before_signal set_after_signal
         ~keep:(React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 
-let%shared tongue ?(a = []) ?(side = `Bottom)
-    ?(stops : stop list =
-      [`Px 70; `Percent 100; `Interval (`Percent 100, `Full_content)])
-    ?(init : simple_stop = `Px 70) ?handle ?update content
+let%shared
+    tongue
+      ?(a = [])
+      ?(side = `Bottom)
+      ?(stops : stop list =
+        [`Px 70; `Percent 100; `Interval (`Percent 100, `Full_content)])
+      ?(init : simple_stop = `Px 70)
+      ?handle
+      ?update
+      content
   =
   let a = (a :> Html_types.div_attrib attrib list) in
   let class_ = class_of_side side in

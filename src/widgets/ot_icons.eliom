@@ -10,8 +10,10 @@ module Make (A : module type of Eliom_content.Html.F) = struct
    * The optional parameter is at the end to be able to add other CSS classes
    * with predefined icons.
    *)
-  let icon classes
-      ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list)) ()
+  let icon
+        classes
+        ?(a = ([] : Html_types.i_attrib Eliom_content.Html.attrib list))
+        ()
     =
     A.i ~a:(A.a_class ("ot-icon" :: classes) :: a) []
 
