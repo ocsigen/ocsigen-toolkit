@@ -148,10 +148,10 @@ val make_lazy :
         -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
          Eliom_shared.Value.t
   -> ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt)
-  -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
+  -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt)
        Eliom_shared.Value.t
        list
-  -> [> `Div] t Lwt.t
+  -> [> `Div] t
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
     generator function. Contents will be generated and filled lazily, i.e. when
