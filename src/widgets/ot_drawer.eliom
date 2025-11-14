@@ -1,3 +1,5 @@
+open Eio.Std
+
 [%%shared
 (* Ocsigen
  * http://www.ocsigen.org
@@ -113,11 +115,11 @@ let%shared
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
   let bind_touch :
-    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
+    ((unit -> unit) Promise.t * (unit -> unit) Lwt.u) Eliom_client_value.t
     =
     [%client Lwt.wait ()]
   in
-  let touch_thread = [%client (ref Lwt.return_unit : unit Lwt.t ref)] in
+  let touch_thread = [%client (ref Lwt.return_unit : unit Promise.t ref)] in
   let reset_scroll_pos =
     [%client
       (fun () ->
@@ -179,7 +181,7 @@ let%shared
          html_ManipClass_remove "ot-drawer-open";
          html_ManipClass_remove "ot-drawer-closing");
        Lwt.return_unit
-       : unit Lwt.t)]
+       : unit Promise.t)]
   in
   let _ =
     [%client
