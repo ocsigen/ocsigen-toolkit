@@ -153,7 +153,6 @@ struct
                  Lwt.return (v :> Html_types.div_content_fun F.elt list))
               (fun e ->
                  A.bind2 (fail e) (fun v ->
-                   dec_active_spinners ();
                    Lwt.return (v :> Html_types.div_content_fun F.elt list)))
           in
           Manip.replaceChildren d v;
