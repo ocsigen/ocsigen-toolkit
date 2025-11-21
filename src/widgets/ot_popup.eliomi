@@ -44,12 +44,12 @@ val popup :
    ?a:[< div_attrib] attrib list
   -> ?enable_scrolling_hack:bool
   -> ?close_button:button_content elt list
-  -> ?confirmation_onclose:(unit -> bool Lwt.t)
-  -> ?onclose:(unit -> unit Lwt.t)
+  -> ?confirmation_onclose:(unit -> bool)
+  -> ?onclose:(unit -> unit)
   -> ?close_on_background_click:bool
   -> ?close_on_escape:bool
-  -> ((unit -> unit Lwt.t) -> [< div_content] elt Lwt.t)
-  -> [> `Div] elt Lwt.t
+  -> ((unit -> unit) -> [< div_content] elt)
+  -> [> `Div] elt
 (** [ popup ?a ?enable_scrolling_hack
        ?close_button ?confirmation_onclose ?onclose gen_content ]
     Display a modal popup.
@@ -81,10 +81,9 @@ val ask_question :
    ?a:[< div_attrib] attrib list
   -> ?a_hcf:[< div_attrib] attrib list
   -> header:[< header_content] elt list
-  -> buttons:
-       ([< button_content_fun] elt list * (unit -> 'a Lwt.t) * string list) list
+  -> buttons:([< button_content_fun] elt list * (unit -> 'a) * string list) list
   -> [< div_content] elt list
-  -> 'a Lwt.t
+  -> 'a
 (** [ask_question ?a ?a_hcf question buttons]
     Prompt a user, wait for its response and return the selected value.
     [question] is the content of the popup header
@@ -97,7 +96,7 @@ val confirm :
   -> [< header_content_fun] elt list
   -> ([< button_content_fun] as 'a) elt list
   -> 'a elt list
-  -> bool Lwt.t
+  -> bool
 (** Shortcut using [ask_question] for prompting the user with a question
     and returning a boolean.
     [confirm ?a question yes no]

@@ -19,9 +19,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%client.start]
-
-open Js_of_ocaml
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 [%%shared.start]
 
@@ -274,13 +273,13 @@ val next :
 [%%client.start]
 
 (*  Make arrow keys cause event change.
-    Returns a thread that never stops until you call [Lwt.cancel] on it. *)
+    Never returns unless you cancel the switch in which is runs. *)
 val bind_arrow_keys :
    ?use_capture:bool
   -> ?vertical:bool
   -> change:([> `Goto of int | `Next | `Prev] -> unit)
   -> #Dom_html.eventTarget Js.t
-  -> unit Lwt.t
+  -> unit
 
 val set_default_fail :
    (exn -> [< Html_types.div_content] Eliom_content.Html.elt)

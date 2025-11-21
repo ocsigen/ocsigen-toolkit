@@ -86,18 +86,19 @@ val do_submit :
   -> ?cropping:cropping
   -> upload:'a upload
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** [ do_submit input ?cropping ~upload () ]
     [input] is the input with file loaded
     [cropping] are cropping info
-    [upload] function to upload the file *)
+    [upload] function to upload the file.
+    This function waits for the submission to complete. *)
 
 val bind_submit :
    Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
   -> upload:'a upload
-  -> after_submit:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit)
   -> unit
   -> unit
 (** [ bind_submit input button ?cropping ~upload ~after_submit () ]
@@ -111,7 +112,7 @@ val bind :
   -> ?crop:(unit -> unit) * cropping
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
   -> upload:'a upload
-  -> after_submit:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit)
   -> unit
   -> unit
 (** [bind] is a shortcut for [bind_input] and [bind_submit] actions *)

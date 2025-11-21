@@ -22,12 +22,12 @@
 
 open Js_of_ocaml
 
-val nodeready : #Dom.node Js.t -> unit Lwt.t
+val nodeready : #Dom.node Js.t -> unit
 (** Wait for a node to be inserted in the DOM.
 
     {3 Example}
 
-    [let _ = nodeready node in Console.console##debug node]
+    [Eio.Fiber.fork ~sw (fun () -> nodeready node; Console.console##debug node)]
 
     {3 Known issues}
 

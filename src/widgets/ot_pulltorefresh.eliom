@@ -2,8 +2,7 @@
 
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
-[%%client open Eliom_content.Html]
-
+open%client Eliom_content.Html
 open Eliom_content.Html.D
 
 let%shared default_header =
@@ -14,7 +13,8 @@ let%shared default_header =
 
 [%%client
 open Js_of_ocaml
-open Lwt.Syntax
+open Js_of_ocaml
+open Js_of_ocaml_eio
 
 module type CONF = sig
   val dragThreshold : float
@@ -22,7 +22,7 @@ module type CONF = sig
   val container : Html_types.div Eliom_content.Html.D.elt
   val set_state : ?step:React.step -> state option -> unit
   val timeout : float
-  val afterPull : unit -> bool Lwt.t
+  val afterPull : unit -> bool
 end
 
 module Make (Conf : CONF) = struct
@@ -43,18 +43,17 @@ module Make (Conf : CONF) = struct
     let _, y = Dom_html.getDocumentScroll () in
     if y > 0. then top := false else top := true
 
-  let touchstart_handler ev _ =
+  let touchstart_handler ev =
     Dom_html.stopPropagation ev;
-    (if !refreshFlag || !joinRefreshFlag
-     then Dom.preventDefault ev
-     else
-       let touch = ev##.changedTouches##item 0 in
-       Js.Optdef.iter touch (fun touch ->
-         dragStart := Js.to_float touch##.clientY;
-         scrollXStart := Js.to_float touch##.clientX);
-       first_move := true;
-       Manip.Class.remove container "ot-pull-refresh-transition-on");
-    Lwt.return_unit
+    if !refreshFlag || !joinRefreshFlag
+    then Dom.preventDefault ev
+    else
+      let touch = ev##.changedTouches##item 0 in
+      Js.Optdef.iter touch (fun touch ->
+        dragStart := Js.to_float touch##.clientY;
+        scrollXStart := Js.to_float touch##.clientX);
+      first_move := true;
+      Manip.Class.remove container "ot-pull-refresh-transition-on"
 
   let touchmove_handler_ ev =
     Dom.preventDefault ev;
@@ -66,7 +65,7 @@ module Make (Conf : CONF) = struct
     js_container##.style##.transform
     := Js.string ("translateY(" ^ string_of_float translateY ^ "px)")
 
-  let touchmove_handler ev _ =
+  let touchmove_handler ev =
     scroll_handler ();
     if not !scrollingX
     then (
@@ -91,8 +90,7 @@ module Make (Conf : CONF) = struct
           if !top && !distance > 0. && not !scrollingX
           then touchmove_handler_ ev
           else joinRefreshFlag := false));
-    first_move := false;
-    Lwt.return_unit
+    first_move := false
 
   let refresh () =
     Conf.set_state @@ Some Loading;
@@ -101,12 +99,13 @@ module Make (Conf : CONF) = struct
     := Js.string
          ("translateY(" ^ (string_of_float @@ Conf.dragThreshold) ^ "px)");
     refreshFlag := true;
-    Lwt.async (fun () ->
-      let* b =
-        Lwt.pick
-          [ Conf.afterPull ()
-          ; (let* () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
-             Lwt.return_false) ]
+    Eliom_lib.fork (fun () ->
+      let b =
+        Eio.Fiber.any
+          [ Conf.afterPull
+          ; (fun () ->
+              Js_of_ocaml_eio.Eio_js.sleep Conf.timeout;
+              false) ]
       in
       if b
       then
@@ -127,8 +126,7 @@ module Make (Conf : CONF) = struct
         ignore
           (Dom_html.window##setTimeout
              (Js.wrap_callback (fun () -> refreshFlag := false))
-             (Js.float 500.)));
-      Lwt.return_unit)
+             (Js.float 500.))))
 
   let scroll_back () =
     Conf.set_state None;
@@ -142,7 +140,7 @@ module Make (Conf : CONF) = struct
            (Js.wrap_callback (fun () -> refreshFlag := false))
            (Js.float 500.)))
 
-  let touchend_handler ev _ =
+  let touchend_handler ev =
     if !top && !distance > 0. && !dragStart >= 0.
     then
       if !refreshFlag
@@ -156,15 +154,14 @@ module Make (Conf : CONF) = struct
         dragStart := -1.;
         distance := 0.);
     scrollXStart := -1.;
-    scrollingX := false;
-    Lwt.return_unit
+    scrollingX := false
 
   let init () =
-    let open Js_of_ocaml_lwt.Lwt_js_events in
-    Lwt.async (fun () -> touchstarts js_container touchstart_handler);
-    Lwt.async (fun () -> touchmoves js_container touchmove_handler);
-    Lwt.async (fun () -> touchends js_container touchend_handler);
-    Lwt.async (fun () -> touchcancels js_container touchend_handler)
+    let open Js_of_ocaml_eio.Eio_js_events in
+    Eio_js.start (fun () -> touchstarts js_container touchstart_handler);
+    Eio_js.start (fun () -> touchmoves js_container touchmove_handler);
+    Eio_js.start (fun () -> touchends js_container touchend_handler);
+    Eio_js.start (fun () -> touchcancels js_container touchend_handler)
 end]
 
 let make

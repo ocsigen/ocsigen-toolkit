@@ -33,9 +33,8 @@ type button_labels =
 
 [%%client.start]
 
-open Lwt.Syntax
 open Js_of_ocaml
-open Js_of_ocaml_lwt
+open Js_of_ocaml_eio
 
 let default_intl =
   { i_days = ["S"; "M"; "T"; "W"; "T"; "F"; "S"]
@@ -178,12 +177,20 @@ let zeroth_displayed_day ~intl d =
   then o
   else CalendarLib.Date.prev o `Week
 
-let select_action ?(size = 1) selector action =
+let select_action
+      ?(size = 1)
+      selector
+      (action :
+        ?cancel_handler:bool
+        -> ?use_capture:bool
+        -> ?passive:bool
+        -> 'a
+        -> ('b -> unit)
+        -> unit)
+  =
   let dom_select = Eliom_content.Html.To_dom.of_select selector in
-  Lwt.async (fun () ->
-    action dom_select (fun _ _ ->
-      dom_select##.size := size;
-      Lwt.return_unit))
+  Eliom_lib.fork (fun () ->
+    action dom_select (fun _ -> dom_select##.size := size))
 
 let rec build_calendar
           ?prehilight
@@ -227,7 +234,7 @@ let rec build_calendar
             else option ~a:[a_value y] (txt y)))
   in
   let () =
-    let open Lwt_js_events in
+    let open Eio_js_events in
     let size = 10 in
     select_action select_year mousedowns ~size;
     select_action select_year changes;
@@ -356,19 +363,15 @@ let attach_events
     and y = CalendarLib.Calendar.Date.year d in
     let action =
       match action with
-      | Some action ->
-          fun _ r ->
-            update_classes cal zero d;
-            let* _ = action y m dom in
-            Lwt.return_unit
-      | None -> fun _ r -> update_classes cal zero d; Lwt.return_unit
+      | Some action -> fun _ -> update_classes cal zero d; action y m dom
+      | None -> fun _ -> update_classes cal zero d
     in
     let set_onclick () =
       if in_period d ~begin_p:period.begin_p ~end_p:period.end_p
       then
-        let f () = Lwt_js_events.clicks c action in
-        Lwt.async f
-      else Lwt.async (fun () -> Lwt.return_unit)
+        let f () = Eio_js_events.clicks c action in
+        Eliom_lib.fork f
+      else ()
     in
     if List.exists (( = ) dom) highlight
     then (
@@ -378,7 +381,7 @@ let attach_events
     then set_onclick ()
     else ()
 
-let attach_events_lwt
+let attach_events_async
       ?action
       ?click_non_highlighted
       ~intl
@@ -390,11 +393,10 @@ let attach_events_lwt
   let f () =
     let m = CalendarLib.Date.(month d |> int_of_month)
     and y = CalendarLib.Date.year d in
-    let* highlight = highlight y m in
-    attach_events ?action ?click_non_highlighted ~intl ~period d cal highlight;
-    Lwt.return_unit
+    let highlight = highlight y m in
+    attach_events ?action ?click_non_highlighted ~intl ~period d cal highlight
   in
-  Lwt.async f
+  Eliom_lib.fork f
 
 let make_span_handler
       selector
@@ -444,7 +446,7 @@ let attach_behavior
   =
   (match highlight with
   | Some highlight ->
-      attach_events_lwt ?click_non_highlighted ?action ~intl ~period d cal
+      attach_events_async ?click_non_highlighted ?action ~intl ~period d cal
         highlight
   | None -> attach_events ?click_non_highlighted ?action ~intl ~period d cal []);
   let s_y = To_dom.of_select select_year in
@@ -503,10 +505,10 @@ let attach_behavior
 
 let make :
    ?init:int * int * int
-  -> ?highlight:(int -> int -> int list Lwt.t)
+  -> ?highlight:(int -> int -> int list)
   -> ?click_non_highlighted:bool
   -> ?update:(int * int * int) React.E.t
-  -> ?action:(int -> int -> int -> unit Lwt.t)
+  -> ?action:(int -> int -> int -> unit)
   -> ?period:
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date
@@ -551,7 +553,7 @@ let make :
       let f (y, m, d) =
         CalendarLib.Date.make_year_month y m |> f_d_ym;
         match action with
-        | Some action -> Lwt.async (fun () -> action y m d)
+        | Some action -> Eliom_lib.fork (fun () -> action y m d)
         | None -> ()
       in
       Eliom_lib.Dom_reference.retain (To_dom.of_element elt)
@@ -599,11 +601,7 @@ let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
         CalendarLib.Date.(year d, month d |> int_of_month, day_of_month d)
   in
   let v, f = Eliom_shared.React.S.create init in
-  let action =
-    [%client
-      fun y m d ->
-        ~%f (y, m, d);
-        Lwt.return_unit]
+  let action = [%client fun y m d -> ~%f (y, m, d)]
   and click_non_highlighted = true in
   let d =
     make ~init ~click_non_highlighted ?update ?button_labels ?intl ?period

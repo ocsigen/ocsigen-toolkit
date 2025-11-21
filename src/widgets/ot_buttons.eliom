@@ -2,8 +2,7 @@
 
 open Eliom_content.Html
 open Eliom_content.Html.F
-
-[%%client open Js_of_ocaml_lwt]
+open%client Js_of_ocaml_eio
 
 let%shared dropdown ?(a = []) ~menu content =
   let dropdown =
@@ -16,8 +15,7 @@ let%shared dropdown ?(a = []) ~menu content =
   (* the following does nothing, but still fixes hover anomalies on iPad *)
   ignore
     [%client
-      (Lwt.async @@ fun () ->
-       Lwt_js_events.clicks (To_dom.of_element ~%dropdown) (fun ev _ ->
-         Lwt.return_unit)
+      (Eliom_lib.fork @@ fun () ->
+       Eio_js_events.clicks (To_dom.of_element ~%dropdown) (fun ev -> ())
        : _)];
   dropdown

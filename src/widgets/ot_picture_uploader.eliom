@@ -1,4 +1,3 @@
-[%%shared
 (* Ocsigen
  * http://www.ocsigen.org
  *
@@ -18,12 +17,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Js_of_ocaml]
-
-[%%client open Js_of_ocaml_lwt]
-[%%client open Lwt.Syntax]
-[%%shared open Eliom_content.Html]
-[%%shared open Eliom_content.Html.F]
+open%shared Js_of_ocaml
+open%client Js_of_ocaml_eio
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 type%shared ('a, 'b) service =
   ( unit
@@ -43,10 +40,7 @@ type%shared ('a, 'b) service =
     Eliom_service.t
 
 let%client process_file input callback =
-  Js.Opt.case
-    input##.files##(item 0)
-    (fun () -> Lwt.return_unit)
-    (fun x -> callback x)
+  Js.Opt.case input##.files##(item 0) (fun () -> ()) (fun x -> callback x)
 
 let%client file_reader file callback =
   let reader = new%js File.fileReader in
@@ -120,7 +114,7 @@ let%shared
   let img_h, set_img_h = Eliom_shared.React.S.create 0. in
   let _ =
     [%client
-      (let open Lwt_js_events in
+      (let open Eio_js_events in
        let crop = To_dom.of_element ~%crop in
        let t_f = To_dom.of_element ~%t_f in
        let tr_f = To_dom.of_element ~%tr_f in
@@ -283,8 +277,8 @@ let%shared
          Js.bool true
        in
        let bind_handler add_trigger event rm_trigger get_x get_y (dom, handler) =
-         Lwt.async (fun () ->
-           add_trigger (To_dom.of_element dom) (fun ev _ ->
+         Eliom_lib.fork (fun () ->
+           add_trigger (To_dom.of_element dom) (fun ev ->
              Dom.preventDefault ev;
              Dom_html.stopPropagation ev;
              let () = x := get_x ev in
@@ -294,11 +288,9 @@ let%shared
                  (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)))
                  (Js.bool false)
              in
-             let* _ =
-               Lwt.pick @@ List.map (fun e -> e Dom_html.document) rm_trigger
-             in
-             Dom_html.removeEventListener x;
-             Lwt.return_unit))
+             Eio.Fiber.any
+             @@ List.map (fun e () -> e Dom_html.document) rm_trigger;
+             Dom_html.removeEventListener x))
        in
        let listeners =
          match ~%ratio with
@@ -327,7 +319,7 @@ let%shared
        List.iter2
          (fun x y ->
             bind_handler mousedowns Dom_html.Event.mousemove
-              [Lwt_js_events.mouseup]
+              [Eio_js_events.mouseup]
               (fun ev -> Js.to_float ev##.clientX)
               (fun ev -> Js.to_float ev##.clientY)
               (x, y))
@@ -338,7 +330,7 @@ let%shared
             List.iter
               (fun x ->
                  bind_handler touchstarts Dom_html.Event.touchmove
-                   [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
+                   [Eio_js_events.touchend; Eio_js_events.touchcancel]
                    (fun ev ->
                       Js.Optdef.case
                         (ev##.touches##item 0)
@@ -410,37 +402,30 @@ let%shared preview ?(a = []) () =
 let%shared submit ?(a = []) content =
   D.Raw.button ~a:(a_class ["ot-pup-submit"] :: a) content
 
-(* FIXME: To be put in Lwt_js_events *)
+(* FIXME: To be put in Eio_js_events *)
 let%client loads ?cancel_handler ?use_capture t =
-  Lwt_js_events.(seq_loop load ?cancel_handler ?use_capture t)
+  Eio_js_events.(seq_loop load ?cancel_handler ?use_capture t)
 
 let%client bind_input input preview ?container ?reset () =
   let onerror () =
     Eliom_lib.Option.iter
       (fun container -> container##.classList##add (Js.string "ot-no-file"))
       container;
-    preview##.src := Js.string "";
-    Lwt.return_unit
+    preview##.src := Js.string ""
   in
-  Eliom_lib.Option.iter
-    (fun f ->
-       Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
-    reset;
-  Lwt.async (fun () ->
-    Lwt_js_events.changes input (fun _ _ ->
-      Js.Opt.case
-        (input##.files##item 0)
-        onerror
-        (fun file ->
-           let () =
-             file_reader (Js.Unsafe.coerce file) (fun data ->
-               preview##.src := data;
-               Eliom_lib.Option.iter
-                 (fun container ->
-                    container##.classList##remove (Js.string "ot-no-file"))
-                 container)
-           in
-           Lwt.return_unit)))
+  Eliom_lib.Option.iter (fun f -> ignore @@ loads preview (fun _ -> f ())) reset;
+  ignore
+  @@ Eio_js_events.changes input (fun _ ->
+    Js.Opt.case
+      (input##.files##item 0)
+      onerror
+      (fun file ->
+         file_reader (Js.Unsafe.coerce file) (fun data ->
+           preview##.src := data;
+           Eliom_lib.Option.iter
+             (fun container ->
+                container##.classList##remove (Js.string "ot-no-file"))
+             container)))
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t
@@ -454,8 +439,8 @@ let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
 
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
-  let* _ = upload ?progress ?cropping file in
-  Lwt.return_unit
+  let _ = upload ?progress ?cropping file in
+  ()
 
 let%client
     bind_submit
@@ -466,12 +451,12 @@ let%client
       ~after_submit
       ()
   =
-  Lwt.async (fun () ->
-    Lwt_js_events.clicks button (fun ev _ ->
-      Dom.preventDefault ev;
-      Dom_html.stopPropagation ev;
-      let* () = do_submit input ?cropping ~upload () in
-      after_submit ()))
+  ignore
+  @@ Eio_js_events.clicks button (fun ev ->
+    Dom.preventDefault ev;
+    Dom_html.stopPropagation ev;
+    do_submit input ?cropping ~upload ();
+    after_submit ())
 
 let%client
     bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit ()

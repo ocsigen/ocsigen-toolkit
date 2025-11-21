@@ -23,8 +23,7 @@
 open Eliom_shared.React.S.Infix
 open Eliom_content.Html
 open%client Js_of_ocaml
-
-[%%client open Js_of_ocaml_lwt]
+open%client Js_of_ocaml_eio
 
 type 'a rf = ?step:React.step -> 'a -> unit
 
@@ -272,15 +271,12 @@ let clock_html_wrap ?(classes = []) s (f : (int * bool) rf Eliom_client_value.t)
   let _ =
     [%client
       (let e = Eliom_content.Html.To_dom.of_element ~%e in
-       ( Lwt.async @@ fun () ->
-         Lwt_js_events.touchends e @@ fun ev _ ->
-         Lwt.return (wrap_touch ~ends:true ev ~%f) );
-       ( Lwt.async @@ fun () ->
-         Lwt_js_events.touchcancels e @@ fun ev _ ->
-         Lwt.return (wrap_touch ~ends:true ev ~%f) );
-       Lwt.async @@ fun () ->
-       Lwt_js_events.touchmoves e @@ fun ev _ ->
-       Lwt.return (wrap_touch ~ends:false ev ~%f)
+       Eio_js.start (fun () ->
+         Eio_js_events.touchends e @@ fun ev -> wrap_touch ~ends:true ev ~%f);
+       Eio_js.start (fun () ->
+         Eio_js_events.touchcancels e @@ fun ev -> wrap_touch ~ends:true ev ~%f);
+       Eio_js.start (fun () ->
+         Eio_js_events.touchmoves e @@ fun ev -> wrap_touch ~ends:false ev ~%f)
        : unit)]
   in
   e
@@ -314,14 +310,12 @@ let clock_html_wrap_24h ?(classes = []) s f_e f_b =
           wrap_touch_24h ~ends ev (~%f_e ~step) f_b;
           React.Step.execute step
         and e = Eliom_content.Html.To_dom.of_element ~%e in
-        ( Lwt.async @@ fun () ->
-          Lwt_js_events.touchends e @@ fun ev _ -> Lwt.return (f ~ends:true ev)
-        );
-        ( Lwt.async @@ fun () ->
-          Lwt_js_events.touchcancels e @@ fun ev _ ->
-          Lwt.return (f ~ends:true ev) );
-        Lwt.async @@ fun () ->
-        Lwt_js_events.touchmoves e @@ fun ev _ -> Lwt.return (f ~ends:false ev)
+        Eio_js.start (fun () ->
+          Eio_js_events.touchends e @@ fun ev -> f ~ends:true ev);
+        Eio_js.start (fun () ->
+          Eio_js_events.touchcancels e @@ fun ev -> f ~ends:true ev);
+        Eio_js.start (fun () ->
+          Eio_js_events.touchmoves e @@ fun ev -> f ~ends:false ev)
         : unit)];
   e
 
@@ -394,7 +388,7 @@ let show_minutes_aux
          match ~%action with
          | Some action ->
              let v = React.S.value ~%hm in
-             Lwt.async (fun () -> action v)
+             Eliom_lib.fork (fun () -> action v)
          | None -> ()
        : (int * bool) rf)]
 
