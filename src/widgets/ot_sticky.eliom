@@ -3,8 +3,7 @@
 open Eliom_content.Html
 open Html_types
 open Js_of_ocaml
-open Js_of_ocaml_lwt
-open Lwt.Syntax
+open Js_of_ocaml_eio
 
 (* This is about the real "position: sticky" *)
 
@@ -55,8 +54,8 @@ type glue =
   ; inline : div_content D.elt
   ; dir : [`Top | `Left]
   ; (*TODO: support `Bottom and `Right*)
-    scroll_thread : unit Lwt.t
-  ; resize_thread : (int * int) React.S.t
+    cancel_scroll : unit -> unit
+  ; resize_signal : (int * int) React.S.t
   ; dissolve : unit -> unit }
 
 let move_content ~from to_elt =
@@ -125,9 +124,9 @@ let make_sticky
       ?(force = false)
       elt
   =
-  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  Ot_nodeready.nodeready (To_dom.of_element elt);
   if (not force) && supports_position_sticky elt
-  then Lwt.return_none
+  then None
   else
     let fixed_dom =
       Js.Opt.case
@@ -137,16 +136,16 @@ let make_sticky
     in
     let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
     Manip.insertBefore ~before:elt fixed;
-    let* () = Ot_nodeready.nodeready fixed_dom in
+    Ot_nodeready.nodeready fixed_dom;
     Manip.Class.add fixed "ot-sticky-fixed";
     Manip.Class.add elt "ot-sticky-inline";
     let glue =
       { fixed
       ; inline = elt
       ; dir
-      ; scroll_thread = Lwt.return_unit
+      ; cancel_scroll = (fun () -> ())
       ; (* updated below *)
-        resize_thread = React.S.const (0, 0)
+        resize_signal = React.S.const (0, 0)
       ; (* updated below *)
         dissolve = (fun () -> failwith "undefined") }
     in
@@ -154,41 +153,41 @@ let make_sticky
       unstick ~force:true glue; synchronise glue; update_state glue
     in
     init ();
-    let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
+    let onloaded_event = Ot_spinner.onloaded |> React.E.map init in
     Eliom_lib.Dom_reference.retain (To_dom.of_element fixed)
-      ~keep:onloaded_thread;
-    let scroll_thread =
-      Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
-      update_state glue; Lwt.return_unit
-    in
-    let resize_thread =
+      ~keep:onloaded_event;
+    Eio.Switch.run @@ fun sw ->
+    Eio.Fiber.fork ~sw (fun () ->
+      Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ -> update_state glue);
+    let cancel_scroll () = Eio.Switch.fail sw Eio_js_events.Cancelled in
+    let resize_signal =
       Ot_size.width_height
       |> React.S.map @@ fun (width, height) ->
          synchronise glue; update_state glue; width, height
     in
-    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed) ~keep:resize_thread;
+    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed) ~keep:resize_signal;
     let dissolve () =
-      Lwt.cancel scroll_thread;
-      React.S.stop resize_thread;
-      React.E.stop onloaded_thread;
+      cancel_scroll ();
+      React.S.stop resize_signal;
+      React.E.stop onloaded_event;
       unstick ~force:true glue;
       Manip.removeSelf glue.fixed;
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
     Eliom_client.onunload (fun () -> dissolve ());
-    Lwt.return_some {glue with scroll_thread; resize_thread; dissolve}
+    Some {glue with cancel_scroll; resize_signal; dissolve}
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
 
 (* TODO: ensure compatibility with DOM caching *)
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
-  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
-  let* glue = make_sticky ?ios_html_scroll_hack ~dir elt in
+  Ot_nodeready.nodeready (To_dom.of_element elt);
+  let glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with None -> elt | Some g -> g.fixed in
   match Manip.parentNode elt with
-  | None -> Lwt.return (fun () -> ())
+  | None -> fun () -> ()
   | Some parent ->
-      let* () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+      Ot_nodeready.nodeready (To_dom.of_element parent);
       let compute_top_left (_, win_height) =
         match dir with
         | `Top ->
@@ -205,30 +204,28 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
             failwith
               "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
       in
-      let resize_thread =
+      let resize_signal =
         React.S.map compute_top_left
         @@
         match glue with
         | None -> Ot_size.width_height
-        | Some glue -> glue.resize_thread
+        | Some glue -> glue.resize_signal
       in
-      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_thread;
+      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_signal;
       let init () =
         let doIt () = compute_top_left @@ React.S.value Ot_size.width_height in
         (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
-        Lwt.async (fun () ->
-          let* _ = Lwt_js.sleep 0.5 in
-          Lwt.return @@ doIt ());
+        Eliom_lib.fork (fun () -> Eio_js.sleep 0.5; doIt ());
         doIt ()
       in
       init ();
-      let onload_thread = React.E.map init Ot_spinner.onloaded in
-      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_thread;
+      let onload_event = React.E.map init Ot_spinner.onloaded in
+      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_event;
       let stop () =
-        React.E.stop onload_thread;
-        React.S.stop resize_thread;
+        React.E.stop onload_event;
+        React.S.stop resize_signal;
         match glue with Some g -> g.dissolve () | None -> ()
       in
       Eliom_client.onunload (fun () -> stop ());
-      Lwt.return stop
+      stop

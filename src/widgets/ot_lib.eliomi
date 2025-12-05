@@ -22,6 +22,7 @@
 [%%client.start]
 
 open Js_of_ocaml
+open Js_of_ocaml_eio
 
 val in_ancestors :
    elt:Dom_html.element Js.t
@@ -30,22 +31,21 @@ val in_ancestors :
 
 val onloads : (unit -> unit) -> unit
 
-val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
+val onresizes : (Dom_html.event Js.t -> unit) -> unit
 (** NOTE: be careful when using the functions [onresizes],
     [window_scroll], and [window_scrolls]. They may be called before
     the new document is displayed (and thus the new window is there)
     and therefore may be attached to the window that is about to be
     replaced. In most use-cases you should have a line as follows
-    before: let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element
-    some_elt in *)
+    before: Ot_nodeready.nodeready @@ To_dom.of_element some_elt; *)
 
-val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
+val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t
 
 val window_scrolls :
    ?ios_html_scroll_hack:bool
   -> ?use_capture:bool
-  -> (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t)
-  -> unit Lwt.t
+  -> (Dom_html.event Js.t -> unit)
+  -> unit
 (** If [ios_html_scroll_hack] then listen on window + html + body
     instead of only window.  On iOS (8 and 9), in WkWebView and in
     Safari, some CSS properties (e.g. html{overflow:scroll;
@@ -77,10 +77,12 @@ val click_outside :
    ?use_capture:bool
   -> ?inside:Dom_html.element Js.t
   -> #Dom_html.element Js.t
-  -> Dom_html.mouseEvent Js.t Lwt.t
+  -> Dom_html.mouseEvent Js.t
 (** [click_outside e] returns when user clicks outside element [e].
     Will only catch clicks inside the element given as optional
     parameter [?inside] (default is [Dom_html.document##.body]). *)
+
+(**/**)
 
 [%%shared.start]
 
