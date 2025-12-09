@@ -18,3 +18,4 @@ depends: [
   "eliom" {>= "11.0.0"}
   "calendar" {>= "2.0.0"}
 ]
+x-maintenance-intent: ["(latest)" ]
