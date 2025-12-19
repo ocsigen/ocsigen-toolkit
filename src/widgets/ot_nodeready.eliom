@@ -62,7 +62,7 @@ let handler records observer =
     ready
     |> List.iter (fun {resolver; stop_ondead} ->
       stop_ondead ();
-      Eio.Promise.resolve resolver ()))
+      ignore (Eio.Promise.try_resolve resolver ())))
 
 let observer =
   new%js MutationObserver.mutationObserver (Js.wrap_callback handler)
@@ -100,7 +100,7 @@ let nodeready n =
         instances_of_node
         |> List.iter (fun {resolver} ->
           log ~n "deinstalled";
-          Eio.Promise.resolve resolver ()));
+          ignore (Eio.Promise.try_resolve resolver ())));
       watched := {node = n; promise = t; resolver = s; stop_ondead} :: !watched;
       log ~n "installed";
       Eio.Promise.await t)

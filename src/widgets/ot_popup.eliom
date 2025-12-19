@@ -145,7 +145,7 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
              Eio_js_events.clicks (To_dom.of_element btn) (fun _ ->
                let r = action () in
                let result = do_close () in
-               Eio.Promise.resolve w r; result);
+               ignore (Eio.Promise.try_resolve w r); result);
              btn)
           buttons
       in

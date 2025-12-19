@@ -116,27 +116,21 @@ let%client with_spinner ?(a = []) ?spinner ?fail gen =
           :> exn -> Html_types.div_content elt list)
     | None -> fun e -> default_fail e
   in
-  let prom, prom_resolver = Eio.Promise.create () in
+  (* In Eio direct-style, we must fork to show spinner while gen() executes *)
+  inc_active_spinners ();
+  let cl = ["ot-spinner"] in
+  let cl = if spinner = None then cl_spinner :: cl_spinning :: cl else cl in
+  let d =
+    D.div ~a:(a_class cl :: a)
+      (match spinner with None -> [] | Some s -> s)
+  in
   Eliom_lib.fork (fun () ->
     let v =
       try (gen () :> Html_types.div_content_fun F.elt list)
       with e -> (fail e :> Html_types.div_content_fun F.elt list)
     in
-    Eio.Promise.resolve prom_resolver v);
-  match Eio.Promise.peek prom with
-  | Some v -> D.div ~a:(a_class ["ot-spinner"] :: a) v
-  | None ->
-      inc_active_spinners ();
-      let cl = ["ot-spinner"] in
-      let cl = if spinner = None then cl_spinner :: cl_spinning :: cl else cl in
-      let d =
-        D.div ~a:(a_class cl :: a)
-          (match spinner with None -> [] | Some s -> s)
-      in
-      Eliom_lib.fork (fun () ->
-        let v = Eio.Promise.await prom in
-        Manip.replaceChildren d v;
-        Manip.Class.remove d cl_spinning;
-        Manip.Class.remove d cl_spinner;
-        dec_active_spinners ());
-      d
+    Manip.replaceChildren d v;
+    Manip.Class.remove d cl_spinning;
+    Manip.Class.remove d cl_spinner;
+    dec_active_spinners ());
+  d
