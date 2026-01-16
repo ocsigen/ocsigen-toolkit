@@ -41,10 +41,10 @@ type button_labels =
 
 val make :
    ?init:int * int * int
-  -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
+  -> ?highlight:(int -> int -> int list) Eliom_client_value.t
   -> ?click_non_highlighted:bool
   -> ?update:(int * int * int) React.E.t Eliom_client_value.t
-  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
+  -> ?action:(int -> int -> int -> unit) Eliom_client_value.t
   -> ?period:
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date

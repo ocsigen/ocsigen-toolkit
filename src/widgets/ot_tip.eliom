@@ -1,4 +1,3 @@
-[%%client
 (* Ocsigen Toolkit
  * http://www.ocsigen.org/ocsigen-toolkit
  *
@@ -19,10 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Js_of_ocaml]
-
-[%%client open Eliom_content.Html]
-[%%client open Eliom_content.Html.F]
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
+open%client Eliom_content.Html
+open%client Eliom_content.Html.F
 
 let%client
     display
@@ -59,9 +58,11 @@ let%client
   let o_width = o_right -. o_left in
   let o_center_to_left = (o_right +. o_left) /. 2. in
   let o_center_to_right = d_width -. o_center_to_left in
-  let container_ready = Ot_nodeready.nodeready container_elt in
+  let container_ready () = Ot_nodeready.nodeready container_elt in
   let when_container_ready get_from_container use_it =
-    Lwt.(async @@ fun () -> container_ready >|= get_from_container >|= use_it)
+    Eio_js.start @@ fun () ->
+    container_ready ();
+    use_it (get_from_container ())
   in
   let get_c_height () = float container_elt##.offsetHeight in
   let get_half_c_width () = float (container_elt##.offsetWidth / 2) in

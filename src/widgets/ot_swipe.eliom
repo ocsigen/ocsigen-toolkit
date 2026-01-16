@@ -1,12 +1,9 @@
 (** Swiping an element *)
 
-[%%shared open Js_of_ocaml]
-[%%client open Js_of_ocaml_lwt]
-
+open%shared Js_of_ocaml
+open%client Js_of_ocaml_eio
 open%client Eliom_content.Html
-open%client Lwt.Syntax
-
-[%%shared open Eliom_content.Html.F]
+open%shared Eliom_content.Html.F
 
 (** sensibility for detecting swipe left/right or up/down *)
 
@@ -122,28 +119,25 @@ let%shared
          (* position when touch starts *)
        in
        let status = ref Stopped in
-       let onpanend ev aa =
+       let onpanend ev =
          if !status <> Start
          then (
            add_transition ~%transition_duration elt';
            let left = ~%compute_final_pos ev (truncate (clX ev -. !startx)) in
            elt'##.style##.left := px_of_int left;
            Eliom_lib.Option.iter (fun f -> f ev left) ~%onend;
-           Lwt.async (fun () ->
-             let* _ = Lwt_js_events.transitionend elt' in
-             Manip.Class.remove elt "ot-swiping";
-             Lwt.return_unit));
-         status := Stopped;
-         Lwt.return_unit
+           Eliom_lib.fork (fun () ->
+             ignore @@ Eio_js_events.transitionend elt';
+             Manip.Class.remove elt "ot-swiping"));
+         status := Stopped
        in
        let onpanstart0 () = status := Start in
-       let onpanstart ev _ =
+       let onpanstart ev =
          startx := clX ev -. float elt'##.offsetLeft;
          starty := clY ev;
-         onpanstart0 ();
-         Lwt.return_unit
+         onpanstart0 ()
        in
-       let onpan ev aa =
+       let onpan ev =
          let left = clX ev -. !startx in
          let do_pan left = elt'##.style##.left := px_of_int left in
          if !status = Start
@@ -176,9 +170,8 @@ let%shared
                (* We send a touchstart event to the parent *)
                dispatch_event ~ev elt' "touchstart"
                  (float min +. !startx)
-                 (clY ev);
+                 (clY ev)
                (* We propagate *)
-               Lwt.return_unit
            | _, Some max when left > float max ->
                (* max reached.
                     We stop the movement of this element
@@ -189,15 +182,13 @@ let%shared
                (* We send a touchstart event to the parent *)
                dispatch_event ~ev elt' "touchstart"
                  (float max +. !startx)
-                 (clY ev);
+                 (clY ev)
                (* We propagate *)
-               Lwt.return_unit
            | _ ->
                Dom_html.stopPropagation ev;
                Dom.preventDefault ev;
                Eliom_lib.Option.iter (fun f -> f ev (truncate left)) ~%onmove;
-               do_pan (int_of_float (left +. 0.5));
-               Lwt.return_unit)
+               do_pan (int_of_float (left +. 0.5)))
          else
            (* Shall we restart swiping this element? *)
            let restart_pos =
@@ -217,12 +208,11 @@ let%shared
                  (clY ev);
                onpanstart0 ( (* restart_pos + !startx *) );
                Dom_html.stopPropagation ev;
-               do_pan (int_of_float (left +. 0.5));
-               Lwt.return_unit
-           | None -> (* We propagate *) Lwt.return_unit
+               do_pan (int_of_float (left +. 0.5))
+           | None -> (* We propagate *) ()
        in
-       Lwt.async (fun () -> Lwt_js_events.touchstarts elt' onpanstart);
-       Lwt.async (fun () -> Lwt_js_events.touchmoves elt' onpan);
-       Lwt.async (fun () -> Lwt_js_events.touchends elt' onpanend);
-       Lwt.async (fun () -> Lwt_js_events.touchcancels elt' onpanend)
+       Eio_js.start (fun () -> Eio_js_events.touchstarts elt' onpanstart);
+       Eio_js.start (fun () -> Eio_js_events.touchmoves elt' onpan);
+       Eio_js.start (fun () -> Eio_js_events.touchends elt' onpanend);
+       Eio_js.start (fun () -> Eio_js_events.touchcancels elt' onpanend)
        : unit)]
