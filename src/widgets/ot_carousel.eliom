@@ -687,7 +687,7 @@ let%shared
       ~a:
         (a_class ["ot-bullet-nav-item"]
         :: R.a_class class_
-        :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]
+        :: a_onclick [%client fun _ -> Eio_js.start (fun () -> ~%change (`Goto ~%i))]
         :: a)
       c
   in
@@ -722,7 +722,7 @@ let%shared
       ~a:
         [ a_class ["ot-car-ribbon-list-item"]
         ; R.a_class class_
-        ; a_onclick [%client fun _ -> ~%change (`Goto ~%i)] ]
+        ; a_onclick [%client fun _ -> Eio_js.start (fun () -> ~%change (`Goto ~%i))] ]
       c
   in
   let l = List.mapi item l in
@@ -953,11 +953,12 @@ let%shared
       :: a_onclick
            [%client
              fun _ ->
-               let offset = React.S.value ~%offset in
-               ~%change
-                 (if offset > 1
-                  then `Goto (React.S.value ~%pos - offset)
-                  else `Prev)]
+               Eio_js.start (fun () ->
+                 let offset = React.S.value ~%offset in
+                 ~%change
+                   (if offset > 1
+                    then `Goto (React.S.value ~%pos - offset)
+                    else `Prev))]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
@@ -981,11 +982,12 @@ let%shared
       :: a_onclick
            [%client
              fun _ ->
-               let offset = React.S.value ~%offset in
-               ~%change
-                 (if offset > 1
-                  then `Goto (React.S.value ~%pos + offset)
-                  else `Next)]
+               Eio_js.start (fun () ->
+                 let offset = React.S.value ~%offset in
+                 ~%change
+                   (if offset > 1
+                    then `Goto (React.S.value ~%pos + offset)
+                    else `Next))]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
