@@ -22,7 +22,10 @@ open%client Js_of_ocaml
 open%client Js_of_ocaml_eio
 
 let%client onloads handler =
-  let rec loop () = Eliom_client.onload @@ fun () -> handler (); loop () in
+  let rec loop () = Eliom_client.onload @@ fun () ->
+    Eio_js.start (fun () -> handler ());
+    loop ()
+  in
   loop ()
 
 let%client onresizes handler =
