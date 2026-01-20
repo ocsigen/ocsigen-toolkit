@@ -356,11 +356,13 @@ let%shared
            Eio.Fiber.any [f1; f2; f3]
          in
          Eio.Promise.resolve (snd ~%bind_touch) (fun () ->
-           Eio.Switch.run (fun sw ->
-             (~%cancel_touch :=
-                fun () -> Eio.Switch.fail sw Eio_js_events.Cancelled);
-             Eio.Fiber.fork ~sw (fun () ->
-               Eio_js_events.touchstarts bckgrnd' onpanstart)))
+           try
+             Eio.Switch.run (fun sw ->
+               (~%cancel_touch :=
+                  fun () -> Eio.Switch.fail sw Eio_js_events.Cancelled);
+               Eio.Fiber.fork ~sw (fun () ->
+                 Eio_js_events.touchstarts bckgrnd' onpanstart))
+           with Eio_js_events.Cancelled -> ())
          (* Hammer.bind_callback hammer "panstart" onpanstart; *)
          (* Hammer.bind_callback hammer "panmove" onpan; *)
          (* Hammer.bind_callback hammer "panend" onpanend; *)
