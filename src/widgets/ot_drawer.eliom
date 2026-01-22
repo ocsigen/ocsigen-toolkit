@@ -106,10 +106,11 @@ let%shared
   let bckgrnd =
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
+  (* Use lazy to defer Promise.create until we're inside an Eio fiber *)
   let bind_touch :
-    ((unit -> unit) Promise.t * (unit -> unit) Promise.u) Eliom_client_value.t
+    ((unit -> unit) Promise.t * (unit -> unit) Promise.u) Lazy.t Eliom_client_value.t
     =
-    [%client Promise.create ()]
+    [%client lazy (Promise.create ())]
   in
   let cancel_touch = [%client (ref (fun () -> ()) : (unit -> unit) ref)] in
   let reset_scroll_pos =
@@ -152,7 +153,7 @@ let%shared
          add_class ~%bckgrnd "opening";
          !(~%cancel_touch) ();
          Eliom_lib.fork (fun () ->
-           let bind_touch = Eio.Promise.await (fst ~%bind_touch) in
+           let bind_touch = Eio.Promise.await (fst (Lazy.force ~%bind_touch)) in
            bind_touch ());
          bind_click_outside ~%bckgrnd ~%d ~%close;
          Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
@@ -355,7 +356,7 @@ let%shared
            in
            Eio.Fiber.any [f1; f2; f3]
          in
-         Eio.Promise.resolve (snd ~%bind_touch) (fun () ->
+         Eio.Promise.resolve (snd (Lazy.force ~%bind_touch)) (fun () ->
            try
              Eio.Switch.run (fun sw ->
                (~%cancel_touch :=
