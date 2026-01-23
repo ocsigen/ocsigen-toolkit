@@ -356,20 +356,14 @@ let%shared
            in
            Eio.Fiber.any [f1; f2; f3]
          in
-         Eio.Promise.resolve (snd (Lazy.force ~%bind_touch)) (fun () ->
+         ignore (Eio.Promise.try_resolve (snd (Lazy.force ~%bind_touch)) (fun () ->
            try
              Eio.Switch.run (fun sw ->
                (~%cancel_touch :=
                   fun () -> Eio.Switch.fail sw Eio_js_events.Cancelled);
                Eio.Fiber.fork ~sw (fun () ->
                  Eio_js_events.touchstarts bckgrnd' onpanstart))
-           with Eio_js_events.Cancelled -> ())
-         (* Hammer.bind_callback hammer "panstart" onpanstart; *)
-         (* Hammer.bind_callback hammer "panmove" onpan; *)
-         (* Hammer.bind_callback hammer "panend" onpanend; *)
-         (* Hammer.bind_callback hammer *)
-         (*   (if ~%position = `Left then "swipeleft" else "swiperight") *)
-         (*   (fun _ -> Eliom_lib.fork (fun () -> perform_animation `Close)) *)
+           with Eio_js_events.Cancelled -> ~%cancel_touch := fun () -> ()))
          : unit)]
     else [%client ()]
   in

@@ -116,16 +116,21 @@ let%client with_spinner ?(a = []) ?spinner ?fail gen =
           :> exn -> Html_types.div_content elt list)
     | None -> fun e -> default_fail e
   in
+  (* Execute gen() synchronously first to check if it completes immediately *)
+  let result = ref None in
   let prom, prom_resolver = Eio.Promise.create () in
-  Eliom_lib.fork (fun () ->
-    let v =
-      try (gen () :> Html_types.div_content_fun F.elt list)
-      with e -> (fail e :> Html_types.div_content_fun F.elt list)
-    in
-    Eio.Promise.resolve prom_resolver v);
-  match Eio.Promise.peek prom with
+  (try
+    let v = (gen () :> Html_types.div_content_fun F.elt list) in
+    result := Some v;
+    ignore (Eio.Promise.try_resolve prom_resolver v)
+  with e ->
+    let v = (fail e :> Html_types.div_content_fun F.elt list) in
+    result := Some v;
+    ignore (Eio.Promise.try_resolve prom_resolver v));
+  match !result with
   | Some v -> D.div ~a:(a_class ["ot-spinner"] :: a) v
   | None ->
+      (* This case shouldn't happen with sync execution, but keep for safety *)
       inc_active_spinners ();
       let cl = ["ot-spinner"] in
       let cl = if spinner = None then cl_spinner :: cl_spinning :: cl else cl in

@@ -85,7 +85,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
   let forward_animation ?(transition_duration = 0.5) take_screenshot =
     let wait_for_page_change, trigger_page_change = Eio.Promise.create () in
     Eliom_client.Page_status.oninactive ~once:true (fun () ->
-      Eio.Promise.resolve trigger_page_change ());
+      ignore (Eio.Promise.try_resolve trigger_page_change ()));
     let fa ss =
       Eliom_lib.fork @@ fun () ->
       Eio.Promise.await wait_for_page_change;
@@ -112,7 +112,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
   let backward_animation ?(transition_duration = 0.5) take_screenshot =
     let wait_for_page_change, trigger_page_change = Eio.Promise.create () in
     Eliom_client.Page_status.oninactive ~once:true (fun () ->
-      Eio.Promise.resolve trigger_page_change ());
+      ignore (Eio.Promise.try_resolve trigger_page_change ()));
     let ba ss =
       Eliom_lib.fork @@ fun () ->
       Eio.Promise.await wait_for_page_change;

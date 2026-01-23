@@ -630,7 +630,7 @@ let%shared
       ?allow_overswipe ?update ?disabled ?full_height ?make_transform
       ?make_page_attribute contents
   in
-  Eio.Promise.resolve wakener carousel.elt;
+  ignore (Eio.Promise.try_resolve wakener carousel.elt);
   (* generate initial content (client-side) *)
   (* replace spinners with content when switched to for the first time *)
   let _ =
