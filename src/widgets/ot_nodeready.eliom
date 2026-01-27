@@ -30,8 +30,8 @@ let rec node_in_document node =
 
 type t =
   { node : Dom.node Js.t
-  ; thread : unit Lwt.t
-  ; resolver : unit Lwt.u
+  ; promise : unit Eio.Promise.t
+  ; resolver : unit Eio.Promise.u
   ; stop_ondead : unit -> unit }
 
 let watched = ref []
@@ -61,7 +61,8 @@ let handler records observer =
     if not_ready = [] then observer##disconnect;
     ready
     |> List.iter (fun {resolver; stop_ondead} ->
-      stop_ondead (); Lwt.wakeup resolver ()))
+      stop_ondead ();
+      ignore (Eio.Promise.try_resolve resolver ())))
 
 let observer =
   new%js MutationObserver.mutationObserver (Js.wrap_callback handler)
@@ -75,19 +76,17 @@ let config =
 let nodeready n =
   let n = (n :> Dom.node Js.t) in
   if node_in_document n
-  then (
-    log ~n "already in document";
-    Lwt.return_unit)
+  then log ~n "already in document"
   else (
     if !watched = [] then observer##observe Dom_html.document config;
     try
-      let {thread} =
+      let {promise} =
         List.find (fun {node} -> Js.strict_equals n node) !watched
       in
       log ~n "already being watched";
-      thread
+      Eio.Promise.await promise
     with Not_found ->
-      let t, s = Lwt.wait () in
+      let t, s = Eio.Promise.create () in
       let stop, stop_ondead = React.E.create () in
       let stop_ondead () =
         log ~n "put node in document";
@@ -100,7 +99,8 @@ let nodeready n =
         watched := rest;
         instances_of_node
         |> List.iter (fun {resolver} ->
-          log ~n "deinstalled"; Lwt.wakeup resolver ()));
-      watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
+          log ~n "deinstalled";
+          ignore (Eio.Promise.try_resolve resolver ())));
+      watched := {node = n; promise = t; resolver = s; stop_ondead} :: !watched;
       log ~n "installed";
-      t)
+      Eio.Promise.await t)

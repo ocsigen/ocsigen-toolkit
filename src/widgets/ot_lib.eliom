@@ -1,4 +1,3 @@
-[%%client
 (* Ocsigen
  * http://www.ocsigen.org
  *
@@ -19,67 +18,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Js_of_ocaml
-open Lwt.Syntax]
-
-[%%client open Js_of_ocaml_lwt]
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 let%client onloads handler =
-  let rec loop () = Eliom_client.onload @@ fun () -> handler (); loop () in
+  let rec loop () = Eliom_client.onload @@ fun () ->
+    Eio_js.start (fun () -> handler ());
+    loop ()
+  in
   loop ()
 
 let%client onresizes handler =
   let stop, stop_thread = React.E.create () in
   Eliom_client.Page_status.while_active ~stop (fun () ->
-    Lwt_js_events.onresizes handler);
-  Lwt.finalize
-    (fun () -> fst @@ Lwt.wait ())
-    (fun () -> stop_thread (); Lwt.return_unit)
+    Eio_js_events.onresizes handler);
+  try Eio.Fiber.await_cancel () with Eio.Cancel.Cancelled _ -> stop_thread ()
 
 let%client window_scroll ?use_capture () =
-  Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
+  Eio_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
 
 let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
   let stop, stop_thread = React.E.create () in
-  let cur = ref Lwt.return_unit in
   Eliom_client.Page_status.while_active ~stop (fun () ->
-    cur :=
-      if ios_html_scroll_hack
-      then
-        let rec loop () =
-          let* e =
-            Lwt.pick
-              (List.map
-                 (* We listen to several elements because scroll events are
+    if ios_html_scroll_hack
+    then
+      let rec loop () =
+        let e =
+          Eio.Fiber.any
+            (List.map
+               (* We listen to several elements because scroll events are
                    not happening on the same element on every platform. *)
-                 (fun element -> Lwt_js_events.scroll ?use_capture element)
-                 [ (Dom_html.window :> Dom_html.eventTarget Js.t)
-                 ; (Dom_html.document##.documentElement
-                     :> Dom_html.eventTarget Js.t)
-                 ; (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ])
-          in
-          let continue = ref true in
-          let w =
-            Lwt.catch
-              (fun () -> fst (Lwt.task ()))
-              (function
-                | Lwt.Canceled ->
-                    continue := false;
-                    Lwt.return_unit
-                | exc -> Lwt.reraise exc)
-          in
-          let* () = handler e w in
-          if !continue then loop () else Lwt.return_unit
+               (fun element () -> Eio_js_events.scroll ?use_capture element)
+               [ (Dom_html.window :> Dom_html.eventTarget Js.t)
+               ; (Dom_html.document##.documentElement
+                   :> Dom_html.eventTarget Js.t)
+               ; (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ])
         in
-        loop ()
-      else
-        Lwt_js_events.seq_loop
-          (Lwt_js_events.make_event Dom_html.Event.scroll)
-          ?use_capture Dom_html.window handler;
-    !cur);
-  Lwt.finalize
-    (fun () -> fst @@ Lwt.task ())
-    (fun () -> stop_thread (); Lwt.cancel !cur; Lwt.return_unit)
+        handler e; loop ()
+      in
+      loop ()
+    else
+      Eio_js_events.seq_loop
+        (Eio_js_events.make_event Dom_html.Event.scroll)
+        ?use_capture Dom_html.window handler);
+  try Eio.Fiber.await_cancel () with Eio.Cancel.Cancelled _ -> stop_thread ()
 
 let%client rec in_ancestors ~elt ~ancestor =
   Js.strict_equals elt (ancestor : Dom_html.element Js.t)
@@ -98,13 +80,13 @@ let%client rec
       ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t))
       elt
   =
-  let* ev = Lwt_js_events.click ?use_capture inside in
+  let ev = Eio_js_events.click ?use_capture inside in
   Js.Opt.case ev##.target
     (fun () -> click_outside ?use_capture elt)
     (fun target ->
        if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
        then click_outside ?use_capture ~inside elt
-       else Lwt.return ev)
+       else ev)
 
 [%%shared
 module List = struct

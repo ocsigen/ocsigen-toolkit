@@ -1,4 +1,3 @@
-[%%shared
 (* Ocsigen
  * http://www.ocsigen.org
  *
@@ -19,14 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Eliom_content.Html]
-
-[%%shared open Eliom_content.Html.F]
-
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
-open%client Lwt.Syntax
-
-[%%client open Js_of_ocaml_lwt]
+open%client Js_of_ocaml_eio
 
 let%shared hcf ?(a = []) ?(header = []) ?(footer = []) content =
   D.section
@@ -72,14 +67,14 @@ let%client
       ?(enable_scrolling_hack = true)
       ?close_button
       ?confirmation_onclose
-      ?(onclose = fun () -> Lwt.return_unit)
+      ?(onclose = fun () -> ())
       ?(close_on_background_click = false)
       ?(close_on_escape = close_button <> None)
       gen_content
   =
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
-    (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
+    (gen_content :> (unit -> unit) -> Html_types.div_content elt)
   in
   let popup = ref None in
   let stop, stop_thread = React.E.create () in
@@ -98,16 +93,13 @@ let%client
   let close () =
     match confirmation_onclose with
     | None -> do_close ()
-    | Some f ->
-        Lwt.bind (f ()) (function
-          | true -> do_close ()
-          | false -> Lwt.return_unit)
+    | Some f -> if f () then do_close ()
   in
   (* FIXME: use a list for gen_content return type *)
-  let* c =
+  let c =
     Ot_spinner.with_spinner
       ~a:[a_class ["ot-popup-content"]]
-      (Lwt.map (fun x -> [x]) (gen_content do_close))
+      (fun () -> [gen_content do_close])
   in
   let content = [c] in
   let content =
@@ -117,7 +109,7 @@ let%client
           ~a:
             [ a_button_type `Button
             ; a_class ["ot-popup-close"]
-            ; a_onclick (fun ev -> Lwt.async (fun () -> close ())) ]
+            ; a_onclick (fun ev -> Eliom_lib.fork (fun () -> close ())) ]
           but
         :: content
     | None -> content
@@ -129,20 +121,20 @@ let%client
   then
     Eliom_client.Page_status.while_active ~stop (fun () ->
       (* Close the popup when user clicks on background *)
-      let* event = Lwt_js_events.click box_dom in
-      if event##.target = Js.some box_dom then close () else Lwt.return_unit);
+      let event = Eio_js_events.click box_dom in
+      if event##.target = Js.some box_dom then close ());
   if close_on_escape
   then
     Eliom_client.Page_status.while_active ~stop (fun () ->
-      Lwt_js_events.keydowns Dom_html.window @@ fun ev _ ->
-      if ev##.keyCode = 27 then close () else Lwt.return_unit);
+      Eio_js_events.keydowns Dom_html.window @@ fun ev ->
+      if ev##.keyCode = 27 then close ());
   popup := Some box;
   Manip.appendToBody box;
-  Lwt.return box
+  box
 
 let%client ask_question ?a ?a_hcf ~header ~buttons contents =
-  let t, w = Lwt.wait () in
-  let* _ =
+  let t, w = Eio.Promise.create () in
+  let _ =
     popup ?a (fun do_close ->
       let answers =
         List.map
@@ -150,17 +142,16 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
              let btn = D.Raw.button ~a:[a_class btn_class] content in
              (* Onlick, give t the selected value
                 and close question popup. *)
-             Lwt.async (fun () ->
-               Lwt_js_events.clicks (To_dom.of_element btn) (fun _ _ ->
-                 let* r = action () in
-                 let* result = do_close () in
-                 Lwt.wakeup w r; Lwt.return result));
+             Eio_js_events.clicks (To_dom.of_element btn) (fun _ ->
+               let r = action () in
+               let result = do_close () in
+               ignore (Eio.Promise.try_resolve w r); result);
              btn)
           buttons
       in
-      Lwt.return (hcf ?a:a_hcf ~header ~footer:answers contents))
+      hcf ?a:a_hcf ~header ~footer:answers contents)
   in
-  t
+  Eio.Promise.await t
 
 let%client confirm ?(a = []) question yes no =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -168,6 +159,6 @@ let%client confirm ?(a = []) question yes no =
     ~a:(a_class ["ot-popup-confirmation"] :: a)
     ~header:question
     ~buttons:
-      [ yes, (fun () -> Lwt.return_true), ["ot-popup-yes"]
-      ; no, (fun () -> Lwt.return_false), ["ot-popup-no"] ]
+      [ yes, (fun () -> true), ["ot-popup-yes"]
+      ; no, (fun () -> false), ["ot-popup-no"] ]
     []

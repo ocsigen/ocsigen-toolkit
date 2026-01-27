@@ -1,4 +1,3 @@
-[%%shared
 (* Ocsigen
  * http://www.ocsigen.org
  *
@@ -19,14 +18,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Eliom_content.Html]
-
-[%%shared open Eliom_content.Html.F]
-
+open%shared Eio.Std
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 open%client Js_of_ocaml
-open%client Lwt.Syntax
-
-[%%client open Js_of_ocaml_lwt]
+open%client Js_of_ocaml_eio
 
 type%client status = Stopped | Start | Aborted | In_progress
 
@@ -43,15 +39,13 @@ let%client clY ev =
     (fun a -> Js.to_float a##.clientY)
 
 let%client bind_click_outside bckgrnd elt close =
-  Lwt.async (fun () ->
-    let* ev =
-      Ot_lib.click_outside ~use_capture:true
+  Eliom_lib.fork (fun () ->
+    let ev =
+      Ot_lib.click_outside ~use_capture:true (To_dom.of_element elt)
         ~inside:(To_dom.of_element bckgrnd)
-        (To_dom.of_element elt)
     in
     Dom_html.stopPropagation ev;
-    close ();
-    Lwt.return_unit)
+    close ())
 
 let%client html () =
   Js.Opt.to_option
@@ -112,12 +106,13 @@ let%shared
   let bckgrnd =
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
+  (* Use lazy to defer Promise.create until we're inside an Eio fiber *)
   let bind_touch :
-    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
+    ((unit -> unit) Promise.t * (unit -> unit) Promise.u) Lazy.t Eliom_client_value.t
     =
-    [%client Lwt.wait ()]
+    [%client lazy (Promise.create ())]
   in
-  let touch_thread = [%client (ref Lwt.return_unit : unit Lwt.t ref)] in
+  let cancel_touch = [%client (ref (fun () -> ()) : (unit -> unit) ref)] in
   let reset_scroll_pos =
     [%client
       (fun () ->
@@ -139,12 +134,11 @@ let%shared
          remove_class ~%bckgrnd "open";
          ~%reset_scroll_pos ();
          add_class ~%bckgrnd "closing";
-         Lwt.cancel !(~%touch_thread);
-         Lwt_js_events.async (fun () ->
-           let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
+         !(~%cancel_touch) ();
+         Eio_js_events.async (fun () ->
+           ignore (Eio_js_events.transitionend (To_dom.of_element ~%d));
            remove_class ~%bckgrnd "closing";
-           Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
-           Lwt.return_unit)
+           Eliom_lib.Option.iter (fun f -> f ()) ~%onclose)
        : unit -> unit)]
   in
   let close = wrap_close close in
@@ -157,17 +151,16 @@ let%shared
          Dom_html.document##.body##.style##.top
          := Js.string (Printf.sprintf "%.2fpx" (-. !(~%scroll_pos)));
          add_class ~%bckgrnd "opening";
-         Lwt.cancel !(~%touch_thread);
-         Lwt.async (fun () ->
-           let* bind_touch = fst ~%bind_touch in
-           bind_touch (); Lwt.return_unit);
+         !(~%cancel_touch) ();
+         Eliom_lib.fork (fun () ->
+           let bind_touch = Eio.Promise.await (fst (Lazy.force ~%bind_touch)) in
+           bind_touch ());
          bind_click_outside ~%bckgrnd ~%d ~%close;
          Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
            (fun () -> html_ManipClass_add "ot-drawer-open");
-         Lwt_js_events.async (fun () ->
-           let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
-           remove_class ~%bckgrnd "opening";
-           Lwt.return_unit)
+         Eio_js_events.async (fun () ->
+           ignore (Eio_js_events.transitionend (To_dom.of_element ~%d));
+           remove_class ~%bckgrnd "opening")
        : unit -> unit)]
   in
   let open_ = wrap_open open_ in
@@ -177,9 +170,8 @@ let%shared
          ~%reset_scroll_pos ();
          html_ManipClass_remove "ot-drawer-opening";
          html_ManipClass_remove "ot-drawer-open";
-         html_ManipClass_remove "ot-drawer-closing");
-       Lwt.return_unit
-       : unit Lwt.t)]
+         html_ManipClass_remove "ot-drawer-closing")
+       : unit)]
   in
   let _ =
     [%client
@@ -188,12 +180,11 @@ let%shared
          then ~%close ()
          else ~%open_ ()
        in
-       Lwt_js_events.async (fun () ->
-         Lwt_js_events.clicks (To_dom.of_element ~%toggle_button) (fun ev _ ->
+       Eio_js_events.async (fun () ->
+         Eio_js_events.clicks (To_dom.of_element ~%toggle_button) (fun ev ->
            Dom.preventDefault ev;
            Dom_html.stopPropagation ev;
-           toggle ();
-           Lwt.return_unit))
+           toggle ()))
        : unit)]
   in
   let _ =
@@ -207,18 +198,17 @@ let%shared
          let animation_frame_requested = ref false in
          let action = ref (`Move 0.) in
          let perform_animation a =
-           if !action = `Close && a = `Open
-           then
-             (* We received a panend after a swipeleft. We ignore it. *)
-             Lwt.return_unit
-           else (
+           if
+             not (!action = `Close && a = `Open)
+             (* if we received a panend after a swipeleft. We ignore it. *)
+           then (
              action := a;
              if not !animation_frame_requested
              then (
                animation_frame_requested := true;
-               let* () = Lwt_js_events.request_animation_frame () in
+               Eio_js_events.request_animation_frame ();
                animation_frame_requested := false;
-               (match !action with
+               match !action with
                | `Move delta ->
                    let s =
                      (match ~%position with
@@ -235,26 +225,22 @@ let%shared
                    (Js.Unsafe.coerce dr##.style)##.transform := Js.string "";
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
-                   Lwt.async (fun () ->
-                     let* _ = Lwt_js_events.transitionend dr in
-                     Manip.Class.remove ~%bckgrnd "ot-swiping";
-                     Lwt.return_unit);
+                   Eliom_lib.fork (fun () ->
+                     ignore @@ Eio_js_events.transitionend dr;
+                     Manip.Class.remove ~%bckgrnd "ot-swiping");
                    cl ()
                | `Open ->
                    (Js.Unsafe.coerce dr##.style)##.transform := Js.string "";
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
-                   Lwt.async (fun () ->
-                     let* _ = Lwt_js_events.transitionend dr in
-                     Manip.Class.remove ~%bckgrnd "ot-swiping";
-                     Lwt.return_unit)
+                   Eliom_lib.fork (fun () ->
+                     ignore @@ Eio_js_events.transitionend dr;
+                     Manip.Class.remove ~%bckgrnd "ot-swiping")
                | `Abort ->
                    (Js.Unsafe.coerce dr##.style)##.transform := Js.string "";
                    (Js.Unsafe.coerce dr##.style)##.webkitTransform
                    := Js.string "";
-                   Manip.Class.remove ~%bckgrnd "ot-swiping");
-               Lwt.return_unit)
-             else Lwt.return_unit)
+                   Manip.Class.remove ~%bckgrnd "ot-swiping"))
          in
          (* let hammer = Hammer.make_hammer bckgrnd in *)
          let startx =
@@ -266,7 +252,7 @@ let%shared
            (* position when touch starts *)
          in
          let status = ref Stopped in
-         let onpan ev _ =
+         let onpan ev =
            let left = clX ev -. !startx in
            let top = clY ev -. !starty in
            if !status = Start
@@ -312,9 +298,7 @@ let%shared
                   &&
                   (move := left;
                    true)
-             then perform_animation (`Move !move)
-             else Lwt.return_unit)
-           else Lwt.return_unit
+             then perform_animation (`Move !move))
          in
          let onpanend ev _ =
            if !status = In_progress
@@ -338,60 +322,48 @@ let%shared
                || (~%position = `Left && deltaX >= 0.)
              then perform_animation `Abort
              else perform_animation `Open)
-           else (
-             status := Stopped;
-             Lwt.return_unit)
+           else status := Stopped
          in
-         let onpanstart ev _ =
+         let onpanstart ev =
            status := Start;
            startx := clX ev;
            starty := clY ev;
-           let* () = onpan ev a in
+           ignore @@ onpan ev;
            (* Lwt.pick and Lwt_js_events.touch*** seem to behave oddly.
            This wrapping is an attempt to understand why. *)
-           let a =
-             Lwt.catch
-               (fun () -> Lwt_js_events.touchmoves bckgrnd' onpan)
-               (function
-                 | Lwt.Canceled -> Lwt.return_unit
-                 | e ->
-                     let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
-                     Lwt.fail e)
-           and b =
-             Lwt.catch
-               (fun () ->
-                  let* ev = Lwt_js_events.touchend bckgrnd' in
-                  onpanend ev ())
-               (function
-                 | Lwt.Canceled -> Lwt.return_unit
-                 | e ->
-                     let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
-                     Lwt.fail e)
-           and c =
-             Lwt.catch
-               (fun () ->
-                  let* ev = Lwt_js_events.touchcancel bckgrnd' in
-                  onpanend ev ())
-               (function
-                 | Lwt.Canceled -> Lwt.return_unit
-                 | e ->
-                     let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
-                     Lwt.fail e)
+           let f1 () =
+             try Eio_js_events.touchmoves bckgrnd' onpan
+             with e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
+               raise e
+           and f2 () =
+             try
+               let ev = Eio_js_events.touchend bckgrnd' in
+               onpanend ev ()
+             with e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
+               raise e
+           and f3 () =
+             try
+               let ev = Eio_js_events.touchcancel bckgrnd' in
+               onpanend ev ()
+             with e ->
+               let s = Printexc.to_string e in
+               Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
+               raise e
            in
-           Lwt.pick [a; b; c]
+           Eio.Fiber.any [f1; f2; f3]
          in
-         Lwt.wakeup (snd ~%bind_touch) (fun () ->
-           let t = Lwt_js_events.touchstarts bckgrnd' onpanstart in
-           ~%touch_thread := t)
-         (* Hammer.bind_callback hammer "panstart" onpanstart; *)
-         (* Hammer.bind_callback hammer "panmove" onpan; *)
-         (* Hammer.bind_callback hammer "panend" onpanend; *)
-         (* Hammer.bind_callback hammer *)
-         (*   (if ~%position = `Left then "swipeleft" else "swiperight") *)
-         (*   (fun _ -> Lwt.async (fun () -> perform_animation `Close)) *)
+         ignore (Eio.Promise.try_resolve (snd (Lazy.force ~%bind_touch)) (fun () ->
+           try
+             Eio.Switch.run (fun sw ->
+               (~%cancel_touch :=
+                  fun () -> Eio.Switch.fail sw Eio_js_events.Cancelled);
+               Eio.Fiber.fork ~sw (fun () ->
+                 Eio_js_events.touchstarts bckgrnd' onpanstart))
+           with Eio_js_events.Cancelled -> ~%cancel_touch := fun () -> ()))
          : unit)]
     else [%client ()]
   in

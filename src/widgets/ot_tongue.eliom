@@ -1,12 +1,7 @@
-[%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F]
-
-[%%client
-open Lwt.Infix
-open Lwt.Syntax
-open Js_of_ocaml
-open Js_of_ocaml_lwt]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 let%client inertia_parameter1 = 0.1
 
@@ -203,7 +198,7 @@ let%client stop_before ~speed ~maxsize size stops =
 
 let%client disable_transition elt =
   Manip.Class.add elt "notransition";
-  Lwt_js_events.request_animation_frame ()
+  Eio_js_events.request_animation_frame ()
 
 let%client enable_transition ?duration elt =
   (match duration with
@@ -213,7 +208,7 @@ let%client enable_transition ?duration elt =
       (Js.Unsafe.coerce elt'##.style)##.transitionDuration
       := Js.string (Printf.sprintf "%.2fs" duration));
   Manip.Class.remove elt "notransition";
-  Lwt_js_events.request_animation_frame ()
+  Eio_js_events.request_animation_frame ()
 
 let%client
     bind
@@ -227,7 +222,7 @@ let%client
       set_swipe_pos
       elt
   =
-  let open Lwt_js_events in
+  let open Eio_js_events in
   let elt' = To_dom.of_element elt in
   let defaultduration = (Js.Unsafe.coerce elt'##.style)##.transitionDuration in
   let handle' = To_dom.of_element handle in
@@ -253,21 +248,14 @@ let%client
       then None
       else Some Float.(pow (inertia_parameter2 *. abs speed) inertia_parameter3)
     in
-    let* () = enable_transition ?duration elt in
+    enable_transition ?duration elt;
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
-    Lwt.async (fun () ->
-      let* () =
-        if stop <> previousstop
-        then
-          let* _ = Lwt_js_events.transitionend elt' in
-          Lwt.return_unit
-        else Lwt.return_unit
-      in
-      set_after_signal stop; Lwt.return_unit);
-    Lwt.return_unit
+    Eliom_lib.fork (fun () ->
+      if stop <> previousstop then ignore @@ Eio_js_events.transitionend elt';
+      set_after_signal stop)
   in
-  Lwt.async (fun () ->
+  Eliom_lib.fork (fun () ->
     (* Initialize size *)
     let maxsize = full_size elt vert in
     let px = px_of_simple_stop vert elt init in
@@ -315,7 +303,7 @@ let%client
        | `Left -> pxl pos
        | `Right -> pxr pos
   in
-  let ontouchmove ev _ =
+  let ontouchmove ev =
     let pos = cl ev in
     if pos <> !currentpos
     then (
@@ -329,13 +317,12 @@ let%client
     if not !animation_frame_requested
     then (
       animation_frame_requested := true;
-      let* () = Lwt_js_events.request_animation_frame () in
+      Eio_js_events.request_animation_frame ();
       animation_frame_requested := false;
       let d = sign *. (!startpos -. !currentpos) in
       let maxsize = full_size elt vert in
       let size = min (truncate (!startsize +. d)) maxsize in
-      set_swipe_pos size; set_tongue_position size; Lwt.return_unit)
-    else Lwt.return_unit
+      set_swipe_pos size; set_tongue_position size)
   in
   let ontouchend ev =
     let pos = pos ev in
@@ -351,7 +338,7 @@ let%client
     in
     set speed (!currentstop, true)
   in
-  let ontouchstart ev _ =
+  let ontouchstart ev =
     startpos := cl ev;
     currentpos := !startpos;
     previouspos := !startpos;
@@ -360,14 +347,14 @@ let%client
     (* To allow the user to stop the transition at the current position *)
     (* FIXME: This doesn't work too well when an adress bar appears while swiping *)
     set_tongue_position (truncate !startsize);
-    let a = touchmoves elt' ontouchmove in
-    let b = touchend elt' >>= ontouchend in
-    let c = touchcancel elt' >>= ontouchcancel in
-    let* () = disable_transition elt in
+    let a () = touchmoves elt' ontouchmove in
+    let b () = ontouchend @@ touchend elt' in
+    let c () = ontouchcancel @@ touchcancel elt' in
+    disable_transition elt;
     (Js.Unsafe.coerce elt'##.style)##.transitionDuration := defaultduration;
-    Lwt.pick [a; b; c]
+    Eio.Fiber.any [a; b; c]
   in
-  Lwt.async (fun () -> touchstarts handle' ontouchstart);
+  ignore @@ touchstarts handle' ontouchstart;
   match update with
   | Some update ->
       Eliom_lib.Dom_reference.retain elt'
@@ -407,12 +394,11 @@ let%shared
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
+      (Eliom_lib.fork (fun () ->
+         Ot_nodeready.nodeready (To_dom.of_element ~%elt);
          bind ~%side ~%stops ~%init ~%handle
            ~%(update : simple_stop React.E.t Eliom_client_value.t option)
-           (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
-         Lwt.return_unit)
+           (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt)
        : unit)];
   let px_signal_before =
     [%client

@@ -20,11 +20,9 @@
  *)
 
 open%client Js_of_ocaml
-
-[%%shared open Eliom_content.Html]
-[%%shared open Lwt.Syntax]
-[%%shared open Eliom_content.Html.F]
-[%%client open Eliom_shared]
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
+open%client Eliom_shared
 
 let%shared default_fail_fun e =
   [ (if Eliom_config.get_debugmode ()
@@ -54,129 +52,85 @@ let%client set_default_fail f =
       : exn -> [< Html_types.div_content] Eliom_content.Html.elt list
       :> exn -> Html_types.div_content Eliom_content.Html.elt list)
 
-let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
+let%server with_spinner ?(a = []) ?spinner:_ ?fail gen =
   let a = (a :> Html_types.div_attrib attrib list) in
   let fail =
     ((match fail with
-     | Some fail -> (fail :> exn -> Html_types.div_content elt list Lwt.t)
-     | None -> fun e -> Lwt.return (default_fail e))
-      :> exn -> Html_types.div_content elt list Lwt.t)
+     | Some fail -> (fail :> exn -> Html_types.div_content elt list)
+     | None -> fun e -> default_fail e)
+      :> exn -> Html_types.div_content elt list)
   in
-  let* v =
-    Lwt.catch
-      (fun () ->
-         let* v = thread in
-         Lwt.return (v :> Html_types.div_content_fun F.elt list))
-      (fun e ->
-         let* v = fail e in
-         Lwt.return (v :> Html_types.div_content_fun F.elt list))
+  let v =
+    try (gen () :> Html_types.div_content_fun F.elt list)
+    with e -> (fail e :> Html_types.div_content_fun F.elt list)
   in
-  Lwt.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
+  D.div ~a:(a_class ["ot-spinner"] :: a) v
 
-[%%client
-let num_active_spinners, set_num_active_spinners = React.S.create 0
-let onloaded, set_onloaded = React.E.create ()
+let%client num_active_spinners, set_num_active_spinners = React.S.create 0
+let%client onloaded, set_onloaded = React.E.create ()
 
 (* Make sure the signal is not destroyed indirectly
    by a call to React.E.stop *)
-let _ = ignore (React.E.map (fun _ -> ()) onloaded)
+let%client _ = ignore (React.E.map (fun _ -> ()) onloaded)
 
-let _ =
+let%client _ =
   Ot_lib.onloads @@ fun () ->
   if React.S.value num_active_spinners = 0 then set_onloaded ()
 
-let inc_active_spinners () =
+let%client inc_active_spinners () =
   set_num_active_spinners @@ (React.S.value num_active_spinners + 1)
 
-let dec_active_spinners () =
+let%client dec_active_spinners () =
   set_num_active_spinners @@ (React.S.value num_active_spinners - 1);
   if React.S.value num_active_spinners = 0 then set_onloaded ()
 
-let cl_spinning = "ot-icon-animation-spinning"
-let cl_spinner = "ot-icon-spinner"
+let%client cl_spinning = "ot-icon-animation-spinning"
+let%client cl_spinner = "ot-icon-spinner"
 
-let replace_content ?fail elt thread =
+let%client replace_content ?fail elt gen =
   let fail =
     match fail with
     | Some fail ->
         (fail
-          : exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t
-          :> exn -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
-    | None -> fun e -> Lwt.return (default_fail e)
+          : exn -> [< Html_types.div_content] Eliom_content.Html.elt list
+          :> exn -> Html_types.div_content Eliom_content.Html.elt list)
+    | None -> fun e -> default_fail e
   in
   inc_active_spinners ();
   Manip.replaceChildren elt [];
   Manip.Class.add elt cl_spinning;
   Manip.Class.add elt cl_spinner;
-  let* new_content = Lwt.catch (fun () -> thread) (fun e -> fail e) in
+  let new_content = try gen () with e -> fail e in
   Manip.replaceChildren elt new_content;
   Manip.Class.remove elt cl_spinning;
   Manip.Class.remove elt cl_spinner;
-  dec_active_spinners ();
-  Lwt.return_unit
+  dec_active_spinners ()
 
-module Make (A : sig
-    type +'a t
-
-    val bind : 'a t -> ('a -> 'b t) -> 'b t
-    val bind2 : 'a t -> ('a -> 'b Lwt.t) -> 'b Lwt.t
-    val return : 'a -> 'a t
-  end) =
-struct
-  let with_spinner ?(a = []) ?spinner ?fail thread =
-    let a = (a :> Html_types.div_attrib attrib list) in
-    let fail =
-      match fail with
-      | Some fail ->
-          (fail
-            : exn -> [< Html_types.div_content] elt list A.t
-            :> exn -> Html_types.div_content elt list A.t)
-      | None -> fun e -> A.return (default_fail e)
+let%client with_spinner ?(a = []) ?spinner ?fail gen =
+  let a = (a :> Html_types.div_attrib attrib list) in
+  let fail =
+    match fail with
+    | Some fail ->
+        (fail
+          : exn -> [< Html_types.div_content] elt list
+          :> exn -> Html_types.div_content elt list)
+    | None -> fun e -> default_fail e
+  in
+  (* In Eio direct-style, we must fork to show spinner while gen() executes *)
+  inc_active_spinners ();
+  let cl = ["ot-spinner"] in
+  let cl = if spinner = None then cl_spinner :: cl_spinning :: cl else cl in
+  let d =
+    D.div ~a:(a_class cl :: a)
+      (match spinner with None -> [] | Some s -> s)
+  in
+  Eliom_lib.fork (fun () ->
+    let v =
+      try (gen () :> Html_types.div_content_fun F.elt list)
+      with e -> (fail e :> Html_types.div_content_fun F.elt list)
     in
-    match Lwt.state thread with
-    | Lwt.Return v -> A.return (D.div ~a:(a_class ["ot-spinner"] :: a) v)
-    | Lwt.Sleep ->
-        inc_active_spinners ();
-        let cl = ["ot-spinner"] in
-        let cl =
-          if spinner = None then cl_spinner :: cl_spinning :: cl else cl
-        in
-        let d =
-          D.div ~a:(a_class cl :: a)
-            (match spinner with None -> [] | Some s -> s)
-        in
-        Lwt.async (fun () ->
-          let* v =
-            Lwt.catch
-              (fun () ->
-                 let* v = thread in
-                 Lwt.return (v :> Html_types.div_content_fun F.elt list))
-              (fun e ->
-                 A.bind2 (fail e) (fun v ->
-                   Lwt.return (v :> Html_types.div_content_fun F.elt list)))
-          in
-          Manip.replaceChildren d v;
-          Manip.Class.remove d cl_spinning;
-          Manip.Class.remove d cl_spinner;
-          dec_active_spinners ();
-          Lwt.return_unit);
-        A.return d
-    | Lwt.Fail e -> A.bind (fail e) (fun c -> A.return (D.div ~a c))
-end
-
-module N = Make (struct
-    type +'a t = 'a
-
-    let bind a f = f a
-    let bind2 a f = f a
-    let return a = a
-  end)
-
-module L = Make (struct
-    include Lwt
-
-    let bind2 = bind
-  end)
-
-let with_spinner_no_lwt = N.with_spinner
-let with_spinner = L.with_spinner]
+    Manip.replaceChildren d v;
+    Manip.Class.remove d cl_spinning;
+    Manip.Class.remove d cl_spinner;
+    dec_active_spinners ());
+  d

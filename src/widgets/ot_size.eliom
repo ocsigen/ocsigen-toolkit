@@ -22,7 +22,7 @@
 [%%client.start]
 
 open Js_of_ocaml
-open Js_of_ocaml_lwt
+open Js_of_ocaml_eio
 
 (* size and orientation *)
 type orientation = Portrait | Landscape
@@ -56,9 +56,9 @@ let update_width_height () =
 
 let width_height, width, height =
   (* TODO: MutationObserver? *)
-  (let open Lwt_js_events in
+  (let open Eio_js_events in
    async @@ fun () ->
-   onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ());
+   onresizes @@ fun _ -> update_width_height ());
   let w = React.S.l1 fst wh in
   let h = React.S.l1 snd wh in
   (* Make sure the signals are not destroyed indirectly

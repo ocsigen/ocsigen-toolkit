@@ -31,3 +31,5 @@ space-around-records = false
 space-around-lists = false
 space-around-variants = false
 ocp-indent-compat = true
+wrap-comments = false
+parse-docstrings = false

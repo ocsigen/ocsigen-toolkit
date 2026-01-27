@@ -20,7 +20,7 @@
 
 open Js_of_ocaml
 
-[%%client open Js_of_ocaml_lwt]
+[%%client open Js_of_ocaml_eio]
 
 open Eliom_content.Html
 open Eliom_content.Html.F
@@ -61,16 +61,12 @@ let setup_tabcycle (elts : #tabbable Js.t list) : unit =
   let rec fn n = function
     | [x] ->
         x##.tabIndex := n;
-        (let open Lwt_js_events in
+        (let open Eio_js_events in
          async @@ fun () ->
-         focuses x @@ fun _ _ ->
-         x##.tabIndex := 1;
-         Lwt.return_unit);
-        let open Lwt_js_events in
+         focuses x @@ fun _ -> x##.tabIndex := 1);
+        let open Eio_js_events in
         async @@ fun () ->
-        blurs x @@ fun _ _ ->
-        x##.tabIndex := n;
-        Lwt.return_unit
+        blurs x @@ fun _ -> x##.tabIndex := n
     | hd :: tl ->
         hd##.tabIndex := n;
         fn (n + 1) tl

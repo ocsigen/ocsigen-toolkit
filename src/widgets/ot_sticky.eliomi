@@ -20,8 +20,8 @@ type glue =
   { fixed : div_content D.elt
   ; inline : div_content D.elt
   ; dir : [`Top | `Left]
-  ; scroll_thread : unit Lwt.t
-  ; resize_thread : (int * int) React.S.t
+  ; cancel_scroll : unit -> unit
+  ; resize_signal : (int * int) React.S.t
   ; dissolve : unit -> unit }
 (** returned by [make sticky] (if position:sticky is not supported). You only
     need this value if you want to manipulate the stickiness later (as
@@ -29,10 +29,13 @@ type glue =
     [fixed]: element cloned from the element supplied to [make_sticky];
     [inline]: original element supplied to [make_sticky];
     [dir]: see [make_sticky];
-    [scroll_thread]: thread that makes either [fixed] or [inline] visible,
-                     depending on the scroll position;
-    [resize_thread]: thread that resizes the fixed element according to the
-                     inline element on window resize;
+    [cancel_scroll]: function to be called to cancel the scroll
+    [scroll_promise]: promise that will be resolved when scroll is finished
+                      (with either [fixed] or [inline] visible,
+                      depending on the scroll position);
+    [resize_signal]:  React signal updated with the size of fixed element
+                      recomputed according to the
+                      inline element on window resize;
     [dissolve]: undo [make_sticky] i.e. kill [scroll_thread] and [resize_thread]
                 and remove [fixed] from the DOM tree.
 *)
@@ -42,7 +45,7 @@ val make_sticky :
   -> ?ios_html_scroll_hack:bool
   -> ?force:bool
   -> div_content elt
-  -> glue option Lwt.t
+  -> glue option
 (** position:sticky polyfill which is not supported by some browsers. It
     functions by making a clone with position:fixed of the designated
     element and continuously (window scroll/resize) monitoring the
@@ -53,6 +56,8 @@ val make_sticky :
     browser. The supplied element should be a D-element.
     [dir] determines whether it sticks to the top on vertical scroll or the the
     left on horizontal scroll.
+
+    The function will wait until the node is ready is the page before starting.
 
     NOTE: Do not forget to include the CSS attributes as defined in the file
     css/ot_sticky.css.
@@ -67,7 +72,8 @@ val keep_in_sight :
    dir:[`Left | `Top]
   -> ?ios_html_scroll_hack:bool
   -> div_content elt
-  -> (unit -> unit) Lwt.t
+  -> unit
+  -> unit
 (** make sure an element gets never out of sight while scrolling by
     continuously (window scroll/resize) monitoring the position of the
     element and adjusting the top/left value. Calls
@@ -78,4 +84,8 @@ val keep_in_sight :
     div. (It has to be the parent and not the element itself because
     when the element floats (is in its fixed state) we can't use its
     position for computing the right values.  Returns a function by
-    which the [keep_in_sight] functionality can be stopped. *)
+    which the [keep_in_sight] functionality can be stopped.
+    
+    The function will wait until the node is ready is the page before starting.
+
+    *)

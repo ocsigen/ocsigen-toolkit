@@ -35,11 +35,9 @@
 *)
 
 open%client Js_of_ocaml
-
-[%%client open Js_of_ocaml_lwt]
-[%%shared open Eliom_content.Html]
-[%%shared open Eliom_content.Html.F]
-[%%shared open Lwt.Syntax]
+open%client Js_of_ocaml_eio
+open%shared Eliom_content.Html
+open%shared Eliom_content.Html.F
 
 let%client clX = Ot_swipe.clX
 let%client clY = Ot_swipe.clY
@@ -191,10 +189,9 @@ let%shared
            (for example if we want margins between elements) *)
            max 1 (truncate (float (width_carousel + 1) /. float width_element))
        in
-       Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready d2' in
-         ~%set_nb_visible_elements (comp_nb_visible_elements ());
-         Lwt.return_unit);
+       Eliom_lib.fork (fun () ->
+         let () = Ot_nodeready.nodeready d2' in
+         ~%set_nb_visible_elements (comp_nb_visible_elements ()));
        let maxi () = ~%maxi - React.S.value ~%nb_visible_elements + 1 in
        let pos_signal = ~%pos_signal in
        let pos_set = ~%pos_set in
@@ -304,20 +301,13 @@ let%shared
          ~%swipe_pos_set ~step 0.;
          React.Step.execute step;
          set_active ();
-         Lwt.async (fun () ->
-           let* () =
-             if move
-             then
-               let* _ = Lwt_js_events.transitionend d2' in
-               Lwt.return_unit
-             else Lwt.return_unit
-           in
+         Eliom_lib.fork (fun () ->
+           if move then ignore (Eio_js_events.transitionend d2');
            Eliom_lib.Option.iter (fun f -> f ()) transitionend;
            Manip.Class.remove ~%d2 ot_swiping;
-           ~%pos_post_set pos;
+           ~%pos_post_set pos
            (* Remove swiping after calling f,
-           because f will possibly change the scrolling position of the page *)
-           Lwt.return_unit)
+           because f will possibly change the scrolling position of the page *))
        in
        (*VVV I recompute the size everytime we touch the carousel
         and when the window is resized (?).
@@ -328,27 +318,26 @@ let%shared
            (React.S.map
               (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
               (if vertical then Ot_size.height else Ot_size.width));
-       Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready d2' in
-         set_position ~%position; add_transition d2'; Lwt.return_unit);
+       Eliom_lib.fork (fun () ->
+         Ot_nodeready.nodeready d2'; set_position ~%position; add_transition d2');
        let perform_animation a =
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
          if not (React.S.value ~%disabled)
-         then (
+         then
            match !action, a with
            | `Change _, _ ->
                (* We received both a panend and a swipe.
              The panend can be a `Goback and the swipe a `Change.
              We ignore the `Goback. *)
-               Lwt.return_unit
+               ()
            | _ ->
                action := a;
                if not !animation_frame_requested
                then (
                  animation_frame_requested := true;
-                 let* () = Lwt_js_events.request_animation_frame () in
+                 Eio_js_events.request_animation_frame ();
                  animation_frame_requested := false;
-                 (match !action with
+                 match !action with
                  | `Move (delta, width_element) ->
                      let delta =
                        if ~%allow_overswipe
@@ -373,10 +362,7 @@ let%shared
                      Manip.Class.add ~%d2 ot_swiping;
                      set_top_margin ();
                      action := `Move (0., 0);
-                     set_position ~transitionend:unset_top_margin position);
-                 Lwt.return_unit)
-               else Lwt.return_unit)
-         else Lwt.return_unit
+                     set_position ~transitionend:unset_top_margin position)
        in
        let status = ref Stopped in
        let compute_speed prev_speed prev_delta prev_timestamp delta =
@@ -396,7 +382,7 @@ let%shared
          in
          timestamp, speed
        in
-       let onpan ev _ =
+       let onpan ev =
          (match !status with
          | Start (startx, starty, prev_timestamp) ->
              let move =
@@ -425,7 +411,7 @@ let%shared
                    (startx, starty, width_element (), speed, move, timestamp))
                else !status
          | _ -> ());
-         (match !status with
+         match !status with
          | Ongoing
              ( startx
              , starty
@@ -445,10 +431,9 @@ let%shared
              in
              status :=
                Ongoing (startx, starty, width_element, speed, delta, timestamp);
-             Lwt.async (fun () ->
+             Eliom_lib.fork (fun () ->
                perform_animation (`Move (delta, width_element)))
-         | _ -> ());
-         Lwt.return_unit
+         | _ -> ()
        in
        (* let hammer = Hammer.make_hammer d2 in *)
        let do_end ev startx starty prev_speed prev_delta prev_timestamp =
@@ -488,32 +473,31 @@ let%shared
          then perform_animation (`Change newpos)
          else perform_animation (`Goback newpos)
        in
-       let touchend ev _ =
+       let touchend ev =
          match !status with
          | Start (startx, starty, timestamp) ->
              do_end ev startx starty 0. 0. timestamp
          | Ongoing (startx, starty, _width, speed, delta, timestamp) ->
              do_end ev startx starty speed delta timestamp
-         | _ -> Lwt.return_unit
+         | _ -> ()
        in
-       let touchcancel ev _ =
+       let touchcancel ev =
          match !status with
          | Start (startx, starty, _) | Ongoing (startx, starty, _, _, _, _) ->
              add_transition d2';
              status := Stopped;
              let pos = Eliom_shared.React.S.value pos_signal in
              perform_animation (`Goback pos)
-         | _ -> Lwt.return_unit
+         | _ -> ()
        in
        if ~%swipeable
        then (
-         Lwt.async (fun () ->
-           Lwt_js_events.touchstarts d (fun ev aa ->
-             status := Start (clX ev, clY ev, now ());
-             Lwt.return_unit));
-         Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
-         Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
-         Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel));
+         Eliom_lib.fork (fun () ->
+           Eio_js_events.touchstarts d (fun ev ->
+             status := Start (clX ev, clY ev, now ())));
+         Eliom_lib.fork (fun () -> Eio_js_events.touchmoves d onpan);
+         Eliom_lib.fork (fun () -> Eio_js_events.touchends d touchend);
+         Eliom_lib.fork (fun () -> Eio_js_events.touchcancels d touchcancel));
        ignore
          (Eliom_lib.Option.map
             (fun update ->
@@ -538,14 +522,12 @@ let%shared
                              in
                              if curpos < maxi
                              then perform_animation (`Change (curpos + 1))
-                             else Lwt.return_unit
                          | `Prev ->
                              let curpos =
                                Eliom_shared.React.S.value pos_signal
                              in
                              if curpos > 0
-                             then perform_animation (`Change (curpos - 1))
-                             else Lwt.return_unit)
+                             then perform_animation (`Change (curpos - 1)))
                       update))
             ~%update)
        : unit)]
@@ -587,27 +569,24 @@ let%client set_default_fail f =
       :> exn -> Html_types.div_content Eliom_content.Html.elt)
 
 let%shared generate_content generator =
-  Lwt.catch
-    (fun () -> Eliom_shared.Value.local generator ())
-    (fun e -> Lwt.return (default_fail e))
+  try Eliom_shared.Value.local generator () with e -> default_fail e
 
 (* on the client side we generate the contents of the initially visible page
    asynchronously so the tabs will be rendered right away *)
 let%client generate_initial_contents ~spinner sleeper gen =
   let s = spinner () in
-  ( Lwt.async @@ fun () ->
-    let* contents = generate_content gen in
+  ( Eliom_lib.fork @@ fun () ->
+    let contents = generate_content gen in
     (* wait until DOM elements are created before attempting to replace them *)
-    let* parent = sleeper in
+    let parent = Eio.Promise.await sleeper in
     ignore @@ To_dom.of_element parent;
-    Manip.replaceSelf s contents;
-    Lwt.return () );
-  Lwt.return (s, ref @@ None)
+    Manip.replaceSelf s contents );
+  s, ref @@ None
 
 (* on the server side we generate all the visible contents right away *)
 let%server generate_initial_contents ~spinner:_ _ gen =
-  let* contents = generate_content gen in
-  Lwt.return (contents, ref @@ None)
+  let contents = generate_content gen in
+  contents, ref @@ None
 
 let%shared
     make_lazy
@@ -628,30 +607,30 @@ let%shared
   =
   let gen_contents =
     (gen_contents
-      :> (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list)
+      :> (unit -> Html_types.div_content elt) Eliom_shared.Value.t list)
   in
-  let sleeper, wakener = Lwt.wait () in
-  let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t =
+  let sleeper, wakener =
+    Eio.Promise.create
+      (* TODO: ciao-lwt: Translation is incomplete, [Promise.await] must be called on the promise when it's part of control-flow. *)
+      ()
+  in
+  let mk_contents : int -> 'gen -> 'a elt * ('a elt * 'gen) option ref =
    fun i gen ->
     if i = position
     then generate_initial_contents ~spinner sleeper gen
     else
-      Lwt.return
-      @@
       let s = spinner () in
       s, ref @@ Some (s, gen)
   in
-  let* contents, spinners_and_generators =
-    Lwt.map List.split
-    @@ Lwt_list.map_s (fun x -> x)
-    @@ List.mapi mk_contents gen_contents
+  let contents, spinners_and_generators =
+    List.split (List.map (fun x -> x) (List.mapi mk_contents gen_contents))
   in
   let carousel =
     make ?a ?vertical ~position ?transition_duration ?inertia ?swipeable
       ?allow_overswipe ?update ?disabled ?full_height ?make_transform
       ?make_page_attribute contents
   in
-  Lwt.wakeup wakener carousel.elt;
+  ignore (Eio.Promise.try_resolve wakener carousel.elt);
   (* generate initial content (client-side) *)
   (* replace spinners with content when switched to for the first time *)
   let _ =
@@ -667,17 +646,16 @@ let%shared
                 let spinner_and_generator =
                   List.nth ~%spinners_and_generators i
                 in
-                Lwt.async @@ fun () ->
+                Eliom_lib.fork @@ fun () ->
                 match !spinner_and_generator with
                 | Some (spinner, gen_content) ->
                     spinner_and_generator := None;
-                    let* content = generate_content gen_content in
-                    Manip.replaceSelf spinner content;
-                    Lwt.return_unit
-                | None -> Lwt.return ())
+                    let content = generate_content gen_content in
+                    Manip.replaceSelf spinner content
+                | None -> ())
        : unit)]
   in
-  Lwt.return carousel
+  carousel
 
 let%shared bullet_class i pos size =
   Eliom_shared.React.S.l2
@@ -709,7 +687,7 @@ let%shared
       ~a:
         (a_class ["ot-bullet-nav-item"]
         :: R.a_class class_
-        :: a_onclick [%client fun _ -> ~%change (`Goto ~%i)]
+        :: a_onclick [%client fun _ -> Eio_js.start (fun () -> ~%change (`Goto ~%i))]
         :: a)
       c
   in
@@ -744,7 +722,7 @@ let%shared
       ~a:
         [ a_class ["ot-car-ribbon-list-item"]
         ; R.a_class class_
-        ; a_onclick [%client fun _ -> ~%change (`Goto ~%i)] ]
+        ; a_onclick [%client fun _ -> Eio_js.start (fun () -> ~%change (`Goto ~%i))] ]
       c
   in
   let l = List.mapi item l in
@@ -773,8 +751,8 @@ let%shared
          React.S.create container'##.offsetWidth
        in
        let curleft, set_curleft = React.S.create initial_gap in
-       Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready container' in
+       Eliom_lib.fork (fun () ->
+         Ot_nodeready.nodeready container';
          (* Ribbon position: *)
          set_containerwidth container'##.offsetWidth;
          Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
@@ -794,10 +772,9 @@ let%shared
            noderesize but there is also a race condition with this code here
            that runs on window resizing. So we make sure the ribbon code runs
            AFTER it has been placed into the fixed container by Ot_sticky. *)
-                Lwt.async @@ fun () ->
-                let* _ = Lwt_js.sleep 0.05 in
-                set_containerwidth container'##.offsetWidth;
-                Lwt.return_unit);
+                Eliom_lib.fork @@ fun () ->
+                Eio_js.sleep 0.05;
+                set_containerwidth container'##.offsetWidth);
          (* Changing the position of the ribbon when the carousel position
          changes or when the size of the window changes: *)
          Eliom_lib.Dom_reference.retain container'
@@ -844,7 +821,7 @@ let%shared
                    | _ -> ())
                 ~%pos ~%size containerwidth);
          (* Cursor: *)
-         (match ~%cursor_elt, ~%cursor with
+         match ~%cursor_elt, ~%cursor with
          | Some cursor_elt, Some cursor ->
              let moving = ref false in
              Eliom_lib.Dom_reference.retain container'
@@ -924,13 +901,11 @@ let%shared
                        | _ -> ())
                     ~%pos cursor ~%size curleft containerwidth)
          | _ -> ());
-         Lwt.return_unit);
-       Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready container' in
-         let* () = Lwt_js_events.request_animation_frame () in
+       Eliom_lib.fork (fun () ->
+         Ot_nodeready.nodeready container';
+         Eio_js_events.request_animation_frame ();
          add_transition the_ul';
-         Eliom_lib.Option.iter add_transition cursor_elt';
-         Lwt.return_unit);
+         Eliom_lib.Option.iter add_transition cursor_elt');
        (* Moving the ribbon with fingers: *)
        let fmax () = initial_gap in
        let fmin () =
@@ -957,8 +932,7 @@ let%shared
          ~onstart:(fun _ _ ->
            Eliom_lib.Option.iter remove_transition cursor_elt')
          ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
-         the_ul;
-       Lwt.return_unit
+         the_ul
        : _)];
   container
 
@@ -979,11 +953,12 @@ let%shared
       :: a_onclick
            [%client
              fun _ ->
-               let offset = React.S.value ~%offset in
-               ~%change
-                 (if offset > 1
-                  then `Goto (React.S.value ~%pos - offset)
-                  else `Prev)]
+               Eio_js.start (fun () ->
+                 let offset = React.S.value ~%offset in
+                 ~%change
+                   (if offset > 1
+                    then `Goto (React.S.value ~%pos - offset)
+                    else `Prev))]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
@@ -1007,11 +982,12 @@ let%shared
       :: a_onclick
            [%client
              fun _ ->
-               let offset = React.S.value ~%offset in
-               ~%change
-                 (if offset > 1
-                  then `Goto (React.S.value ~%pos + offset)
-                  else `Next)]
+               Eio_js.start (fun () ->
+                 let offset = React.S.value ~%offset in
+                 ~%change
+                   (if offset > 1
+                    then `Goto (React.S.value ~%pos + offset)
+                    else `Next))]
       :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
     content
 
@@ -1033,7 +1009,7 @@ let%shared
 (*   D.div ~a:(a_class ["ot-car-nav"]::a) [prev; menu; next] *)
 
 let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
-  Lwt_js_events.keydowns ?use_capture elt (fun ev _ ->
+  Eio_js_events.keydowns ?use_capture elt (fun ev ->
     let change d =
       Dom_html.stopPropagation ev;
       Dom.preventDefault ev;
@@ -1061,8 +1037,7 @@ let%client bind_arrow_keys ?use_capture ?(vertical = false) ~change elt =
     else if key = 39 (* right *)
     then change `Next
     else if key = 37 (* left *)
-    then change `Prev;
-    Lwt.return_unit)
+    then change `Prev)
 
 let%shared wheel_compute_angle pos faces swipe_pos =
   (float pos +. swipe_pos) *. (360. /. float faces)
@@ -1142,8 +1117,8 @@ let%shared
 (* {client{ *)
 
 (*    let _ = *)
-(*      Lwt.async (fun () -> *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*      Elio_lib.fork (fun () -> *)
+(*        Eio_js.sleep 1.; *)
 (*        let ev, send_ev = React.E.create () in *)
 (*        let d, _ = make *)
 (*            ~position:2 *)
@@ -1155,27 +1130,27 @@ let%shared
 (*            ] *)
 (*        in *)
 (*        Manip.appendToBody d; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev `Next; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev `Next; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev `Prev; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev `Next; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev `Prev; *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev (`Goto 0); *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev (`Goto 3); *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev (`Goto 1); *)
-(*        lwt () = Lwt_js.sleep 1. in *)
+(*        Eio_js.sleep 1.; *)
 (*        send_ev (`Goto 0); *)
-(*        lwt () = Lwt_js.sleep 1. in *)
-(*        send_ev (`Goto 3); *)
-(*        Lwt.return_unit *)
+(*        Eio_js.sleep 1.; *)
+(*        send_ev (`Goto 3) *)
+(*         *)
 (*      ) *)
 
 (*  }} *)

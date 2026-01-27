@@ -33,10 +33,7 @@ open Js_of_ocaml
 type cropping = (float * float * float * float) React.S.t
 
 type 'a upload =
-  ?progress:(int -> int -> unit)
-  -> ?cropping:cropping
-  -> File.file Js.t
-  -> 'a Lwt.t
+  ?progress:(int -> int -> unit) -> ?cropping:cropping -> File.file Js.t -> 'a
 
 type ('a, 'b) service =
   ( unit
@@ -89,18 +86,19 @@ val do_submit :
   -> ?cropping:cropping
   -> upload:'a upload
   -> unit
-  -> unit Lwt.t
+  -> unit
 (** [ do_submit input ?cropping ~upload () ]
     [input] is the input with file loaded
     [cropping] are cropping info
-    [upload] function to upload the file *)
+    [upload] function to upload the file.
+    This function waits for the submission to complete. *)
 
 val bind_submit :
    Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
   -> upload:'a upload
-  -> after_submit:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit)
   -> unit
   -> unit
 (** [ bind_submit input button ?cropping ~upload ~after_submit () ]
@@ -114,7 +112,7 @@ val bind :
   -> ?crop:(unit -> unit) * cropping
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
   -> upload:'a upload
-  -> after_submit:(unit -> unit Lwt.t)
+  -> after_submit:(unit -> unit)
   -> unit
   -> unit
 (** [bind] is a shortcut for [bind_input] and [bind_submit] actions *)
@@ -142,7 +140,7 @@ val submit :
 (** Create a button with [ot-pup-sumit] clas *)
 
 val mk_form :
-   ?after_submit:(unit -> unit Lwt.t)
+   ?after_submit:(unit -> unit)
   -> ?crop:float option
   -> ?input:
        [< Html_types.label_attrib > `Class] Eliom_content.Html.attrib list
@@ -151,7 +149,7 @@ val mk_form :
        [< Html_types.button_attrib > `Class] Eliom_content.Html.attrib list
        * [< Html_types.button_content_fun] Eliom_content.Html.elt list
   -> 'a upload
-  -> [> `Form] Eliom_content.Html.elt Lwt.t
+  -> [> `Form] Eliom_content.Html.elt
 (** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.
     If [crop] is present, cropping is enable, with the optional ratio it is.

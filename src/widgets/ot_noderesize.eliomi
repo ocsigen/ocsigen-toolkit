@@ -45,9 +45,9 @@ open Js_of_ocaml
 
     {3 Example}
 
-    {[Lwt.async (fun () ->
+    {[Eio.Fiber.fork ~sw (fun () ->
         let div' = (To_dom.of_element div) in
-        let%lwt () = Ot_nodeready.nodeready div' in
+        Ot_nodeready.nodeready div';
         Ot_noderesize.noderesize (ot_noderesize.attach div) (fun () ->
           Console.console##log (Js.string "Resized") ) )]} *)
 

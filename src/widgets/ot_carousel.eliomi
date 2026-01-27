@@ -19,9 +19,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-[%%client.start]
-
-open Js_of_ocaml
+open%client Js_of_ocaml
+open%client Js_of_ocaml_eio
 
 [%%shared.start]
 
@@ -148,10 +147,10 @@ val make_lazy :
         -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
          Eliom_shared.Value.t
   -> ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt)
-  -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
+  -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt)
        Eliom_shared.Value.t
        list
-  -> [> `Div] t Lwt.t
+  -> [> `Div] t
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
     generator function. Contents will be generated and filled lazily, i.e. when
@@ -274,13 +273,13 @@ val next :
 [%%client.start]
 
 (*  Make arrow keys cause event change.
-    Returns a thread that never stops until you call [Lwt.cancel] on it. *)
+    Never returns unless you cancel the switch in which is runs. *)
 val bind_arrow_keys :
    ?use_capture:bool
   -> ?vertical:bool
   -> change:([> `Goto of int | `Next | `Prev] -> unit)
   -> #Dom_html.eventTarget Js.t
-  -> unit Lwt.t
+  -> unit
 
 val set_default_fail :
    (exn -> [< Html_types.div_content] Eliom_content.Html.elt)
