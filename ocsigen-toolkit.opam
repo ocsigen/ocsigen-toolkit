@@ -13,6 +13,7 @@ build: [ make "-j%{jobs}%" ]
 install: [ make "install" ]
 available: arch != "x86_32" & arch != "arm32"
 depends: [
+  "dune" {>= "3.14"}
   "ocaml" {>= "4.08.0"}
   "js_of_ocaml" {>= "6.0.0"}
   "eliom" {>= "11.0.0"}

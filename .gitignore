@@ -1,8 +1,1 @@
-.depend
-_client
-_deps
-_server
-lib
-_opam
-doc/client
-doc/server
+_build
