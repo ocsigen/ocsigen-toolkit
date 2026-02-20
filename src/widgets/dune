@@ -1,0 +1,58 @@
+(env
+ (_
+  (flags
+   (:standard -w +A@3-4@5..16@20..43-44@45..68-69-70))))
+
+(library
+ (public_name ocsigen-toolkit.server)
+ (name widgets_server)
+ (modes byte native)
+ (wrapped false)
+ (preprocess
+  (pps
+   eliom.ppx.server
+   lwt_ppx
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --rpc-raw))
+ (libraries eliom.server calendar js_of_ocaml))
+
+(subdir
+ client
+ (library
+  (public_name ocsigen-toolkit.client)
+  (name widgets_client)
+  (modes byte)
+  (wrapped false)
+  (preprocess
+   (pps
+    eliom.ppx.client
+    js_of_ocaml-ppx
+    lwt_ppx
+    js_of_ocaml-ppx_deriving_json))
+  (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
+ (dynamic_include ../dune.client))
+
+(subdir
+ tools
+ (executable
+  (name eliom_ppx_client)
+  (modes native)
+  (modules eliom_ppx_client)
+  (preprocess
+   (pps lwt_ppx))
+  (libraries ocsigen-ppx-rpc eliom.ppx.client))
+ (rule
+  (action
+   (with-stdout-to
+    eliom_ppx_client.ml
+    (echo "let () = Ppxlib.Driver.standalone ()")))))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run ../../tools/gen_dune.exe .))))
