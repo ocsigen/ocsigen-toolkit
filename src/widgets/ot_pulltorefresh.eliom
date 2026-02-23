@@ -4,10 +4,11 @@ type state = Pulling | Ready | Loading | Succeeded | Failed
 
 [%%client open Eliom_content.Html]
 
-open Eliom_content.Html.D
+module H = Eliom_content.Html
+open H.D
 
-let%shared default_header =
-  let open Eliom_content.Html in
+let%shared default_header : state option -> [> `Div] H.elt list =
+  let open H in
   function
   | Some Loading -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
   | _ -> []
@@ -19,7 +20,7 @@ open Lwt.Syntax
 module type CONF = sig
   val dragThreshold : float
   val scale : float
-  val container : Html_types.div Eliom_content.Html.D.elt
+  val container : Html_types.div H.D.elt
   val set_state : ?step:React.step -> state option -> unit
   val timeout : float
   val afterPull : unit -> bool Lwt.t
@@ -168,13 +169,13 @@ module Make (Conf : CONF) = struct
 end]
 
 let make
-      ?(a = [])
+      ?(a : [< Html_types.div_attrib > `Class] H.attrib list = [])
       ?(app_only = true)
       ?(scale = 5.)
       ?(dragThreshold = 80.)
       ?(refresh_timeout = 20.)
       ?(header = [%shared default_header])
-      ~content
+      ~(content : Html_types.div_content H.elt)
       (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
   if app_only && not (Eliom_client.is_client_app ())
@@ -182,10 +183,10 @@ let make
   else
     let state_s, set_state = Eliom_shared.React.S.create None in
     let headContainer =
-      Eliom_content.Html.R.node
+      H.R.node
       @@ Eliom_shared.React.S.map
            [%shared
-             let open Eliom_content.Html in
+             let open H in
              fun s ->
                D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
                @@ Eliom_shared.Value.local ~%header
@@ -209,5 +210,6 @@ let make
          let module Ptr = Make (Ptr_conf) in
          Ptr.init ()
          : unit)];
-    let open Eliom_content.Html in
-    F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
+    let open H in
+    (F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
+      :> [> `Div] elt)

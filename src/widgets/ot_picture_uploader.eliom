@@ -457,7 +457,7 @@ let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
 
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
-  let* _ = upload ?progress ?cropping file in
+  let* () = upload ?progress ?cropping file in
   Lwt.return_unit
 
 let%client
@@ -503,7 +503,7 @@ let%shared
       ?crop
       ?input:(input_a, input_content = [], [])
       ?submit:(submit_a, submit_content = [], [])
-      (upload : 'a upload)
+      (upload : unit upload)
   =
   let preview = preview () in
   let input, input_label = input ~a:input_a input_content in
