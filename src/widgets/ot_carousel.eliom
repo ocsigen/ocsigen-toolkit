@@ -967,7 +967,7 @@ let%shared blur = function true -> ["ot-blurred"] | false -> []
 let%shared
     previous
       ?(a = [])
-      ~(change : ([> `Prev | `Goto of int] -> unit) Eliom_client_value.t)
+      ~(change : ([`Prev | `Goto of int] -> unit) Eliom_client_value.t)
       ?(offset = Eliom_shared.React.S.const 1)
       ~pos
       content
@@ -979,8 +979,9 @@ let%shared
       :: a_onclick
            [%client
              fun _ ->
+               let change = (~%change :> [`Prev | `Goto of int] -> unit) in
                let offset = React.S.value ~%offset in
-               ~%change
+               change
                  (if offset > 1
                   then `Goto (React.S.value ~%pos - offset)
                   else `Prev)]
