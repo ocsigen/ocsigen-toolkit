@@ -582,13 +582,15 @@ let%server make :
    ?button_labels
    ?intl
    () ->
-  C.node
-    [%client
-      (make ?init:~%init ?highlight:~%highlight
-         ?click_non_highlighted:~%click_non_highlighted ?update:~%update
-         ?action:~%action ?period:~%period ?intl:~%intl
-         ?button_labels:~%button_labels ()
-       : [> `Div] elt)]
+  (C.node
+     [%client
+       (make ?init:~%init ?highlight:~%highlight
+          ?click_non_highlighted:~%click_non_highlighted ?update:~%update
+          ?action:~%action ?period:~%period ?intl:~%intl
+          ?button_labels:~%button_labels ()
+        : [> `Div] elt)]
+    : [`Div] elt
+    :> [> `Div] elt)
 
 let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
   let init =
