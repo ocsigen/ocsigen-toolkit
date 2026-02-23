@@ -107,11 +107,11 @@ let%shared
          (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
       ?(onend :
          (Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t option)
-      (elt : _ elt)
+      (elt : Html_types.div_content elt)
   =
   ignore
     [%client
-      (let elt = ~%elt in
+      (let elt = (~%elt :> Html_types.div_content elt) in
        let elt' = To_dom.of_element elt in
        let startx =
          ref 0.

@@ -243,7 +243,7 @@ val ribbon :
 
 val previous :
    ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
-  -> change:([> `Prev | `Goto of int] -> unit) Eliom_client_value.t
+  -> change:([`Prev | `Goto of int] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
   -> Html_types.button_content Eliom_content.Html.elt list
@@ -252,7 +252,7 @@ val previous :
 
 val next :
    ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
-  -> change:([> `Next | `Goto of int] -> unit) Eliom_client_value.t
+  -> change:([`Next | `Goto of int] -> unit) Eliom_client_value.t
   -> ?offset:int Eliom_shared.React.S.t
   -> pos:int Eliom_shared.React.S.t
   -> vis_elts:int Eliom_shared.React.S.t

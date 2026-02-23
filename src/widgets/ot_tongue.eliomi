@@ -25,7 +25,7 @@ val tongue :
   -> ?side:[`Bottom | `Left | `Right | `Top]
   -> ?stops:stop list
   -> ?init:simple_stop
-  -> ?handle:[> `Div] Eliom_content.Html.elt
+  -> ?handle:Html_types.div_content Eliom_content.Html.elt
   -> ?update:simple_stop React.event Eliom_client_value.t
   -> [< Html_types.div_content_fun] Eliom_content.Html.elt list
   -> tongue
