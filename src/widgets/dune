@@ -25,11 +25,7 @@
   (modes byte)
   (wrapped false)
   (preprocess
-   (pps
-    eliom.ppx.client
-    js_of_ocaml-ppx
-    lwt_ppx
-    js_of_ocaml-ppx_deriving_json))
+   (pps js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json))
   (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
  (dynamic_include ../dune.client))
 
