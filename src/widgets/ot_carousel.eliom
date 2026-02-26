@@ -972,6 +972,9 @@ let%shared
       ~pos
       content
   =
+  let change =
+    (change :> ([`Prev | `Goto of int] -> unit) Eliom_client_value.t)
+  in
   Form.button_no_value ~button_type:`Button
     ~a:
       (R.a_class (Eliom_shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
@@ -997,6 +1000,9 @@ let%shared
       ~length
       content
   =
+  let change =
+    (change :> ([`Next | `Goto of int] -> unit) Eliom_client_value.t)
+  in
   Form.button_no_value ~button_type:`Button
     ~a:
       (R.a_class

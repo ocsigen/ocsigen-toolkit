@@ -11,7 +11,7 @@ val bind :
   -> ?onstart:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
   -> ?onmove:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
   -> ?onend:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
-  -> 'a Eliom_content.Html.elt
+  -> Html_types.div_content Eliom_content.Html.elt
   -> unit
 (**
    [bind ~compute_final_pos elt] makes [elt] left-right
