@@ -320,6 +320,36 @@ val%shared validate_as_int : string -> (int option, unit) result
 val%shared none_input_value : string
 (** The string ["-"], used as placeholder for empty optional int inputs. *)
 
+(** {3 Date and time inputs} *)
+
+val%shared parse_date : string -> (int * int * int) option
+(** Parse a date string in [YYYY-MM-DD] format. *)
+
+val%shared parse_time : string -> (int * int) option
+(** Parse a time string in [HH:MM] format. *)
+
+val%shared string_of_date : int * int * int -> string
+(** Format a [(year, month, day)] triple as [YYYY-MM-DD]. *)
+
+val%shared string_of_time : int * int -> string
+(** Format a [(hours, minutes)] pair as [HH:MM]. *)
+
+val%shared reactive_date_input :
+   ?a:[< Html_types.input_attrib] attrib list
+  -> ?value:int * int * int
+  -> unit
+  -> [> `Input] elt * (int * int * int) option react_component
+(** A reactive HTML5 date input. The signal carries
+    [Some (year, month, day)] or [None] when empty. *)
+
+val%shared reactive_time_input :
+   ?a:[< Html_types.input_attrib] attrib list
+  -> ?value:int * int
+  -> unit
+  -> [> `Input] elt * (int * int) option react_component
+(** A reactive HTML5 time input. The signal carries
+    [Some (hours, minutes)] or [None] when empty. *)
+
 (** {2 Tab cycling (client-only)} *)
 
 module%client Tabbable : sig

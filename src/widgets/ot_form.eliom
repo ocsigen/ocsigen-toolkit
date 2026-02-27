@@ -816,6 +816,86 @@ let%shared int_input ?(min = 0) ?(max = max_int) ?(size = 2) initial_value =
   in
   buttons, value
 
+(* -- Date and time inputs ---------------------------------------- *)
+
+let%shared parse_date s =
+  try Scanf.sscanf s "%4d-%2d-%2d" (fun y m d -> Some (y, m, d))
+  with _ -> None
+
+let%shared parse_time s =
+  try Scanf.sscanf s "%2d:%2d" (fun h m -> Some (h, m)) with _ -> None
+
+let%shared string_of_date (y, m, d) = Printf.sprintf "%04d-%02d-%02d" y m d
+let%shared string_of_time (h, m) = Printf.sprintf "%02d:%02d" h m
+
+let%shared reactive_date_input ?(a = []) ?value () =
+  let initial_str =
+    match value with Some v -> string_of_date v | None -> ""
+  in
+  let signal, set_signal = Eliom_shared.React.S.create value in
+  let inp =
+    D.Raw.input
+      ~a:
+        (a_input_type `Date
+        :: a_class ["ot-form-input"; "ot-date-input"]
+        :: cons_opt
+             (if initial_str <> "" then Some (a_value initial_str) else None)
+             (a :> Html_types.input_attrib attrib list))
+      ()
+  in
+  let (_ : unit Eliom_client_value.t) =
+    [%client
+      let inp' = To_dom.of_input ~%inp in
+      Lwt.async (fun () ->
+        Lwt_js_events.changes inp' @@ fun _ _ ->
+        let v = Js.to_string inp'##.value in
+        ~%set_signal (parse_date v);
+        Lwt.return_unit);
+      Eliom_lib.Dom_reference.retain inp'
+        ~keep:
+          (React.S.map
+             (fun v ->
+                let s = match v with Some d -> string_of_date d | None -> "" in
+                if Js.to_string inp'##.value <> s
+                then inp'##.value := Js.string s)
+             ~%signal)]
+  in
+  inp, (signal, set_signal)
+
+let%shared reactive_time_input ?(a = []) ?value () =
+  let initial_str =
+    match value with Some v -> string_of_time v | None -> ""
+  in
+  let signal, set_signal = Eliom_shared.React.S.create value in
+  let inp =
+    D.Raw.input
+      ~a:
+        (a_input_type `Time
+        :: a_class ["ot-form-input"; "ot-time-input"]
+        :: cons_opt
+             (if initial_str <> "" then Some (a_value initial_str) else None)
+             (a :> Html_types.input_attrib attrib list))
+      ()
+  in
+  let (_ : unit Eliom_client_value.t) =
+    [%client
+      let inp' = To_dom.of_input ~%inp in
+      Lwt.async (fun () ->
+        Lwt_js_events.changes inp' @@ fun _ _ ->
+        let v = Js.to_string inp'##.value in
+        ~%set_signal (parse_time v);
+        Lwt.return_unit);
+      Eliom_lib.Dom_reference.retain inp'
+        ~keep:
+          (React.S.map
+             (fun v ->
+                let s = match v with Some t -> string_of_time t | None -> "" in
+                if Js.to_string inp'##.value <> s
+                then inp'##.value := Js.string s)
+             ~%signal)]
+  in
+  inp, (signal, set_signal)
+
 (* ================================================================ *)
 (* Tab cycling (client-only)                                        *)
 (* ================================================================ *)
