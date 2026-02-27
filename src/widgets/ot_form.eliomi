@@ -224,6 +224,21 @@ val%shared graceful_invalid_style : [`Input] elt -> unit
     for invalidity without showing errors before the user interacts.
     Inspired by [:-moz-ui-invalid]. *)
 
+(** {3 Reactive select} *)
+
+val%shared reactive_select :
+   ?a:[< Html_types.select_attrib] attrib list
+  -> options:(string * string) list
+  -> ?selected:string
+  -> unit
+  -> [> `Select] elt * string react_component
+(** [reactive_select ~options ()] creates a [<select>] element with
+    reactive selection tracking. [options] is a list of [(value, label)]
+    pairs. Returns the element and a [(signal, setter)] pair.
+    The setter can be used to change the selection programmatically. *)
+
+(** {3 Misc} *)
+
 val%shared validate_as_int : string -> (int option, unit) result
 (** Validate a string as an optional integer. Returns [Ok None] for
     empty strings or ["-"], [Ok (Some n)] for valid integers,

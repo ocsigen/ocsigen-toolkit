@@ -554,6 +554,45 @@ let%shared
         Lwt_js_events.inputs inp @@ fun _ _ -> f (); Lwt.return_unit
         : unit)]
 
+(* -- Reactive select --------------------------------------------- *)
+
+let%shared reactive_select ?(a = []) ~options ?selected () =
+  let initial =
+    match selected with Some v -> v | None -> fst (List.hd options)
+  in
+  let signal, set_signal = Eliom_shared.React.S.create initial in
+  let make_option (value, label_text) =
+    let a_sel = if value = initial then [a_selected ()] else [] in
+    F.option ~a:(a_value value :: a_sel) (F.txt label_text)
+  in
+  let elt =
+    D.Raw.select
+      ~a:
+        (a_class ["ot-form-select"]
+        :: (a :> Html_types.select_attrib attrib list))
+      (List.map make_option options)
+  in
+  let (_ : unit Eliom_client_value.t) =
+    [%client
+      let dom =
+        (Js.Unsafe.coerce (To_dom.of_element ~%elt)
+         : < value : Js.js_string Js.t Js.prop > Js.t)
+      in
+      Lwt.async (fun () ->
+        Lwt_js_events.changes (To_dom.of_element ~%elt) @@ fun _ _ ->
+        ~%set_signal (Js.to_string dom##.value);
+        Lwt.return_unit);
+      Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
+        ~keep:
+          (React.S.map
+             (fun v ->
+                if Js.to_string dom##.value <> v then dom##.value := Js.string v)
+             ~%signal)]
+  in
+  elt, (signal, set_signal)
+
+(* -- Misc ------------------------------------------------------- *)
+
 let%shared none_input_value = "-"
 
 let%shared validate_as_int value =
