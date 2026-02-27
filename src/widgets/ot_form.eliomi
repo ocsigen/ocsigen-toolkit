@@ -286,6 +286,18 @@ val%shared password_input :
     CSS classes: [ot-password-container], [ot-password-input],
     [ot-password-toggle], [ot-password-toggle-show], [ot-password-toggle-hide]. *)
 
+(** {3 Password toggle (non-reactive)} *)
+
+val%shared password_toggle :
+  [< Html_types.input] elt -> [> `Div] elt
+(** [password_toggle inp] wraps an existing password input element [inp]
+    in a container with a visibility toggle button.
+    Unlike {!password_input}, this does not use reactive signals: it
+    manipulates the DOM directly on click, making it suitable for use
+    with [D.Form.input] in Eliom forms.
+    CSS classes: [ot-password-container],
+    [ot-password-toggle], [ot-password-toggle-show], [ot-password-toggle-hide]. *)
+
 (** {3 Prevent double submit} *)
 
 val%shared prevent_double_submit :

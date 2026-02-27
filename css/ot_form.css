@@ -44,7 +44,8 @@
     align-items: center;
 }
 
-.ot-password-container > .ot-password-input {
+.ot-password-container > .ot-password-input,
+.ot-password-container > input {
     flex: 1;
 }
 

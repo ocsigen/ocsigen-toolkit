@@ -688,6 +688,46 @@ let%shared password_input ?(a = []) ?placeholder () =
   , inp
   , (visible_s, set_visible) )
 
+(* -- Password toggle (non-reactive) ------------------------------ *)
+
+let%shared password_toggle (inp : [< Html_types.input] elt) =
+  let toggle_icon =
+    D.span ~a:[a_class ["ot-password-toggle-show"]] []
+  in
+  let toggle =
+    D.button
+      ~a:
+        [ a_button_type `Button
+        ; a_class ["ot-password-toggle"]
+        ; a_onclick
+            [%client
+              fun ev ->
+                Dom_html.stopPropagation ev;
+                Dom.preventDefault ev;
+                let inp = To_dom.of_input ~%inp in
+                let icon = To_dom.of_element ~%toggle_icon in
+                let t =
+                  Js.to_string (Js.Unsafe.get inp (Js.string "type"))
+                in
+                if t = "password"
+                then begin
+                  Js.Unsafe.set inp (Js.string "type")
+                    (Js.string "text");
+                  icon##.className :=
+                    Js.string "ot-password-toggle-hide"
+                end
+                else begin
+                  Js.Unsafe.set inp (Js.string "type")
+                    (Js.string "password");
+                  icon##.className :=
+                    Js.string "ot-password-toggle-show"
+                end] ]
+      [toggle_icon]
+  in
+  D.div ~a:[a_class ["ot-password-container"]]
+    [ (inp : [< Html_types.input] elt :> Html_types.div_content_fun elt)
+    ; toggle ]
+
 (* -- Prevent double submit --------------------------------------- *)
 
 let%shared prevent_double_submit ?(a = []) ?button_type ~f content =
