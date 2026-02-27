@@ -236,6 +236,25 @@ val%shared graceful_invalid_style : [`Input] elt -> unit
     for invalidity without showing errors before the user interacts.
     Inspired by [:-moz-ui-invalid]. *)
 
+(** {3 Integer inputs} *)
+
+val%shared optional_int_input :
+   ?min:int
+  -> ?max:int
+  -> ?size:int
+  -> int option
+  -> [> `Div] elt * (int option, unit) result Eliom_shared.React.S.t
+(** An integer input with +/- buttons that can be empty (None).
+    Displays ["-"] when empty. *)
+
+val%shared int_input :
+   ?min:int
+  -> ?max:int
+  -> ?size:int
+  -> int
+  -> [> `Div] elt * (int, unit) result Eliom_shared.React.S.t
+(** An integer input with +/- buttons. Always contains a value. *)
+
 (** {3 Reactive select} *)
 
 val%shared reactive_select :

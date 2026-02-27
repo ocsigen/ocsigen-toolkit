@@ -623,7 +623,7 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
   in
   elt, (signal, set_signal)
 
-(* -- Misc ------------------------------------------------------- *)
+(* -- Integer inputs ---------------------------------------------- *)
 
 let%shared none_input_value = "-"
 
@@ -635,6 +635,103 @@ let%shared validate_as_int value =
     match int_of_string_opt value with
     | None -> Error ()
     | Some value -> Ok (Some value)
+
+let%shared
+    int_step_button
+      ~min_value
+      ~max_value
+      ~value
+      ~set_value
+      ~input_elt
+      ~optional
+      step
+  =
+  let disabled =
+    Eliom_shared.React.S.map
+      [%shared
+        function
+        | Error () -> true
+        | Ok None -> ~%step < 0
+        | Ok (Some v) ->
+            if ~%step < 0
+            then if ~%optional then v < ~%min_value else v <= ~%min_value
+            else v >= ~%max_value]
+      value
+  in
+  let execute_step =
+    [%client
+      fun _ ->
+        let value =
+          match Eliom_shared.React.S.value ~%value with
+          | Ok None | Error () -> pred ~%min_value
+          | Ok (Some value) -> value
+        in
+        let s =
+          if ~%step < 0 && value = ~%min_value && ~%optional
+          then none_input_value
+          else string_of_int @@ ( + ) ~%step @@ value
+        in
+        ~%set_value s;
+        (To_dom.of_input ~%input_elt)##.value := Js.string s]
+  in
+  disableable_button
+    ~a:[F.a_onclick execute_step; F.a_class ["ot-form-step-button"]]
+    ~disabled
+    [F.txt (if step < 0 then "\xe2\x88\x92" else "+")]
+
+let%shared make_int_input ~min ~max ~size ~optional initial_value =
+  let input_r =
+    let initial_value =
+      match initial_value with
+      | None -> none_input_value
+      | Some value -> string_of_int value
+    in
+    Eliom_shared.React.S.create initial_value
+  in
+  let input, value =
+    let input, (value, _) =
+      reactive_input
+        ~validate:[%client fun x -> Result.is_ok (validate_as_int x)]
+        ~input_r
+        ~a:
+          [ a_input_type `Text
+          ; a_inputmode `Numeric
+          ; a_size size
+          ; a_onfocus [%client select_input_value]
+          ; a_class ["ot-form-input"] ]
+        ()
+    in
+    input, Eliom_shared.React.S.map [%shared validate_as_int] value
+  in
+  let less_button, more_button =
+    let step_button =
+      int_step_button ~min_value:min ~max_value:max ~value
+        ~set_value:(snd input_r) ~input_elt:input ~optional
+    in
+    step_button (-1), step_button 1
+  in
+  ( F.div ~a:[F.a_class ["ot-form-int-input"]] [less_button; input; more_button]
+  , value )
+
+let%shared
+    optional_int_input ?(min = 0) ?(max = max_int) ?(size = 2) initial_value
+  =
+  make_int_input ~min ~max ~size ~optional:true initial_value
+
+let%shared int_input ?(min = 0) ?(max = max_int) ?(size = 2) initial_value =
+  let buttons, value =
+    make_int_input ~min ~max ~size ~optional:false (Some initial_value)
+  in
+  let value =
+    Eliom_shared.React.S.map
+      [%shared
+        fun result ->
+          match result with
+          | Ok (Some s) -> Ok s
+          | Ok None | Error () -> Error ()]
+      value
+  in
+  buttons, value
 
 (* ================================================================ *)
 (* Tab cycling (client-only)                                        *)
