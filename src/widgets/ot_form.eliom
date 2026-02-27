@@ -623,6 +623,27 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
   in
   elt, (signal, set_signal)
 
+(* -- Debounced input --------------------------------------------- *)
+
+let%shared debounced_input ?(a = []) ?(delay = 0.3) ?value ?validate () =
+  let input, (raw_signal, set) = reactive_input ~a ?value ?validate () in
+  let init = match value with Some v -> v | None -> "" in
+  let debounced, set_debounced = Eliom_shared.React.S.create init in
+  let (_ : unit Eliom_client_value.t) =
+    [%client
+      let pending = ref Lwt.return_unit in
+      let el = To_dom.of_input ~%input in
+      Lwt.async (fun () ->
+        Lwt_js_events.inputs el (fun _ _ ->
+          Lwt.cancel !pending;
+          (pending :=
+             let* () = Lwt_js.sleep ~%delay in
+             ~%set_debounced (Js.to_string el##.value);
+             Lwt.return_unit);
+          Lwt.return_unit))]
+  in
+  input, (raw_signal, debounced, set)
+
 (* -- Password input ---------------------------------------------- *)
 
 let%shared password_input ?(a = []) ?placeholder () =

@@ -151,6 +151,24 @@ val%shared reactive_textarea :
      * (string Eliom_shared.React.S.t * (string -> unit) Eliom_client_value.t)
 (** Create a reactive textarea. *)
 
+(** {3 Debounced input} *)
+
+val%shared debounced_input :
+   ?a:[< Html_types.input_attrib] attrib list
+  -> ?delay:float
+  -> ?value:string
+  -> ?validate:(string -> bool) Eliom_client_value.t
+  -> unit
+  -> [> `Input] elt
+     * (string Eliom_shared.React.S.t
+       * string Eliom_shared.React.S.t
+       * (string -> unit) Eliom_client_value.t)
+(** A reactive input where the debounced signal updates only after
+    [delay] seconds (default 0.3) of inactivity. Returns
+    [(input, (raw_signal, debounced_signal, setter))].
+    [raw_signal] updates on every keystroke; [debounced_signal]
+    waits for the user to stop typing. *)
+
 (** {3 Enter key binding} *)
 
 val%shared lwt_bind_input_enter :
