@@ -623,6 +623,24 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
   in
   elt, (signal, set_signal)
 
+(* -- Prevent double submit --------------------------------------- *)
+
+let%shared prevent_double_submit ?(a = []) ?button_type ~f content =
+  let disabled_s, set_disabled = Eliom_shared.React.S.create false in
+  let onclick =
+    [%client
+      fun _ ->
+        if not (React.S.value ~%disabled_s)
+        then begin
+          ~%set_disabled true;
+          Lwt.async (fun () ->
+            Lwt.finalize ~%f (fun () -> ~%set_disabled false; Lwt.return_unit))
+        end]
+  in
+  disableable_button
+    ~a:(a_onclick onclick :: (a :> Html_types.button_attrib attrib list))
+    ?button_type ~disabled:disabled_s content
+
 (* -- Integer inputs ---------------------------------------------- *)
 
 let%shared none_input_value = "-"

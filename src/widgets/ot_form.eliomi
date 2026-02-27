@@ -255,6 +255,17 @@ val%shared int_input :
   -> [> `Div] elt * (int, unit) result Eliom_shared.React.S.t
 (** An integer input with +/- buttons. Always contains a value. *)
 
+(** {3 Prevent double submit} *)
+
+val%shared prevent_double_submit :
+   ?a:[< Html_types.button_attrib] attrib list
+  -> ?button_type:[< Eliom_form_sigs.button_type]
+  -> f:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> [< Html_types.button_content] elt list
+  -> [> `Button] elt
+(** A button that disables itself while the action [f] is running,
+    preventing double submissions. *)
+
 (** {3 Reactive select} *)
 
 val%shared reactive_select :
