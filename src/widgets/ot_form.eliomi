@@ -66,6 +66,18 @@ val%shared disableable_button :
   -> [> `Button] elt
 (** A button that can be reactively disabled. *)
 
+(** {3 Toggle button} *)
+
+val%shared reactive_toggle_button :
+   ?a:[< Html_types.button_attrib] attrib list
+  -> ?init:bool
+  -> ?ctrl:bool react_component
+  -> [< Html_types.button_content] elt list
+  -> [> `Button] elt * bool react_component
+(** A toggle button that alternates between on/off states.
+    The CSS classes ["ot-toggle-on"] and ["ot-toggle-off"] are set
+    reactively on the button element. *)
+
 (** {3 Radio buttons} *)
 
 val%shared radio :

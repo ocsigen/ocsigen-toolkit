@@ -85,6 +85,38 @@ let%shared disableable_button ?(a = []) ?button_type ~disabled content =
     ~button_type
     (content :> Html_types.button_content elt list)
 
+(* -- Toggle button ----------------------------------------------- *)
+
+let%shared
+    reactive_toggle_button
+      ?(a = [])
+      ?(init = false)
+      ?(ctrl = Eliom_shared.React.S.create init)
+      content
+  =
+  let signal, set_signal = ctrl in
+  let elt =
+    D.button
+      ~a:
+        (a_onclick
+           [%client
+             fun ev ->
+               Dom_html.stopPropagation ev;
+               Dom.preventDefault ev;
+               ~%set_signal (not (React.S.value ~%signal))]
+        :: a_button_type `Button
+        :: R.a_class
+             (Eliom_shared.React.S.map
+                [%shared
+                  fun checked ->
+                    "ot-toggle-button"
+                    :: (if checked then ["ot-toggle-on"] else ["ot-toggle-off"])]
+                signal)
+        :: (a :> Html_types.button_attrib attrib list))
+      content
+  in
+  elt, (signal, set_signal)
+
 (* -- Radio buttons ----------------------------------------------- *)
 
 let%shared
