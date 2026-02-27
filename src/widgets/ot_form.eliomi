@@ -320,6 +320,16 @@ val%shared validate_as_int : string -> (int option, unit) result
 val%shared none_input_value : string
 (** The string ["-"], used as placeholder for empty optional int inputs. *)
 
+(** {3 Reactive fieldset} *)
+
+val%shared reactive_fieldset :
+   ?a:[< Html_types.fieldset_attrib] attrib list
+  -> disabled:bool Eliom_shared.React.S.t
+  -> [< Html_types.fieldset_content] elt list
+  -> [> `Fieldset] elt
+(** A fieldset that can be reactively disabled.
+    When disabled, all form elements inside are disabled by the browser. *)
+
 (** {3 Date and time inputs} *)
 
 val%shared parse_date : string -> (int * int * int) option

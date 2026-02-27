@@ -816,6 +816,12 @@ let%shared int_input ?(min = 0) ?(max = max_int) ?(size = 2) initial_value =
   in
   buttons, value
 
+(* -- Reactive fieldset ------------------------------------------- *)
+
+let%shared reactive_fieldset ?(a = []) ~disabled content =
+  let a = (a :> Html_types.fieldset_attrib attrib list) in
+  F.fieldset ~a:(R.filter_attrib (a_disabled ()) disabled :: a) content
+
 (* -- Date and time inputs ---------------------------------------- *)
 
 let%shared parse_date s =
