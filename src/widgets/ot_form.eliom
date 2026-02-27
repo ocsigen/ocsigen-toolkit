@@ -623,6 +623,50 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
   in
   elt, (signal, set_signal)
 
+(* -- Password input ---------------------------------------------- *)
+
+let%shared password_input ?(a = []) ?placeholder () =
+  let visible_s, set_visible = Eliom_shared.React.S.create false in
+  let inp =
+    D.Raw.input
+      ~a:
+        (R.a_input_type
+           (Eliom_shared.React.S.map
+              [%shared fun visible -> if visible then `Text else `Password]
+              visible_s)
+        :: a_class ["ot-form-input"; "ot-password-input"]
+        :: cons_opt
+             (Option.map a_placeholder placeholder)
+             (a :> Html_types.input_attrib attrib list))
+      ()
+  in
+  let toggle =
+    D.button
+      ~a:
+        [ a_button_type `Button
+        ; a_class ["ot-password-toggle"]
+        ; a_onclick
+            [%client
+              fun ev ->
+                Dom_html.stopPropagation ev;
+                Dom.preventDefault ev;
+                ~%set_visible (not (React.S.value ~%visible_s))] ]
+      [ D.span
+          ~a:
+            [ R.a_class
+                (Eliom_shared.React.S.map
+                   [%shared
+                     fun visible ->
+                       if visible
+                       then ["ot-password-toggle-hide"]
+                       else ["ot-password-toggle-show"]]
+                   visible_s) ]
+          [] ]
+  in
+  ( F.div ~a:[F.a_class ["ot-password-container"]] [inp; toggle]
+  , inp
+  , (visible_s, set_visible) )
+
 (* -- Prevent double submit --------------------------------------- *)
 
 let%shared prevent_double_submit ?(a = []) ?button_type ~f content =

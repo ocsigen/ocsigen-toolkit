@@ -255,6 +255,19 @@ val%shared int_input :
   -> [> `Div] elt * (int, unit) result Eliom_shared.React.S.t
 (** An integer input with +/- buttons. Always contains a value. *)
 
+(** {3 Password input} *)
+
+val%shared password_input :
+   ?a:[< Html_types.input_attrib] attrib list
+  -> ?placeholder:string
+  -> unit
+  -> [> `Div] elt * [> `Input] elt * bool react_component
+(** A password input with a visibility toggle button.
+    Returns [(container, input, (visible_signal, set_visible))].
+    The toggle switches between [type=password] and [type=text].
+    CSS classes: [ot-password-container], [ot-password-input],
+    [ot-password-toggle], [ot-password-toggle-show], [ot-password-toggle-hide]. *)
+
 (** {3 Prevent double submit} *)
 
 val%shared prevent_double_submit :
