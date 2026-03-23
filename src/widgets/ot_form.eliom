@@ -690,7 +690,8 @@ let%shared password_input ?(a = []) ?placeholder () =
 
 (* -- Password toggle (non-reactive) ------------------------------ *)
 
-let%shared password_toggle (inp : [< Html_types.input] elt) =
+let%shared password_toggle (inp : [< Html_types.input] elt) : [> `Div] elt =
+  let inp = (inp :> Html_types.input elt) in
   let toggle_icon =
     D.span ~a:[a_class ["ot-password-toggle-show"]] []
   in
@@ -725,7 +726,7 @@ let%shared password_toggle (inp : [< Html_types.input] elt) =
       [toggle_icon]
   in
   D.div ~a:[a_class ["ot-password-container"]]
-    [ (inp : [< Html_types.input] elt :> Html_types.div_content_fun elt)
+    [ (inp :> Html_types.div_content_fun elt)
     ; toggle ]
 
 (* -- Prevent double submit --------------------------------------- *)
