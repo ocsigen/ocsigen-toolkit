@@ -2,9 +2,9 @@
 
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
-[%%client open Eliom_content.Html]
+[%%client open Eliom.Content.Html]
 
-module H = Eliom_content.Html
+module H = Eliom.Content.Html
 open H.D
 
 let%shared default_header : state option -> [> `Div] H.elt list =
@@ -176,20 +176,20 @@ let make
       ?(refresh_timeout = 20.)
       ?(header = [%shared default_header])
       ~(content : Html_types.div_content H.elt)
-      (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
+      (afterPull : (unit -> bool Lwt.t) Eliom.Client_value.t)
   =
-  if app_only && not (Eliom_client.is_client_app ())
+  if app_only && not (Eliom.Client.is_client_app ())
   then div ~a [content]
   else
-    let state_s, set_state = Eliom_shared.React.S.create None in
+    let state_s, set_state = Eliom.Shared.React.S.create None in
     let headContainer =
       H.R.node
-      @@ Eliom_shared.React.S.map
+      @@ Eliom.Shared.React.S.map
            [%shared
              let open H in
              fun s ->
                D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
-               @@ Eliom_shared.Value.local ~%header
+               @@ Eliom.Shared.Value.local ~%header
                @@ s]
            state_s
     in

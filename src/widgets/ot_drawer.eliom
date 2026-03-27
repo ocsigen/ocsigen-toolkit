@@ -19,9 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Eliom_content.Html]
+open Eliom.Content.Html]
 
-[%%shared open Eliom_content.Html.F]
+[%%shared open Eliom.Content.Html.F]
 
 open%client Js_of_ocaml
 open%client Lwt.Syntax
@@ -83,8 +83,8 @@ let%shared
       ?(position = `Left)
       ?(opened = false)
       ?(swipe = true)
-      ?(onclose : (unit -> unit) Eliom_client_value.t option)
-      ?(onopen : (unit -> unit) Eliom_client_value.t option)
+      ?(onclose : (unit -> unit) Eliom.Client_value.t option)
+      ?(onopen : (unit -> unit) Eliom.Client_value.t option)
       ?(wrap_close = fun f -> f)
       ?(wrap_open = fun f -> f)
       content
@@ -113,7 +113,7 @@ let%shared
     D.div ~a:(a_class ("ot-drawer-bckgrnd" :: bckgrnd_init_class) :: a) [d]
   in
   let bind_touch :
-    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom_client_value.t
+    ((unit -> unit) Lwt.t * (unit -> unit) Lwt.u) Eliom.Client_value.t
     =
     [%client Lwt.wait ()]
   in
@@ -143,7 +143,7 @@ let%shared
          Lwt_js_events.async (fun () ->
            let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "closing";
-           Eliom_lib.Option.iter (fun f -> f ()) ~%onclose;
+           Eliom.Lib.Option.iter (fun f -> f ()) ~%onclose;
            Lwt.return_unit)
        : unit -> unit)]
   in
@@ -153,7 +153,7 @@ let%shared
       (fun () ->
          ~%scroll_pos := Js.to_float Dom_html.window##.scrollY;
          add_class ~%bckgrnd "open";
-         Eliom_lib.Option.iter (fun f -> f ()) ~%onopen;
+         Eliom.Lib.Option.iter (fun f -> f ()) ~%onopen;
          Dom_html.document##.body##.style##.top
          := Js.string (Printf.sprintf "%.2fpx" (-. !(~%scroll_pos)));
          add_class ~%bckgrnd "opening";
@@ -162,7 +162,7 @@ let%shared
            let* bind_touch = fst ~%bind_touch in
            bind_touch (); Lwt.return_unit);
          bind_click_outside ~%bckgrnd ~%d ~%close;
-         Eliom_client.Page_status.onactive ~stop:(fst ~%stop_open_event)
+         Eliom.Client.Page_status.onactive ~stop:(fst ~%stop_open_event)
            (fun () -> html_ManipClass_add "ot-drawer-open");
          Lwt_js_events.async (fun () ->
            let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
@@ -173,7 +173,7 @@ let%shared
   let open_ = wrap_open open_ in
   let _ =
     [%client
-      (Eliom_client.Page_status.oninactive (fun () ->
+      (Eliom.Client.Page_status.oninactive (fun () ->
          ~%reset_scroll_pos ();
          html_ManipClass_remove "ot-drawer-opening";
          html_ManipClass_remove "ot-drawer-open";

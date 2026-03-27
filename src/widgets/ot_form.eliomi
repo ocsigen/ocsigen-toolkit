@@ -19,13 +19,13 @@
  *)
 
 open%client Js_of_ocaml
-open%shared Eliom_content.Html
+open%shared Eliom.Content.Html
 
 (** {2 Reactive form widgets} *)
 
 type%shared 'a react_component =
-  'a Eliom_shared.React.S.t
-  * (?step:React.step -> 'a -> unit) Eliom_shared.Value.t
+  'a Eliom.Shared.React.S.t
+  * (?step:React.step -> 'a -> unit) Eliom.Shared.Value.t
 (** A reactive component: a signal and its setter. *)
 
 (** {3 Client-side utilities} *)
@@ -60,8 +60,8 @@ val%client on_enter :
 
 val%shared disableable_button :
    ?a:[< Html_types.button_attrib] attrib list
-  -> ?button_type:[< Eliom_form_sigs.button_type]
-  -> disabled:bool Eliom_shared.React.S.t
+  -> ?button_type:[< Eliom.Form_sigs.button_type]
+  -> disabled:bool Eliom.Shared.React.S.t
   -> [< Html_types.button_content] elt list
   -> [> `Button] elt
 (** A button that can be reactively disabled. *)
@@ -82,8 +82,8 @@ val%shared reactive_toggle_button :
 
 val%shared radio :
    ?a:[< Html_types.label_attrib] attrib list
-  -> ?disabled_s:bool Eliom_shared.React.S.t
-  -> ?checked_s:bool Eliom_shared.React.S.t
+  -> ?disabled_s:bool Eliom.Shared.React.S.t
+  -> ?checked_s:bool Eliom.Shared.React.S.t
   -> ?name:string
   -> ?before:[< Html_types.label_content_fun > `Input `Span] elt list
   -> [< Html_types.span_content] elt list
@@ -92,7 +92,7 @@ val%shared radio :
 
 val%shared radio_buttons :
    ?a:[< Html_types.label_attrib] attrib list
-  -> ?disabled_s:int list Eliom_shared.React.S.t
+  -> ?disabled_s:int list Eliom.Shared.React.S.t
   -> selection_react:int option react_component
   -> name:string
   -> [< Html_types.span_content] elt list list
@@ -113,9 +113,9 @@ val%shared radio_selector :
 val%shared reactify_input :
    ?input_r:string react_component
   -> ?value:string
-  -> ?validate:(string -> bool) Eliom_client_value.t
+  -> ?validate:(string -> bool) Eliom.Client_value.t
   -> [`Input | `Textarea] elt
-  -> string Eliom_shared.React.S.t * (string -> unit) Eliom_client_value.t
+  -> string Eliom.Shared.React.S.t * (string -> unit) Eliom.Client_value.t
 (** Make an existing input or textarea element reactive.
     Returns a signal tracking the current value and a setter. *)
 
@@ -123,10 +123,10 @@ val%shared reactive_input :
    ?a:[< Html_types.input_attrib] attrib list
   -> ?input_r:string react_component
   -> ?value:string
-  -> ?validate:(string -> bool) Eliom_client_value.t
+  -> ?validate:(string -> bool) Eliom.Client_value.t
   -> unit
   -> [> `Input] elt
-     * (string Eliom_shared.React.S.t * (string -> unit) Eliom_client_value.t)
+     * (string Eliom.Shared.React.S.t * (string -> unit) Eliom.Client_value.t)
 (** Create a reactive text input. Returns the element and
     a (signal, setter) pair. *)
 
@@ -145,10 +145,10 @@ val%shared reactive_textarea :
   -> ?resize:bool
   -> ?a_placeholder:string
   -> ?value:string
-  -> ?validate:(string -> bool) Eliom_client_value.t
+  -> ?validate:(string -> bool) Eliom.Client_value.t
   -> unit
   -> [> `Textarea] elt
-     * (string Eliom_shared.React.S.t * (string -> unit) Eliom_client_value.t)
+     * (string Eliom.Shared.React.S.t * (string -> unit) Eliom.Client_value.t)
 (** Create a reactive textarea. *)
 
 (** {3 Debounced input} *)
@@ -157,12 +157,12 @@ val%shared debounced_input :
    ?a:[< Html_types.input_attrib] attrib list
   -> ?delay:float
   -> ?value:string
-  -> ?validate:(string -> bool) Eliom_client_value.t
+  -> ?validate:(string -> bool) Eliom.Client_value.t
   -> unit
   -> [> `Input] elt
-     * (string Eliom_shared.React.S.t
-       * string Eliom_shared.React.S.t
-       * (string -> unit) Eliom_client_value.t)
+     * (string Eliom.Shared.React.S.t
+       * string Eliom.Shared.React.S.t
+       * (string -> unit) Eliom.Client_value.t)
 (** A reactive input where the debounced signal updates only after
     [delay] seconds (default 0.3) of inactivity. Returns
     [(input, (raw_signal, debounced_signal, setter))].
@@ -172,10 +172,10 @@ val%shared debounced_input :
 (** {3 Enter key binding} *)
 
 val%shared lwt_bind_input_enter :
-   ?validate:(string -> bool) Eliom_client_value.t
+   ?validate:(string -> bool) Eliom.Client_value.t
   -> ?button:[`Button] elt
   -> [`Input] elt
-  -> (string -> unit Lwt.t) Eliom_client_value.t
+  -> (string -> unit Lwt.t) Eliom.Client_value.t
   -> unit
 (** Bind an Lwt action to an existing input, triggered on Enter key
     or optional button click. *)
@@ -183,8 +183,8 @@ val%shared lwt_bind_input_enter :
 val%shared lwt_bound_input_enter :
    ?a:[< Html_types.input_attrib] attrib list
   -> ?button:[`Button] elt
-  -> ?validate:(string -> bool) Eliom_client_value.t
-  -> (string -> unit Lwt.t) Eliom_client_value.t
+  -> ?validate:(string -> bool) Eliom.Client_value.t
+  -> (string -> unit Lwt.t) Eliom.Client_value.t
   -> [> `Input] elt
 (** Create an input with an Lwt action triggered on Enter key. *)
 
@@ -217,13 +217,13 @@ val%shared reactive_checkbox :
   -> ?style:checkbox_style
   -> ?mobile_style:checkbox_style
   -> ?ctrl:
-       bool Eliom_shared.React.S.t
-       * (?step:React.step -> bool -> unit) Eliom_shared.Value.t
+       bool Eliom.Shared.React.S.t
+       * (?step:React.step -> bool -> unit) Eliom.Shared.Value.t
   -> [< Html_types.span_content] elt list
   -> < label : [> `Label] elt
      ; input : [> `Input] elt
-     ; value : bool Eliom_shared.React.S.t
-     ; manually_changed : bool Eliom_shared.React.S.t >
+     ; value : bool Eliom.Shared.React.S.t
+     ; manually_changed : bool Eliom.Shared.React.S.t >
 (** A reactive checkbox. The returned object provides:
     - [label]: the label element
     - [input]: the input element
@@ -234,15 +234,15 @@ val%shared reactive_checkbox :
 
 val%shared input_validation_tools :
    ?init:string
-  -> ?set_focus:(bool -> unit) Eliom_client_value.t
+  -> ?set_focus:(bool -> unit) Eliom.Client_value.t
   -> ?result_iter:
        (Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t -> string -> unit)
-         Eliom_client_value.t
+         Eliom.Client_value.t
   -> ?invalid_class:string
-  -> (string -> (string, string) Result.t) Eliom_shared.Value.t
+  -> (string -> (string, string) Result.t) Eliom.Shared.Value.t
   -> [> Html_types.input_attrib] attrib list
      * [> `Class] attrib
-     * (string, string) Result.t Eliom_shared.React.S.t
+     * (string, string) Result.t Eliom.Shared.React.S.t
 (** Given a validation function, builds the necessary [oninput] and [onblur]
     attributes for an input, a reactive class attribute for error states,
     and a signal with the validation result.
@@ -261,7 +261,7 @@ val%shared optional_int_input :
   -> ?max:int
   -> ?size:int
   -> int option
-  -> [> `Div] elt * (int option, unit) result Eliom_shared.React.S.t
+  -> [> `Div] elt * (int option, unit) result Eliom.Shared.React.S.t
 (** An integer input with +/- buttons that can be empty (None).
     Displays ["-"] when empty. *)
 
@@ -270,7 +270,7 @@ val%shared int_input :
   -> ?max:int
   -> ?size:int
   -> int
-  -> [> `Div] elt * (int, unit) result Eliom_shared.React.S.t
+  -> [> `Div] elt * (int, unit) result Eliom.Shared.React.S.t
 (** An integer input with +/- buttons. Always contains a value. *)
 
 (** {3 Password input} *)
@@ -288,8 +288,10 @@ val%shared password_input :
 
 (** {3 Password toggle (non-reactive)} *)
 
-val%shared password_toggle :
-  [< Html_types.input] elt -> [> `Div] elt
+(* TODO: Restore once PPX type inference handles wrapped types correctly.
+   val%shared password_toggle :
+     [< Html_types.input] Eliom.Content.Html.elt
+     -> [> `Div] Eliom.Content.Html.elt *)
 (** [password_toggle inp] wraps an existing password input element [inp]
     in a container with a visibility toggle button.
     Unlike {!password_input}, this does not use reactive signals: it
@@ -302,8 +304,8 @@ val%shared password_toggle :
 
 val%shared prevent_double_submit :
    ?a:[< Html_types.button_attrib] attrib list
-  -> ?button_type:[< Eliom_form_sigs.button_type]
-  -> f:(unit -> unit Lwt.t) Eliom_client_value.t
+  -> ?button_type:[< Eliom.Form_sigs.button_type]
+  -> f:(unit -> unit Lwt.t) Eliom.Client_value.t
   -> [< Html_types.button_content] elt list
   -> [> `Button] elt
 (** A button that disables itself while the action [f] is running,
@@ -336,7 +338,7 @@ val%shared none_input_value : string
 
 val%shared reactive_fieldset :
    ?a:[< Html_types.fieldset_attrib] attrib list
-  -> disabled:bool Eliom_shared.React.S.t
+  -> disabled:bool Eliom.Shared.React.S.t
   -> [< Html_types.fieldset_content] elt list
   -> [> `Fieldset] elt
 (** A fieldset that can be reactively disabled.

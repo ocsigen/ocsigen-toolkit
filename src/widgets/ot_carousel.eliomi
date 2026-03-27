@@ -48,33 +48,33 @@ open Js_of_ocaml
     programs. *)
 
 type 'a t =
-  { elt : 'a Eliom_content.Html.elt
-  ; pos : int Eliom_shared.React.S.t
-  ; pos_post : int Eliom_shared.React.S.t
-  ; vis_elts : int Eliom_shared.React.S.t
-  ; swipe_pos : float React.S.t Eliom_client_value.t }
+  { elt : 'a Eliom.Content.Html.elt
+  ; pos : int Eliom.Shared.React.S.t
+  ; pos_post : int Eliom.Shared.React.S.t
+  ; vis_elts : int Eliom.Shared.React.S.t
+  ; swipe_pos : float React.S.t Eliom.Client_value.t }
 (** see [make] *)
 
 val make :
-   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
   -> ?inertia:float
   -> ?swipeable:bool
   -> ?allow_overswipe:bool
-  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom_client_value.t
-  -> ?disabled:bool Eliom_shared.React.S.t
+  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom.Client_value.t
+  -> ?disabled:bool Eliom.Shared.React.S.t
   -> ?full_height:
-       [`No | `No_header | `Header of (unit -> int) Eliom_client_value.t]
+       [`No | `No_header | `Header of (unit -> int) Eliom.Client_value.t]
   -> ?make_transform:
-       (vertical:bool -> ?delta:int -> int -> string) Eliom_shared.Value.t
+       (vertical:bool -> ?delta:int -> int -> string) Eliom.Shared.Value.t
   -> ?make_page_attribute:
        (vertical:bool
         -> int
-        -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
-         Eliom_shared.Value.t
-  -> [< Html_types.div_content] Eliom_content.Html.elt list
+        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list)
+         Eliom.Shared.Value.t
+  -> [< Html_types.div_content] Eliom.Content.Html.elt list
   -> [> `Div] t
 (**
   Creates a carousel from the elements of a list.
@@ -129,27 +129,27 @@ val make :
 *)
 
 val make_lazy :
-   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
   -> ?inertia:float
   -> ?swipeable:bool
   -> ?allow_overswipe:bool
-  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom_client_value.t
-  -> ?disabled:bool Eliom_shared.React.S.t
+  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom.Client_value.t
+  -> ?disabled:bool Eliom.Shared.React.S.t
   -> ?full_height:
-       [`No | `No_header | `Header of (unit -> int) Eliom_client_value.t]
+       [`No | `No_header | `Header of (unit -> int) Eliom.Client_value.t]
   -> ?make_transform:
-       (vertical:bool -> ?delta:int -> int -> string) Eliom_shared.Value.t
+       (vertical:bool -> ?delta:int -> int -> string) Eliom.Shared.Value.t
   -> ?make_page_attribute:
        (vertical:bool
         -> int
-        -> Html_types.div_attrib Eliom_content.Html.D.attrib list)
-         Eliom_shared.Value.t
-  -> ?spinner:(unit -> Html_types.div_content Eliom_content.Html.elt)
-  -> (unit -> [< Html_types.div_content] Eliom_content.Html.elt Lwt.t)
-       Eliom_shared.Value.t
+        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list)
+         Eliom.Shared.Value.t
+  -> ?spinner:(unit -> Html_types.div_content Eliom.Content.Html.elt)
+  -> (unit -> [< Html_types.div_content] Eliom.Content.Html.elt Lwt.t)
+       Eliom.Shared.Value.t
        list
   -> [> `Div] t Lwt.t
 (** same as [make] except for the last argument. Instead of supplying the
@@ -163,20 +163,20 @@ val make_lazy :
 *)
 
 val wheel :
-   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
   -> ?inertia:float
   -> ?allow_overswipe:bool
-  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom_client_value.t
-  -> ?disabled:bool Eliom_shared.React.S.t
+  -> ?update:[`Goto of int | `Next | `Prev] React.event Eliom.Client_value.t
+  -> ?disabled:bool Eliom.Shared.React.S.t
   -> ?faces:int
   -> ?face_size:int
-  -> [< Html_types.div_content] Eliom_content.Html.elt list
-  -> [> `Div] Eliom_content.Html.elt
-     * int Eliom_shared.React.S.t
-     * float React.S.t Eliom_client_value.t
+  -> [< Html_types.div_content] Eliom.Content.Html.elt list
+  -> [> `Div] Eliom.Content.Html.elt
+     * int Eliom.Shared.React.S.t
+     * float React.S.t Eliom.Client_value.t
 (** Carousel with 3D effect. Faces are displayed on a cylinder.
     Give the number of faces you want as parameter [faces] (default: 20).
     The size of the faces (height for vertical carousel, width for horizontal)
@@ -192,15 +192,15 @@ val wheel :
  *)
 
 val bullets :
-   ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
-  -> ?attributes:[< Html_types.li_attrib] Eliom_content.Html.attrib list list
-  -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t
-  -> pos:int Eliom_shared.React.S.t
+   ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
+  -> ?attributes:[< Html_types.li_attrib] Eliom.Content.Html.attrib list list
+  -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t
+  -> pos:int Eliom.Shared.React.S.t
   -> length:int
-  -> ?size:int Eliom_shared.React.S.t
-  -> ?content:[< Html_types.li_content_fun] Eliom_content.Html.elt list list
+  -> ?size:int Eliom.Shared.React.S.t
+  -> ?content:[< Html_types.li_content_fun] Eliom.Content.Html.elt list list
   -> unit
-  -> [> `Ul] Eliom_content.Html.elt
+  -> [> `Ul] Eliom.Content.Html.elt
 (** List of bullets for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
     [change] is a function to change position of carousel.
@@ -216,15 +216,15 @@ val bullets :
  *)
 
 val ribbon :
-   ?a:[< Html_types.ul_attrib] Eliom_content.Html.attrib list
-  -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t
-  -> pos:int Eliom_shared.React.S.t
-  -> ?size:int Eliom_shared.React.S.t
+   ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
+  -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t
+  -> pos:int Eliom.Shared.React.S.t
+  -> ?size:int Eliom.Shared.React.S.t
   -> ?initial_gap:int
   -> ?transition_duration:float
-  -> ?cursor:float React.S.t Eliom_client_value.t
-  -> [< Html_types.li_content_fun] Eliom_content.Html.elt list list
-  -> [> `Div] Eliom_content.Html.elt
+  -> ?cursor:float React.S.t Eliom.Client_value.t
+  -> [< Html_types.li_content_fun] Eliom.Content.Html.elt list list
+  -> [> `Div] Eliom.Content.Html.elt
 (** Menu (or tabs) for carousel. Current page has class ["active"].
     [pos] is a signal corresponding to current position.
     [change] is a function to change position of carousel.
@@ -242,34 +242,34 @@ val ribbon :
  *)
 
 val previous :
-   ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
-  -> change:([> `Prev | `Goto of int] -> unit) Eliom_client_value.t
-  -> ?offset:int Eliom_shared.React.S.t
-  -> pos:int Eliom_shared.React.S.t
-  -> Html_types.button_content Eliom_content.Html.elt list
-  -> [> `Button] Eliom_content.Html.elt
+   ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
+  -> change:([> `Prev | `Goto of int] -> unit) Eliom.Client_value.t
+  -> ?offset:int Eliom.Shared.React.S.t
+  -> pos:int Eliom.Shared.React.S.t
+  -> Html_types.button_content Eliom.Content.Html.elt list
+  -> [> `Button] Eliom.Content.Html.elt
 (** Button to go to the previous page (or mores page if [offset] is present). *)
 
 val next :
-   ?a:[< Html_types.button_attrib] Eliom_content.Html.attrib list
-  -> change:([> `Next | `Goto of int] -> unit) Eliom_client_value.t
-  -> ?offset:int Eliom_shared.React.S.t
-  -> pos:int Eliom_shared.React.S.t
-  -> vis_elts:int Eliom_shared.React.S.t
+   ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
+  -> change:([> `Next | `Goto of int] -> unit) Eliom.Client_value.t
+  -> ?offset:int Eliom.Shared.React.S.t
+  -> pos:int Eliom.Shared.React.S.t
+  -> vis_elts:int Eliom.Shared.React.S.t
   -> length:int
-  -> Html_types.button_content Eliom_content.Html.elt list
-  -> [> `Button] Eliom_content.Html.elt
+  -> Html_types.button_content Eliom.Content.Html.elt list
+  -> [> `Button] Eliom.Content.Html.elt
 (** Button to go to the next page (or more pages if [offset] is present). *)
 
 (* (\** Menu + prev/next buttons *\) *)
 (* val nav : *)
 (*   ?a:[< Html_types.ul_attrib > `Class `OnClick ] *)
-(*     Eliom_content.Html.F.attrib list -> *)
-(*   change: ([> `Goto of int | `Next | `Prev ] -> unit) Eliom_client_value.t -> *)
-(*   pos:int Eliom_shared.React.S.t -> *)
-(*   ?size:int Eliom_shared.React.S.t -> *)
-(*   [< Html_types.li_content_fun ] Eliom_content.Html.F.elt list list -> *)
-(*   [> Html_types.div ] Eliom_content.Html.F.elt *)
+(*     Eliom.Content.Html.F.attrib list -> *)
+(*   change: ([> `Goto of int | `Next | `Prev ] -> unit) Eliom.Client_value.t -> *)
+(*   pos:int Eliom.Shared.React.S.t -> *)
+(*   ?size:int Eliom.Shared.React.S.t -> *)
+(*   [< Html_types.li_content_fun ] Eliom.Content.Html.F.elt list list -> *)
+(*   [> Html_types.div ] Eliom.Content.Html.F.elt *)
 
 [%%client.start]
 
@@ -283,6 +283,6 @@ val bind_arrow_keys :
   -> unit Lwt.t
 
 val set_default_fail :
-   (exn -> [< Html_types.div_content] Eliom_content.Html.elt)
+   (exn -> [< Html_types.div_content] Eliom.Content.Html.elt)
   -> unit
 (** Change the default function used to display error messages *)

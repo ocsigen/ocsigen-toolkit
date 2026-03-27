@@ -20,8 +20,8 @@
 
 [%%shared.start] (* shared by default, override as necessary *)
 
-open Eliom_content.Html
-open Eliom_shared.React.S.Infix
+open Eliom.Content.Html
+open Eliom.Shared.React.S.Infix
 
 let display_aux (_, _, a) v =
   let v = match a with Some a -> a.(v) | None -> string_of_int v
@@ -29,12 +29,12 @@ let display_aux (_, _, a) v =
   D.div ~a [D.txt v]
 
 let%client go_up (lb, ub, a) r (f : ?step:_ -> _) =
-  let v = Eliom_shared.React.S.value r in
+  let v = Eliom.Shared.React.S.value r in
   assert (v <= ub - 1);
   f (if v = ub - 1 then lb else v + 1)
 
 let%client go_down (lb, ub, a) r (f : ?step:_ -> _) =
-  let v = Eliom_shared.React.S.value r in
+  let v = Eliom.Shared.React.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)
 
@@ -58,7 +58,7 @@ let display ?(txt_up = "up") ?(txt_down = "down") e (v, f) =
 
 let make ?txt_up ?txt_down ?f ?(lb = 0) ub =
   assert (ub > lb);
-  let ((v, _) as rp) = Eliom_shared.React.S.create lb
+  let ((v, _) as rp) = Eliom.Shared.React.S.create lb
   and a =
     match f with
     | Some f ->

@@ -20,8 +20,8 @@
 
 open%client Js_of_ocaml
 open%client Js_of_ocaml_lwt
-open%shared Eliom_content.Html
-open%shared Eliom_content.Html.F
+open%shared Eliom.Content.Html
+open%shared Eliom.Content.Html.F
 open%client Lwt.Syntax
 
 (* ================================================================ *)
@@ -29,8 +29,8 @@ open%client Lwt.Syntax
 (* ================================================================ *)
 
 type%shared 'a react_component =
-  'a Eliom_shared.React.S.t
-  * (?step:React.step -> 'a -> unit) Eliom_shared.Value.t
+  'a Eliom.Shared.React.S.t
+  * (?step:React.step -> 'a -> unit) Eliom.Shared.Value.t
 
 let%shared cons_opt opt l = match opt with Some x -> x :: l | None -> l
 
@@ -76,7 +76,7 @@ let%client on_enter ~f inp =
 let%shared disableable_button ?(a = []) ?button_type ~disabled content =
   let button_type =
     match button_type with
-    | Some b -> (b :> Eliom_form_sigs.button_type)
+    | Some b -> (b :> Eliom.Form_sigs.button_type)
     | None -> `Button
   in
   let a = (a :> Html_types.button_attrib attrib list) in
@@ -91,7 +91,7 @@ let%shared
     reactive_toggle_button
       ?(a = [])
       ?(init = false)
-      ?(ctrl = Eliom_shared.React.S.create init)
+      ?(ctrl = Eliom.Shared.React.S.create init)
       content
   =
   let signal, set_signal = ctrl in
@@ -106,7 +106,7 @@ let%shared
                ~%set_signal (not (React.S.value ~%signal))]
         :: a_button_type `Button
         :: R.a_class
-             (Eliom_shared.React.S.map
+             (Eliom.Shared.React.S.map
                 [%shared
                   fun checked ->
                     "ot-toggle-button"
@@ -122,15 +122,15 @@ let%shared
 let%shared
     radio
       ?(a = [])
-      ?(disabled_s = Eliom_shared.React.S.const false)
-      ?(checked_s = Eliom_shared.React.S.const false)
+      ?(disabled_s = Eliom.Shared.React.S.const false)
+      ?(checked_s = Eliom.Shared.React.S.const false)
       ?name
       ?(before = [])
       content
   =
   let a_checked =
     R.filter_attrib (a_checked ())
-    @@ Eliom_shared.React.S.l2
+    @@ Eliom.Shared.React.S.l2
          [%shared fun checked disabled -> if disabled then false else checked]
          checked_s disabled_s
   in
@@ -151,7 +151,7 @@ let%shared
     radio_buttons
       ?(a = [])
       ?(disabled_s =
-        (Eliom_shared.React.S.const [] : int list Eliom_shared.React.S.t))
+        (Eliom.Shared.React.S.const [] : int list Eliom.Shared.React.S.t))
       ~(selection_react : int option react_component)
       ~name
       contents
@@ -159,12 +159,12 @@ let%shared
   let a = (a :> Html_types.label_attrib attrib list) in
   let labels = ref [] in
   let s, set = selection_react in
-  let initial = Eliom_shared.React.S.value s in
+  let initial = Eliom.Shared.React.S.value s in
   let mk_radio i content =
-    let checked = Option.map (( = ) i) (Eliom_shared.Value.local initial) in
+    let checked = Option.map (( = ) i) (Eliom.Shared.Value.local initial) in
     let cl =
       R.a_class
-      @@ Eliom_shared.React.S.map
+      @@ Eliom.Shared.React.S.map
            [%shared
              fun disabled ->
                if List.mem ~%i disabled
@@ -176,13 +176,13 @@ let%shared
     in
     let a = cl :: a in
     let disabled_s =
-      Eliom_shared.React.S.map
+      Eliom.Shared.React.S.map
         [%shared fun disabled -> List.mem ~%i disabled]
         disabled_s
     in
     let label, input =
       radio ~a ~disabled_s
-        ?checked_s:(Option.map Eliom_shared.React.S.const checked)
+        ?checked_s:(Option.map Eliom.Shared.React.S.const checked)
         ~name content
     in
     ignore
@@ -192,7 +192,7 @@ let%shared
          Lwt_js_events.changes input @@ fun _ _ ->
          if Js.to_bool input##.checked
          then (
-           (match Eliom_shared.React.S.value ~%s with
+           (match Eliom.Shared.React.S.value ~%s with
            | None -> ()
            | Some p -> Manip.Class.remove (List.nth !(~%labels) p) "checked");
            Manip.Class.add ~%label "checked";
@@ -217,11 +217,11 @@ let%shared
     reactify_input
       ?(input_r : string react_component option)
       ?(value = "")
-      ?(validate : (string -> bool) Eliom_client_value.t option)
+      ?(validate : (string -> bool) Eliom.Client_value.t option)
       (e : [`Input | `Textarea] elt)
   =
   let signal, set_signal =
-    match input_r with Some r -> r | None -> Eliom_shared.React.S.create value
+    match input_r with Some r -> r | None -> Eliom.Shared.React.S.create value
   in
   let e =
     [%client
@@ -240,7 +240,7 @@ let%shared
   in
   let set_signal =
     [%client
-      (Eliom_lib.Dom_reference.retain ~%e
+      (Eliom.Lib.Dom_reference.retain ~%e
          ~keep:
            (React.S.map
               (fun s ->
@@ -249,7 +249,7 @@ let%shared
               ~%signal);
        (match ~%validate with
        | Some f ->
-           Eliom_lib.Dom_reference.retain ~%e
+           Eliom.Lib.Dom_reference.retain ~%e
              ~keep:(React.S.map (fun x -> set_validity ~%e (f x)) ~%signal)
        | None -> ());
       
@@ -305,7 +305,7 @@ let%shared
   in
   let resize_onload = if resize then Some (a_onload resize_onload) else None in
   let resize_oninput = if resize then Some (a_oninput resize_cb) else None in
-  let a = (a :> Html_types.textarea_attrib Eliom_content.Html.attrib list) in
+  let a = (a :> Html_types.textarea_attrib Eliom.Content.Html.attrib list) in
   let ta =
     D.Raw.textarea
       ~a:
@@ -339,16 +339,16 @@ let%shared
 
 let%shared
     lwt_bind_input_enter
-      ?(validate : (string -> bool) Eliom_client_value.t option)
+      ?(validate : (string -> bool) Eliom.Client_value.t option)
       ?button
       (e : Html_types.input elt)
-      (f : (string -> unit Lwt.t) Eliom_client_value.t)
+      (f : (string -> unit Lwt.t) Eliom.Client_value.t)
   =
   ignore
     [%client
       (let e = To_dom.of_input ~%e in
        let f =
-         let f = ~%(f : (string -> unit Lwt.t) Eliom_client_value.t) in
+         let f = ~%(f : (string -> unit Lwt.t) Eliom.Client_value.t) in
          match ~%validate with
          | Some validate ->
              fun v ->
@@ -447,7 +447,7 @@ let%shared
           [ (span
                ~a:[a_class ["ot-checkbox-decoration"]]
                [span ~a:[a_class ["ot-checkbox-sub-decoration"]] []]
-              :> [< Html_types.span_content] Eliom_content.Html.elt)
+              :> [< Html_types.span_content] Eliom.Content.Html.elt)
           ; span content ] ]
   in
   box, inp
@@ -462,7 +462,7 @@ let%shared
       ?disabled
       ?style
       ?mobile_style
-      ?(ctrl = Eliom_shared.React.S.create checked)
+      ?(ctrl = Eliom.Shared.React.S.create checked)
       content
   =
   let box, inp =
@@ -471,17 +471,17 @@ let%shared
   in
   let signal, set_signal = ctrl in
   let manually_changed, set_manually_changed =
-    Eliom_shared.React.S.create false
+    Eliom.Shared.React.S.create false
   in
-  let (_ : unit Eliom_client_value.t) =
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let disabled = Option.value ~default:false ~%disabled in
       if not disabled
       then
         let inp' = To_dom.of_input ~%inp in
-        Eliom_lib.Dom_reference.retain inp'
+        Eliom.Lib.Dom_reference.retain inp'
           ~keep:
-            (Eliom_shared.React.S.map
+            (Eliom.Shared.React.S.map
                (fun b -> inp'##.checked := Js.bool b)
                ~%signal);
         Lwt.async (fun () ->
@@ -505,37 +505,37 @@ let%shared
       ?set_focus
       ?(result_iter :
          (Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t -> string -> unit)
-           Eliom_client_value.t
+           Eliom.Client_value.t
            option)
       ?(invalid_class = "ot-invalid")
-      (check : (string -> (string, string) Result.t) Eliom_shared.Value.t)
+      (check : (string -> (string, string) Result.t) Eliom.Shared.Value.t)
   =
   let invalid_cl valid_s lazy_invalid_s =
     R.filter_attrib (a_class [invalid_class])
-    @@ Eliom_shared.React.S.l2
+    @@ Eliom.Shared.React.S.l2
          [%shared fun valid lazy_invalid -> (not valid) && lazy_invalid]
          valid_s lazy_invalid_s
   in
   let result_s, set_result =
-    Eliom_shared.React.S.create
+    Eliom.Shared.React.S.create
     @@
     match init with
-    | Some i -> (Eliom_shared.Value.local check) i
+    | Some i -> (Eliom.Shared.Value.local check) i
     | None -> Ok ""
   in
   let init_valid =
     match init with
-    | Some i -> Result.is_ok @@ (Eliom_shared.Value.local check) i
+    | Some i -> Result.is_ok @@ (Eliom.Shared.Value.local check) i
     | None -> true
   in
-  let valid_s, set_valid = Eliom_shared.React.S.create init_valid in
+  let valid_s, set_valid = Eliom.Shared.React.S.create init_valid in
   let init_lazy_invalid =
     match init with
-    | Some i -> Result.is_error @@ (Eliom_shared.Value.local check) i
+    | Some i -> Result.is_error @@ (Eliom.Shared.Value.local check) i
     | None -> false
   in
   let lazy_invalid_s, set_lazy_invalid =
-    Eliom_shared.React.S.create init_lazy_invalid
+    Eliom.Shared.React.S.create init_lazy_invalid
   in
   let a_oninput_attr =
     a_oninput
@@ -574,11 +574,11 @@ let%shared
   , result_s )
 
 let%shared
-    graceful_invalid_style (inp : Html_types.input Eliom_content.Html.elt)
+    graceful_invalid_style (inp : Html_types.input Eliom.Content.Html.elt)
   =
   ignore
   @@ [%client
-       (let inp = Eliom_content.Html.To_dom.of_input ~%inp in
+       (let inp = Eliom.Content.Html.To_dom.of_input ~%inp in
         let f () = set_validity inp (Js.Unsafe.coerce inp)##checkValidity in
         Lwt.async @@ fun () ->
         let* _ = Lwt_js_events.blur inp in
@@ -592,7 +592,7 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
   let initial =
     match selected with Some v -> v | None -> fst (List.hd options)
   in
-  let signal, set_signal = Eliom_shared.React.S.create initial in
+  let signal, set_signal = Eliom.Shared.React.S.create initial in
   let make_option (value, label_text) =
     let a_sel = if value = initial then [a_selected ()] else [] in
     F.option ~a:(a_value value :: a_sel) (F.txt label_text)
@@ -604,7 +604,7 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
         :: (a :> Html_types.select_attrib attrib list))
       (List.map make_option options)
   in
-  let (_ : unit Eliom_client_value.t) =
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let dom =
         (Js.Unsafe.coerce (To_dom.of_element ~%elt)
@@ -614,7 +614,7 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
         Lwt_js_events.changes (To_dom.of_element ~%elt) @@ fun _ _ ->
         ~%set_signal (Js.to_string dom##.value);
         Lwt.return_unit);
-      Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
+      Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
         ~keep:
           (React.S.map
              (fun v ->
@@ -628,8 +628,8 @@ let%shared reactive_select ?(a = []) ~options ?selected () =
 let%shared debounced_input ?(a = []) ?(delay = 0.3) ?value ?validate () =
   let input, (raw_signal, set) = reactive_input ~a ?value ?validate () in
   let init = match value with Some v -> v | None -> "" in
-  let debounced, set_debounced = Eliom_shared.React.S.create init in
-  let (_ : unit Eliom_client_value.t) =
+  let debounced, set_debounced = Eliom.Shared.React.S.create init in
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let pending = ref Lwt.return_unit in
       let el = To_dom.of_input ~%input in
@@ -647,12 +647,12 @@ let%shared debounced_input ?(a = []) ?(delay = 0.3) ?value ?validate () =
 (* -- Password input ---------------------------------------------- *)
 
 let%shared password_input ?(a = []) ?placeholder () =
-  let visible_s, set_visible = Eliom_shared.React.S.create false in
+  let visible_s, set_visible = Eliom.Shared.React.S.create false in
   let inp =
     D.Raw.input
       ~a:
         (R.a_input_type
-           (Eliom_shared.React.S.map
+           (Eliom.Shared.React.S.map
               [%shared fun visible -> if visible then `Text else `Password]
               visible_s)
         :: a_class ["ot-form-input"; "ot-password-input"]
@@ -675,7 +675,7 @@ let%shared password_input ?(a = []) ?placeholder () =
       [ D.span
           ~a:
             [ R.a_class
-                (Eliom_shared.React.S.map
+                (Eliom.Shared.React.S.map
                    [%shared
                      fun visible ->
                        if visible
@@ -690,7 +690,7 @@ let%shared password_input ?(a = []) ?placeholder () =
 
 (* -- Password toggle (non-reactive) ------------------------------ *)
 
-let%shared password_toggle (inp : [< Html_types.input] elt) =
+let%shared password_toggle (inp : [< Html_types.input] elt) : [> `Div] elt =
   let toggle_icon =
     D.span ~a:[a_class ["ot-password-toggle-show"]] []
   in
@@ -731,7 +731,7 @@ let%shared password_toggle (inp : [< Html_types.input] elt) =
 (* -- Prevent double submit --------------------------------------- *)
 
 let%shared prevent_double_submit ?(a = []) ?button_type ~f content =
-  let disabled_s, set_disabled = Eliom_shared.React.S.create false in
+  let disabled_s, set_disabled = Eliom.Shared.React.S.create false in
   let onclick =
     [%client
       fun _ ->
@@ -770,7 +770,7 @@ let%shared
       step
   =
   let disabled =
-    Eliom_shared.React.S.map
+    Eliom.Shared.React.S.map
       [%shared
         function
         | Error () -> true
@@ -785,7 +785,7 @@ let%shared
     [%client
       fun _ ->
         let value =
-          match Eliom_shared.React.S.value ~%value with
+          match Eliom.Shared.React.S.value ~%value with
           | Ok None | Error () -> pred ~%min_value
           | Ok (Some value) -> value
         in
@@ -809,7 +809,7 @@ let%shared make_int_input ~min ~max ~size ~optional initial_value =
       | None -> none_input_value
       | Some value -> string_of_int value
     in
-    Eliom_shared.React.S.create initial_value
+    Eliom.Shared.React.S.create initial_value
   in
   let input, value =
     let input, (value, _) =
@@ -824,7 +824,7 @@ let%shared make_int_input ~min ~max ~size ~optional initial_value =
           ; a_class ["ot-form-input"] ]
         ()
     in
-    input, Eliom_shared.React.S.map [%shared validate_as_int] value
+    input, Eliom.Shared.React.S.map [%shared validate_as_int] value
   in
   let less_button, more_button =
     let step_button =
@@ -846,7 +846,7 @@ let%shared int_input ?(min = 0) ?(max = max_int) ?(size = 2) initial_value =
     make_int_input ~min ~max ~size ~optional:false (Some initial_value)
   in
   let value =
-    Eliom_shared.React.S.map
+    Eliom.Shared.React.S.map
       [%shared
         fun result ->
           match result with
@@ -878,7 +878,7 @@ let%shared reactive_date_input ?(a = []) ?value () =
   let initial_str =
     match value with Some v -> string_of_date v | None -> ""
   in
-  let signal, set_signal = Eliom_shared.React.S.create value in
+  let signal, set_signal = Eliom.Shared.React.S.create value in
   let inp =
     D.Raw.input
       ~a:
@@ -889,7 +889,7 @@ let%shared reactive_date_input ?(a = []) ?value () =
              (a :> Html_types.input_attrib attrib list))
       ()
   in
-  let (_ : unit Eliom_client_value.t) =
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let inp' = To_dom.of_input ~%inp in
       Lwt.async (fun () ->
@@ -897,7 +897,7 @@ let%shared reactive_date_input ?(a = []) ?value () =
         let v = Js.to_string inp'##.value in
         ~%set_signal (parse_date v);
         Lwt.return_unit);
-      Eliom_lib.Dom_reference.retain inp'
+      Eliom.Lib.Dom_reference.retain inp'
         ~keep:
           (React.S.map
              (fun v ->
@@ -912,7 +912,7 @@ let%shared reactive_time_input ?(a = []) ?value () =
   let initial_str =
     match value with Some v -> string_of_time v | None -> ""
   in
-  let signal, set_signal = Eliom_shared.React.S.create value in
+  let signal, set_signal = Eliom.Shared.React.S.create value in
   let inp =
     D.Raw.input
       ~a:
@@ -923,7 +923,7 @@ let%shared reactive_time_input ?(a = []) ?value () =
              (a :> Html_types.input_attrib attrib list))
       ()
   in
-  let (_ : unit Eliom_client_value.t) =
+  let (_ : unit Eliom.Client_value.t) =
     [%client
       let inp' = To_dom.of_input ~%inp in
       Lwt.async (fun () ->
@@ -931,7 +931,7 @@ let%shared reactive_time_input ?(a = []) ?value () =
         let v = Js.to_string inp'##.value in
         ~%set_signal (parse_time v);
         Lwt.return_unit);
-      Eliom_lib.Dom_reference.retain inp'
+      Eliom.Lib.Dom_reference.retain inp'
         ~keep:
           (React.S.map
              (fun v ->
