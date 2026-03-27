@@ -19,7 +19,7 @@ module type PAGE_TRANSITION_CONF = sig
 
   val screenshot_container :
      screenshot option
-    -> Html_types.div_content Eliom_content.Html.elt
+    -> Html_types.div_content Eliom.Content.Html.elt
 end
 
 (** [install_global_handler t take_screenshot animation_type]
@@ -40,7 +40,7 @@ module Make
     val install_global_handler :
        ?transition_duration:float
       -> take_screenshot:((screenshot -> unit) -> unit)
-      -> animation_type:(Eliom_client.changepage_event -> animation)
+      -> animation_type:(Eliom.Client.changepage_event -> animation)
       -> unit
   end
   with type screenshot = Conf.screenshot
@@ -48,7 +48,7 @@ module Make
 val install_global_handler_withURI :
    ?transition_duration:float
   -> take_screenshot:((string -> unit) -> unit)
-  -> animation_type:(Eliom_client.changepage_event -> animation)
+  -> animation_type:(Eliom.Client.changepage_event -> animation)
   -> unit
 (** [install_global_handler_withURI] enables you to skip the step of
     creating a module of type [PAGE_TRANSITION_CONF] when screenshots

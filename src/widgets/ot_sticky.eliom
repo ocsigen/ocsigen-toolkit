@@ -1,6 +1,6 @@
 [%%client.start]
 
-open Eliom_content.Html
+open Eliom.Content.Html
 open Html_types
 open Js_of_ocaml
 open Js_of_ocaml_lwt
@@ -155,7 +155,7 @@ let make_sticky
     in
     init ();
     let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
-    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed)
+    Eliom.Lib.Dom_reference.retain (To_dom.of_element fixed)
       ~keep:onloaded_thread;
     let scroll_thread =
       Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
@@ -166,7 +166,7 @@ let make_sticky
       |> React.S.map @@ fun (width, height) ->
          synchronise glue; update_state glue; width, height
     in
-    Eliom_lib.Dom_reference.retain (To_dom.of_element fixed) ~keep:resize_thread;
+    Eliom.Lib.Dom_reference.retain (To_dom.of_element fixed) ~keep:resize_thread;
     let dissolve () =
       Lwt.cancel scroll_thread;
       React.S.stop resize_thread;
@@ -175,7 +175,7 @@ let make_sticky
       Manip.removeSelf glue.fixed;
       Manip.Class.remove glue.inline "ot-sticky-inline"
     in
-    Eliom_client.onunload (fun () -> dissolve ());
+    Eliom.Client.onunload (fun () -> dissolve ());
     Lwt.return_some {glue with scroll_thread; resize_thread; dissolve}
 
 (* This is about functionality built on top of position:sticky / the polyfill *)
@@ -212,7 +212,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         | None -> Ot_size.width_height
         | Some glue -> glue.resize_thread
       in
-      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_thread;
+      Eliom.Lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_thread;
       let init () =
         let doIt () = compute_top_left @@ React.S.value Ot_size.width_height in
         (* the additional initialisation after some delay is due to the inexplicable
@@ -224,11 +224,11 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
       in
       init ();
       let onload_thread = React.E.map init Ot_spinner.onloaded in
-      Eliom_lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_thread;
+      Eliom.Lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_thread;
       let stop () =
         React.E.stop onload_thread;
         React.S.stop resize_thread;
         match glue with Some g -> g.dissolve () | None -> ()
       in
-      Eliom_client.onunload (fun () -> stop ());
+      Eliom.Client.onunload (fun () -> stop ());
       Lwt.return stop

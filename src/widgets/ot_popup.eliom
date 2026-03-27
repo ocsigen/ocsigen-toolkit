@@ -19,9 +19,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-open Eliom_content.Html]
+open Eliom.Content.Html]
 
-[%%shared open Eliom_content.Html.F]
+[%%shared open Eliom.Content.Html.F]
 
 open%client Js_of_ocaml
 open%client Lwt.Syntax
@@ -83,7 +83,7 @@ let%client
   in
   let popup = ref None in
   let stop, stop_thread = React.E.create () in
-  Eliom_client.Page_status.onactive ~stop (fun () ->
+  Eliom.Client.Page_status.onactive ~stop (fun () ->
     if enable_scrolling_hack then disable_page_scroll ());
   let reset () = if enable_scrolling_hack then enable_page_scroll () in
   let do_close () =
@@ -91,10 +91,10 @@ let%client
       (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))##.length
       = 1
     then reset ();
-    let () = Eliom_lib.Option.iter Manip.removeSelf !popup in
+    let () = Eliom.Lib.Option.iter Manip.removeSelf !popup in
     stop_thread (); onclose ()
   in
-  Eliom_client.Page_status.oninactive ~stop reset;
+  Eliom.Client.Page_status.oninactive ~stop reset;
   let close () =
     match confirmation_onclose with
     | None -> do_close ()
@@ -124,16 +124,16 @@ let%client
   in
   let pop = D.div ~a:[a_class ["ot-popup"]] content in
   let box = D.div ~a:(a_class ["ot-popup-background"] :: a) [pop] in
-  let box_dom = Eliom_content.Html.To_dom.of_element box in
+  let box_dom = Eliom.Content.Html.To_dom.of_element box in
   if close_on_background_click
   then
-    Eliom_client.Page_status.while_active ~stop (fun () ->
+    Eliom.Client.Page_status.while_active ~stop (fun () ->
       (* Close the popup when user clicks on background *)
       let* event = Lwt_js_events.click box_dom in
       if event##.target = Js.some box_dom then close () else Lwt.return_unit);
   if close_on_escape
   then
-    Eliom_client.Page_status.while_active ~stop (fun () ->
+    Eliom.Client.Page_status.while_active ~stop (fun () ->
       Lwt_js_events.keydowns Dom_html.window @@ fun ev _ ->
       if ev##.keyCode = 27 then close () else Lwt.return_unit);
   popup := Some box;

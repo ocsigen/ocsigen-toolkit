@@ -21,13 +21,13 @@
 
 open%client Js_of_ocaml
 
-[%%shared open Eliom_content.Html]
+[%%shared open Eliom.Content.Html]
 [%%shared open Lwt.Syntax]
-[%%shared open Eliom_content.Html.F]
-[%%client open Eliom_shared]
+[%%shared open Eliom.Content.Html.F]
+[%%client open Eliom.Shared]
 
 let%shared default_fail_fun e =
-  [ (if Eliom_config.get_debugmode ()
+  [ (if Eliom.Config.get_debugmode ()
      then em [txt (Printexc.to_string e)]
      else
        let e = Printexc.to_string e in
@@ -39,20 +39,20 @@ let%shared default_fail_fun e =
        em ~a:[a_class ["ot-icon-error"]] []) ]
 
 let%shared default_fail_ref :
-  (exn -> Html_types.div_content Eliom_content.Html.elt list) ref
+  (exn -> Html_types.div_content Eliom.Content.Html.elt list) ref
   =
   ref default_fail_fun
 
 let%shared default_fail e =
   (!default_fail_ref e
-    : Html_types.div_content Eliom_content.Html.elt list
-    :> [< Html_types.div_content] Eliom_content.Html.elt list)
+    : Html_types.div_content Eliom.Content.Html.elt list
+    :> [< Html_types.div_content] Eliom.Content.Html.elt list)
 
 let%client set_default_fail f =
   default_fail_ref :=
     (f
-      : exn -> [< Html_types.div_content] Eliom_content.Html.elt list
-      :> exn -> Html_types.div_content Eliom_content.Html.elt list)
+      : exn -> [< Html_types.div_content] Eliom.Content.Html.elt list
+      :> exn -> Html_types.div_content Eliom.Content.Html.elt list)
 
 let%server with_spinner ?(a = []) ?spinner:_ ?fail thread =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -100,8 +100,8 @@ let replace_content ?fail elt thread =
     match fail with
     | Some fail ->
         (fail
-          : exn -> [< Html_types.div_content] Eliom_content.Html.elt list Lwt.t
-          :> exn -> Html_types.div_content Eliom_content.Html.elt list Lwt.t)
+          : exn -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t
+          :> exn -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t)
     | None -> fun e -> Lwt.return (default_fail e)
   in
   inc_active_spinners ();

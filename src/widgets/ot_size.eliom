@@ -68,7 +68,7 @@ let width_height, width, height =
   wh, w, h
 
 let set_adaptative_width elt f =
-  Eliom_lib.Dom_reference.retain elt
+  Eliom.Lib.Dom_reference.retain elt
     ~keep:
       (React.S.map
          (fun w ->
@@ -76,7 +76,7 @@ let set_adaptative_width elt f =
          height)
 
 let set_adaptative_height elt f =
-  Eliom_lib.Dom_reference.retain elt
+  Eliom.Lib.Dom_reference.retain elt
     ~keep:
       (React.S.map
          (fun w ->
