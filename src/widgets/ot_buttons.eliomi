@@ -1,7 +1,7 @@
 [%%shared.start]
 
 open Html_types
-open Eliom_content.Html
+open Eliom.Content.Html
 
 (* [dropdown ~menu content] creates a dropdown button with [content] as the
    button's content and [menu] as the menu's content. Note that the menu is

@@ -24,7 +24,7 @@
 (** {2 Drawer menu for mobile and Web applications} *)
 
 val drawer :
-   ?a:[< Html_types.div_attrib] Eliom_content.Html.attrib list
+   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?position:[`Top | `Right | `Bottom | `Left]
   -> ?opened:bool
   -> ?swipe:bool
@@ -36,8 +36,8 @@ val drawer :
   -> ?wrap_open:
        ((unit -> unit) Eliom_client_value.t
         -> (unit -> unit) Eliom_client_value.t)
-  -> [< Html_types.div_content] Eliom_content.Html.elt list
-  -> [> `Div] Eliom_content.Html.elt
+  -> [< Html_types.div_content] Eliom.Content.Html.elt list
+  -> [> `Div] Eliom.Content.Html.elt
      * (unit -> unit) Eliom_client_value.t
      * (unit -> unit) Eliom_client_value.t
 (** Build a drawer menu on the left, right, top or bottom of the screen.

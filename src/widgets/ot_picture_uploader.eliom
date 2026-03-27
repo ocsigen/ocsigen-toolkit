@@ -22,25 +22,25 @@ open Js_of_ocaml]
 
 [%%client open Js_of_ocaml_lwt]
 [%%client open Lwt.Syntax]
-[%%shared open Eliom_content.Html]
-[%%shared open Eliom_content.Html.F]
+[%%shared open Eliom.Content.Html]
+[%%shared open Eliom.Content.Html.F]
 
 type%shared ('a, 'b) service =
   ( unit
-    , 'a * ((float * float * float * float) option * Eliom_lib.file_info)
-    , Eliom_service.post
-    , Eliom_service.non_att
-    , Eliom_service.co
-    , Eliom_service.non_ext
-    , Eliom_service.reg
+    , 'a * ((float * float * float * float) option * Eliom.Lib.file_info)
+    , Eliom.Service.post
+    , Eliom.Service.non_att
+    , Eliom.Service.co
+    , Eliom.Service.non_ext
+    , Eliom.Service.reg
     , [`WithoutSuffix]
     , unit
-    , [`One of 'a Eliom_parameter.ocaml] Eliom_parameter.param_name
-      * ([`One of (float * float * float * float) option Eliom_parameter.ocaml]
-           Eliom_parameter.param_name
-        * [`One of Eliom_lib.file_info] Eliom_parameter.param_name)
-    , 'b Eliom_service.ocaml )
-    Eliom_service.t
+    , [`One of 'a Eliom.Parameter.ocaml] Eliom.Parameter.param_name
+      * ([`One of (float * float * float * float) option Eliom.Parameter.ocaml]
+           Eliom.Parameter.param_name
+        * [`One of Eliom.Lib.file_info] Eliom.Parameter.param_name)
+    , 'b Eliom.Service.ocaml )
+    Eliom.Service.t
 
 let%client process_file input callback =
   Js.Opt.case
@@ -112,12 +112,12 @@ let%shared
       ~a:[a_class ["ot-pup-ctrls"]]
       [t_c; tr_c; r_c; br_c; b_c; bl_c; l_c; tl_c]
   in
-  let left, set_left = Eliom_shared.React.S.create 0. in
-  let right, set_right = Eliom_shared.React.S.create 0. in
-  let top, set_top = Eliom_shared.React.S.create 0. in
-  let bottom, set_bottom = Eliom_shared.React.S.create 0. in
-  let img_w, set_img_w = Eliom_shared.React.S.create 0. in
-  let img_h, set_img_h = Eliom_shared.React.S.create 0. in
+  let left, set_left = Eliom.Shared.React.S.create 0. in
+  let right, set_right = Eliom.Shared.React.S.create 0. in
+  let top, set_top = Eliom.Shared.React.S.create 0. in
+  let bottom, set_bottom = Eliom.Shared.React.S.create 0. in
+  let img_w, set_img_w = Eliom.Shared.React.S.create 0. in
+  let img_h, set_img_h = Eliom.Shared.React.S.create 0. in
   let _ =
     [%client
       (let open Lwt_js_events in
@@ -132,7 +132,7 @@ let%shared
        let tl_f = To_dom.of_element ~%tl_f in
        let x = ref 0. in
        let y = ref 0. in
-       Eliom_lib.Dom_reference.retain crop
+       Eliom.Lib.Dom_reference.retain crop
          ~keep:
            (React.S.map
               ( on_animation_frame @@ fun x ->
@@ -144,7 +144,7 @@ let%shared
                 let () = r_f##.style##.top := top in
                 crop##.style##.top := top )
               ~%top);
-       Eliom_lib.Dom_reference.retain crop
+       Eliom.Lib.Dom_reference.retain crop
          ~keep:
            (React.S.map
               ( on_animation_frame @@ fun x ->
@@ -156,7 +156,7 @@ let%shared
                 let () = r_f##.style##.bottom := bottom in
                 crop##.style##.bottom := bottom )
               ~%bottom);
-       Eliom_lib.Dom_reference.retain crop
+       Eliom.Lib.Dom_reference.retain crop
          ~keep:
            (React.S.map
               ( on_animation_frame @@ fun x ->
@@ -168,7 +168,7 @@ let%shared
                 let () = b_f##.style##.right := right in
                 crop##.style##.right := right )
               ~%right);
-       Eliom_lib.Dom_reference.retain crop
+       Eliom.Lib.Dom_reference.retain crop
          ~keep:
            (React.S.map
               ( on_animation_frame @@ fun x ->
@@ -386,7 +386,7 @@ let%shared
        : unit -> unit)]
   in
   ( reset
-  , Eliom_shared.React.S.l4
+  , Eliom.Shared.React.S.l4
       [%shared fun x y w h -> x, y, w, h]
       top right bottom left
   , div
@@ -416,13 +416,13 @@ let%client loads ?cancel_handler ?use_capture t =
 
 let%client bind_input input preview ?container ?reset () =
   let onerror () =
-    Eliom_lib.Option.iter
+    Eliom.Lib.Option.iter
       (fun container -> container##.classList##add (Js.string "ot-no-file"))
       container;
     preview##.src := Js.string "";
     Lwt.return_unit
   in
-  Eliom_lib.Option.iter
+  Eliom.Lib.Option.iter
     (fun f ->
        Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
     reset;
@@ -435,7 +435,7 @@ let%client bind_input input preview ?container ?reset () =
            let () =
              file_reader (Js.Unsafe.coerce file) (fun data ->
                preview##.src := data;
-               Eliom_lib.Option.iter
+               Eliom.Lib.Option.iter
                  (fun container ->
                     container##.classList##remove (Js.string "ot-no-file"))
                  container)
@@ -452,8 +452,8 @@ type 'a upload =
   -> 'a Lwt.t]
 
 let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
-  Eliom_client.call_ocaml_service ~service () ?upload_progress:progress
-    (arg, (Eliom_lib.Option.map React.S.value cropping, file))
+  Eliom.Client.call_ocaml_service ~service () ?upload_progress:progress
+    (arg, (Eliom.Lib.Option.map React.S.value cropping, file))
 
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
@@ -487,11 +487,11 @@ let%client
   ()
 
 let%server mk_service name arg_deriver =
-  Eliom_service.create_ocaml ~name ~path:Eliom_service.No_path
+  Eliom.Service.create_ocaml ~name ~path:Eliom.Service.No_path
     ~meth:
-      (Eliom_service.Post
-         ( Eliom_parameter.unit
-         , let open Eliom_parameter in
+      (Eliom.Service.Post
+         ( Eliom.Parameter.unit
+         , let open Eliom.Parameter in
            ocaml "service_arg" arg_deriver
            ** ocaml "cropping" [%json: (float * float * float * float) option]
            ** file "f" ))

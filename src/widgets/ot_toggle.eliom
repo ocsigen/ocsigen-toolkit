@@ -20,8 +20,8 @@
 
 [%%shared.start] (* shared by default, override as necessary *)
 
-open Eliom_content.Html
-open Eliom_shared.React.S.Infix
+open Eliom.Content.Html
+open Eliom.Shared.React.S.Infix
 
 type t = T_Up | T_Down
 
@@ -56,7 +56,7 @@ let make
       ?(update : bool React.E.t Eliom_client_value.t option)
       ()
   =
-  let e, f = Eliom_shared.React.S.create (if init_up then T_Up else T_Down) in
+  let e, f = Eliom.Shared.React.S.create (if init_up then T_Up else T_Down) in
   let elt =
     D.div
       [ e
@@ -68,8 +68,8 @@ let make
       ignore
       @@ [%client
            (let f b = ~%f (up_for_true b) in
-            Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
-              ~keep:(Eliom_shared.React.E.map f ~%update)
+            Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
+              ~keep:(Eliom.Shared.React.E.map f ~%update)
             : unit)]
   | None -> ());
   elt, e >|= [%shared function T_Up -> true | _ -> false]

@@ -2,12 +2,12 @@
 
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
-[%%client open Eliom_content.Html]
+[%%client open Eliom.Content.Html]
 
-open Eliom_content.Html.D
+open Eliom.Content.Html.D
 
 let%shared default_header =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   function
   | Some Loading -> [F.div ~a:[F.a_class ["ot-icon-animation-spinning"]] []]
   | _ -> []
@@ -19,7 +19,7 @@ open Lwt.Syntax
 module type CONF = sig
   val dragThreshold : float
   val scale : float
-  val container : Html_types.div Eliom_content.Html.D.elt
+  val container : Html_types.div Eliom.Content.Html.D.elt
   val set_state : ?step:React.step -> state option -> unit
   val timeout : float
   val afterPull : unit -> bool Lwt.t
@@ -177,18 +177,18 @@ let make
       ~content
       (afterPull : (unit -> bool Lwt.t) Eliom_client_value.t)
   =
-  if app_only && not (Eliom_client.is_client_app ())
+  if app_only && not (Eliom.Client.is_client_app ())
   then div ~a [content]
   else
-    let state_s, set_state = Eliom_shared.React.S.create None in
+    let state_s, set_state = Eliom.Shared.React.S.create None in
     let headContainer =
-      Eliom_content.Html.R.node
-      @@ Eliom_shared.React.S.map
+      Eliom.Content.Html.R.node
+      @@ Eliom.Shared.React.S.map
            [%shared
-             let open Eliom_content.Html in
+             let open Eliom.Content.Html in
              fun s ->
                D.div ~a:[D.a_class ["ot-pull-refresh-head-container"]]
-               @@ Eliom_shared.Value.local ~%header
+               @@ Eliom.Shared.Value.local ~%header
                @@ s]
            state_s
     in
@@ -209,5 +209,5 @@ let make
          let module Ptr = Make (Ptr_conf) in
          Ptr.init ()
          : unit)];
-    let open Eliom_content.Html in
+    let open Eliom.Content.Html in
     F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]

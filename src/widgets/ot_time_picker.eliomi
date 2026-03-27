@@ -29,8 +29,8 @@ val make :
   -> ?round_5:bool
   -> ?h24:bool
   -> unit
-  -> [> `Div] Eliom_content.Html.elt
-     * (int * int) Eliom_shared.React.S.t
+  -> [> `Div] Eliom.Content.Html.elt
+     * (int * int) Eliom.Shared.React.S.t
      * (unit -> unit) Eliom_client_value.t
 (** [make ?action ?round_5 ?h24 ()] produces a clock-style time picker
     for hours and minutes. The user is first asked to pick hours, then
@@ -62,7 +62,7 @@ val make_hours_minutes_seq :
   -> ?round_5:bool
   -> ?h24:bool
   -> unit
-  -> [> `Div] Eliom_content.Html.elt
-     * (int * int) Eliom_shared.React.S.t
+  -> [> `Div] Eliom.Content.Html.elt
+     * (int * int) Eliom.Shared.React.S.t
      * (unit -> unit) Eliom_client_value.t
 (** Alias of [make]. Deprecated. *)

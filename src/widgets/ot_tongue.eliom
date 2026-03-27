@@ -1,6 +1,6 @@
 [%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F]
+open Eliom.Content.Html
+open Eliom.Content.Html.F]
 
 [%%client
 open Lwt.Infix
@@ -45,7 +45,7 @@ type%shared stop =
   | `Interval of simple_stop * simple_stop ]
 
 type%shared tongue =
-  { elt : Html_types.div Eliom_content.Html.D.elt
+  { elt : Html_types.div Eliom.Content.Html.D.elt
   ; stop_signal_before : simple_stop React.S.t Eliom_client_value.t
   ; stop_signal_after : simple_stop React.S.t Eliom_client_value.t
   ; swipe_pos : int React.S.t Eliom_client_value.t
@@ -370,7 +370,7 @@ let%client
   Lwt.async (fun () -> touchstarts handle' ontouchstart);
   match update with
   | Some update ->
-      Eliom_lib.Dom_reference.retain elt'
+      Eliom.Lib.Dom_reference.retain elt'
         ~keep:(React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 

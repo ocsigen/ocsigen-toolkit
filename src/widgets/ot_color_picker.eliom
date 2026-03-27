@@ -21,7 +21,7 @@
 
 [%%shared.start]
 
-open Eliom_shared.React.S.Infix
+open Eliom.Shared.React.S.Infix
 
 let hsv_to_rgb h s v =
   let h = float_of_int h in
@@ -46,7 +46,7 @@ let rgb_to_css (r, g, b) =
     (int_of_float b)
 
 let display_hue_selector ~setter (sel_hue, sel_sat, sel_ltn) =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   let dim = 111 in
   let irange = Array.init dim (fun x -> x) in
   let step = 360.0 /. float_of_int dim in
@@ -84,7 +84,7 @@ let display_hue_selector ~setter (sel_hue, sel_sat, sel_ltn) =
   * TODO: use a CSS3 gradient in each cell to make the grid look smoother
   *)
 let display_sl_grid ~setter (sel_hue, sel_sat, sel_ltn) =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   let hue = float_of_int sel_hue in
   let dim = 51 in
   let irange = Array.init (dim * dim) (fun x -> x) in
@@ -130,7 +130,7 @@ let display_sl_grid ~setter (sel_hue, sel_sat, sel_ltn) =
   D.(div ~a:[a_class ["ot-color-picker-sl-picker"]] (Array.to_list rows))
 
 let display_aux ?(a = []) ~setter sel =
-  let open Eliom_content.Html in
+  let open Eliom.Content.Html in
   D.div
     ~a:(D.a_class ["ot-color-picker"] :: a)
     [display_hue_selector ~setter sel; display_sl_grid ~setter sel]
@@ -139,7 +139,7 @@ let display ?a cp_sig =
   let setter = snd cp_sig in
   fst cp_sig
   >|= [%shared display_aux ?a:~%a ~setter:~%setter]
-  |> Eliom_content.Html.R.node
+  |> Eliom.Content.Html.R.node
 
 let make
       ?a
@@ -148,15 +148,15 @@ let make
       ()
   =
   let ((cp_sig, cp_set) as cp_react) =
-    Eliom_shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
+    Eliom.Shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
   in
   let elt, signal = display ?a cp_react, cp_sig in
-  let elt = Eliom_content.Html.D.div [elt] in
+  let elt = Eliom.Content.Html.D.div [elt] in
   ignore
     [%client
       (* /!\ How to avoid the effectful signal ? *)
-      (Eliom_lib.Dom_reference.retain
-         (Eliom_content.Html.To_dom.of_element ~%elt)
+      (Eliom.Lib.Dom_reference.retain
+         (Eliom.Content.Html.To_dom.of_element ~%elt)
          ~keep:
            (React.E.map (fun update -> ~%cp_set update) ~%update
             : unit React.event)
