@@ -23,7 +23,7 @@
 
 (** Popup widget *)
 
-open Eliom_content.Html
+open Eliom.Content.Html
 open Html_types
 
 val hcf :

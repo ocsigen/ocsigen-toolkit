@@ -93,7 +93,7 @@ let nodeready n =
         log ~n "put node in document";
         stop_ondead ()
       in
-      Eliom_client.Page_status.ondead ~stop (fun () ->
+      Eliom.Client.Page_status.ondead ~stop (fun () ->
         let instances_of_node, rest =
           List.partition (fun {node} -> Js.strict_equals n node) !watched
         in

@@ -1,6 +1,6 @@
 [%%shared
-open Eliom_content.Html
-open Eliom_content.Html.F]
+open Eliom.Content.Html
+open Eliom.Content.Html.F]
 
 [%%client
 open Lwt.Infix
@@ -45,12 +45,12 @@ type%shared stop =
   | `Interval of simple_stop * simple_stop ]
 
 type%shared tongue =
-  { elt : Html_types.div Eliom_content.Html.D.elt
-  ; stop_signal_before : simple_stop React.S.t Eliom_client_value.t
-  ; stop_signal_after : simple_stop React.S.t Eliom_client_value.t
-  ; swipe_pos : int React.S.t Eliom_client_value.t
-  ; px_signal_before : int React.S.t Eliom_client_value.t
-  ; px_signal_after : int React.S.t Eliom_client_value.t }
+  { elt : Html_types.div Eliom.Content.Html.D.elt
+  ; stop_signal_before : simple_stop React.S.t Eliom.Client_value.t
+  ; stop_signal_after : simple_stop React.S.t Eliom.Client_value.t
+  ; swipe_pos : int React.S.t Eliom.Client_value.t
+  ; px_signal_before : int React.S.t Eliom.Client_value.t
+  ; px_signal_after : int React.S.t Eliom.Client_value.t }
 
 let%client now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 
@@ -370,7 +370,7 @@ let%client
   Lwt.async (fun () -> touchstarts handle' ontouchstart);
   match update with
   | Some update ->
-      Eliom_lib.Dom_reference.retain elt'
+      Eliom.Lib.Dom_reference.retain elt'
         ~keep:(React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 
@@ -410,7 +410,7 @@ let%shared
       (Lwt.async (fun () ->
          let* () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
          bind ~%side ~%stops ~%init ~%handle
-           ~%(update : simple_stop React.E.t Eliom_client_value.t option)
+           ~%(update : simple_stop React.E.t Eliom.Client_value.t option)
            (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
          Lwt.return_unit)
        : unit)];

@@ -41,17 +41,17 @@ type button_labels =
 
 val make :
    ?init:int * int * int
-  -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
+  -> ?highlight:(int -> int -> int list Lwt.t) Eliom.Client_value.t
   -> ?click_non_highlighted:bool
-  -> ?update:(int * int * int) React.E.t Eliom_client_value.t
-  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
+  -> ?update:(int * int * int) React.E.t Eliom.Client_value.t
+  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom.Client_value.t
   -> ?period:
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date
   -> ?button_labels:button_labels
   -> ?intl:intl
   -> unit
-  -> [> `Div] Eliom_content.Html.elt
+  -> [> `Div] Eliom.Content.Html.elt
 (** [make ?highlight ?click_any ?action] produces a calendar.
 
     If a client-side function [highlight] is provided, [highlight y m]
@@ -71,14 +71,14 @@ val make :
 
 val make_date_picker :
    ?init:int * int * int
-  -> ?update:(int * int * int) React.E.t Eliom_client_value.t
+  -> ?update:(int * int * int) React.E.t Eliom.Client_value.t
   -> ?button_labels:button_labels
   -> ?intl:intl
   -> ?period:
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date
   -> unit
-  -> [> `Div] Eliom_content.Html.elt * (int * int * int) Eliom_shared.React.S.t
+  -> [> `Div] Eliom.Content.Html.elt * (int * int * int) Eliom.Shared.React.S.t
 (** [make_date_picker ?init ()] returns a client-side reactive signal
     [(y, m, d)] corresponding to the date [d]:[m]:[y] that the user
     clicks on. The optional parameter [init] provides an initial value
