@@ -60,7 +60,7 @@ type glue =
   ; dissolve : unit -> unit }
 
 let move_content ~from to_elt =
-  if (Ot_style.style @@ To_dom.of_element to_elt)##.display <> Js.string "none"
+  if (Style.style @@ To_dom.of_element to_elt)##.display <> Js.string "none"
   then (
     let children = Manip.children from in
     Manip.removeChildren from;
@@ -69,10 +69,10 @@ let move_content ~from to_elt =
 let stick ?(force = false) g =
   if force || (not @@ Manip.Class.contain g.fixed "ot-stuck")
   then (
-    Ot_style.set_width g.inline
-    @@ Ot_size.client_width (To_dom.of_element g.inline);
-    Ot_style.set_height g.inline
-    @@ Ot_size.client_height (To_dom.of_element g.inline);
+    Style.set_width g.inline
+    @@ Size.client_width (To_dom.of_element g.inline);
+    Style.set_height g.inline
+    @@ Size.client_height (To_dom.of_element g.inline);
     move_content ~from:g.inline g.fixed;
     Manip.Class.add g.fixed "ot-stuck";
     Manip.Class.add g.inline "ot-stuck")
@@ -88,17 +88,17 @@ let unstick ?(force = false) g =
 
 let synchronise g =
   let sync_values () =
-    Ot_style.set_width g.fixed
-    @@ Ot_size.client_width (To_dom.of_element g.inline);
-    Ot_style.set_height g.fixed
-    @@ Ot_size.client_height (To_dom.of_element g.inline);
+    Style.set_width g.fixed
+    @@ Size.client_width (To_dom.of_element g.inline);
+    Style.set_height g.fixed
+    @@ Size.client_height (To_dom.of_element g.inline);
     match g.dir with
     | `Top ->
-        Ot_style.set_left g.fixed
-        @@ Ot_size.client_page_left (To_dom.of_element g.inline)
+        Style.set_left g.fixed
+        @@ Size.client_page_left (To_dom.of_element g.inline)
     | `Left ->
-        Ot_style.set_top g.fixed
-        @@ Ot_size.client_page_top (To_dom.of_element g.inline)
+        Style.set_top g.fixed
+        @@ Size.client_page_top (To_dom.of_element g.inline)
   in
   if Manip.Class.contain g.fixed "ot-stuck"
   then (unstick g; sync_values (); stick g)
@@ -109,11 +109,11 @@ let update_state ?force g =
   let inline = To_dom.of_element g.inline in
   match g.dir with
   | `Top ->
-      if Ot_size.client_top fixed > Ot_size.client_top inline
+      if Size.client_top fixed > Size.client_top inline
       then stick ?force g
       else unstick ?force g
   | `Left ->
-      if Ot_size.client_left fixed > Ot_size.client_left inline
+      if Size.client_left fixed > Size.client_left inline
       then stick ?force g
       else unstick ?force g
 
@@ -125,7 +125,7 @@ let make_sticky
       ?(force = false)
       elt
   =
-  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  let* () = Nodeready.nodeready (To_dom.of_element elt) in
   if (not force) && supports_position_sticky elt
   then Lwt.return_none
   else
@@ -137,7 +137,7 @@ let make_sticky
     in
     let fixed = Of_dom.of_element @@ Dom_html.element fixed_dom in
     Manip.insertBefore ~before:elt fixed;
-    let* () = Ot_nodeready.nodeready fixed_dom in
+    let* () = Nodeready.nodeready fixed_dom in
     Manip.Class.add fixed "ot-sticky-fixed";
     Manip.Class.add elt "ot-sticky-inline";
     let glue =
@@ -154,15 +154,15 @@ let make_sticky
       unstick ~force:true glue; synchronise glue; update_state glue
     in
     init ();
-    let onloaded_thread = Ot_spinner.onloaded |> React.E.map init in
+    let onloaded_thread = Spinner.onloaded |> React.E.map init in
     Eliom.Lib.Dom_reference.retain (To_dom.of_element fixed)
       ~keep:onloaded_thread;
     let scroll_thread =
-      Ot_lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
+      Lib.window_scrolls ~ios_html_scroll_hack @@ fun _ _ ->
       update_state glue; Lwt.return_unit
     in
     let resize_thread =
-      Ot_size.width_height
+      Size.width_height
       |> React.S.map @@ fun (width, height) ->
          synchronise glue; update_state glue; width, height
     in
@@ -182,39 +182,39 @@ let make_sticky
 
 (* TODO: ensure compatibility with DOM caching *)
 let keep_in_sight ~dir ?ios_html_scroll_hack elt =
-  let* () = Ot_nodeready.nodeready (To_dom.of_element elt) in
+  let* () = Nodeready.nodeready (To_dom.of_element elt) in
   let* glue = make_sticky ?ios_html_scroll_hack ~dir elt in
   let elt = match glue with None -> elt | Some g -> g.fixed in
   match Manip.parentNode elt with
   | None -> Lwt.return (fun () -> ())
   | Some parent ->
-      let* () = Ot_nodeready.nodeready (To_dom.of_element parent) in
+      let* () = Nodeready.nodeready (To_dom.of_element parent) in
       let compute_top_left (_, win_height) =
         match dir with
         | `Top ->
             (* sleep, as this should run after make_sticky's handlers *)
             let win_height = float_of_int win_height in
             let parent_top =
-              Ot_size.client_page_top (To_dom.of_element parent)
+              Size.client_page_top (To_dom.of_element parent)
             in
-            let elt_height = Ot_size.client_height (To_dom.of_element elt) in
+            let elt_height = Size.client_height (To_dom.of_element elt) in
             if elt_height > win_height -. parent_top
-            then Ot_style.set_top elt (win_height -. elt_height)
-            else Ot_style.set_top elt parent_top
+            then Style.set_top elt (win_height -. elt_height)
+            else Style.set_top elt parent_top
         | _ ->
             failwith
-              "Ot_sticky.keep_in_sight only supports ~dir:`Top right now."
+              "Sticky.keep_in_sight only supports ~dir:`Top right now."
       in
       let resize_thread =
         React.S.map compute_top_left
         @@
         match glue with
-        | None -> Ot_size.width_height
+        | None -> Size.width_height
         | Some glue -> glue.resize_thread
       in
       Eliom.Lib.Dom_reference.retain (To_dom.of_element elt) ~keep:resize_thread;
       let init () =
-        let doIt () = compute_top_left @@ React.S.value Ot_size.width_height in
+        let doIt () = compute_top_left @@ React.S.value Size.width_height in
         (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
         Lwt.async (fun () ->
@@ -223,7 +223,7 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         doIt ()
       in
       init ();
-      let onload_thread = React.E.map init Ot_spinner.onloaded in
+      let onload_thread = React.E.map init Spinner.onloaded in
       Eliom.Lib.Dom_reference.retain (To_dom.of_element elt) ~keep:onload_thread;
       let stop () =
         React.E.stop onload_thread;

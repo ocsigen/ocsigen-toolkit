@@ -95,19 +95,19 @@ let height_to_bottom offset elt =
 
 let client_top ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.top
-  -. if with_margin then Ot_style.marginTop elt else 0.0
+  -. if with_margin then Style.marginTop elt else 0.0
 
 let client_bottom ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.bottom
-  +. if with_margin then Ot_style.marginBottom elt else 0.0
+  +. if with_margin then Style.marginBottom elt else 0.0
 
 let client_left ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.left
-  -. if with_margin then Ot_style.marginLeft elt else 0.0
+  -. if with_margin then Style.marginLeft elt else 0.0
 
 let client_right ?(with_margin = false) elt =
   Js.to_float elt##getBoundingClientRect##.right
-  +. if with_margin then Ot_style.marginRight elt else 0.0
+  +. if with_margin then Style.marginRight elt else 0.0
 
 let client_height ?(with_margin = false) elt =
   client_bottom ~with_margin elt -. client_top ~with_margin elt

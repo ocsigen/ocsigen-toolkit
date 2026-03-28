@@ -24,7 +24,7 @@ open Js_of_ocaml
 
 (** {2 Picture uploader widget}
 
-    [Ot_picture_uploader] allows the user to see a picture he wants to
+    [Picture_uploader] allows the user to see a picture he wants to
     send to the before sending it server.  Also, controllers can be
     added to allow the user to specify a cropping area. No cropping is
     actually done on the client side, it MUST be handled on server
