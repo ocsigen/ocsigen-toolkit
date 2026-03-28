@@ -36,7 +36,7 @@ val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
     the new document is displayed (and thus the new window is there)
     and therefore may be attached to the window that is about to be
     replaced. In most use-cases you should have a line as follows
-    before: let%lwt () = Ot_nodeready.nodeready @@ To_dom.of_element
+    before: let%lwt () = Nodeready.nodeready @@ To_dom.of_element
     some_elt in *)
 
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t

@@ -41,8 +41,8 @@ open%client Js_of_ocaml
 [%%shared open Eliom.Content.Html.F]
 [%%shared open Lwt.Syntax]
 
-let%client clX = Ot_swipe.clX
-let%client clY = Ot_swipe.clY
+let%client clX = Swipe.clX
+let%client clY = Swipe.clY
 
 let%client add_transition transition_duration =
   let s = Js.string (Printf.sprintf "%.2fs" transition_duration) in
@@ -192,7 +192,7 @@ let%shared
            max 1 (truncate (float (width_carousel + 1) /. float width_element))
        in
        Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready d2' in
+         let* () = Nodeready.nodeready d2' in
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
          Lwt.return_unit);
        let maxi () = ~%maxi - React.S.value ~%nb_visible_elements + 1 in
@@ -232,11 +232,9 @@ let%shared
            in
            Eliom.Lib.Option.iter
              (fun dist ->
-                let delta =
-                  max 0 (dist - int_of_float (Ot_size.client_top d))
-                in
+                let delta = max 0 (dist - int_of_float (Size.client_top d)) in
                 let pos = React.S.value pos_signal in
-                Ot_lib.List.iteri2
+                Lib.List.iteri2
                   (fun i coli scrolli ->
                      if i <> pos
                      then
@@ -266,9 +264,9 @@ let%shared
          in
          Eliom.Lib.Option.iter
            (fun dist ->
-              let delta = -max 0 (dist - int_of_float (Ot_size.client_top d)) in
+              let delta = -max 0 (dist - int_of_float (Size.client_top d)) in
               let pos = React.S.value pos_signal in
-              Ot_lib.List.iteri2
+              Lib.List.iteri2
                 (fun i coli scrolli ->
                    let coli' = To_dom.of_element coli in
                    coli'##.style##.marginTop := Js.string "0px";
@@ -327,9 +325,9 @@ let%shared
          ~keep:
            (React.S.map
               (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
-              (if vertical then Ot_size.height else Ot_size.width));
+              (if vertical then Size.height else Size.width));
        Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready d2' in
+         let* () = Nodeready.nodeready d2' in
          set_position ~%position; add_transition d2'; Lwt.return_unit);
        let perform_animation a =
          ~%set_nb_visible_elements (comp_nb_visible_elements ());
@@ -409,12 +407,12 @@ let%shared
                  >= abs_float move
                then
                  Stopped (* swiping in wrong direction (vertical/horizontal) *)
-               else if abs_float move > Ot_swipe.threshold
+               else if abs_float move > Swipe.threshold
                then (
                  (* We decide to take the event *)
                  (* We send a touchcancel to the parent
                   (which received the start) *)
-                 Ot_swipe.dispatch_event ~ev d2' "touchcancel" (clX ev) (clY ev);
+                 Swipe.dispatch_event ~ev d2' "touchcancel" (clX ev) (clY ev);
                  Manip.Class.add ~%d2 ot_swiping;
                  set_top_margin ();
                  remove_transition d2';
@@ -566,7 +564,7 @@ let%shared default_fail_fun e =
     ignore
       [%client
         (Console.console##error
-           (Js.string ("Ot_carousel content failed with " ^ ~%e))
+           (Js.string ("Carousel content failed with " ^ ~%e))
          : unit)];
     em ~a:[a_class ["ot-icon-error"]] []
 
@@ -774,10 +772,10 @@ let%shared
        in
        let curleft, set_curleft = React.S.create initial_gap in
        Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready container' in
+         let* () = Nodeready.nodeready container' in
          (* Ribbon position: *)
          set_containerwidth container'##.offsetWidth;
-         Ot_noderesize.noderesize (Ot_noderesize.attach container') (fun () ->
+         Noderesize.noderesize (Noderesize.attach container') (fun () ->
            set_containerwidth container'##.offsetWidth);
          (* noderesize is not very reliable, for example if we remove the
          node from page and put it back.
@@ -785,15 +783,15 @@ let%shared
          when the browser window's size changes: *)
          Eliom.Lib.Dom_reference.retain container'
            ~keep:
-             (Ot_size.width
+             (Size.width
              |> React.S.map @@ fun _ ->
                 (* This delay is a hack to make the ribbon work when it is inside of a
-           container that is sticky due to [Ot_sticky.make_sticky]. The problem
-           is that Ot_sticky functions by moving around the contents of the
+           container that is sticky due to [Sticky.make_sticky]. The problem
+           is that Sticky functions by moving around the contents of the
            container in the DOM when the window is resized. This destroys the
            noderesize but there is also a race condition with this code here
            that runs on window resizing. So we make sure the ribbon code runs
-           AFTER it has been placed into the fixed container by Ot_sticky. *)
+           AFTER it has been placed into the fixed container by Sticky. *)
                 Lwt.async @@ fun () ->
                 let* _ = Lwt_js.sleep 0.05 in
                 set_containerwidth container'##.offsetWidth;
@@ -926,7 +924,7 @@ let%shared
          | _ -> ());
          Lwt.return_unit);
        Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready container' in
+         let* () = Nodeready.nodeready container' in
          let* () = Lwt_js_events.request_animation_frame () in
          add_transition the_ul';
          Eliom.Lib.Option.iter add_transition cursor_elt';
@@ -937,7 +935,7 @@ let%shared
          let ul_width = (To_dom.of_element the_ul)##.scrollWidth in
          React.S.value containerwidth - ul_width - initial_gap
        in
-       Ot_swipe.bind ~min:fmin ~max:fmax
+       Swipe.bind ~min:fmin ~max:fmax
          ~compute_final_pos:(fun ev p ->
            let cw = React.S.value containerwidth in
            let pos = max (-the_ul'##.scrollWidth + (cw / 2)) (min (cw / 2) p) in

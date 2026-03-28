@@ -47,8 +47,8 @@ open Js_of_ocaml
 
     {[Lwt.async (fun () ->
         let div' = (To_dom.of_element div) in
-        let%lwt () = Ot_nodeready.nodeready div' in
-        Ot_noderesize.noderesize (ot_noderesize.attach div) (fun () ->
+        let%lwt () = Nodeready.nodeready div' in
+        Noderesize.noderesize (ot_noderesize.attach div) (fun () ->
           Console.console##log (Js.string "Resized") ) )]} *)
 
 type resize_sensor
