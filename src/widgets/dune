@@ -15,7 +15,18 @@
    js_of_ocaml-ppx_deriving_json
    ocsigen-ppx-rpc
    --rpc-raw))
- (libraries eliom.server calendar js_of_ocaml))
+ (flags
+  (:standard
+   (:include type_includes)))
+ (libraries eliom.server calendar))
+
+(rule
+ (target type_includes)
+ (deps (universe))
+ (action
+  (with-stdout-to
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))
 
 (subdir
  client
