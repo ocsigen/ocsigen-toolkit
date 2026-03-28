@@ -1,1 +1,7 @@
 (vendored_dirs ocsigen-dune-rules)
+
+(install
+ (package ocsigen-toolkit)
+ (section share)
+ (files
+  (glob_files css/*.css)))
