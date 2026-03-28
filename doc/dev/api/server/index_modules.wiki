@@ -7,7 +7,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_calendar"| module Ot_calendar >> |<<div class="odocwiki_info"|~Calendar widget
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_carousel"| module Ot_carousel >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_carousel"| module Ot_carousel >> |<<div class="odocwiki_info"|~Carousel
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="Ot_color_picker"| module Ot_color_picker >> |<<div class="odocwiki_info"|~This module implements a color picker~.
 >>
 |

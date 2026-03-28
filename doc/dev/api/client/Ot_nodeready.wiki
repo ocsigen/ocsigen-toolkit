@@ -9,11 +9,11 @@
 
 
 
-    <<span class="odocwiki_inlinecode"|let ~_ ~= nodeready node in ~Firebug~.console~#~#debug node>>
+    <<span class="odocwiki_inlinecode"|let ~_ ~= nodeready node in ~Console~.console~#~#debug node>>
 
 
     
-===@@id="3_Knownissues"@@~Known issues===
+===@@id="3_Known issues"@@~Known issues===
 
 
 

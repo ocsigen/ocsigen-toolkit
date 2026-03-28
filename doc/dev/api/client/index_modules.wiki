@@ -10,9 +10,7 @@
 |
 |@@ @style="tet-align: left;"@@\\O|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_buttons"| module Ot_buttons >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_calendar"| module Ot_calendar >> |<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|intl>> is the type of internationalization specifiers~.
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_calendar"| module Ot_calendar >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_carousel"| module Ot_carousel >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_color_picker"| module Ot_color_picker >> |<<div class="odocwiki_info"|~This module implements a color picker~.
 >>

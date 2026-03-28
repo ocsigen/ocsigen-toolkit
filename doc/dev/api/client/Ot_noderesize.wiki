@@ -3,12 +3,12 @@
 ----
 
 
-==@@id="2_Getaneventwhenanelementssizechanges"@@~Get an event when an element~'s size changes==
+==@@id="2_Get an event when an element's size changes"@@~Get an event when an element~'s size changes==
 
 
 
     
-===@@id="3_Knownissues"@@~Known issues===
+===@@id="3_Known issues"@@~Known issues===
 
 
 
@@ -37,7 +37,7 @@
         let div' = (To_dom.of_element div) in
         let%lwt () = Ot_nodeready.nodeready div' in
         Ot_noderesize.noderesize (ot_noderesize.attach div) (fun () ->
-          Firebug.console##log (Js.string "Resized") ) )>>
+          Console.console##log (Js.string "Resized") ) )>>
 
 <<pre class="ocsforge_color odocwiki_code" id="TYPEresize_sensor"|<<span class="ocsforge_color_keyword"|type>> <<span class="odocwiki_name"|resize~_sensor>>>><<pre id="VALattach" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|attach>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|\\  ~#<<span class="ocsforge_color_uid"|Js_of_ocaml>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Dom_html>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|element>> <<span class="ocsforge_color_uid"|Js_of_ocaml>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_uid"|Js>><<span class="ocsforge_color_delimiter"| . >><<span class="ocsforge_color_lid"|t>> <<span class="ocsforge_color_delimiter"| -> >>\\  <<a_api subproject="client" text="resize_sensor" | type Ot_noderesize.resize_sensor >>>>>><<pre id="VALnoderesize" class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|val>> <<span class="odocwiki_name"|noderesize>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_label"| ?safe: >>bool <<span class="ocsforge_color_delimiter"| -> >> <<a_api subproject="client" text="resize_sensor" | type Ot_noderesize.resize_sensor >> <<span class="ocsforge_color_delimiter"| -> >> <<span class="ocsforge_color_delimiter"| ( >>unit <<span class="ocsforge_color_delimiter"| -> >> unit<<span class="ocsforge_color_delimiter"| ) >> <<span class="ocsforge_color_delimiter"| -> >> unit>>>><<div class="odocwiki_info"|~When <<span class="odocwiki_inlinecode"|safe>> is set to <<span class="odocwiki_inlinecode"|true>>~, <<span class="odocwiki_inlinecode"|noderesize>> will work whatever sized is
     the watched element~. ~When set to <<span class="odocwiki_inlinecode"|false>> ~(which is the default~)~,

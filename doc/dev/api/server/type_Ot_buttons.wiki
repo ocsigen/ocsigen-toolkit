@@ -1,7 +1,7 @@
 <<code language="ocaml" | sig
   val dropdown :
-    ?a:Html_types.div_attrib Eliom_content.Html.attrib list ->
-    menu:Html_types.div_content Eliom_content.Html.elt list ->
-    Html_types.div_content Eliom_content.Html.elt list ->
-    Html_types.div_content Eliom_content.Html.elt
+    ?a:Html_types.div_attrib Eliom.Content.Html.attrib list ->
+    menu:Html_types.div_content Eliom.Content.Html.elt list ->
+    Html_types.div_content Eliom.Content.Html.elt list ->
+    Html_types.div_content Eliom.Content.Html.elt
 end >>

@@ -1,25 +1,24 @@
 <<code language="ocaml" | sig
   val with_spinner :
-    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
-    ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
+    ?a:[< Html_types.div_attrib ] Eliom.Content.Html.attrib list ->
+    ?spinner:[< Html_types.div_content ] Eliom.Content.Html.elt list ->
     ?fail:(exn ->
-           [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t) ->
-    [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
-    [> `Div ] Eliom_content.Html.elt Lwt.t
+           [< Html_types.div_content ] Eliom.Content.Html.elt list Lwt.t) ->
+    [< Html_types.div_content ] Eliom.Content.Html.elt list Lwt.t ->
+    [> `Div ] Eliom.Content.Html.elt Lwt.t
   val with_spinner_no_lwt :
-    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
-    ?spinner:[< Html_types.div_content ] Eliom_content.Html.elt list ->
-    ?fail:(exn -> [< Html_types.div_content ] Eliom_content.Html.elt list) ->
-    [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t ->
-    [> `Div ] Eliom_content.Html.elt
+    ?a:[< Html_types.div_attrib ] Eliom.Content.Html.attrib list ->
+    ?spinner:[< Html_types.div_content ] Eliom.Content.Html.elt list ->
+    ?fail:(exn -> [< Html_types.div_content ] Eliom.Content.Html.elt list) ->
+    [< Html_types.div_content ] Eliom.Content.Html.elt list Lwt.t ->
+    [> `Div ] Eliom.Content.Html.elt
   val replace_content :
     ?fail:(exn ->
-           [< Html_types.div_content ] Eliom_content.Html.elt list Lwt.t) ->
-    'a Eliom_content.Html.elt ->
-    Html_types.div_content Eliom_content.Html.elt list Lwt.t -> unit Lwt.t
-  val num_active_spinners : int Eliom_shared.React.S.t
-  val onloaded : unit Eliom_shared.React.E.t
-  val when_loaded : (unit -> unit) -> unit
+           [< Html_types.div_content ] Eliom.Content.Html.elt list Lwt.t) ->
+    'a Eliom.Content.Html.elt ->
+    Html_types.div_content Eliom.Content.Html.elt list Lwt.t -> unit Lwt.t
+  val num_active_spinners : int Eliom.Shared.React.S.t
+  val onloaded : unit Eliom.Shared.React.E.t
   val set_default_fail :
-    (exn -> [< Html_types.div_content ] Eliom_content.Html.elt list) -> unit
+    (exn -> [< Html_types.div_content ] Eliom.Content.Html.elt list) -> unit
 end >>

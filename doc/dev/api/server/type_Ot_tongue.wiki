@@ -6,19 +6,20 @@
       | `Percent of int
       | `Px of int ]
   type tongue = {
-    elt : Html_types.div Eliom_content.Html.D.elt;
-    stop_signal_before : Ot_tongue.simple_stop React.S.t Eliom_client_value.t;
-    stop_signal_after : Ot_tongue.simple_stop React.S.t Eliom_client_value.t;
-    px_signal_before : int React.S.t Eliom_client_value.t;
-    px_signal_after : int React.S.t Eliom_client_value.t;
+    elt : Html_types.div Eliom.Content.Html.D.elt;
+    stop_signal_before : Ot_tongue.simple_stop React.S.t Eliom.Client_value.t;
+    stop_signal_after : Ot_tongue.simple_stop React.S.t Eliom.Client_value.t;
+    swipe_pos : int React.S.t Eliom.Client_value.t;
+    px_signal_before : int React.S.t Eliom.Client_value.t;
+    px_signal_after : int React.S.t Eliom.Client_value.t;
   }
   val tongue :
-    ?a:[< Html_types.div_attrib ] Eliom_content.Html.attrib list ->
+    ?a:[< Html_types.div_attrib ] Eliom.Content.Html.attrib list ->
     ?side:[ `Bottom | `Left | `Right | `Top ] ->
     ?stops:Ot_tongue.stop list ->
     ?init:Ot_tongue.simple_stop ->
-    ?handle:[> `Div ] Eliom_content.Html.elt ->
-    ?update:Ot_tongue.simple_stop React.event Eliom_client_value.t ->
-    [< Html_types.div_content_fun ] Eliom_content.Html.elt list ->
+    ?handle:Html_types.div_content Eliom.Content.Html.elt ->
+    ?update:Ot_tongue.simple_stop React.event Eliom.Client_value.t ->
+    [< Html_types.div_content_fun ] Eliom.Content.Html.elt list ->
     Ot_tongue.tongue
 end >>

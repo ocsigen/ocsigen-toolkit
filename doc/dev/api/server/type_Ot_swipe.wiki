@@ -1,16 +1,16 @@
 <<code language="ocaml" | sig
   val bind :
     ?transition_duration:float ->
-    ?min:(unit -> int) Eliom_client_value.t ->
-    ?max:(unit -> int) Eliom_client_value.t ->
+    ?min:(unit -> int) Eliom.Client_value.t ->
+    ?max:(unit -> int) Eliom.Client_value.t ->
     compute_final_pos:(Js_of_ocaml.Dom_html.touchEvent Js_of_ocaml.Js.t ->
                        int -> int)
-                      Eliom_client_value.t ->
+                      Eliom.Client_value.t ->
     ?onstart:(Js_of_ocaml.Dom_html.touchEvent Js_of_ocaml.Js.t -> int -> unit)
-             Eliom_client_value.t ->
+             Eliom.Client_value.t ->
     ?onmove:(Js_of_ocaml.Dom_html.touchEvent Js_of_ocaml.Js.t -> int -> unit)
-            Eliom_client_value.t ->
+            Eliom.Client_value.t ->
     ?onend:(Js_of_ocaml.Dom_html.touchEvent Js_of_ocaml.Js.t -> int -> unit)
-           Eliom_client_value.t ->
-    'a Eliom_content.Html.elt -> unit
+           Eliom.Client_value.t ->
+    Html_types.div_content Eliom.Content.Html.elt -> unit
 end >>

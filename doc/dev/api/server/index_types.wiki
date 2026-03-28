@@ -6,9 +6,15 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="checkbox_position"| type Ot_form.checkbox_position >> ~[<<a_api subproject="server" | module Ot_form >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="checkbox_style"| type Ot_form.checkbox_style >> ~[<<a_api subproject="server" | module Ot_form >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="cropping"| type Ot_picture_uploader.cropping >> ~[<<a_api subproject="server" | module Ot_picture_uploader >>~]||
 |@@ @style="tet-align: left;"@@\\I|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="intl"| type Ot_calendar.intl >> ~[<<a_api subproject="server" | module Ot_calendar >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|intl>> is the type of internationalization specifiers~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="react_component"| type Ot_form.react_component >> ~[<<a_api subproject="server" | module Ot_form >>~]|<<div class="odocwiki_info"|~A reactive component~: a signal and its setter~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\S|

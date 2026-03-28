@@ -14,9 +14,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind"| value Ot_picture_uploader.bind >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind>> is a shortcut for <<span class="odocwiki_inlinecode"|bind~_input>> and <<span class="odocwiki_inlinecode"|bind~_submit>> actions
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_arrow_keys"| value Ot_carousel.bind_arrow_keys >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Make arrow keys cause event change~.
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_arrow_keys"| value Ot_carousel.bind_arrow_keys >> ~[<<a_api subproject="client" | module Ot_carousel >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="bind_input"| value Ot_picture_uploader.bind_input >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|bind~_input input preview ~?container ~?reset ~(~)>>
     ~Bind <<span class="odocwiki_inlinecode"|input>> and <<span class="odocwiki_inlinecode"|preview>> so the file selected in <<span class="odocwiki_inlinecode"|input>> is the
     image displayed in <<span class="odocwiki_inlinecode"|preview>>~.
@@ -36,7 +34,9 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_bottom"| value Ot_size.client_bottom >> ~[<<a_api subproject="client" | module Ot_size >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_height"| value Ot_size.client_height >> ~[<<a_api subproject="client" | module Ot_size >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_height"| value Ot_size.client_height >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|size of an element
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_left"| value Ot_size.client_left >> ~[<<a_api subproject="client" | module Ot_size >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_bottom"| value Ot_size.client_page_bottom >> ~[<<a_api subproject="client" | module Ot_size >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_left"| value Ot_size.client_page_left >> ~[<<a_api subproject="client" | module Ot_size >>~]||
@@ -44,9 +44,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_page_top"| value Ot_size.client_page_top >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|position of an element relative to the document
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_right"| value Ot_size.client_right >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|size of an element
->>
-|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_right"| value Ot_size.client_right >> ~[<<a_api subproject="client" | module Ot_size >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="client_top"| value Ot_size.client_top >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|position of an element relative to the inner window~;
     get~Client~Bounding~Rect does not include borders by default~, use <<span class="odocwiki_inlinecode"|with~_margin>>
     to take them into account~.
@@ -199,7 +197,7 @@
 |
 |@@ @style="tet-align: left;"@@\\O|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="ocaml_service_upload"| value Ot_picture_uploader.ocaml_service_upload >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onloaded"| value Ot_spinner.onloaded >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|do an action once no spinners are spinning ~(could be right away~)
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onloaded"| value Ot_spinner.onloaded >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|onloaded>> is an event that fires when all spinners have finished loading~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="onloads"| value Ot_lib.onloads >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
@@ -215,9 +213,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="popup"| value Ot_popup.popup >> ~[<<a_api subproject="client" | module Ot_popup >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"| popup ~?a ~?enable~_scrolling~_hack
        ~?close~_button ~?confirmation~_onclose ~?onclose gen~_content >>
     ~Display a modal popup~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="prevent_tab"| value Ot_form.prevent_tab >> ~[<<a_api subproject="client" | module Ot_form >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|prevent~_tab e>> prevents <<span class="odocwiki_inlinecode"|e>> ~(and its children~) to be focused with tab key~.
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="preview"| value Ot_picture_uploader.preview >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a img element with no src~, no alt and <<span class="odocwiki_inlinecode"|ot~-pup~-preview>> class~.
@@ -250,6 +245,9 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_default_fail"| value Ot_spinner.set_default_fail >> ~[<<a_api subproject="client" | module Ot_spinner >>~]|<<div class="odocwiki_info"|~Change the default function used to display error messages
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_default_fail"| value Ot_carousel.set_default_fail >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Change the default function used to display error messages
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_height"| value Ot_style.set_height >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_left"| value Ot_style.set_left >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_position_sticky"| value Ot_sticky.set_position_sticky >> ~[<<a_api subproject="client" | module Ot_sticky >>~]|<<div class="odocwiki_info"|try to set ~C~S~S attribute "position" to "sticky"~.
@@ -258,18 +256,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_right"| value Ot_style.set_right >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_top"| value Ot_style.set_top >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="set_width"| value Ot_style.set_width >> ~[<<a_api subproject="client" | module Ot_style >>~]||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="setup_form"| value Ot_form.setup_form >> ~[<<a_api subproject="client" | module Ot_form >>~]|<<div class="odocwiki_info"|~Scan for focusable elements apply <<span class="odocwiki_inlinecode"|setup~_tabcycle~_auto>> to them and
-    focus the first~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="setup_tabcycle"| value Ot_form.setup_tabcycle >> ~[<<a_api subproject="client" | module Ot_form >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|setup~_tabcycle>> makes tab key loop over child elements of an element and
-    only these elements~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="setup_tabcycle_auto"| value Ot_form.setup_tabcycle_auto >> ~[<<a_api subproject="client" | module Ot_form >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|setup~_tabcycle~_auto>> scans an element for tabbable elements ~(buttons~, inputs~)
-    and feeds them to <<span class="odocwiki_inlinecode"|setup~_tabcycle>>
->>
-|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="style"| value Ot_style.style >> ~[<<a_api subproject="client" | module Ot_style >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="submit"| value Ot_picture_uploader.submit >> ~[<<a_api subproject="client" | module Ot_picture_uploader >>~]|<<div class="odocwiki_info"|~Create a button with <<span class="odocwiki_inlinecode"|ot~-pup~-sumit>> clas
 >>
@@ -289,7 +275,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="wheel"| value Ot_carousel.wheel >> ~[<<a_api subproject="client" | module Ot_carousel >>~]|<<div class="odocwiki_info"|~Carousel with ~3~D effect~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="when_loaded"| value Ot_spinner.when_loaded >> ~[<<a_api subproject="client" | module Ot_spinner >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="width"| value Ot_size.width >> ~[<<a_api subproject="client" | module Ot_size >>~]||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="width_height"| value Ot_size.width_height >> ~[<<a_api subproject="client" | module Ot_size >>~]|<<div class="odocwiki_info"|~N~O~T~E~: mind to stop any signals derived from the following signals ~(using
     <<span class="odocwiki_inlinecode"|~React~.~S~.stop>>~) on unload~.

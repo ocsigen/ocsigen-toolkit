@@ -44,10 +44,10 @@
   val marginBottom : #Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t -> float
   val marginLeft : #Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t -> float
   val marginRight : #Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t -> float
-  val set_top : 'a Eliom_content.Html.elt -> float -> unit
-  val set_bottom : 'a Eliom_content.Html.elt -> float -> unit
-  val set_left : 'a Eliom_content.Html.elt -> float -> unit
-  val set_right : 'a Eliom_content.Html.elt -> float -> unit
-  val set_width : 'a Eliom_content.Html.elt -> float -> unit
-  val set_height : 'a Eliom_content.Html.elt -> float -> unit
+  val set_top : 'a Eliom.Content.Html.elt -> float -> unit
+  val set_bottom : 'a Eliom.Content.Html.elt -> float -> unit
+  val set_left : 'a Eliom.Content.Html.elt -> float -> unit
+  val set_right : 'a Eliom.Content.Html.elt -> float -> unit
+  val set_width : 'a Eliom.Content.Html.elt -> float -> unit
+  val set_height : 'a Eliom.Content.Html.elt -> float -> unit
 end >>

@@ -34,13 +34,13 @@ widgets on a mobile device without contacting the server. See the
 section >> of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use
-<<a_api project="eliom" subproject="server" | module Eliom_shared >>
+<<a_api project="eliom" subproject="server" | module Eliom.Shared >>
 extensively, which allows us to produce this reactive content on both
 sides.
 See
 <<a_manual project="eliom" chapter="clientserver-react" | the respective manual chapter >>
 for more info.
-<<a_api project="eliom" subproject="server" | module Eliom_shared >>
+<<a_api project="eliom" subproject="server" | module Eliom.Shared >>
 signals and events appear in the Ocsigen Toolkit APIs, and can be used
 as a mechanism for composing different widgets.
 

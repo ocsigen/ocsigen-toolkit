@@ -4,5 +4,5 @@
     ?txt_down:string ->
     ?f:(int -> string) ->
     ?lb:int ->
-    int -> [> `Div ] Eliom_content.Html.elt * int Eliom_shared.React.S.t
+    int -> [> `Div ] Eliom.Content.Html.elt * int Eliom.Shared.React.S.t
 end >>
