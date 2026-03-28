@@ -2,6 +2,7 @@
 
 ; Install the CSS files into share/ocsigen-toolkit/css/
 (install
+ (package ocsigen-toolkit)
  (section share)
  (files
   (glob_files css/*.css)))
