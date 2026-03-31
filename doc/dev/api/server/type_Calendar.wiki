@@ -1,0 +1,33 @@
+<<code language="ocaml" | sig
+  type intl = {
+    i_days : string list;
+    i_months : string list;
+    i_start : [ `Fri | `Mon | `Sat | `Sun | `Thu | `Tue | `Wed ];
+  }
+  type button_labels = {
+    b_prev_year : string;
+    b_prev_month : string;
+    b_next_month : string;
+    b_next_year : string;
+  }
+  val make :
+    ?init:int * int * int ->
+    ?highlight:(int -> int -> int list Lwt.t) Eliom.Client_value.t ->
+    ?click_non_highlighted:bool ->
+    ?update:(int * int * int) React.E.t Eliom.Client_value.t ->
+    ?action:(int -> int -> int -> unit Lwt.t) Eliom.Client_value.t ->
+    ?period:CalendarLib.Date.field CalendarLib.Date.date *
+            CalendarLib.Date.field CalendarLib.Date.date ->
+    ?button_labels:Calendar.button_labels ->
+    ?intl:Calendar.intl -> unit -> [> `Div ] Eliom.Content.Html.elt
+  val make_date_picker :
+    ?init:int * int * int ->
+    ?update:(int * int * int) React.E.t Eliom.Client_value.t ->
+    ?button_labels:Calendar.button_labels ->
+    ?intl:Calendar.intl ->
+    ?period:CalendarLib.Date.field CalendarLib.Date.date *
+            CalendarLib.Date.field CalendarLib.Date.date ->
+    unit ->
+    [> `Div ] Eliom.Content.Html.elt *
+    (int * int * int) Eliom.Shared.React.S.t
+end >>

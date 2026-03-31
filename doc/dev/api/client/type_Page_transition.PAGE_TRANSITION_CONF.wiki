@@ -1,0 +1,6 @@
+<<code language="ocaml" | sig
+  type screenshot
+  val screenshot_container :
+    Page_transition.PAGE_TRANSITION_CONF.screenshot option ->
+    Html_types.div_content Eliom.Content.Html.elt
+end >>

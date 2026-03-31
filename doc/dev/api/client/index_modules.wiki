@@ -1,57 +1,65 @@
 =Index of modules=
 
+|@@ @style="tet-align: left;"@@\\B|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Buttons"| module Buttons >> ||
+|@@ @style="tet-align: left;"@@\\C|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Calendar"| module Calendar >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Carousel"| module Carousel >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Color_picker"| module Color_picker >> |<<div class="odocwiki_info"|~This module implements a color picker~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Drawer"| module Drawer >> |<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
+>>
+|
+|@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Form"| module Form >> ||
 |@@ @style="tet-align: left;"@@\\L|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="List"| module Ot_lib.List >> ~[<<a_api subproject="client" | module Ot_lib >>~]||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Lib"| module Lib >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="List"| module Lib.List >> ~[<<a_api subproject="client" | module Lib >>~]||
 |@@ @style="tet-align: left;"@@\\M|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Ot_page_transition.Make >> ~[<<a_api subproject="client" | module Ot_page_transition >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|install~_global~_handler t take~_screenshot animation~_type>>
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Page_transition.Make >> ~[<<a_api subproject="client" | module Page_transition >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|install~_global~_handler t take~_screenshot animation~_type>>
     creates a global onchangepage handler which is registered
     recursively and applies to all pages~.
 >>
 |
-|@@ @style="tet-align: left;"@@\\O|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_buttons"| module Ot_buttons >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_calendar"| module Ot_calendar >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_carousel"| module Ot_carousel >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_color_picker"| module Ot_color_picker >> |<<div class="odocwiki_info"|~This module implements a color picker~.
+|@@ @style="tet-align: left;"@@\\N|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Nodeready"| module Nodeready >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Noderesize"| module Noderesize >> ||
+|@@ @style="tet-align: left;"@@\\P|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Page_transition"| module Page_transition >> |<<div class="odocwiki_info"|~This widget helps realize page transition with screenshots~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_drawer"| module Ot_drawer >> |<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Picture_uploader"| module Picture_uploader >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Popup"| module Popup >> |<<div class="odocwiki_info"|~Popup widget
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_form"| module Ot_form >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_lib"| module Ot_lib >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_nodeready"| module Ot_nodeready >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_noderesize"| module Ot_noderesize >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_page_transition"| module Ot_page_transition >> |<<div class="odocwiki_info"|~This widget helps realize page transition with screenshots~.
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_picture_uploader"| module Ot_picture_uploader >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_popup"| module Ot_popup >> |<<div class="odocwiki_info"|~Popup widget
->>
-|
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_pulltorefresh"| module Ot_pulltorefresh >> |<<div class="odocwiki_info"|~Pull to refresh
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Pulltorefresh"| module Pulltorefresh >> |<<div class="odocwiki_info"|~Pull to refresh
     ~This widget can handle any element that needs to be refreshed
     after being pulled down~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_range"| module Ot_range >> |<<div class="odocwiki_info"|~Range selection widget
+|@@ @style="tet-align: left;"@@\\R|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Range"| module Range >> |<<div class="odocwiki_info"|~Range selection widget
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_size"| module Ot_size >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_spinner"| module Ot_spinner >> |<<div class="odocwiki_info"|~Spinner widget
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Size"| module Size >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Spinner"| module Spinner >> |<<div class="odocwiki_info"|~Spinner widget
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_sticky"| module Ot_sticky >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_style"| module Ot_style >> |<<div class="odocwiki_info"|~This module is an interface to get~Computed~Style~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Sticky"| module Sticky >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Style"| module Style >> |<<div class="odocwiki_info"|~This module is an interface to get~Computed~Style~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_swipe"| module Ot_swipe >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_time_picker"| module Ot_time_picker >> |<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Swipe"| module Swipe >> ||
+|@@ @style="tet-align: left;"@@\\T|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Time_picker"| module Time_picker >> |<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_tip"| module Ot_tip >> ||
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_toggle"| module Ot_toggle >> |<<div class="odocwiki_info"|~Binary toggle widget
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Tip"| module Tip >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Toggle"| module Toggle >> |<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
-|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Ot_tongue"| module Ot_tongue >> ||
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Tongue"| module Tongue >> ||
 \\

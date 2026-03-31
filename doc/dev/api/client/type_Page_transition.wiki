@@ -1,0 +1,27 @@
+<<code language="ocaml" | sig
+  type animation = Nil | Forward | Backward
+  module type PAGE_TRANSITION_CONF =
+    sig
+      type screenshot
+      val screenshot_container :
+        Page_transition.PAGE_TRANSITION_CONF.screenshot option ->
+        Html_types.div_content Eliom.Content.Html.elt
+    end
+  module Make :
+    (Conf : PAGE_TRANSITION_CONF) ->
+      sig
+        type screenshot = Conf.screenshot
+        val install_global_handler :
+          ?transition_duration:float ->
+          take_screenshot:((Page_transition.Make.screenshot -> unit) -> unit) ->
+          animation_type:(Eliom.Client.changepage_event ->
+                          Page_transition.animation) ->
+          unit
+      end
+  val install_global_handler_withURI :
+    ?transition_duration:float ->
+    take_screenshot:((string -> unit) -> unit) ->
+    animation_type:(Eliom.Client.changepage_event ->
+                    Page_transition.animation) ->
+    unit
+end >>
