@@ -232,9 +232,7 @@ let%shared
            in
            Eliom.Lib.Option.iter
              (fun dist ->
-                let delta =
-                  max 0 (dist - int_of_float (Size.client_top d))
-                in
+                let delta = max 0 (dist - int_of_float (Size.client_top d)) in
                 let pos = React.S.value pos_signal in
                 Lib.List.iteri2
                   (fun i coli scrolli ->

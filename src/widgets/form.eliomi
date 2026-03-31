@@ -291,7 +291,7 @@ val%shared password_input :
 (* TODO: Restore polymorphic type [< Html_types.input] once PPX weak type
    bug is fixed. See ia-reports/eliom-ppx-weak-types-bug.md *)
 val%shared password_toggle :
-  [`Input] Eliom.Content.Html.elt
+   [`Input] Eliom.Content.Html.elt
   -> [> `Div] Eliom.Content.Html.elt
 (** [password_toggle inp] wraps an existing password input element [inp]
     in a container with a visibility toggle button.

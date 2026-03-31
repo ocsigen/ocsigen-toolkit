@@ -69,10 +69,8 @@ let move_content ~from to_elt =
 let stick ?(force = false) g =
   if force || (not @@ Manip.Class.contain g.fixed "ot-stuck")
   then (
-    Style.set_width g.inline
-    @@ Size.client_width (To_dom.of_element g.inline);
-    Style.set_height g.inline
-    @@ Size.client_height (To_dom.of_element g.inline);
+    Style.set_width g.inline @@ Size.client_width (To_dom.of_element g.inline);
+    Style.set_height g.inline @@ Size.client_height (To_dom.of_element g.inline);
     move_content ~from:g.inline g.fixed;
     Manip.Class.add g.fixed "ot-stuck";
     Manip.Class.add g.inline "ot-stuck")
@@ -88,10 +86,8 @@ let unstick ?(force = false) g =
 
 let synchronise g =
   let sync_values () =
-    Style.set_width g.fixed
-    @@ Size.client_width (To_dom.of_element g.inline);
-    Style.set_height g.fixed
-    @@ Size.client_height (To_dom.of_element g.inline);
+    Style.set_width g.fixed @@ Size.client_width (To_dom.of_element g.inline);
+    Style.set_height g.fixed @@ Size.client_height (To_dom.of_element g.inline);
     match g.dir with
     | `Top ->
         Style.set_left g.fixed
@@ -194,16 +190,13 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         | `Top ->
             (* sleep, as this should run after make_sticky's handlers *)
             let win_height = float_of_int win_height in
-            let parent_top =
-              Size.client_page_top (To_dom.of_element parent)
-            in
+            let parent_top = Size.client_page_top (To_dom.of_element parent) in
             let elt_height = Size.client_height (To_dom.of_element elt) in
             if elt_height > win_height -. parent_top
             then Style.set_top elt (win_height -. elt_height)
             else Style.set_top elt parent_top
         | _ ->
-            failwith
-              "Sticky.keep_in_sight only supports ~dir:`Top right now."
+            failwith "Sticky.keep_in_sight only supports ~dir:`Top right now."
       in
       let resize_thread =
         React.S.map compute_top_left

@@ -252,7 +252,6 @@ let%shared
            Eliom.Lib.Dom_reference.retain ~%e
              ~keep:(React.S.map (fun x -> set_validity ~%e (f x)) ~%signal)
        | None -> ());
-      
        let f _ _ =
          let v = Js.to_string ~%e_with_value##.value in
          ~%set_signal v; Lwt.return_unit
@@ -477,7 +476,7 @@ let%shared
     [%client
       let disabled = Option.value ~default:false ~%disabled in
       if not disabled
-      then
+      then (
         let inp' = To_dom.of_input ~%inp in
         Eliom.Lib.Dom_reference.retain inp'
           ~keep:
@@ -488,7 +487,7 @@ let%shared
           Lwt_js_events.changes inp' (fun _ _ ->
             ~%set_manually_changed true;
             ~%set_signal (Js.to_bool inp'##.checked);
-            Lwt.return_unit))]
+            Lwt.return_unit)))]
   in
   object
     method label = box
@@ -691,9 +690,7 @@ let%shared password_input ?(a = []) ?placeholder () =
 (* -- Password toggle (non-reactive) ------------------------------ *)
 
 let%shared password_toggle (inp : [< Html_types.input] elt) : [> `Div] elt =
-  let toggle_icon =
-    D.span ~a:[a_class ["ot-password-toggle-show"]] []
-  in
+  let toggle_icon = D.span ~a:[a_class ["ot-password-toggle-show"]] [] in
   let toggle =
     D.button
       ~a:
@@ -706,27 +703,21 @@ let%shared password_toggle (inp : [< Html_types.input] elt) : [> `Div] elt =
                 Dom.preventDefault ev;
                 let inp = To_dom.of_input ~%inp in
                 let icon = To_dom.of_element ~%toggle_icon in
-                let t =
-                  Js.to_string (Js.Unsafe.get inp (Js.string "type"))
-                in
+                let t = Js.to_string (Js.Unsafe.get inp (Js.string "type")) in
                 if t = "password"
                 then begin
-                  Js.Unsafe.set inp (Js.string "type")
-                    (Js.string "text");
-                  icon##.className :=
-                    Js.string "ot-password-toggle-hide"
+                  Js.Unsafe.set inp (Js.string "type") (Js.string "text");
+                  icon##.className := Js.string "ot-password-toggle-hide"
                 end
                 else begin
-                  Js.Unsafe.set inp (Js.string "type")
-                    (Js.string "password");
-                  icon##.className :=
-                    Js.string "ot-password-toggle-show"
+                  Js.Unsafe.set inp (Js.string "type") (Js.string "password");
+                  icon##.className := Js.string "ot-password-toggle-show"
                 end] ]
       [toggle_icon]
   in
-  D.div ~a:[a_class ["ot-password-container"]]
-    [ (inp : [< Html_types.input] elt :> Html_types.div_content_fun elt)
-    ; toggle ]
+  D.div
+    ~a:[a_class ["ot-password-container"]]
+    [(inp : [< Html_types.input] elt :> Html_types.div_content_fun elt); toggle]
 
 (* -- Prevent double submit --------------------------------------- *)
 
@@ -901,7 +892,9 @@ let%shared reactive_date_input ?(a = []) ?value () =
         ~keep:
           (React.S.map
              (fun v ->
-                let s = match v with Some d -> string_of_date d | None -> "" in
+                let s =
+                  match v with Some d -> string_of_date d | None -> ""
+                in
                 if Js.to_string inp'##.value <> s
                 then inp'##.value := Js.string s)
              ~%signal)]
@@ -935,7 +928,9 @@ let%shared reactive_time_input ?(a = []) ?value () =
         ~keep:
           (React.S.map
              (fun v ->
-                let s = match v with Some t -> string_of_time t | None -> "" in
+                let s =
+                  match v with Some t -> string_of_time t | None -> ""
+                in
                 if Js.to_string inp'##.value <> s
                 then inp'##.value := Js.string s)
              ~%signal)]
@@ -953,8 +948,7 @@ module%client Tabbable = struct
   end
 end
 
-let%client only_if_active' elt v =
-  if Style.invisible elt then None else Some v
+let%client only_if_active' elt v = if Style.invisible elt then None else Some v
 
 let%client only_if_active elt v =
   if elt##.disabled = Js._true || Style.invisible elt then None else Some v
@@ -1018,4 +1012,3 @@ let%client prevent_tab elt =
 let%client setup_form element =
   let elts = tabbable_elts_of element in
   setup_tabcycle elts; focus_first elts
-

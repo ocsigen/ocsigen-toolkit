@@ -7,7 +7,8 @@
  (public_name ocsigen-toolkit.server)
  (name widgets_server)
  (modes byte native)
- (wrapped (module_name Ot))
+ (wrapped
+  (module_name Ot))
  (preprocess
   (pps
    eliom.ppx.server
@@ -34,7 +35,8 @@
   (public_name ocsigen-toolkit.client)
   (name widgets_client)
   (modes byte)
-  (wrapped (module_name Ot))
+  (wrapped
+   (module_name Ot))
   (preprocess
    (pps js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json))
   (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
