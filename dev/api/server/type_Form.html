@@ -1,0 +1,233 @@
+<html><head><title></title><meta charset="utf8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link rel="stylesheet" href="https://ocsigen.org/css/style.css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/themes/prism.min.css"/><script type="application/javascript" src="https://ocsigen.org/js/client.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-core.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-ocaml.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-clike.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-reason.min.js">
+//<![CDATA[
+
+//]]>
+</script><script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.9.0/components/prism-javascript.min.js">
+//<![CDATA[
+
+//]]>
+</script></head><body class="type_Form ocsigen-toolkit"><div class="project-page"><div class="page-header"><p class="logo-ocsigen"><a href="../.././../../" class="ocsimore_phrasing_link"><img src="../.././../../img/ocsigen-white.svg" alt="Ocsigen"/></a>
+</p><p class="logo-subproject">Toolkit</p><div class="mainmenu"><p class="mainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a></p><p class="mainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a></p><p><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a></p><p><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a></p><p><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a></p><p><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a></p><p><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a></p><p><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a></p></div><form id="googlesearch" action="https://google.com/search"><input name="q" id="gsearch-box" placeholder="Search using Google"/><label for="gsearch-box"><img src="/img/search.svg" alt="" id="gsearch-icon"/></label><input type="submit" id="gsearch-submit" onclick="document.getElementById('gsearch-box').value += ' site:ocsigen.org';"/></form><aside class="how-drawer"><input id="how-drawer-toggle" type="checkbox"/><label for="how-drawer-toggle" id="how-drawer-label"><span class="how-drawer-icon"></span></label><nav class="how-drawer-content"><ul class="drawermainmenu"><li class="drawermainmenu-home"><a href="../.././../../" class="ocsimore_phrasing_link">Home</a>
+</li><li class="drawermainmenu-doc"><a href="../.././../../tuto/" class="ocsimore_phrasing_link">Doc</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../eliom/" class="ocsimore_phrasing_link">Eliom</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../js_of_ocaml/" class="ocsimore_phrasing_link">Js_of_ocaml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigenserver/" class="ocsimore_phrasing_link">Server</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../lwt/" class="ocsimore_phrasing_link">Lwt</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../tyxml/" class="ocsimore_phrasing_link">Tyxml</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-toolkit/" class="ocsimore_phrasing_link">Toolkit</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsipersist/" class="ocsimore_phrasing_link">Ocsipersist</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../html_of_wiki/" class="ocsimore_phrasing_link">html_of_wiki</a>
+</li><li class="drawermainmenu-project"><a href="../.././../../ocsimore/" class="ocsimore_phrasing_link">Ocsimore (<em>deprecated</em>)</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../projects" class="ocsimore_phrasing_link">Other projects</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../papers" class="ocsimore_phrasing_link">Research papers</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../credits" class="ocsimore_phrasing_link">Who does Ocsigen?</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../contributing" class="ocsimore_phrasing_link">Contributing</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../blog" class="ocsimore_phrasing_link">Blog</a>
+</li><li class="drawermainmenu-page"><a href="../.././../../install" class="ocsimore_phrasing_link">Installation</a>
+</li><li class="drawermainmenu-page"><a href="https://github.com/ocsigen" class="ocsimore_phrasing_link">Source code</a>
+</li></ul><nav class="how-doctree"><h1>Ocsigen toolkit</h1><h2><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h2></nav></nav></aside></div><p class="reasonwarning">Warning: Reason support is experimental.
+We are looking for beta-tester and contributors.
+</p><button id="reason">Switch to </button><div class="twocols"><nav class="leftcol">Version <select class="how-versions" onchange="location = this.value;"><option value="../.././../dev/api/server/type_Form" selected="selected">dev</option><option value="../.././../2.7.0/api/server/type_Form">2.7.0</option><option value="../.././../2.2.0/api/server/type_Form">2.2.0</option><option value="../.././../2.0/api/server/type_Form">2.0</option><option value="../.././../1.1.0/api/server/type_Form">1.1.0</option><option value="../.././../1.0/api/server/type_Form">1.0</option><option value="../.././../0.99/api/server/type_Form">0.99</option></select><nav class="how-doctree"><h1>Ocsigen toolkit</h1><h2><a href="../.././manual/intro" class="ocsimore_phrasing_link">Introduction</a></h2></nav></nav><article class="rightcol"><label class="csw-switch"><input type="checkbox" onchange="location = '.././client/type_Form';"/><span class="csw-slider csw-slider-style-round"></span><span class="csw-slider-no">Server version</span><span class="csw-slider-yes">Client version</span></label><pre class=""><code class="language-ocaml translatable">sig
+  type 'a react_component =
+      'a Eliom.Shared.React.S.t *
+      (?step:React.step -&gt; 'a -&gt; unit) Eliom.Shared.Value.t
+  val disableable_button :
+    ?a:[&lt; Html_types.button_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?button_type:[&lt; Eliom.Form_sigs.button_type ] -&gt;
+    disabled:bool Eliom.Shared.React.S.t -&gt;
+    [&lt; Html_types.button_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Button ] Eliom.Content.Html.elt
+  val reactive_toggle_button :
+    ?a:[&lt; Html_types.button_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?init:bool -&gt;
+    ?ctrl:bool Form.react_component -&gt;
+    [&lt; Html_types.button_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Button ] Eliom.Content.Html.elt * bool Form.react_component
+  val radio :
+    ?a:[&lt; Html_types.label_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?disabled_s:bool Eliom.Shared.React.S.t -&gt;
+    ?checked_s:bool Eliom.Shared.React.S.t -&gt;
+    ?name:string -&gt;
+    ?before:[&lt; Html_types.label_content_fun &gt; `Input `Span ]
+            Eliom.Content.Html.elt list -&gt;
+    [&lt; Html_types.span_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Label ] Eliom.Content.Html.elt * [&gt; `Input ] Eliom.Content.Html.elt
+  val radio_buttons :
+    ?a:[&lt; Html_types.label_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?disabled_s:int list Eliom.Shared.React.S.t -&gt;
+    selection_react:int option Form.react_component -&gt;
+    name:string -&gt;
+    [&lt; Html_types.span_content ] Eliom.Content.Html.elt list list -&gt;
+    Html_types.div_content Eliom.Content.Html.elt list
+  val radio_selector :
+    ?a:[&lt; Html_types.div_attrib &gt; `Class ] Eliom.Content.Html.attrib list -&gt;
+    selection_react:int option Form.react_component -&gt;
+    name:string -&gt;
+    label:[&lt; Html_types.div_content ] Eliom.Content.Html.elt list -&gt;
+    [&lt; Html_types.span_content ] Eliom.Content.Html.elt list list -&gt;
+    [&gt; `Div ] Eliom.Content.Html.elt
+  val reactify_input :
+    ?input_r:string Form.react_component -&gt;
+    ?value:string -&gt;
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    [ `Input | `Textarea ] Eliom.Content.Html.elt -&gt;
+    string Eliom.Shared.React.S.t * (string -&gt; unit) Eliom.Client_value.t
+  val reactive_input :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?input_r:string Form.react_component -&gt;
+    ?value:string -&gt;
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    unit -&gt;
+    [&gt; `Input ] Eliom.Content.Html.elt *
+    (string Eliom.Shared.React.S.t * (string -&gt; unit) Eliom.Client_value.t)
+  val textarea :
+    ?a:[&lt; Html_types.textarea_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?a_rows:int -&gt;
+    ?resize:bool -&gt;
+    ?a_placeholder:string -&gt; string -&gt; [&gt; `Textarea ] Eliom.Content.Html.elt
+  val reactive_textarea :
+    ?a:[&lt; Html_types.textarea_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?a_rows:int -&gt;
+    ?resize:bool -&gt;
+    ?a_placeholder:string -&gt;
+    ?value:string -&gt;
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    unit -&gt;
+    [&gt; `Textarea ] Eliom.Content.Html.elt *
+    (string Eliom.Shared.React.S.t * (string -&gt; unit) Eliom.Client_value.t)
+  val debounced_input :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?delay:float -&gt;
+    ?value:string -&gt;
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    unit -&gt;
+    [&gt; `Input ] Eliom.Content.Html.elt *
+    (string Eliom.Shared.React.S.t * string Eliom.Shared.React.S.t *
+     (string -&gt; unit) Eliom.Client_value.t)
+  val lwt_bind_input_enter :
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    ?button:[ `Button ] Eliom.Content.Html.elt -&gt;
+    [ `Input ] Eliom.Content.Html.elt -&gt;
+    (string -&gt; unit Lwt.t) Eliom.Client_value.t -&gt; unit
+  val lwt_bound_input_enter :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?button:[ `Button ] Eliom.Content.Html.elt -&gt;
+    ?validate:(string -&gt; bool) Eliom.Client_value.t -&gt;
+    (string -&gt; unit Lwt.t) Eliom.Client_value.t -&gt;
+    [&gt; `Input ] Eliom.Content.Html.elt
+  type checkbox_position = [ `Left | `None | `Right ]
+  type checkbox_style = [ `Box | `Bullet | `Small_bullet | `Toggle ]
+  val checkbox :
+    ?a:[&lt; Html_types.label_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?a_inp:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?required:bool -&gt;
+    ?position:Form.checkbox_position -&gt;
+    ?checked:bool -&gt;
+    ?readonly:bool -&gt;
+    ?disabled:bool -&gt;
+    ?style:Form.checkbox_style -&gt;
+    ?mobile_style:Form.checkbox_style -&gt;
+    [&lt; Html_types.span_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Label ] Eliom.Content.Html.elt * [&gt; `Input ] Eliom.Content.Html.elt
+  val reactive_checkbox :
+    ?a:[&lt; Html_types.label_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?a_inp:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?position:Form.checkbox_position -&gt;
+    ?checked:bool -&gt;
+    ?readonly:bool -&gt;
+    ?disabled:bool -&gt;
+    ?style:Form.checkbox_style -&gt;
+    ?mobile_style:Form.checkbox_style -&gt;
+    ?ctrl:bool Eliom.Shared.React.S.t *
+          (?step:React.step -&gt; bool -&gt; unit) Eliom.Shared.Value.t -&gt;
+    [&lt; Html_types.span_content ] Eliom.Content.Html.elt list -&gt;
+    &lt; input : [&gt; `Input ] Eliom.Content.Html.elt;
+      label : [&gt; `Label ] Eliom.Content.Html.elt;
+      manually_changed : bool Eliom.Shared.React.S.t;
+      value : bool Eliom.Shared.React.S.t &gt;
+  val input_validation_tools :
+    ?init:string -&gt;
+    ?set_focus:(bool -&gt; unit) Eliom.Client_value.t -&gt;
+    ?result_iter:(Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t -&gt;
+                  string -&gt; unit)
+                 Eliom.Client_value.t -&gt;
+    ?invalid_class:string -&gt;
+    (string -&gt; (string, string) Stdlib.Result.t) Eliom.Shared.Value.t -&gt;
+    [&gt; Html_types.input_attrib ] Eliom.Content.Html.attrib list *
+    [&gt; `Class ] Eliom.Content.Html.attrib *
+    (string, string) Stdlib.Result.t Eliom.Shared.React.S.t
+  val graceful_invalid_style : [ `Input ] Eliom.Content.Html.elt -&gt; unit
+  val optional_int_input :
+    ?min:int -&gt;
+    ?max:int -&gt;
+    ?size:int -&gt;
+    int option -&gt;
+    [&gt; `Div ] Eliom.Content.Html.elt *
+    (int option, unit) Stdlib.result Eliom.Shared.React.S.t
+  val int_input :
+    ?min:int -&gt;
+    ?max:int -&gt;
+    ?size:int -&gt;
+    int -&gt;
+    [&gt; `Div ] Eliom.Content.Html.elt *
+    (int, unit) Stdlib.result Eliom.Shared.React.S.t
+  val password_input :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?placeholder:string -&gt;
+    unit -&gt;
+    [&gt; `Div ] Eliom.Content.Html.elt * [&gt; `Input ] Eliom.Content.Html.elt *
+    bool Form.react_component
+  val password_toggle :
+    [ `Input ] Eliom.Content.Html.elt -&gt; [&gt; `Div ] Eliom.Content.Html.elt
+  val prevent_double_submit :
+    ?a:[&lt; Html_types.button_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?button_type:[&lt; Eliom.Form_sigs.button_type ] -&gt;
+    f:(unit -&gt; unit Lwt.t) Eliom.Client_value.t -&gt;
+    [&lt; Html_types.button_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Button ] Eliom.Content.Html.elt
+  val reactive_select :
+    ?a:[&lt; Html_types.select_attrib ] Eliom.Content.Html.attrib list -&gt;
+    options:(string * string) list -&gt;
+    ?selected:string -&gt;
+    unit -&gt; [&gt; `Select ] Eliom.Content.Html.elt * string Form.react_component
+  val validate_as_int : string -&gt; (int option, unit) Stdlib.result
+  val none_input_value : string
+  val reactive_fieldset :
+    ?a:[&lt; Html_types.fieldset_attrib ] Eliom.Content.Html.attrib list -&gt;
+    disabled:bool Eliom.Shared.React.S.t -&gt;
+    [&lt; Html_types.fieldset_content ] Eliom.Content.Html.elt list -&gt;
+    [&gt; `Fieldset ] Eliom.Content.Html.elt
+  val parse_date : string -&gt; (int * int * int) option
+  val parse_time : string -&gt; (int * int) option
+  val string_of_date : int * int * int -&gt; string
+  val string_of_time : int * int -&gt; string
+  val reactive_date_input :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?value:int * int * int -&gt;
+    unit -&gt;
+    [&gt; `Input ] Eliom.Content.Html.elt *
+    (int * int * int) option Form.react_component
+  val reactive_time_input :
+    ?a:[&lt; Html_types.input_attrib ] Eliom.Content.Html.attrib list -&gt;
+    ?value:int * int -&gt;
+    unit -&gt;
+    [&gt; `Input ] Eliom.Content.Html.elt *
+    (int * int) option Form.react_component
+end</code></pre></article></div></div></body></html>
