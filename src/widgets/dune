@@ -1,3 +1,5 @@
+(include_subdirs qualified)
+
 (env
  (_
   (flags
@@ -7,8 +9,7 @@
  (public_name ocsigen-toolkit.server)
  (name widgets_server)
  (modes byte native)
- (wrapped
-  (module_name Ot))
+ (wrapped false)
  (preprocess
   (pps
    eliom.ppx.server
@@ -28,25 +29,3 @@
   (with-stdout-to
    %{target}
    (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))
-
-(subdir
- client
- (library
-  (public_name ocsigen-toolkit.client)
-  (name widgets_client)
-  (modes byte)
-  (wrapped
-   (module_name Ot))
-  (preprocess
-   (pps js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json))
-  (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
- (dynamic_include ../dune.client))
-
-(rule
- (deps
-  (glob_files *.eliom)
-  (glob_files *.eliomi))
- (action
-  (with-stdout-to
-   dune.client
-   (run ocsigen-dune-rules .))))
