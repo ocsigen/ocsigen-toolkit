@@ -39,4 +39,5 @@
    (>= "11.0.0"))
   (calendar
    (>= "2.0.0"))
+  ocsigen-dune-rules
   cmdliner))
