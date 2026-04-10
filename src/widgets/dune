@@ -1,0 +1,31 @@
+(include_subdirs qualified)
+
+(env
+ (_
+  (flags
+   (:standard -w +A-4-9-16-22-27-32-33-39-44-48-60-70))))
+
+(library
+ (public_name ocsigen-toolkit.server)
+ (name widgets_server)
+ (modes byte native)
+ (wrapped false)
+ (preprocess
+  (pps
+   eliom.ppx.server
+   lwt_ppx
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --rpc-raw))
+ (flags
+  (:standard
+   (:include type_includes)))
+ (libraries eliom.server calendar))
+
+(rule
+ (target type_includes)
+ (deps (universe))
+ (action
+  (with-stdout-to
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))
