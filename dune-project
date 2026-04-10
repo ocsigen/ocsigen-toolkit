@@ -41,3 +41,12 @@
    (>= "2.0.0"))
   ocsigen-dune-rules
   ocsigen-ppx-rpc))
+
+(package
+ (name ocsigen-toolkit-compat)
+ (synopsis "Backward-compatible Ot_xxx module names for ocsigen-toolkit")
+ (description
+  "Provides the old Ot_xxx module names (e.g. Ot_popup, Ot_carousel) as aliases to the new Ot.Xxx modules. Use this package to ease migration of existing code.")
+ (depends
+  (ocsigen-toolkit
+   (= :version))))
