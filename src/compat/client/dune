@@ -1,0 +1,8 @@
+(library
+ (name ocsigen_toolkit_compat_client)
+ (public_name ocsigen-toolkit-compat.client)
+ (synopsis "Backward-compatible Ot_xxx module names (client-side)")
+ (wrapped false)
+ (modes byte)
+ (flags (:standard -w -70))
+ (libraries ocsigen-toolkit.client))
