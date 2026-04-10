@@ -1,0 +1,7 @@
+(library
+ (name ocsigen_toolkit_compat_server)
+ (public_name ocsigen-toolkit-compat.server)
+ (synopsis "Backward-compatible Ot_xxx module names (server-side)")
+ (wrapped false)
+ (flags (:standard -w -70))
+ (libraries ocsigen-toolkit.server))
