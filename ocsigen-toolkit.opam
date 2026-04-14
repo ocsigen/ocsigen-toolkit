@@ -16,6 +16,7 @@ depends: [
   "eliom" {>= "11.0.0"}
   "calendar" {>= "2.0.0"}
   "cmdliner"
+  "ocsigen-ppx-rpc"
   "odoc" {with-doc}
 ]
 build: [

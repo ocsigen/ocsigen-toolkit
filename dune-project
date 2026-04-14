@@ -39,4 +39,6 @@
    (>= "11.0.0"))
   (calendar
    (>= "2.0.0"))
-  cmdliner))
+  ; ocsigen-dune-rules dependencies
+  cmdliner
+  ocsigen-ppx-rpc))
