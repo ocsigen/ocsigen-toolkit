@@ -1,1 +1,7 @@
 (vendored_dirs ocsigen-dune-rules)
+
+; Install the CSS files into share/ocsigen-toolkit/css/
+(install
+ (section share)
+ (files
+  (glob_files css/*.css)))
