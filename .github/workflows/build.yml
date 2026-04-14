@@ -39,6 +39,13 @@ jobs:
         if: runner.os == 'macOS'
         run: brew update && brew reinstall openssl@3
 
+      - name: Install external dependencies
+        # The version of binaryen available in ubuntu is too old and doesn't
+        # contain wasm-merge needed by wasm_of_ocaml.
+        if: runner.os == 'Linux'
+        run: |
+          curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_129/binaryen-version_129-x86_64-linux.tar.gz | sudo tar xz -C /usr/local --strip-components=1
+
       - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
 
       - run: opam install . --deps-only
