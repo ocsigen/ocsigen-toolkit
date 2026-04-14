@@ -690,7 +690,8 @@ let%shared password_input ?(a = []) ?placeholder () =
 
 (* -- Password toggle (non-reactive) ------------------------------ *)
 
-let%shared password_toggle (inp : [< Html_types.input] elt) =
+let%shared password_toggle inp =
+  let inp = (inp : [< Html_types.input] elt :> Html_types.input elt) in
   let toggle_icon =
     D.span ~a:[a_class ["ot-password-toggle-show"]] []
   in
