@@ -20,13 +20,11 @@ val make :
   -> ?dragThreshold:float
   -> ?refresh_timeout:float
   -> ?header:
-       (state option
-        -> ([< Html_types.div_content_fun > `Div] as 'a) Eliom_content.Html.elt
-             list)
+       (state option -> Html_types.div_content Eliom_content.Html.elt list)
          Eliom_shared.Value.t
-  -> content:'a Eliom_content.Html.elt
+  -> content:Html_types.div_content Eliom_content.Html.elt
   -> (unit -> bool Lwt.t) Eliom_client_value.t
-  -> 'a Eliom_content.Html.elt
+  -> [> `Div] Eliom_content.Html.elt
 (**
    Creates a pull-to-refresh container from an html element.
    [?a] is the attribute array of the returned element

@@ -87,7 +87,7 @@ val do_submit :
    Dom_html.inputElement Js.t Eliom_client_value.t
   -> ?progress:(int -> int -> unit)
   -> ?cropping:cropping
-  -> upload:'a upload
+  -> upload:unit upload
   -> unit
   -> unit Lwt.t
 (** [ do_submit input ?cropping ~upload () ]
@@ -99,7 +99,7 @@ val bind_submit :
    Dom_html.inputElement Js.t Eliom_client_value.t
   -> #Dom_html.eventTarget Js.t Eliom_client_value.t
   -> ?cropping:cropping
-  -> upload:'a upload
+  -> upload:unit upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -113,7 +113,7 @@ val bind :
   -> preview:Dom_html.imageElement Js.t
   -> ?crop:(unit -> unit) * cropping
   -> submit:#Dom_html.eventTarget Js.t Eliom_client_value.t
-  -> upload:'a upload
+  -> upload:unit upload
   -> after_submit:(unit -> unit Lwt.t)
   -> unit
   -> unit
@@ -150,7 +150,7 @@ val mk_form :
   -> ?submit:
        [< Html_types.button_attrib > `Class] Eliom_content.Html.attrib list
        * [< Html_types.button_content_fun] Eliom_content.Html.elt list
-  -> 'a upload
+  -> unit upload
   -> [> `Form] Eliom_content.Html.elt Lwt.t
 (** Ready-to-use form. Customizable with
     [input], the input button content, [submit], the submit button content.

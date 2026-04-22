@@ -1,0 +1,39 @@
+(env
+ (_
+  (flags
+   (:standard -w +A-4-9-16-27-32-33-39-44-48-60-70))))
+
+(library
+ (public_name ocsigen-toolkit.server)
+ (name widgets_server)
+ (modes byte native)
+ (wrapped false)
+ (preprocess
+  (pps
+   eliom.ppx.server
+   lwt_ppx
+   js_of_ocaml-ppx_deriving_json
+   ocsigen-ppx-rpc
+   --rpc-raw))
+ (libraries eliom.server calendar js_of_ocaml))
+
+(subdir
+ client
+ (library
+  (public_name ocsigen-toolkit.client)
+  (name widgets_client)
+  (modes byte)
+  (wrapped false)
+  (preprocess
+   (pps js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json))
+  (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
+ (dynamic_include ../dune.client))
+
+(rule
+ (deps
+  (glob_files *.eliom)
+  (glob_files *.eliomi))
+ (action
+  (with-stdout-to
+   dune.client
+   (run ocsigen-dune-rules .))))
