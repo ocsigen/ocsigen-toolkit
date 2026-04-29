@@ -4,16 +4,7 @@
  *)
 
 [%%shared
-module type ICON_HTML = sig
-  val i :
-     ?a:[< Html_types.i_attrib] Eliom.Content.Html.attrib list
-    -> [< Html_types.i_content_fun] Eliom.Content.Html.elt list
-    -> [> Html_types.i] Eliom.Content.Html.elt
-
-  val a_class : Html_types.nmtokens -> [> `Class] Eliom.Content.Html.attrib
-end
-
-module Make (A : ICON_HTML) = struct
+module Make (A : module type of Eliom.Content.Html.F) = struct
   (** [icon classes] create an icon HTML attribute with "ot-icon" and [classes]
    * as CSS classes.
    * The optional parameter is at the end to be able to add other CSS classes
