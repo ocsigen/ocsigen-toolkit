@@ -1,9 +1,21 @@
 ==
-* <<a_api subproject="client" text="Index of types" | index types >>
-* <<a_api subproject="client" text="Index of values" | index values >>
-* <<a_api subproject="client" text="Index of modules" | index modules >>
-* <<a_api subproject="client" text="Index of module types" | index module types >>
-\
+
+=@@id="1_Ocsigen Toolkit client API"@@~Ocsigen ~Toolkit client ~A~P~I=
+
+
+
+
+|<<a_api subproject="client" | module Lib >>||
+
+
+
+
+
+==@@id="2_Widgets"@@~Widgets==
+
+
+
+
 |<<a_api subproject="client" | module Buttons >>||
 |<<a_api subproject="client" | module Calendar >>||
 |<<a_api subproject="client" | module Carousel >>||
@@ -14,9 +26,6 @@
 >>
 |
 |<<a_api subproject="client" | module Form >>||
-|<<a_api subproject="client" | module Lib >>||
-|<<a_api subproject="client" | module Nodeready >>||
-|<<a_api subproject="client" | module Noderesize >>||
 |<<a_api subproject="client" | module Page_transition >>|<<div class="odocwiki_info"|~This widget helps realize page transition with screenshots~.
 >>
 |
@@ -32,7 +41,6 @@
 |<<a_api subproject="client" | module Range >>|<<div class="odocwiki_info"|~Range selection widget
 >>
 |
-|<<a_api subproject="client" | module Size >>||
 |<<a_api subproject="client" | module Spinner >>|<<div class="odocwiki_info"|~Spinner widget
 >>
 |
@@ -44,9 +52,35 @@
 |<<a_api subproject="client" | module Time_picker >>|<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
 >>
 |
-|<<a_api subproject="client" | module Tip >>||
 |<<a_api subproject="client" | module Toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
 |<<a_api subproject="client" | module Tongue >>||
+
+
+
+
+
+==@@id="2_DOM utilities"@@~D~O~M utilities==
+
+
+
+
+|<<a_api subproject="client" | module Nodeready >>||
+|<<a_api subproject="client" | module Noderesize >>||
+|<<a_api subproject="client" | module Size >>||
+|<<a_api subproject="client" | module Tip >>||
+
+
+
+
+
+==@@id="2_Indexes"@@~Indexes==
+
+
+
+* <<a_api subproject="client" text="Index of types" | index types >>
+* <<a_api subproject="client" text="Index of values" | index values >>
+* <<a_api subproject="client" text="Index of modules" | index modules >>
+* <<a_api subproject="client" text="Index of module types" | index module types >>
 

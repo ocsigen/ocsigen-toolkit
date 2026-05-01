@@ -1,8 +1,21 @@
 ==
-* <<a_api subproject="server" text="Index of types" | index types >>
-* <<a_api subproject="server" text="Index of values" | index values >>
-* <<a_api subproject="server" text="Index of modules" | index modules >>
-\
+
+=@@id="1_Ocsigen Toolkit server API"@@~Ocsigen ~Toolkit server ~A~P~I=
+
+
+
+
+|<<a_api subproject="server" | module Lib >>||
+
+
+
+
+
+==@@id="2_Widgets"@@~Widgets==
+
+
+
+
 |<<a_api subproject="server" | module Buttons >>||
 |<<a_api subproject="server" | module Calendar >>|<<div class="odocwiki_info"|~Calendar widget
 >>
@@ -17,9 +30,6 @@
 >>
 |
 |<<a_api subproject="server" | module Form >>||
-|<<a_api subproject="server" | module Lib >>||
-|<<a_api subproject="server" | module Nodeready >>||
-|<<a_api subproject="server" | module Noderesize >>||
 |<<a_api subproject="server" | module Page_transition >>||
 |<<a_api subproject="server" | module Picture_uploader >>||
 |<<a_api subproject="server" | module Popup >>|<<div class="odocwiki_info"|~Popup widget
@@ -33,7 +43,6 @@
 |<<a_api subproject="server" | module Range >>|<<div class="odocwiki_info"|~Range selection widget
 >>
 |
-|<<a_api subproject="server" | module Size >>||
 |<<a_api subproject="server" | module Spinner >>|<<div class="odocwiki_info"|~Spinner widget
 >>
 |
@@ -43,9 +52,34 @@
 |<<a_api subproject="server" | module Time_picker >>|<<div class="odocwiki_info"|~This module implements a clock~-style time picker~.
 >>
 |
-|<<a_api subproject="server" | module Tip >>||
 |<<a_api subproject="server" | module Toggle >>|<<div class="odocwiki_info"|~Binary toggle widget
 >>
 |
 |<<a_api subproject="server" | module Tongue >>||
+
+
+
+
+
+==@@id="2_DOM utilities"@@~D~O~M utilities==
+
+
+
+
+|<<a_api subproject="server" | module Nodeready >>||
+|<<a_api subproject="server" | module Noderesize >>||
+|<<a_api subproject="server" | module Size >>||
+|<<a_api subproject="server" | module Tip >>||
+
+
+
+
+
+==@@id="2_Indexes"@@~Indexes==
+
+
+
+* <<a_api subproject="server" text="Index of types" | index types >>
+* <<a_api subproject="server" text="Index of values" | index values >>
+* <<a_api subproject="server" text="Index of modules" | index modules >>
 

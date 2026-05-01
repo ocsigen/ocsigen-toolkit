@@ -1,0 +1,31 @@
+=~Ocsigen ~Toolkit client ~A~P~I
+==[[client/Lib|Lib]]
+==~Widgets
+===[[client/Buttons|Buttons]]
+===[[client/Calendar|Calendar]]
+===[[client/Carousel|Carousel]]
+===[[client/Color_picker|Color_picker]]
+===[[client/Drawer|Drawer]]
+===[[client/Form|Form]]
+===[[client/Page_transition|Page_transition]]
+===[[client/Picture_uploader|Picture_uploader]]
+===[[client/Popup|Popup]]
+===[[client/Pulltorefresh|Pulltorefresh]]
+===[[client/Range|Range]]
+===[[client/Spinner|Spinner]]
+===[[client/Sticky|Sticky]]
+===[[client/Style|Style]]
+===[[client/Swipe|Swipe]]
+===[[client/Time_picker|Time_picker]]
+===[[client/Toggle|Toggle]]
+===[[client/Tongue|Tongue]]
+==~D~O~M utilities
+===[[client/Nodeready|Nodeready]]
+===[[client/Noderesize|Noderesize]]
+===[[client/Size|Size]]
+===[[client/Tip|Tip]]
+==~Indexes
+=== <<a_api subproject="client" text="Index of types" | index types >>
+=== <<a_api subproject="client" text="Index of values" | index values >>
+=== <<a_api subproject="client" text="Index of modules" | index modules >>
+=== <<a_api subproject="client" text="Index of module types" | index module types >>
