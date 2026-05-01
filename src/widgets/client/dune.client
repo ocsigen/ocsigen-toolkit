@@ -65,6 +65,11 @@
     (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/icons.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Icons.cmo} %{dep:../../Ot/icons.eliom})))))
 (subdir Ot
  (rule
+  (with-stdout-to icons.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/icons.eliomi} --intf %{dep:../../Ot/icons.eliomi})))))
+(subdir Ot
+ (rule
   (with-stdout-to lib.eliom
    (chdir %{workspace_root}
     (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/lib.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Lib.cmo} %{dep:../../Ot/lib.eliom})))))
