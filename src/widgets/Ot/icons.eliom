@@ -4,7 +4,62 @@
  *)
 
 [%%shared
-module Make (A : Eliom.Content.Html.T) = struct
+module type S = sig
+  type 'a elt
+  type 'a attrib
+
+  val icon :
+     string list
+    -> ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val user :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val plus :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val spinner :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val shutdown :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val config :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val signout :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val close :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+
+  val question :
+     ?a:Html_types.i_attrib attrib list
+    -> unit
+    -> [> Html_types.i] elt
+end
+
+module Make (A : Eliom.Content.Html.T) :
+  S with type 'a elt = 'a A.elt and type 'a attrib = 'a A.attrib = struct
+  type 'a elt = 'a A.elt
+  type 'a attrib = 'a A.attrib
+
   (** [icon classes] create an icon HTML attribute with "ot-icon" and [classes]
    * as CSS classes.
    * The optional parameter is at the end to be able to add other CSS classes
