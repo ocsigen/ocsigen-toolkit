@@ -12,6 +12,12 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="checkbox"| value Form.checkbox >> ~[<<a_api subproject="server" | module Form >>~]|<<div class="odocwiki_info"|~A customizable checkbox with position and style options~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="close"| value Icons.S.close >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Close icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-close>>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="config"| value Icons.S.config >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Configuration ~/ gear icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-gear>>~)~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\D|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="debounced_input"| value Form.debounced_input >> ~[<<a_api subproject="server" | module Form >>~]|<<div class="odocwiki_info"|~A reactive input where the debounced signal updates only after
     <<span class="odocwiki_inlinecode"|delay>> seconds ~(default ~0~.~3~) of inactivity~.
@@ -36,6 +42,10 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="icon"| value Icons.S.icon >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|icon classes ~(~)>> is an empty <<span class="odocwiki_inlinecode"|~<i~>>> element whose ~C~S~S classes
+      are <<span class="odocwiki_inlinecode"|"ot~-icon">> followed by <<span class="odocwiki_inlinecode"|classes>>~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="input"| value Picture_uploader.input >> ~[<<a_api subproject="server" | module Picture_uploader >>~]|<<div class="odocwiki_info"|~Create a file input element with good input type <<span class="odocwiki_inlinecode"|ot~-pup~-input>> class
     and wrap it into a label~.
 >>
@@ -125,6 +135,9 @@
     in a container with a visibility toggle button~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="plus"| value Icons.S.plus >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Predefined "plus" ~/ add icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-plus>>~)~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="prevent_double_submit"| value Form.prevent_double_submit >> ~[<<a_api subproject="server" | module Form >>~]|<<div class="odocwiki_info"|~A button that disables itself while the action <<span class="odocwiki_inlinecode"|f>> is running~,
     preventing double submissions~.
 >>
@@ -133,6 +146,10 @@
 >>
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="previous"| value Carousel.previous >> ~[<<a_api subproject="server" | module Carousel >>~]|<<div class="odocwiki_info"|~Button to go to the previous page ~(or mores page if <<span class="odocwiki_inlinecode"|offset>> is present~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\Q|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="question"| value Icons.S.question >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Question mark ~/ help icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-question>>~)~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\R|
@@ -177,6 +194,16 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="shutdown"| value Icons.S.shutdown >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Shutdown ~/ power icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-power>>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="signout"| value Icons.S.signout >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Sign out ~/ logout icon ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-sign~-out>>~)~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="spinner"| value Icons.S.spinner >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Animated spinner icon
+      ~(~C~S~S classes <<span class="odocwiki_inlinecode"|ot~-icon~-spinner ot~-icon~-animation~-spinning>>~)~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="string_of_date"| value Form.string_of_date >> ~[<<a_api subproject="server" | module Form >>~]|<<div class="odocwiki_info"|~Format a <<span class="odocwiki_inlinecode"|~(year~, month~, day~)>> triple as <<span class="odocwiki_inlinecode"|~Y~Y~Y~Y~-~M~M~-~D~D>>~.
 >>
 |
@@ -192,6 +219,11 @@
 |
 |@@class="odocwiki_index"@ @@<<a_api subproject="server" text="tongue"| value Tongue.tongue >> ~[<<a_api subproject="server" | module Tongue >>~]|<<div class="odocwiki_info"|~A tongue is an expandable panel that can appear from a side of the screen
    ~(usually top or bottom~)~.
+>>
+|
+|@@ @style="tet-align: left;"@@\\U|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="user"| value Icons.S.user >> ~[<<a_api subproject="server" | module Icons.S >>~]|<<div class="odocwiki_info"|~Predefined icon for a user ~/ profile glyph
+      ~(~C~S~S class <<span class="odocwiki_inlinecode"|ot~-icon~-user>>~)~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\V|

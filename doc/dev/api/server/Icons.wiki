@@ -1,0 +1,29 @@
+=Module <<a_api_type subproject="server" | module Icons >> =
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<span class="ocsforge_color_uid"|<<span class="ocsforge_color_uid"|Icons>>>> <<span class="ocsforge_color_delimiter"|~:>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module Icons >><<span class="ocsforge_color_keyword"|end>>>>~Helpers to build <<span class="odocwiki_inlinecode"|~<i~>>> icon elements styled by the toolkit~'s ~C~S~S~.
+
+
+    ~Each icon is rendered as an empty <<span class="odocwiki_inlinecode"|~<i class~="ot~-icon ~.~.~."~>>> element
+    whose ~C~S~S classes select the actual glyph~. ~The toolkit ships an
+    <<span class="odocwiki_inlinecode"|ot~_icons~.css>> stylesheet that defines all the <<span class="odocwiki_inlinecode"|ot~-icon~-~*>> and
+    <<span class="odocwiki_inlinecode"|ot~-~*>> classes used by the predefined icons below~. ~Include that
+    file ~(or your own equivalent~) in your application for the icons to
+    actually render~.
+
+
+    ~Use <<span class="odocwiki_inlinecode"|~Ot~.~Icons~.~F>> for static ~H~T~M~L and <<span class="odocwiki_inlinecode"|~Ot~.~Icons~.~D>> for ~H~T~M~L with
+    ~D~O~M identity ~(typically when you need to refer to the produced
+    element from client code~)~, the same way ~Eliom exposes
+    <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~F>> and <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~D>>~.
+
+----
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module type>> <<a_api subproject="server" text="S" | module type Icons.S >> <<span class="ocsforge_color_delimiter"|~=>> <<span class="ocsforge_color_keyword"|sig>><<a_api subproject="server" text=".." | module type Icons.S >><<span class="ocsforge_color_keyword"|end>>>><<div class="odocwiki_info"|~Output of <<a_api subproject="server" | module Icons.Make >>~: a primitive <<span class="odocwiki_inlinecode"|icon>> builder plus a handful of
+    predefined icons for common ~U~I actions~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="Make" | module Icons.Make >> <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_sig_block"|<<span class="ocsforge_color_keyword"|functor>> <<span class="ocsforge_color_delimiter"|(>>A <<span class="ocsforge_color_delimiter"|~:>> <<span class="odocwiki_type"|<<span class="ocsforge_color_uid"|Eliom.Content.Html.T>>>><<span class="ocsforge_color_delimiter"|)>> <<span class="ocsforge_color_delimiter"|-~>>> \\  <<span class="odocwiki_type"|<<a_api subproject="server" text="S" | module Icons.S >>>><<span class="odocwiki_type"|  with type 'a elt = 'a A.elt and type 'a attrib = 'a A.attrib>>>>>><<div class="odocwiki_info"|~Build an icon module on top of an ~Eliom ~H~T~M~L implementation
+    ~(<<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~F>> or <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~D>>~)~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="F" | module Icons.F >> <<span class="ocsforge_color_delimiter"|~:>> \\  <<span class="odocwiki_type"|<<a_api subproject="server" text="S" | module Icons.S >>>><<span class="odocwiki_type"| \\  with type 'a elt = 'a <<span class="ocsforge_color_uid"|Eliom.Content.Html.F>>.elt\\   and type 'a attrib = 'a <<span class="ocsforge_color_uid"|Eliom.Content.Html.F>>.attrib>>>><<div class="odocwiki_info"|~Icons built with <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~F>> ~(static ~H~T~M~L~)~.
+>>
+<<pre class="ocsforge_color odocwiki_code"|<<span class="ocsforge_color_keyword"|module>> <<a_api subproject="server" text="D" | module Icons.D >> <<span class="ocsforge_color_delimiter"|~:>> \\  <<span class="odocwiki_type"|<<a_api subproject="server" text="S" | module Icons.S >>>><<span class="odocwiki_type"| \\  with type 'a elt = 'a <<span class="ocsforge_color_uid"|Eliom.Content.Html.D>>.elt\\   and type 'a attrib = 'a <<span class="ocsforge_color_uid"|Eliom.Content.Html.D>>.attrib>>>><<div class="odocwiki_info"|~Icons built with <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~D>> ~(~H~T~M~L with ~D~O~M identity~,
+    suitable for being referenced from client~-side code~)~.
+>>

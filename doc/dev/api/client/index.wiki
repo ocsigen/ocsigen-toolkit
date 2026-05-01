@@ -26,6 +26,10 @@
 >>
 |
 |<<a_api subproject="client" | module Form >>||
+|<<a_api subproject="client" | module Icons >>|<<div class="odocwiki_info"|~Output of <<a_api subproject="client" | module Icons.Make >>~: a primitive <<span class="odocwiki_inlinecode"|icon>> builder plus a handful of
+    predefined icons for common ~U~I actions~.
+>>
+|
 |<<a_api subproject="client" | module Page_transition >>|<<div class="odocwiki_info"|~This widget helps realize page transition with screenshots~.
 >>
 |

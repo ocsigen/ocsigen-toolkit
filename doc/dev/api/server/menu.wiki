@@ -7,6 +7,7 @@
 ===[[server/Color_picker|Color_picker]]
 ===[[server/Drawer|Drawer]]
 ===[[server/Form|Form]]
+===[[server/Icons|Icons]]
 ===[[server/Page_transition|Page_transition]]
 ===[[server/Picture_uploader|Picture_uploader]]
 ===[[server/Popup|Popup]]
@@ -28,3 +29,4 @@
 === <<a_api subproject="server" text="Index of types" | index types >>
 === <<a_api subproject="server" text="Index of values" | index values >>
 === <<a_api subproject="server" text="Index of modules" | index modules >>
+=== <<a_api subproject="server" text="Index of module types" | index module types >>

@@ -30,6 +30,9 @@
 >>
 |
 |<<a_api subproject="server" | module Form >>||
+|<<a_api subproject="server" | module Icons >>|<<div class="odocwiki_info"|~Helpers to build <<span class="odocwiki_inlinecode"|~<i~>>> icon elements styled by the toolkit~'s ~C~S~S~.
+>>
+|
 |<<a_api subproject="server" | module Page_transition >>||
 |<<a_api subproject="server" | module Picture_uploader >>||
 |<<a_api subproject="server" | module Popup >>|<<div class="odocwiki_info"|~Popup widget
@@ -82,4 +85,5 @@
 * <<a_api subproject="server" text="Index of types" | index types >>
 * <<a_api subproject="server" text="Index of values" | index values >>
 * <<a_api subproject="server" text="Index of modules" | index modules >>
+* <<a_api subproject="server" text="Index of module types" | index module types >>
 

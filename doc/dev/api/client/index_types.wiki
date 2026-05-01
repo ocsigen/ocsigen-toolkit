@@ -4,6 +4,7 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="animation"| type Page_transition.animation >> ~[<<a_api subproject="client" | module Page_transition >>~]|<<div class="odocwiki_info"|~The type of animation~.
 >>
 |
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="attrib"| type Icons.S.attrib >> ~[<<a_api subproject="client" | module Icons.S >>~]||
 |@@ @style="tet-align: left;"@@\\B|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="button_labels"| type Calendar.button_labels >> ~[<<a_api subproject="client" | module Calendar >>~]|<<div class="odocwiki_info"|~An instance of <<span class="odocwiki_inlinecode"|button~_labels>> is used to customize the button
     labels~.
@@ -13,6 +14,8 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="cropping"| type Picture_uploader.cropping >> ~[<<a_api subproject="client" | module Picture_uploader >>~]||
 |@@ @style="tet-align: left;"@@\\D|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="display"| type Style.display >> ~[<<a_api subproject="client" | module Style >>~]||
+|@@ @style="tet-align: left;"@@\\E|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="elt"| type Icons.S.elt >> ~[<<a_api subproject="client" | module Icons.S >>~]||
 |@@ @style="tet-align: left;"@@\\G|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="glue"| type Sticky.glue >> ~[<<a_api subproject="client" | module Sticky >>~]|<<div class="odocwiki_info"|returned by <<span class="odocwiki_inlinecode"|make sticky>> ~(if position~:sticky is not supported~)~.
 >>

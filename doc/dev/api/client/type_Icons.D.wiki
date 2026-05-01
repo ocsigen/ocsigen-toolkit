@@ -1,0 +1,23 @@
+<<code language="ocaml" | sig
+  type 'a elt = 'a Eliom.Content.Html.D.elt
+  type 'a attrib = 'a Eliom.Content.Html.D.attrib
+  val icon :
+    string list ->
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val user :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val plus :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val spinner :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val shutdown :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val config :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val signout :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val close :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+  val question :
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i ] elt
+end >>

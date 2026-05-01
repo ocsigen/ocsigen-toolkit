@@ -1,0 +1,32 @@
+<<code language="ocaml" | sig
+  type 'a elt
+  type 'a attrib
+  val icon :
+    string list ->
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val user :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val plus :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val spinner :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val shutdown :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val config :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val signout :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val close :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+  val question :
+    ?a:Html_types.i_attrib Icons.S.attrib list ->
+    unit -> [> Html_types.i ] Icons.S.elt
+end >>

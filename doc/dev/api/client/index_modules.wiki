@@ -9,11 +9,23 @@
 >>
 |
 |@@ @style="tet-align: left;"@@\\D|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="D"| module Icons.D >> ~[<<a_api subproject="client" | module Icons >>~]|<<div class="odocwiki_info"|~Icons built with <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~D>> ~(~H~T~M~L with ~D~O~M identity~,
+    suitable for being referenced from client~-side code~)~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Drawer"| module Drawer >> |<<div class="odocwiki_info"|~Drawer menu for mobile and ~Web applications
 >>
 |
 |@@ @style="tet-align: left;"@@\\F|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="F"| module Icons.F >> ~[<<a_api subproject="client" | module Icons >>~]|<<div class="odocwiki_info"|~Icons built with <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~F>> ~(static ~H~T~M~L~)~.
+>>
+|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Form"| module Form >> ||
+|@@ @style="tet-align: left;"@@\\I|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Icons"| module Icons >> |<<div class="odocwiki_info"|~Output of <<a_api subproject="client" | module Icons.Make >>~: a primitive <<span class="odocwiki_inlinecode"|icon>> builder plus a handful of
+    predefined icons for common ~U~I actions~.
+>>
+|
 |@@ @style="tet-align: left;"@@\\L|
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Lib"| module Lib >> ||
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="List"| module Lib.List >> ~[<<a_api subproject="client" | module Lib >>~]||
@@ -21,6 +33,10 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Page_transition.Make >> ~[<<a_api subproject="client" | module Page_transition >>~]|<<div class="odocwiki_info"|<<span class="odocwiki_inlinecode"|install~_global~_handler t take~_screenshot animation~_type>>
     creates a global onchangepage handler which is registered
     recursively and applies to all pages~.
+>>
+|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="Make"| module Icons.Make >> ~[<<a_api subproject="client" | module Icons >>~]|<<div class="odocwiki_info"|~Build an icon module on top of an ~Eliom ~H~T~M~L implementation
+    ~(<<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~F>> or <<span class="odocwiki_inlinecode"|~Eliom~.~Content~.~Html~.~D>>~)~.
 >>
 |
 |@@ @style="tet-align: left;"@@\\N|

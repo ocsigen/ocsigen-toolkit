@@ -1,3 +1,8 @@
 =Index of module types=
 
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="server" text="S"| module type Icons.S >> ~[<<a_api subproject="server" | module Icons >>~]|<<div class="odocwiki_info"|~Output of <<a_api subproject="server" | module Icons.Make >>~: a primitive <<span class="odocwiki_inlinecode"|icon>> builder plus a handful of
+    predefined icons for common ~U~I actions~.
+>>
+|
 \\

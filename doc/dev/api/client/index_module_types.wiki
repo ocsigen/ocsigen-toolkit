@@ -4,4 +4,6 @@
 |@@class="odocwiki_index"@ @@<<a_api subproject="client" text="PAGE_TRANSITION_CONF"| module type Page_transition.PAGE_TRANSITION_CONF >> ~[<<a_api subproject="client" | module Page_transition >>~]|<<div class="odocwiki_info"|~Suppose that screenshots are stored in objects of type <<span class="odocwiki_inlinecode"|screenshot>>~.
 >>
 |
+|@@ @style="tet-align: left;"@@\\S|
+|@@class="odocwiki_index"@ @@<<a_api subproject="client" text="S"| module type Icons.S >> ~[<<a_api subproject="client" | module Icons >>~]||
 \\
