@@ -33,6 +33,7 @@
 </li><li class="drawermainmenu-project"><a href=".././../../ocsigen-toolkit/" class="ocsimore_phrasing_link">Toolkit</a>
 </li><li class="drawermainmenu-project"><a href=".././../../ocsigen-start/" class="ocsimore_phrasing_link">Start</a>
 </li><li class="drawermainmenu-project"><a href=".././../../ocsipersist/" class="ocsimore_phrasing_link">Ocsipersist</a>
+</li><li class="drawermainmenu-project"><a href=".././../../ocsigen-i18n/" class="ocsimore_phrasing_link">i18n</a>
 </li><li class="drawermainmenu-project"><a href=".././../../html_of_wiki/" class="ocsimore_phrasing_link">html_of_wiki</a>
 </li><li class="drawermainmenu-project"><a href=".././../../ocsimore/" class="ocsimore_phrasing_link">Ocsimore (<em>deprecated</em>)</a>
 </li><li class="drawermainmenu-page"><a href=".././../../projects" class="ocsimore_phrasing_link">Other projects</a>
@@ -81,47 +82,47 @@ default CSS files, normally installed in
 </p><p>Ocsigen Start uses these files by default. If your application does
 not use Ocsigen Start, you will need to include the CSS manually.
 </p><p>Of course, you are free to modify the style to suit the desired look.
-</p><h2>Widgets overview</h2><ul><li> <span><a href=".././api/server/Ot_buttons">Ot_buttons</a></span>:
+</p><h2>Widgets overview</h2><ul><li> <span><a href=".././api/server/Ot.Buttons">Ot.Buttons</a></span>:
 provides a dropdown menu widget
-</li><li> <span><a href=".././api/server/Ot_calendar">Ot_calendar</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Calendar">Ot.Calendar</a></span>:
 calendar widget, allowing the user to pick dates
-</li><li> <span><a href=".././api/server/Ot_carousel">Ot_carousel</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Carousel">Ot.Carousel</a></span>:
 container for blocks, only one of which is displayed at a time,
 with various ways to move between them (buttons, swipe, keyboard arrows)
-</li><li> <span><a href=".././api/server/Ot_tongue">Ot_tongue</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Tongue">Ot.Tongue</a></span>:
 swipable element appearing from one side of the screen
-</li><li> <span><a href=".././api/server/Ot_color_picker">Ot_color_picker</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Color_picker">Ot.Color_picker</a></span>:
 color picker widget
-</li><li> <span><a href=".././api/server/Ot_drawer">Ot_drawer</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Drawer">Ot.Drawer</a></span>:
 a drawer menu that typically appears on an edge of the screen.
 It can  appear/disappear via buttons or by swiping.
-</li><li> <span><a href=".././api/server/Ot_picture_uploader">Ot_picture_uploader</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Picture_uploader">Ot.Picture_uploader</a></span>:
 user interface for uploading pictures
-</li><li> <span><a href=".././api/server/Ot_popup">Ot_popup</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Popup">Ot.Popup</a></span>:
 popup windows that can be controlled in various ways
-</li><li> <span><a href=".././api/server/Ot_range">Ot_range</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Range">Ot.Range</a></span>:
 widget for picking one among a range of values
-</li><li> <span><a href=".././api/server/Ot_spinner">Ot_spinner</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Spinner">Ot.Spinner</a></span>:
 a spinner that appears while we wait for &quot;slow&quot; HTML content to be
 generated
-</li><li> <span><a href=".././api/server/Ot_swipe">Ot_swipe</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Swipe">Ot.Swipe</a></span>:
 make element swipeable on touch screens
-</li><li> <span><a href=".././api/server/Ot_time_picker">Ot_time_picker</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Time_picker">Ot.Time_picker</a></span>:
 clock-like widget that allows the user to pick a time
-</li><li> <span><a href=".././api/server/Ot_toggle">Ot_toggle</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Toggle">Ot.Toggle</a></span>:
 binary toggle widget
-</li></ul><h3> Non-widget utilities</h3><ul><li> <span><a href=".././api/server/Ot_nodeready">Ot_nodeready</a></span>:
+</li></ul><h3> Non-widget utilities</h3><ul><li> <span><a href=".././api/server/Ot.Nodeready">Ot.Nodeready</a></span>:
 produces an Lwt thread allowing one to wait for a node to be
 inserted in the DOM
-</li><li> <span><a href=".././api/server/Ot_noderesize">Ot_noderesize</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Noderesize">Ot.Noderesize</a></span>:
 listen to element resize events
-</li><li> <span><a href=".././api/server/Ot_size">Ot_size</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Size">Ot.Size</a></span>:
 utilities to deal with DOM element dimensions
-</li><li> <span><a href=".././api/server/Ot_social_meta">Ot_social_meta</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Social_meta">Ot.Social_meta</a></span>:
 extract social meta tags from documents
-</li><li> <span><a href=".././api/server/Ot_lib">Ot_lib</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Lib">Ot.Lib</a></span>:
 functions useful for other widgets
-</li><li> <span><a href=".././api/server/Ot_sticky">Ot_sticky</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Sticky">Ot.Sticky</a></span>:
 make elements &quot;sticky&quot;, i.e., do not let them go out of sight
-</li><li> <span><a href=".././api/server/Ot_style">Ot_style</a></span>:
+</li><li> <span><a href=".././api/server/Ot.Style">Ot.Style</a></span>:
 an interface to <span class="teletype">Window.getComputedStyle()</span></li></ul></article></div></div></body></html>
