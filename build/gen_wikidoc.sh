@@ -81,6 +81,7 @@ gen_doc() {
     -i "$WIKIDOC_DIR" \
     -g odoc_wiki.cma \
     -d "$OUTDIR" \
+    -intro "doc/$SIDE.indexdoc" \
     -subproject "$SIDE" \
     $ELIOMI_FILES
 
