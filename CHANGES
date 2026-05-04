@@ -1,3 +1,22 @@
+===== 4.2.0 =====
+* Module namespace modernization
+** Public modules are now accessed as Ot.Form, Ot.Carousel,
+   Ot.Popup, Ot.Spinner, ... instead of the legacy flat Ot_xxx
+   prefix. Implemented with (include_subdirs qualified) +
+   (wrapped false) in dune.
+** New ocsigen-toolkit-compat opam package: provides the legacy
+   Ot_xxx module names as include-aliases of the new Ot.Xxx
+   modules, to ease migration of existing code.
+* Ot.Icons.Make is now parameterised on Eliom.Content.Html.T
+  (the shared signature exposed by Eliom 13) instead of an ad-hoc
+  ICON_HTML signature.
+* Build system
+** Use ocsigen-dune-rules (gen sub-command) to drive client/server
+   PPX rules. Removed the vendored copy.
+** CSS files are now installed via dune
+   (install (section share) (files (glob_files css/*.css))),
+   replacing the legacy ocsigen-toolkit.install file.
+
 ===== 4.1.0 =====
 * Compatibility with WASM
 
