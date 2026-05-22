@@ -39,6 +39,7 @@
    (>= "13.0.0"))
   (calendar
    (>= "2.0.0"))
+  lwt_ppx
   ocsigen-dune-rules
   ocsigen-ppx-rpc))
 
