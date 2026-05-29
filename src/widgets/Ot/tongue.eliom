@@ -67,7 +67,7 @@ let%client clY ev =
     (fun a -> Js.to_float a##.clientY)
 
 let%client documentsize vert =
-  (if vert then snd else fst) (Ot_size.get_document_size ())
+  (if vert then snd else fst) (Size.get_document_size ())
 
 let%client pxb v = Printf.sprintf "translateY(%dpx)" (documentsize true - v)
 let%client pxr v = Printf.sprintf "translateX(%dpx)" (-v)
@@ -116,12 +116,12 @@ let%shared class_of_side = function
   | `Right -> "ot-tongue-right"
 
 let%client get_size ~side elt =
-  let w, h = Ot_size.get_document_size () in
+  let w, h = Size.get_document_size () in
   match side with
-  | `Top -> Ot_size.client_bottom elt
-  | `Bottom -> float h -. Ot_size.client_top elt
-  | `Left -> Ot_size.client_right elt
-  | `Right -> float w -. Ot_size.client_left elt
+  | `Top -> Size.client_bottom elt
+  | `Bottom -> float h -. Size.client_top elt
+  | `Left -> Size.client_right elt
+  | `Right -> float w -. Size.client_left elt
 
 let%client px_of_simple_stop vert tongue_elt stop =
   let docsize = documentsize vert in
@@ -408,7 +408,7 @@ let%shared
   ignore
     [%client
       (Lwt.async (fun () ->
-         let* () = Ot_nodeready.nodeready (To_dom.of_element ~%elt) in
+         let* () = Nodeready.nodeready (To_dom.of_element ~%elt) in
          bind ~%side ~%stops ~%init ~%handle
            ~%(update : simple_stop React.E.t Eliom.Client_value.t option)
            (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;

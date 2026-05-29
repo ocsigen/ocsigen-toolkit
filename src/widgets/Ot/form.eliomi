@@ -292,7 +292,7 @@ val%shared password_input :
    Eliom PPX no longer produces a weak type variable for wrapped HTML
    modules. *)
 val%shared password_toggle :
-  [`Input] Eliom.Content.Html.elt
+   [`Input] Eliom.Content.Html.elt
   -> [> `Div] Eliom.Content.Html.elt
 (** [password_toggle inp] wraps an existing password input element [inp]
     in a container with a visibility toggle button.

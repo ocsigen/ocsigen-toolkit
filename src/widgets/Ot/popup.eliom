@@ -105,7 +105,7 @@ let%client
   in
   (* FIXME: use a list for gen_content return type *)
   let* c =
-    Ot_spinner.with_spinner
+    Spinner.with_spinner
       ~a:[a_class ["ot-popup-content"]]
       (Lwt.map (fun x -> [x]) (gen_content do_close))
   in
