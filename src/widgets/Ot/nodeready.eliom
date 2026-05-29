@@ -43,7 +43,7 @@ let log ~n:node s =
     (* Console.console##log(node); *)
     ignore node;
     print_endline
-    @@ Printf.sprintf "Ot_nodeready: %s; watching %n elements" s
+    @@ Printf.sprintf "Nodeready: %s; watching %n elements" s
          (List.length !watched))
 
 let handler records observer =

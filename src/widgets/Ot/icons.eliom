@@ -9,6 +9,7 @@ module type ICON_HTML = sig
      ?a:[< Html_types.i_attrib] Eliom.Content.Html.attrib list
     -> [< Html_types.i_content_fun] Eliom.Content.Html.elt list
     -> [> Html_types.i] Eliom.Content.Html.elt
+
   val a_class : Html_types.nmtokens -> [> `Class] Eliom.Content.Html.attrib
 end
 

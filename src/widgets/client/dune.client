@@ -1,0 +1,235 @@
+(subdir Ot
+ (rule
+  (with-stdout-to buttons.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/buttons.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Buttons.cmo} %{dep:../../Ot/buttons.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to buttons.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/buttons.eliomi} --intf %{dep:../../Ot/buttons.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to calendar.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/calendar.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Calendar.cmo} %{dep:../../Ot/calendar.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to calendar.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/calendar.eliomi} --intf %{dep:../../Ot/calendar.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to carousel.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/carousel.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Carousel.cmo} %{dep:../../Ot/carousel.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to carousel.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/carousel.eliomi} --intf %{dep:../../Ot/carousel.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to color_picker.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/color_picker.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Color_picker.cmo} %{dep:../../Ot/color_picker.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to color_picker.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/color_picker.eliomi} --intf %{dep:../../Ot/color_picker.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to drawer.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/drawer.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Drawer.cmo} %{dep:../../Ot/drawer.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to drawer.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/drawer.eliomi} --intf %{dep:../../Ot/drawer.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to form.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/form.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Form.cmo} %{dep:../../Ot/form.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to form.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/form.eliomi} --intf %{dep:../../Ot/form.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to icons.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/icons.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Icons.cmo} %{dep:../../Ot/icons.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to lib.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/lib.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Lib.cmo} %{dep:../../Ot/lib.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to lib.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/lib.eliomi} --intf %{dep:../../Ot/lib.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to nodeready.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/nodeready.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Nodeready.cmo} %{dep:../../Ot/nodeready.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to nodeready.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/nodeready.eliomi} --intf %{dep:../../Ot/nodeready.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to noderesize.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/noderesize.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Noderesize.cmo} %{dep:../../Ot/noderesize.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to noderesize.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/noderesize.eliomi} --intf %{dep:../../Ot/noderesize.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to page_transition.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/page_transition.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Page_transition.cmo} %{dep:../../Ot/page_transition.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to page_transition.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/page_transition.eliomi} --intf %{dep:../../Ot/page_transition.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to picture_uploader.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/picture_uploader.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Picture_uploader.cmo} %{dep:../../Ot/picture_uploader.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to picture_uploader.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/picture_uploader.eliomi} --intf %{dep:../../Ot/picture_uploader.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to popup.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/popup.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Popup.cmo} %{dep:../../Ot/popup.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to popup.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/popup.eliomi} --intf %{dep:../../Ot/popup.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to pulltorefresh.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/pulltorefresh.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Pulltorefresh.cmo} %{dep:../../Ot/pulltorefresh.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to pulltorefresh.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/pulltorefresh.eliomi} --intf %{dep:../../Ot/pulltorefresh.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to range.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/range.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Range.cmo} %{dep:../../Ot/range.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to range.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/range.eliomi} --intf %{dep:../../Ot/range.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to size.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/size.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Size.cmo} %{dep:../../Ot/size.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to size.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/size.eliomi} --intf %{dep:../../Ot/size.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to spinner.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/spinner.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Spinner.cmo} %{dep:../../Ot/spinner.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to spinner.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/spinner.eliomi} --intf %{dep:../../Ot/spinner.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to sticky.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/sticky.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Sticky.cmo} %{dep:../../Ot/sticky.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to sticky.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/sticky.eliomi} --intf %{dep:../../Ot/sticky.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to style.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/style.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Style.cmo} %{dep:../../Ot/style.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to style.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/style.eliomi} --intf %{dep:../../Ot/style.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to swipe.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/swipe.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Swipe.cmo} %{dep:../../Ot/swipe.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to swipe.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/swipe.eliomi} --intf %{dep:../../Ot/swipe.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to time_picker.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/time_picker.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Time_picker.cmo} %{dep:../../Ot/time_picker.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to time_picker.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/time_picker.eliomi} --intf %{dep:../../Ot/time_picker.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to tip.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/tip.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Tip.cmo} %{dep:../../Ot/tip.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to tip.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/tip.eliomi} --intf %{dep:../../Ot/tip.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to toggle.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/toggle.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Toggle.cmo} %{dep:../../Ot/toggle.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to toggle.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/toggle.eliomi} --intf %{dep:../../Ot/toggle.eliomi})))))
+(subdir Ot
+ (rule
+  (with-stdout-to tongue.eliom
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/tongue.eliom} --impl -server-cmo %{dep:../../.widgets_server.objs/byte/ot__Tongue.cmo} %{dep:../../Ot/tongue.eliom})))))
+(subdir Ot
+ (rule
+  (with-stdout-to tongue.eliomi
+   (chdir %{workspace_root}
+    (run ocsigen-ppx-client -as-pp -loc-filename %{dep:../../Ot/tongue.eliomi} --intf %{dep:../../Ot/tongue.eliomi})))))
