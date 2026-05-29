@@ -42,4 +42,4 @@
  (action
   (with-stdout-to
    dune.client
-   (run ocsigen-dune-rules .))))
+   (run ocsigen-dune-rules gen .))))
