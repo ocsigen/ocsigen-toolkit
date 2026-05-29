@@ -50,7 +50,7 @@ val visibility : #Dom_html.element Js.t -> string
 
 val invisible : #Dom_html.element Js.t -> bool
 (** whether an element is currently invisible in the DOM (not the screen);
-    you might want to do a [Ot_nodeready.nodeready] before. *)
+    you might want to do a [Nodeready.nodeready] before. *)
 
 val top : #Dom_html.element Js.t -> float option
 val bottom : #Dom_html.element Js.t -> float option

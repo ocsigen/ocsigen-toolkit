@@ -45,7 +45,7 @@ let%client clY ev =
 let%client bind_click_outside bckgrnd elt close =
   Lwt.async (fun () ->
     let* ev =
-      Ot_lib.click_outside ~use_capture:true
+      Lib.click_outside ~use_capture:true
         ~inside:(To_dom.of_element bckgrnd)
         (To_dom.of_element elt)
     in
@@ -280,9 +280,9 @@ let%shared
                then Aborted (* Orthogonal scrolling *)
                else if
                  (~%position = `Top || ~%position = `Bottom)
-                 && abs_float top <= Ot_swipe.threshold
+                 && abs_float top <= Swipe.threshold
                  || (~%position = `Left || ~%position = `Right)
-                    && abs_float left <= Ot_swipe.threshold
+                    && abs_float left <= Swipe.threshold
                then !status
                else (
                  (* We decide to take the event *)
@@ -356,7 +356,7 @@ let%shared
                  | Lwt.Canceled -> Lwt.return_unit
                  | e ->
                      let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchmoves>exception: %s\n%!" s;
+                     Printf.printf "Drawer>touchmoves>exception: %s\n%!" s;
                      Lwt.fail e)
            and b =
              Lwt.catch
@@ -367,7 +367,7 @@ let%shared
                  | Lwt.Canceled -> Lwt.return_unit
                  | e ->
                      let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchend>exception: %s\n%!" s;
+                     Printf.printf "Drawer>touchend>exception: %s\n%!" s;
                      Lwt.fail e)
            and c =
              Lwt.catch
@@ -378,7 +378,7 @@ let%shared
                  | Lwt.Canceled -> Lwt.return_unit
                  | e ->
                      let s = Printexc.to_string e in
-                     Printf.printf "Ot_drawer>touchcancel>exception: %s\n%!" s;
+                     Printf.printf "Drawer>touchcancel>exception: %s\n%!" s;
                      Lwt.fail e)
            in
            Lwt.pick [a; b; c]

@@ -34,7 +34,7 @@ let%shared default_fail_fun e =
        ignore
          [%client
            (Console.console##error
-              (Js.string ("Ot_spinner content failed with " ^ ~%e))
+              (Js.string ("Spinner content failed with " ^ ~%e))
             : unit)];
        em ~a:[a_class ["ot-icon-error"]] []) ]
 
@@ -82,7 +82,7 @@ let onloaded, set_onloaded = React.E.create ()
 let _ = ignore (React.E.map (fun _ -> ()) onloaded)
 
 let _ =
-  Ot_lib.onloads @@ fun () ->
+  Lib.onloads @@ fun () ->
   if React.S.value num_active_spinners = 0 then set_onloaded ()
 
 let inc_active_spinners () =
