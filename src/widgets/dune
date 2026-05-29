@@ -1,27 +1,67 @@
+;
+; This Dune file was generated with ocsigen-dune-rules.
+; To update it, modify the invocation below and run
+;
+;     dune runtest --auto-promote
+;
+
+(rule
+ (with-stdout-to
+  dune.corrected
+  (run
+   ocsigen-dune-rules
+   gen-library
+   ocsigen_toolkit
+   --public-name
+   ocsigen-toolkit
+   --libraries
+   calendar
+   --server-libraries
+   js_of_ocaml
+   --preprocess
+   lwt_ppx,js_of_ocaml-ppx_deriving_json
+   --server-preprocess
+   ocsigen-ppx-rpc,--rpc-raw)))
+
+;
+; Below this line, any changes will be overwritten.
+;
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune dune.corrected)))
+
 (library
  (public_name ocsigen-toolkit.server)
- (name widgets_server)
+ (name ocsigen_toolkit)
  (modes byte native)
  (wrapped false)
+ (library_flags
+  (:standard -linkall))
  (preprocess
   (pps
    eliom.ppx.server
-   lwt_ppx
-   js_of_ocaml-ppx_deriving_json
    ocsigen-ppx-rpc
-   --rpc-raw))
- (libraries eliom.server calendar js_of_ocaml))
+   --rpc-raw
+   ocsigen-ppx-rpc
+   --rpc-raw
+   lwt_ppx
+   js_of_ocaml-ppx_deriving_json))
+ (libraries eliom.server js_of_ocaml calendar))
 
 (subdir
  client
  (library
   (public_name ocsigen-toolkit.client)
-  (name widgets_client)
+  (name ocsigen_toolkit)
   (modes byte)
   (wrapped false)
+  (library_flags
+   (:standard -linkall))
   (preprocess
    (pps js_of_ocaml-ppx lwt_ppx js_of_ocaml-ppx_deriving_json))
-  (libraries eliom.client calendar js_of_ocaml js_of_ocaml-lwt))
+  (libraries eliom.client js_of_ocaml js_of_ocaml-lwt calendar))
  (dynamic_include ../dune.client))
 
 (rule
@@ -31,4 +71,4 @@
  (action
   (with-stdout-to
    dune.client
-   (run ocsigen-dune-rules .))))
+   (run ocsigen-dune-rules gen-client-modules .))))
