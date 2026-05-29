@@ -70,23 +70,23 @@ open Js_of_ocaml
  *)
 
 val display :
-   ?container_a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+   ?container_a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.attrib list
   -> ?filter_a:
-       [< Html_types.div_attrib > `Class `OnClick] Eliom_content.Html.attrib
+       [< Html_types.div_attrib > `Class `OnClick] Eliom.Content.Html.attrib
          list
   -> ?position:[`Forced_top | `Top | `Ratio of float | `Bottom | `Forced_bottom]
   -> ?side:[`Left | `Right | `Center]
   -> origin:Dom_html.element Js.t
   -> ?onopen:
-       ([> Html_types.div] Eliom_content.Html.elt
-        -> [> Html_types.div] Eliom_content.Html.elt
+       ([> Html_types.div] Eliom.Content.Html.elt
+        -> [> Html_types.div] Eliom.Content.Html.elt
         -> unit)
   -> ?onclose:
-       ([> Html_types.div] Eliom_content.Html.elt
-        -> [> Html_types.div] Eliom_content.Html.elt
+       ([> Html_types.div] Eliom.Content.Html.elt
+        -> [> Html_types.div] Eliom.Content.Html.elt
         -> unit)
   -> content:
        ((unit -> unit)
-        -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list)
+        -> [< Html_types.div_content_fun > `Div] Eliom.Content.Html.elt list)
   -> unit
-  -> [> Html_types.div] Eliom_content.Html.elt * (unit -> unit)
+  -> [> Html_types.div] Eliom.Content.Html.elt * (unit -> unit)

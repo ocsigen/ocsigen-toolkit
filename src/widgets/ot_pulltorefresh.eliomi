@@ -14,17 +14,17 @@
 type state = Pulling | Ready | Loading | Succeeded | Failed
 
 val make :
-   ?a:[< Html_types.div_attrib > `Class] Eliom_content.Html.attrib list
+   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.attrib list
   -> ?app_only:bool
   -> ?scale:float
   -> ?dragThreshold:float
   -> ?refresh_timeout:float
   -> ?header:
-       (state option -> Html_types.div_content Eliom_content.Html.elt list)
-         Eliom_shared.Value.t
-  -> content:Html_types.div_content Eliom_content.Html.elt
-  -> (unit -> bool Lwt.t) Eliom_client_value.t
-  -> [> `Div] Eliom_content.Html.elt
+       (state option -> Html_types.div_content Eliom.Content.Html.elt list)
+         Eliom.Shared.Value.t
+  -> content:Html_types.div_content Eliom.Content.Html.elt
+  -> (unit -> bool Lwt.t) Eliom.Client_value.t
+  -> [> `Div] Eliom.Content.Html.elt
 (**
    Creates a pull-to-refresh container from an html element.
    [?a] is the attribute array of the returned element

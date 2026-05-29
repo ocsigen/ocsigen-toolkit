@@ -21,8 +21,8 @@
 
 [%%shared.start]
 
-open Eliom_content.Html
-open Eliom_shared.React.S.Infix
+open Eliom.Content.Html
+open Eliom.Shared.React.S.Infix
 
 let hsv_to_rgb h s v =
   let h = float_of_int h in
@@ -144,7 +144,7 @@ let make
       ()
   =
   let ((cp_sig, cp_set) as cp_react) =
-    Eliom_shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
+    Eliom.Shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
   in
   let a = (a :> Html_types.div_attrib attrib list option) in
   let elt, signal = display ?a cp_react, cp_sig in
@@ -152,7 +152,7 @@ let make
   ignore
     [%client
       (* /!\ How to avoid the effectful signal ? *)
-      (Eliom_lib.Dom_reference.retain (To_dom.of_element ~%elt)
+      (Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
          ~keep:
            (React.E.map (fun update -> ~%cp_set update) ~%update
             : unit React.event)

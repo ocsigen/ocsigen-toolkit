@@ -18,7 +18,7 @@ val parse_px : Js.js_string Js.t -> float option
 [%%client.start]
 
 open Js_of_ocaml
-open Eliom_content.Html
+open Eliom.Content.Html
 
 let parse_px str =
   let str = Js.to_string str in
