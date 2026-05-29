@@ -36,7 +36,7 @@
   (js_of_ocaml
    (>= "6.0.0"))
   (eliom
-   (>= "11.0.0"))
+   (>= "13.0.0"))
   (calendar
    (>= "2.0.0"))
   ; ocsigen-dune-rules dependencies
