@@ -20,7 +20,7 @@
 
 [%%shared.start] (* shared by default, override as necessary *)
 
-open Eliom_content.Html
+open Eliom.Content.Html
 
 type dow = [`Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat]
 type intl = {i_days : string list; i_months : string list; i_start : dow}
@@ -179,7 +179,7 @@ let zeroth_displayed_day ~intl d =
   else CalendarLib.Date.prev o `Week
 
 let select_action ?(size = 1) selector action =
-  let dom_select = Eliom_content.Html.To_dom.of_select selector in
+  let dom_select = Eliom.Content.Html.To_dom.of_select selector in
   Lwt.async (fun () ->
     action dom_select (fun _ _ ->
       dom_select##.size := size;
@@ -554,17 +554,17 @@ let make :
         | Some action -> Lwt.async (fun () -> action y m d)
         | None -> ()
       in
-      Eliom_lib.Dom_reference.retain (To_dom.of_element elt)
+      Eliom.Lib.Dom_reference.retain (To_dom.of_element elt)
         ~keep:(React.E.map f update)
   | None -> ());
   elt
 
 let%server make :
    ?init:int * int * int
-  -> ?highlight:(int -> int -> int list Lwt.t) Eliom_client_value.t
+  -> ?highlight:(int -> int -> int list Lwt.t) Eliom.Client_value.t
   -> ?click_non_highlighted:bool
-  -> ?update:(int * int * int) React.E.t Eliom_client_value.t
-  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom_client_value.t
+  -> ?update:(int * int * int) React.E.t Eliom.Client_value.t
+  -> ?action:(int -> int -> int -> unit Lwt.t) Eliom.Client_value.t
   -> ?period:
        CalendarLib.Date.field CalendarLib.Date.date
        * CalendarLib.Date.field CalendarLib.Date.date
@@ -600,7 +600,7 @@ let%shared make_date_picker ?init ?update ?button_labels ?intl ?period () =
         let d = CalendarLib.Date.today () in
         CalendarLib.Date.(year d, month d |> int_of_month, day_of_month d)
   in
-  let v, f = Eliom_shared.React.S.create init in
+  let v, f = Eliom.Shared.React.S.create init in
   let action =
     [%client
       fun y m d ->

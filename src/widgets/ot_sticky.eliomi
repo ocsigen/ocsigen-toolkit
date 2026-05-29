@@ -1,6 +1,6 @@
 [%%client.start]
 
-open Eliom_content.Html
+open Eliom.Content.Html
 open Html_types
 
 val is_position_sticky : 'a elt -> bool

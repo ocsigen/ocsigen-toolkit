@@ -37,8 +37,8 @@
 open%client Js_of_ocaml
 
 [%%client open Js_of_ocaml_lwt]
-[%%shared open Eliom_content.Html]
-[%%shared open Eliom_content.Html.F]
+[%%shared open Eliom.Content.Html]
+[%%shared open Eliom.Content.Html.F]
 [%%shared open Lwt.Syntax]
 
 let%client clX = Ot_swipe.clX
@@ -89,11 +89,11 @@ type status =
 *)]
 
 type%shared 'a t =
-  { elt : 'a Eliom_content.Html.elt
-  ; pos : int Eliom_shared.React.S.t
-  ; pos_post : int Eliom_shared.React.S.t
-  ; vis_elts : int Eliom_shared.React.S.t
-  ; swipe_pos : float React.S.t Eliom_client_value.t }
+  { elt : 'a Eliom.Content.Html.elt
+  ; pos : int Eliom.Shared.React.S.t
+  ; pos_post : int Eliom.Shared.React.S.t
+  ; vis_elts : int Eliom.Shared.React.S.t
+  ; swipe_pos : float React.S.t Eliom.Client_value.t }
 
 let%shared
     make
@@ -105,16 +105,16 @@ let%shared
       ?(swipeable = true)
       ?(allow_overswipe = false)
       ?(update :
-         [`Goto of int | `Next | `Prev] React.event Eliom_client_value.t option)
-      ?(disabled = Eliom_shared.React.S.const false)
+         [`Goto of int | `Next | `Prev] React.event Eliom.Client_value.t option)
+      ?(disabled = Eliom.Shared.React.S.const false)
       ?(full_height = `No)
       ?(make_transform = [%shared default_make_transform])
       ?(make_page_attribute = [%shared fun ~vertical:_ _ -> []])
       l
   =
   let a = (a :> Html_types.div_attrib attrib list) in
-  let pos_signal, pos_set = Eliom_shared.React.S.create position in
-  let pos_post, pos_post_set = Eliom_shared.React.S.create position in
+  let pos_signal, pos_set = Eliom.Shared.React.S.create position in
+  let pos_post, pos_post_set = Eliom.Shared.React.S.create position in
   let swipe_pos_sig =
     [%client
       (React.S.create 0.
@@ -137,7 +137,7 @@ let%shared
          D.div
            ~a:
              (a_class clss
-             :: Eliom_shared.Value.local make_page_attribute ~vertical i)
+             :: Eliom.Shared.Value.local make_page_attribute ~vertical i)
            [e])
       l
   in
@@ -147,7 +147,7 @@ let%shared
     else
       [ a_style
           ("transform: "
-          ^ (Eliom_shared.Value.local make_transform) ~vertical position) ]
+          ^ (Eliom.Shared.Value.local make_transform) ~vertical position) ]
   in
   let d2 = D.div ~a:(a_class ["ot-car2"] :: initial_translation) pages in
   let d =
@@ -162,7 +162,7 @@ let%shared
   in
   let maxi = List.length pages - 1 in
   let nb_visible_elements, set_nb_visible_elements =
-    Eliom_shared.React.S.create 1
+    Eliom.Shared.React.S.create 1
   in
   let _ =
     [%client
@@ -230,7 +230,7 @@ let%shared
              | `No_header -> Some 0
              | `Header (f : unit -> int) -> Some (f ())
            in
-           Eliom_lib.Option.iter
+           Eliom.Lib.Option.iter
              (fun dist ->
                 let delta =
                   max 0 (dist - int_of_float (Ot_size.client_top d))
@@ -264,7 +264,7 @@ let%shared
            | `No_header, _ -> Some 0
            | `Header (f : unit -> int), _ -> Some (f ())
          in
-         Eliom_lib.Option.iter
+         Eliom.Lib.Option.iter
            (fun dist ->
               let delta = -max 0 (dist - int_of_float (Ot_size.client_top d)) in
               let pos = React.S.value pos_signal in
@@ -289,7 +289,7 @@ let%shared
              (fun e -> e)
          and s =
            Js.string
-           @@ (Eliom_shared.Value.local ~%make_transform) ~vertical pos
+           @@ (Eliom.Shared.Value.local ~%make_transform) ~vertical pos
          in
          (Js.Unsafe.coerce d2'##.style)##.transform := s;
          (Js.Unsafe.coerce d2'##.style)##.webkitTransform := s;
@@ -312,7 +312,7 @@ let%shared
                Lwt.return_unit
              else Lwt.return_unit
            in
-           Eliom_lib.Option.iter (fun f -> f ()) transitionend;
+           Eliom.Lib.Option.iter (fun f -> f ()) transitionend;
            Manip.Class.remove ~%d2 ot_swiping;
            ~%pos_post_set pos;
            (* Remove swiping after calling f,
@@ -323,7 +323,7 @@ let%shared
         and when the window is resized (?).
         Should be: every time the carousel size or content size changes
         and/or: provide a function to recompute size *)
-       Eliom_lib.Dom_reference.retain d
+       Eliom.Lib.Dom_reference.retain d
          ~keep:
            (React.S.map
               (fun _ -> ~%set_nb_visible_elements (comp_nb_visible_elements ()))
@@ -360,7 +360,7 @@ let%shared
                          let m = (-width_element * maxi ()) + global_delta in
                          min (float global_delta) (max delta (float m))
                      in
-                     let pos = Eliom_shared.React.S.value pos_signal in
+                     let pos = Eliom.Shared.React.S.value pos_signal in
                      ~%swipe_pos_set (-.delta /. float width_element);
                      let s =
                        ~%make_transform ~vertical
@@ -465,7 +465,7 @@ let%shared
          let timestamp, speed =
            compute_speed prev_speed prev_delta prev_timestamp delta
          in
-         let pos = Eliom_shared.React.S.value pos_signal in
+         let pos = Eliom.Shared.React.S.value pos_signal in
          let delta =
            int_of_float
              (delta
@@ -501,7 +501,7 @@ let%shared
          | Start (startx, starty, _) | Ongoing (startx, starty, _, _, _, _) ->
              add_transition d2';
              status := Stopped;
-             let pos = Eliom_shared.React.S.value pos_signal in
+             let pos = Eliom.Shared.React.S.value pos_signal in
              perform_animation (`Goback pos)
          | _ -> Lwt.return_unit
        in
@@ -515,9 +515,9 @@ let%shared
          Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
          Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel));
        ignore
-         (Eliom_lib.Option.map
+         (Eliom.Lib.Option.map
             (fun update ->
-               Eliom_lib.Dom_reference.retain d
+               Eliom.Lib.Dom_reference.retain d
                  ~keep:
                    (React.E.map
                       (fun v ->
@@ -534,14 +534,14 @@ let%shared
                              perform_animation (`Change pos)
                          | `Next ->
                              let curpos =
-                               Eliom_shared.React.S.value pos_signal
+                               Eliom.Shared.React.S.value pos_signal
                              in
                              if curpos < maxi
                              then perform_animation (`Change (curpos + 1))
                              else Lwt.return_unit
                          | `Prev ->
                              let curpos =
-                               Eliom_shared.React.S.value pos_signal
+                               Eliom.Shared.React.S.value pos_signal
                              in
                              if curpos > 0
                              then perform_animation (`Change (curpos - 1))
@@ -559,7 +559,7 @@ let%shared
 let%shared spinner () = D.div ~a:[a_class ["ot-icon-animation-spinning"]] []
 
 let%shared default_fail_fun e =
-  if Eliom_config.get_debugmode ()
+  if Eliom.Config.get_debugmode ()
   then em [txt (Printexc.to_string e)]
   else
     let e = Printexc.to_string e in
@@ -571,24 +571,24 @@ let%shared default_fail_fun e =
     em ~a:[a_class ["ot-icon-error"]] []
 
 let%shared default_fail_ref :
-  (exn -> Html_types.div_content Eliom_content.Html.elt) ref
+  (exn -> Html_types.div_content Eliom.Content.Html.elt) ref
   =
   ref default_fail_fun
 
 let%shared default_fail e =
   (!default_fail_ref e
-    : Html_types.div_content Eliom_content.Html.elt
-    :> [< Html_types.div_content] Eliom_content.Html.elt)
+    : Html_types.div_content Eliom.Content.Html.elt
+    :> [< Html_types.div_content] Eliom.Content.Html.elt)
 
 let%client set_default_fail f =
   default_fail_ref :=
     (f
-      : exn -> [< Html_types.div_content] Eliom_content.Html.elt
-      :> exn -> Html_types.div_content Eliom_content.Html.elt)
+      : exn -> [< Html_types.div_content] Eliom.Content.Html.elt
+      :> exn -> Html_types.div_content Eliom.Content.Html.elt)
 
 let%shared generate_content generator =
   Lwt.catch
-    (fun () -> Eliom_shared.Value.local generator ())
+    (fun () -> Eliom.Shared.Value.local generator ())
     (fun e -> Lwt.return (default_fail e))
 
 (* on the client side we generate the contents of the initially visible page
@@ -628,7 +628,7 @@ let%shared
   =
   let gen_contents =
     (gen_contents
-      :> (unit -> Html_types.div_content elt Lwt.t) Eliom_shared.Value.t list)
+      :> (unit -> Html_types.div_content elt Lwt.t) Eliom.Shared.Value.t list)
   in
   let sleeper, wakener = Lwt.wait () in
   let mk_contents : int -> 'gen -> ('a elt * ('a elt * 'gen) option ref) Lwt.t =
@@ -659,7 +659,7 @@ let%shared
       (if ~%spinners_and_generators = []
        then ()
        else
-         Eliom_lib.Dom_reference.retain
+         Eliom.Lib.Dom_reference.retain
            (To_dom.of_element ~%(carousel.elt))
            ~keep:
              (~%carousel.pos
@@ -680,7 +680,7 @@ let%shared
   Lwt.return carousel
 
 let%shared bullet_class i pos size =
-  Eliom_shared.React.S.l2
+  Eliom.Shared.React.S.l2
     [%shared
       fun p size -> if ~%i >= p && ~%i < p + size then ["ot-active"] else []]
     pos size
@@ -690,10 +690,10 @@ let%shared
       ?(a = [])
       ?attributes
       ~(change :
-         ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+         ([> `Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t)
       ~pos
       ~length
-      ?(size = Eliom_shared.React.S.const 1)
+      ?(size = Eliom.Shared.React.S.const 1)
       ?content
       ()
   =
@@ -729,12 +729,12 @@ let%shared
     ribbon
       ?(a = [])
       ~(change :
-         ([> `Goto of int | `Next | `Prev] -> unit) Eliom_client_value.t)
+         ([> `Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t)
       ~pos
-      ?(size = Eliom_shared.React.S.const 1)
+      ?(size = Eliom.Shared.React.S.const 1)
       ?(initial_gap = 0)
       ?(transition_duration = 0.6)
-      ?(cursor : float React.S.t Eliom_client_value.t option)
+      ?(cursor : float React.S.t Eliom.Client_value.t option)
       l
   =
   let a = (a :> Html_types.div_attrib attrib list) in
@@ -751,7 +751,7 @@ let%shared
   let nb_pages = List.length l in
   let the_ul = D.ul ~a:[a_class ["ot-car-ribbon-list"]] l in
   let cursor_elt =
-    Eliom_lib.Option.map
+    Eliom.Lib.Option.map
       (fun _ -> D.div ~a:[a_class ["ot-car-cursor"]] [])
       cursor
   in
@@ -768,7 +768,7 @@ let%shared
        let container' = To_dom.of_element container in
        let initial_gap = ~%initial_gap in
        let the_ul' = To_dom.of_element the_ul in
-       let cursor_elt' = Eliom_lib.Option.map To_dom.of_element ~%cursor_elt in
+       let cursor_elt' = Eliom.Lib.Option.map To_dom.of_element ~%cursor_elt in
        let containerwidth, set_containerwidth =
          React.S.create container'##.offsetWidth
        in
@@ -783,7 +783,7 @@ let%shared
          node from page and put it back.
          As a temporary workaround, a also update containerwidth
          when the browser window's size changes: *)
-         Eliom_lib.Dom_reference.retain container'
+         Eliom.Lib.Dom_reference.retain container'
            ~keep:
              (Ot_size.width
              |> React.S.map @@ fun _ ->
@@ -800,7 +800,7 @@ let%shared
                 Lwt.return_unit);
          (* Changing the position of the ribbon when the carousel position
          changes or when the size of the window changes: *)
-         Eliom_lib.Dom_reference.retain container'
+         Eliom.Lib.Dom_reference.retain container'
            ~keep:
              (React.S.l3
                 (fun pos size containerwidth ->
@@ -847,7 +847,7 @@ let%shared
          (match ~%cursor_elt, ~%cursor with
          | Some cursor_elt, Some cursor ->
              let moving = ref false in
-             Eliom_lib.Dom_reference.retain container'
+             Eliom.Lib.Dom_reference.retain container'
                ~keep:
                  (React.S.l5
                     (fun pos offset size curleft _ ->
@@ -856,11 +856,11 @@ let%shared
                          (* Carousel is being swiped.
                       Removing transition on cursor. *)
                          moving := true;
-                         Eliom_lib.Option.iter remove_transition cursor_elt');
+                         Eliom.Lib.Option.iter remove_transition cursor_elt');
                        if offset = 0. && !moving
                        then (
                          moving := false;
-                         Eliom_lib.Option.iter add_transition cursor_elt');
+                         Eliom.Lib.Option.iter add_transition cursor_elt');
                        let firstselectedelt = Manip.nth the_ul pos in
                        let lastselectedelt =
                          Manip.nth the_ul (pos + size - 1)
@@ -929,7 +929,7 @@ let%shared
          let* () = Ot_nodeready.nodeready container' in
          let* () = Lwt_js_events.request_animation_frame () in
          add_transition the_ul';
-         Eliom_lib.Option.iter add_transition cursor_elt';
+         Eliom.Lib.Option.iter add_transition cursor_elt';
          Lwt.return_unit);
        (* Moving the ribbon with fingers: *)
        let fmax () = initial_gap in
@@ -955,8 +955,8 @@ let%shared
            let pos = max (fmin ()) pos in
            set_curleft pos)
          ~onstart:(fun _ _ ->
-           Eliom_lib.Option.iter remove_transition cursor_elt')
-         ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
+           Eliom.Lib.Option.iter remove_transition cursor_elt')
+         ~onend:(fun ev _ -> Eliom.Lib.Option.iter add_transition cursor_elt')
          the_ul;
        Lwt.return_unit
        : _)];
@@ -967,17 +967,17 @@ let%shared blur = function true -> ["ot-blurred"] | false -> []
 let%shared
     previous
       ?(a = [])
-      ~(change : ([> `Prev | `Goto of int] -> unit) Eliom_client_value.t)
-      ?(offset = Eliom_shared.React.S.const 1)
+      ~(change : ([> `Prev | `Goto of int] -> unit) Eliom.Client_value.t)
+      ?(offset = Eliom.Shared.React.S.const 1)
       ~pos
       content
   =
   let change =
-    (change :> ([`Prev | `Goto of int] -> unit) Eliom_client_value.t)
+    (change :> ([`Prev | `Goto of int] -> unit) Eliom.Client_value.t)
   in
   Form.button_no_value ~button_type:`Button
     ~a:
-      (R.a_class (Eliom_shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
+      (R.a_class (Eliom.Shared.React.S.map [%shared fun p -> blur (p = 0)] pos)
       :: a_class ["ot-car-prev"]
       :: a_onclick
            [%client
@@ -987,26 +987,26 @@ let%shared
                  (if offset > 1
                   then `Goto (React.S.value ~%pos - offset)
                   else `Prev)]
-      :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
+      :: (a :> Html_types.button_attrib Eliom.Content.Html.attrib list))
     content
 
 let%shared
     next
       ?(a = [])
-      ~(change : ([> `Next | `Goto of int] -> unit) Eliom_client_value.t)
-      ?(offset = Eliom_shared.React.S.const 1)
+      ~(change : ([> `Next | `Goto of int] -> unit) Eliom.Client_value.t)
+      ?(offset = Eliom.Shared.React.S.const 1)
       ~pos
       ~vis_elts
       ~length
       content
   =
   let change =
-    (change :> ([`Next | `Goto of int] -> unit) Eliom_client_value.t)
+    (change :> ([`Next | `Goto of int] -> unit) Eliom.Client_value.t)
   in
   Form.button_no_value ~button_type:`Button
     ~a:
       (R.a_class
-         (Eliom_shared.React.S.l2
+         (Eliom.Shared.React.S.l2
             [%shared fun p s -> blur (p + s >= ~%length)]
             pos vis_elts)
       :: a_class ["ot-car-next"]
@@ -1018,7 +1018,7 @@ let%shared
                  (if offset > 1
                   then `Goto (React.S.value ~%pos + offset)
                   else `Next)]
-      :: (a :> Html_types.button_attrib Eliom_content.Html.attrib list))
+      :: (a :> Html_types.button_attrib Eliom.Content.Html.attrib list))
     content
 
 (* (\* Menu + prev/next buttons *\) *)
@@ -1088,7 +1088,7 @@ let%shared wheel_page_attribute pos z faces ~vertical page_number =
     Printf.sprintf "transform: rotate%s(%.3fdeg) translateZ(%dpx)" v angle z
   in
   let cls =
-    Eliom_shared.React.S.map
+    Eliom.Shared.React.S.map
       [%shared
         fun (pos, swipe_pos) ->
           let faces = ~%faces in
@@ -1123,7 +1123,7 @@ let%shared
   in
   (* I create another signal equal to pos
      because I need pos before it is created :( *)
-  let pos2, set_pos2 = Eliom_shared.React.S.create (position, 0.) in
+  let pos2, set_pos2 = Eliom.Shared.React.S.create (position, 0.) in
   let c =
     make ~a ~vertical ~position ?transition_duration ?inertia ?allow_overswipe
       ?update ?disabled
@@ -1133,7 +1133,7 @@ let%shared
   in
   let _ =
     [%client
-      (Eliom_lib.Dom_reference.retain
+      (Eliom.Lib.Dom_reference.retain
          (To_dom.of_element ~%(c.elt))
          ~keep:
            (React.S.l2
