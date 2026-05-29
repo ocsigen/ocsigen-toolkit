@@ -59,7 +59,7 @@ let%client
   let o_width = o_right -. o_left in
   let o_center_to_left = (o_right +. o_left) /. 2. in
   let o_center_to_right = d_width -. o_center_to_left in
-  let container_ready = Ot_nodeready.nodeready container_elt in
+  let container_ready = Nodeready.nodeready container_elt in
   let when_container_ready get_from_container use_it =
     Lwt.(async @@ fun () -> container_ready >|= get_from_container >|= use_it)
   in

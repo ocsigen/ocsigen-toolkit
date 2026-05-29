@@ -329,7 +329,7 @@ let container = D.(div ~a:[a_class ["ot-tp-container"]])
 
 let am_pm_toggle ?(init_am = true) ?update () =
   let init_up = init_am in
-  Ot_toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ?update ()
+  Toggle.make ~init_up ~up_txt:"AM" ~down_txt:"PM" ?update ()
 
 let string_of_hours ?(h24 = false) h =
   if h24

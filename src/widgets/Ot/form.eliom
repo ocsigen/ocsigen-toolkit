@@ -949,11 +949,10 @@ module%client Tabbable = struct
   end
 end
 
-let%client only_if_active' elt v =
-  if Ot_style.invisible elt then None else Some v
+let%client only_if_active' elt v = if Style.invisible elt then None else Some v
 
 let%client only_if_active elt v =
-  if elt##.disabled = Js._true || Ot_style.invisible elt then None else Some v
+  if elt##.disabled = Js._true || Style.invisible elt then None else Some v
 
 let%client coerce_to_tabbable x =
   let x = Dom_html.element x in
