@@ -16,7 +16,7 @@ depends: [
   "eliom" {>= "13.0~" & < "14.0.0"}
   "calendar" {>= "2.0.0"}
   "lwt_ppx"
-  "cmdliner"
+  "ocsigen-dune-rules"
   "ocsigen-ppx-rpc"
   "odoc" {with-doc}
 ]
