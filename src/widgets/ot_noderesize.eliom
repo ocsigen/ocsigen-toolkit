@@ -20,8 +20,8 @@
  *)
 open Js_of_ocaml]
 
-[%%client open Eliom_content.Html]
-[%%client open Eliom_content.Html.F]
+[%%client open Eliom.Content.Html]
+[%%client open Eliom.Content.Html.F]
 
 type%client resize_sensor =
   { watched : Dom_html.element Js.t

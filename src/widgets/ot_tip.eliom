@@ -21,8 +21,8 @@
  *)
 open Js_of_ocaml]
 
-[%%client open Eliom_content.Html]
-[%%client open Eliom_content.Html.F]
+[%%client open Eliom.Content.Html]
+[%%client open Eliom.Content.Html.F]
 
 let%client
     display
@@ -37,7 +37,7 @@ let%client
       ?(onclose = fun _ _ -> ())
       ~(content :
          (unit -> unit)
-         -> [< Html_types.div_content_fun > `Div] Eliom_content.Html.elt list)
+         -> [< Html_types.div_content_fun > `Div] Eliom.Content.Html.elt list)
       ()
   =
   let close = ref @@ fun () -> () in

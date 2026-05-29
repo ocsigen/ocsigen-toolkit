@@ -25,12 +25,12 @@ open Lwt.Syntax]
 [%%client open Js_of_ocaml_lwt]
 
 let%client onloads handler =
-  let rec loop () = Eliom_client.onload @@ fun () -> handler (); loop () in
+  let rec loop () = Eliom.Client.onload @@ fun () -> handler (); loop () in
   loop ()
 
 let%client onresizes handler =
   let stop, stop_thread = React.E.create () in
-  Eliom_client.Page_status.while_active ~stop (fun () ->
+  Eliom.Client.Page_status.while_active ~stop (fun () ->
     Lwt_js_events.onresizes handler);
   Lwt.finalize
     (fun () -> fst @@ Lwt.wait ())
@@ -42,7 +42,7 @@ let%client window_scroll ?use_capture () =
 let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
   let stop, stop_thread = React.E.create () in
   let cur = ref Lwt.return_unit in
-  Eliom_client.Page_status.while_active ~stop (fun () ->
+  Eliom.Client.Page_status.while_active ~stop (fun () ->
     cur :=
       if ios_html_scroll_hack
       then

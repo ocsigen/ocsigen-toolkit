@@ -1,7 +1,7 @@
 [%%shared.start]
 
-open Eliom_content.Html
-open Eliom_content.Html.F
+open Eliom.Content.Html
+open Eliom.Content.Html.F
 
 [%%client open Js_of_ocaml_lwt]
 

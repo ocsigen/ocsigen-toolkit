@@ -4,14 +4,14 @@ open Js_of_ocaml
 
 val bind :
    ?transition_duration:float
-  -> ?min:(unit -> int) Eliom_client_value.t
-  -> ?max:(unit -> int) Eliom_client_value.t
+  -> ?min:(unit -> int) Eliom.Client_value.t
+  -> ?max:(unit -> int) Eliom.Client_value.t
   -> compute_final_pos:
-       (Dom_html.touchEvent Js.t -> int -> int) Eliom_client_value.t
-  -> ?onstart:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
-  -> ?onmove:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
-  -> ?onend:(Dom_html.touchEvent Js.t -> int -> unit) Eliom_client_value.t
-  -> Html_types.div_content Eliom_content.Html.elt
+       (Dom_html.touchEvent Js.t -> int -> int) Eliom.Client_value.t
+  -> ?onstart:(Dom_html.touchEvent Js.t -> int -> unit) Eliom.Client_value.t
+  -> ?onmove:(Dom_html.touchEvent Js.t -> int -> unit) Eliom.Client_value.t
+  -> ?onend:(Dom_html.touchEvent Js.t -> int -> unit) Eliom.Client_value.t
+  -> Html_types.div_content Eliom.Content.Html.elt
   -> unit
 (**
    [bind ~compute_final_pos elt] makes [elt] left-right
