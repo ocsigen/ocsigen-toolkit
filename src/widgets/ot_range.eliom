@@ -28,12 +28,12 @@ let display_aux (_, _, a) v =
   and a = [D.a_class ["ot-r-value"]] in
   D.div ~a [D.txt v]
 
-let%client go_up (lb, ub, a) r (f : ?step:_ -> _) =
+let%client go_up (lb, ub, _a) r (f : ?step:_ -> _) =
   let v = Eliom_shared.React.S.value r in
   assert (v <= ub - 1);
   f (if v = ub - 1 then lb else v + 1)
 
-let%client go_down (lb, ub, a) r (f : ?step:_ -> _) =
+let%client go_down (lb, ub, _a) r (f : ?step:_ -> _) =
   let v = Eliom_shared.React.S.value r in
   assert (v >= lb);
   f (if v = lb then ub - 1 else v - 1)

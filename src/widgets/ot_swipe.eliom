@@ -122,7 +122,7 @@ let%shared
          (* position when touch starts *)
        in
        let status = ref Stopped in
-       let onpanend ev aa =
+       let onpanend ev _ =
          if !status <> Start
          then (
            add_transition ~%transition_duration elt';
@@ -143,7 +143,7 @@ let%shared
          onpanstart0 ();
          Lwt.return_unit
        in
-       let onpan ev aa =
+       let onpan ev _ =
          let left = clX ev -. !startx in
          let do_pan left = elt'##.style##.left := px_of_int left in
          if !status = Start

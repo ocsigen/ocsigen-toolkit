@@ -46,7 +46,7 @@ end
 module Make (Conf : PAGE_TRANSITION_CONF) = struct
   type screenshot = Conf.screenshot
 
-  let wrap_screenshot ?(a = []) ~transition_duration ~screenshot =
+  let wrap_screenshot ?(a = []) ~transition_duration ~screenshot () =
     let container = Conf.screenshot_container screenshot in
     let wrapper = div ~a:(a_class [cl_wrapper] :: a) [container] in
     set_transition_duration wrapper transition_duration;
@@ -63,7 +63,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
           let screenshot_wrapper, screenshot_container =
             wrap_screenshot
               ~a:[a_class ["ot-page-transition-wrapper-forward"]]
-              ~transition_duration ~screenshot:(Some screenshot)
+              ~transition_duration ~screenshot:(Some screenshot) ()
           in
           Some screenshot_wrapper, Some screenshot_container
       | None -> None, None
@@ -101,7 +101,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
     let screenshot_wrapper, _ =
       wrap_screenshot
         ~a:[a_class ["ot-page-transition-wrapper-backward"]]
-        ~transition_duration ~screenshot
+        ~transition_duration ~screenshot ()
     in
     Eliom_client.lock_request_handling ();
     Manip.appendToBody screenshot_wrapper;
@@ -130,6 +130,7 @@ module Make (Conf : PAGE_TRANSITION_CONF) = struct
         ?transition_duration
         ~take_screenshot
         ~animation_type
+        ()
     =
     let rec hc_handler ev =
       Eliom_client.onchangepage hc_handler;

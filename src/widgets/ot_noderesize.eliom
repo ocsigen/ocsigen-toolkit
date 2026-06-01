@@ -79,7 +79,7 @@ let%client reset {grow; grow_child; shrink; _} =
   grow##.scrollLeft := Js.float (float grow##.scrollWidth);
   grow##.scrollTop := Js.float (float grow##.scrollHeight)
 
-let%client reset_opt {grow; grow_child; shrink; _} =
+let%client reset_opt {grow; shrink; _} =
   shrink##.scrollLeft := Js.float 9999.;
   shrink##.scrollTop := Js.float 9999.;
   grow##.scrollLeft := Js.float 9999.;
