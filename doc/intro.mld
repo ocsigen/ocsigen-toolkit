@@ -4,7 +4,7 @@ Ocsigen Toolkit provides various user interface widgets and related
 utilities that assist in the rapid development of interactive Web
 applications.
 
-Ocsigen Toolkit is built with {{!/eliom/page-index}Eliom}.
+Ocsigen Toolkit is built with {{:../eliom}Eliom}.
 
 {1 Installation and getting started}
 
@@ -15,15 +15,11 @@ opam install ocsigen-toolkit
 v}
 
 You may want to use Ocsigen Toolkit in conjunction with
-{{!/ocsigen-start/page-index}Ocsigen Start}, which provides an application
+{{:../ocsigen-start}Ocsigen Start}, which provides an application
 template for quickly getting started with Ocsigen. The template
 provides various runnable examples of Ocsigen Toolkit widgets. See the
-{{!/ocsigen-start/page-index}Ocsigen Start
+{{:../ocsigen-start/intro.html}Ocsigen Start
 manual} for details.
-
-See the widgets in action in
-{{:https://ocsigen.org/ocsigen-start/demo/}Ocsigen Start's demo application}
-(also available for Android and iOS, or in your mobile browser).
 
 {1 Programming style}
 
@@ -34,17 +30,17 @@ sections. The server instance of the code can be used to produce pages
 (with Ocsigen Toolkit widgets) during traditional Web interaction,
 while the client instance can be used to render the same pages and
 widgets on a mobile device without contacting the server. See the
-{{!/eliom/page-"mobile-apps"}mobile applications
+{{:../eliom/mobile-apps.html}mobile applications
 section} of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use
-{!Eliom_shared}
+{!Eliom.Shared}
 extensively, which allows us to produce this reactive content on both
 sides.
 See
-{{!/eliom/page-"clientserver-react"}the respective manual chapter}
+{{:../eliom/clientserver-react.html}the respective manual chapter}
 for more info.
-{!Eliom_shared}
+{!Eliom.Shared}
 signals and events appear in the Ocsigen Toolkit APIs, and can be used
 as a mechanism for composing different widgets.
 
@@ -62,48 +58,48 @@ Of course, you are free to modify the style to suit the desired look.
 
 {1 Widgets overview}
 
-- {!Ot_buttons}:
+- {!Ot.Buttons}:
   provides a dropdown menu widget
-- {!Ot_calendar}:
+- {!Ot.Calendar}:
   calendar widget, allowing the user to pick dates
-- {!Ot_carousel}:
+- {!Ot.Carousel}:
   container for blocks, only one of which is displayed at a time,
   with various ways to move between them (buttons, swipe, keyboard arrows)
-- {!Ot_tongue}:
+- {!Ot.Tongue}:
   swipable element appearing from one side of the screen
-- {!Ot_color_picker}:
+- {!Ot.Color_picker}:
   color picker widget
-- {!Ot_drawer}:
+- {!Ot.Drawer}:
   a drawer menu that typically appears on an edge of the screen.
   It can  appear/disappear via buttons or by swiping.
-- {!Ot_picture_uploader}:
+- {!Ot.Picture_uploader}:
   user interface for uploading pictures
-- {!Ot_popup}:
+- {!Ot.Popup}:
   popup windows that can be controlled in various ways
-- {!Ot_range}:
+- {!Ot.Range}:
   widget for picking one among a range of values
-- {!Ot_spinner}:
+- {!Ot.Spinner}:
   a spinner that appears while we wait for "slow" HTML content to be
   generated
-- {!Ot_swipe}:
+- {!Ot.Swipe}:
   make element swipeable on touch screens
-- {!Ot_time_picker}:
+- {!Ot.Time_picker}:
   clock-like widget that allows the user to pick a time
-- {!Ot_toggle}:
+- {!Ot.Toggle}:
   binary toggle widget
 
 {2 Non-widget utilities}
 
-- {!Ot_nodeready}:
+- {!Ot.Nodeready}:
   produces an Lwt thread allowing one to wait for a node to be
   inserted in the DOM
-- {!Ot_noderesize}:
+- {!Ot.Noderesize}:
   listen to element resize events
-- {!Ot_size}:
+- {!Ot.Size}:
   utilities to deal with DOM element dimensions
-- {!Ot_lib}:
+- {!Ot.Lib}:
   functions useful for other widgets
-- {!Ot_sticky}:
+- {!Ot.Sticky}:
   make elements "sticky", i.e., do not let them go out of sight
-- {!Ot_style}:
+- {!Ot.Style}:
   an interface to [Window.getComputedStyle()]
