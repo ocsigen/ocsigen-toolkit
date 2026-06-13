@@ -1,6 +1,6 @@
 ;; Declarative wodoc config for the Ocsigen Toolkit documentation (client/server).
 ;;   wodoc build --config doc/wodoc --out <dir>/<label> --label <v> \
-;;               --menu https://ocsigen.org/wodoc/menu.html [--local]
+;;               --menu https://ocsigen.org/doc/menu.html [--local]
 ;; ocsigen-toolkit ships server and client libraries (ocsigen-toolkit.server /
 ;; ocsigen-toolkit.client) with the same module names, so the API is built with
 ;; `odoc_driver ocsigen-toolkit --remap` on the INSTALLED package. Each side gets

@@ -32,7 +32,7 @@ opam install . --with-doc        # the version to document (installed)
 opam install wodoc
 git show origin/wikidoc:doc/dev/manual/menu.wiki > doc/manual/menu.wiki
 wodoc build --config doc/wodoc --label dev --out _doc-site/dev \
-  --menu https://ocsigen.org/wodoc/menu.html
+  --menu https://ocsigen.org/doc/menu.html
 ```
 
 > **Prerequisite (CI).** The cross-library links need the `odoc_driver`
