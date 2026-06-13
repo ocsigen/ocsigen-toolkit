@@ -9,7 +9,7 @@
 (title Toolkit)
 (pub /ocsigen-toolkit)
 (odoc-driver ocsigen-toolkit)
-(landing ocsigen-toolkit/index.html)
+(landing intro.html)
 (manual-menu doc/manual/menu.wiki)
 (client-server
   (server (lib ocsigen-toolkit.server) (indexdoc doc/server.indexdoc) (heading "Server API") (wrapper Ot))
