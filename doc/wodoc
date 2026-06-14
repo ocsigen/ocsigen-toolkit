@@ -19,8 +19,8 @@
   (link "Introduction" intro.html intro)))
 
 (client-server
-  (server (lib ocsigen-toolkit.server) (heading "Server API"))
-  (client (lib ocsigen-toolkit.client) (heading "Client API")))
+  (server (lib ocsigen-toolkit.server) (indexdoc doc/indexdoc.server) (heading "Server API"))
+  (client (lib ocsigen-toolkit.client) (indexdoc doc/indexdoc.client) (heading "Client API")))
 
 ;; Sibling Ocsigen projects whose ocaml.org xrefs are rewritten to relative
 ;; links into their wodoc docs:  (pkg deploy-dir multi-library? wrapper-module)
