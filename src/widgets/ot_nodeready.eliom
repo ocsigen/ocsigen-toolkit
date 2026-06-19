@@ -55,12 +55,12 @@ let handler records observer =
   if !changes
   then (
     let ready, not_ready =
-      List.partition (fun {node} -> node_in_document node) !watched
+      List.partition (fun {node; _} -> node_in_document node) !watched
     in
     watched := not_ready;
     if not_ready = [] then observer##disconnect;
     ready
-    |> List.iter (fun {resolver; stop_ondead} ->
+    |> List.iter (fun {resolver; stop_ondead; _} ->
       stop_ondead (); Lwt.wakeup resolver ()))
 
 let observer =
@@ -81,8 +81,8 @@ let nodeready n =
   else (
     if !watched = [] then observer##observe Dom_html.document config;
     try
-      let {thread} =
-        List.find (fun {node} -> Js.strict_equals n node) !watched
+      let {thread; _} =
+        List.find (fun {node; _} -> Js.strict_equals n node) !watched
       in
       log ~n "already being watched";
       thread
@@ -95,11 +95,11 @@ let nodeready n =
       in
       Eliom_client.Page_status.ondead ~stop (fun () ->
         let instances_of_node, rest =
-          List.partition (fun {node} -> Js.strict_equals n node) !watched
+          List.partition (fun {node; _} -> Js.strict_equals n node) !watched
         in
         watched := rest;
         instances_of_node
-        |> List.iter (fun {resolver} ->
+        |> List.iter (fun {resolver; _} ->
           log ~n "deinstalled"; Lwt.wakeup resolver ()));
       watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
       log ~n "installed";

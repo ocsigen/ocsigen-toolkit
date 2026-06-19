@@ -130,24 +130,17 @@ let rec rotate_list ?(acc = []) l i =
     | h :: l -> rotate_list ~acc:(h :: acc) l (i - 1)
     | [] -> failwith "rotate_list"
 
-let get_rotated_days {i_days; i_start} =
+let get_rotated_days {i_days; i_start; _} =
   if List.length i_days != 7
   then invalid_arg "intl.i_days"
   else rotate_list i_days (int_of_dow i_start)
 
-let name_of_calendarlib_month {i_months} m =
+let name_of_calendarlib_month {i_months; _} m =
   if List.length i_months != 12
   then invalid_arg "intl.i_months"
   else List.nth i_months (CalendarLib.Date.int_of_month m - 1)
 
-let timezone_offset =
-  truncate (-.float (new%js Js.date_now)##getTimezoneOffset /. 60.)
-
 let ( >>! ) = Js.Opt.iter
-let user_tz = CalendarLib.Time_Zone.UTC_Plus timezone_offset
-let to_local date = CalendarLib.(Time_Zone.on Calendar.from_gmt user_tz date)
-let to_utc date = CalendarLib.(Time_Zone.on Calendar.to_gmt user_tz date)
-let now () = to_local (CalendarLib.Calendar.now ())
 
 let rec map_interval i j f =
   if i > j then [] else f i :: map_interval (i + 1) j f
@@ -168,7 +161,7 @@ let build_table i_max j_max ~a ~thead ~f_a_row ~f_cell =
   in
   D.table ~a ~thead (map_interval 0 i_max f)
 
-let fst_dow ~intl:{i_start} d =
+let fst_dow ~intl:{i_start; _} d =
   let open CalendarLib.Date in
   nth_weekday_of_month (year d) (month d) (calendarlib_of_dow i_start) 1
 
@@ -185,7 +178,7 @@ let select_action ?(size = 1) selector action =
       dom_select##.size := size;
       Lwt.return_unit))
 
-let rec build_calendar
+let build_calendar
           ?prehilight
           ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year}
           ~intl
@@ -273,7 +266,7 @@ let rec build_calendar
       ( [D.a_class classes]
       , [D.div [CalendarLib.Date.day_of_month d |> string_of_int |> D.txt]] )
     else [], []
-  and f_a_row i = [] in
+  and f_a_row _ = [] in
   ( build_table 5 6 ~a:[D.a_class ["ot-c-table"]] ~thead ~f_cell ~f_a_row
   , prev_button
   , next_button
@@ -333,7 +326,7 @@ let in_period_coerced
 let attach_events
       ?action
       ?(click_non_highlighted = false)
-      ?update
+      ?update:_
       ~intl
       ~period
       d
@@ -357,11 +350,11 @@ let attach_events
     let action =
       match action with
       | Some action ->
-          fun _ r ->
+          fun _ _ ->
             update_classes cal zero d;
             let* _ = action y m dom in
             Lwt.return_unit
-      | None -> fun _ r -> update_classes cal zero d; Lwt.return_unit
+      | None -> fun _ _ -> update_classes cal zero d; Lwt.return_unit
     in
     let set_onclick () =
       if in_period d ~begin_p:period.begin_p ~end_p:period.end_p

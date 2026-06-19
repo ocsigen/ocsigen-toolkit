@@ -117,7 +117,7 @@ let%client
           ~a:
             [ a_button_type `Button
             ; a_class ["ot-popup-close"]
-            ; a_onclick (fun ev -> Lwt.async (fun () -> close ())) ]
+            ; a_onclick (fun _ev -> Lwt.async (fun () -> close ())) ]
           but
         :: content
     | None -> content

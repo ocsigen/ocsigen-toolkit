@@ -434,7 +434,7 @@ let make_hours_minutes_seq_24h
       Eliom_shared.Value.create
         (Eliom_shared.Value.local f_e_h)
         [%client
-          fun ?step ((x, b) as p) ->
+          fun ?step ((_, b) as p) ->
             ~%f_e_h ?step p;
             if b then ~%f_b false]
     in
@@ -503,7 +503,7 @@ let make_hours_minutes_seq ?action ?(init = 0, 0) ?update ?round_5 () =
     let e_h' = Eliom_shared.React.S.map [%shared fst] e_h
     and f_e_h =
       [%client
-        fun ?step ((x, b) as p) ->
+        fun ?step ((_, b) as p) ->
           ~%f_e_h ?step p;
           if b then ~%f_b false]
     in

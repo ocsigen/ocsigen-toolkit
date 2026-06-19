@@ -462,7 +462,7 @@ let%shared
            then d2'##.offsetHeight, clY ev -. starty
            else d2'##.offsetWidth, clX ev -. startx
          in
-         let timestamp, speed =
+         let _timestamp, speed =
            compute_speed prev_speed prev_delta prev_timestamp delta
          in
          let pos = Eliom_shared.React.S.value pos_signal in
@@ -496,9 +496,9 @@ let%shared
              do_end ev startx starty speed delta timestamp
          | _ -> Lwt.return_unit
        in
-       let touchcancel ev _ =
+       let touchcancel _ev _ =
          match !status with
-         | Start (startx, starty, _) | Ongoing (startx, starty, _, _, _, _) ->
+         | Start _ | Ongoing _ ->
              add_transition d2';
              status := Stopped;
              let pos = Eliom_shared.React.S.value pos_signal in
@@ -508,7 +508,7 @@ let%shared
        if ~%swipeable
        then (
          Lwt.async (fun () ->
-           Lwt_js_events.touchstarts d (fun ev aa ->
+           Lwt_js_events.touchstarts d (fun ev _ ->
              status := Start (clX ev, clY ev, now ());
              Lwt.return_unit));
          Lwt.async (fun () -> Lwt_js_events.touchmoves d onpan);
@@ -938,7 +938,7 @@ let%shared
          React.S.value containerwidth - ul_width - initial_gap
        in
        Ot_swipe.bind ~min:fmin ~max:fmax
-         ~compute_final_pos:(fun ev p ->
+         ~compute_final_pos:(fun _ev p ->
            let cw = React.S.value containerwidth in
            let pos = max (-the_ul'##.scrollWidth + (cw / 2)) (min (cw / 2) p) in
            (* Limit the movement
@@ -956,7 +956,7 @@ let%shared
            set_curleft pos)
          ~onstart:(fun _ _ ->
            Eliom_lib.Option.iter remove_transition cursor_elt')
-         ~onend:(fun ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
+         ~onend:(fun _ev _ -> Eliom_lib.Option.iter add_transition cursor_elt')
          the_ul;
        Lwt.return_unit
        : _)];

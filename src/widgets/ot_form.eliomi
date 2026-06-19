@@ -288,8 +288,7 @@ val%shared password_input :
 
 (** {3 Password toggle (non-reactive)} *)
 
-val%shared password_toggle :
-  [< Html_types.input] elt -> [> `Div] elt
+val%shared password_toggle : [< Html_types.input] elt -> [> `Div] elt
 (** [password_toggle inp] wraps an existing password input element [inp]
     in a container with a visibility toggle button.
     Unlike {!password_input}, this does not use reactive signals: it
