@@ -1,0 +1,23 @@
+{0 Ocsigen Toolkit}
+
+Ocsigen Toolkit is a set of reusable user-interface widgets for
+{{:/eliom/}Eliom} applications. The widgets can be produced on the
+server or on the client from the same code, which makes them
+particularly suited to mobile, client-server applications.
+
+Ocsigen Toolkit is part of the {{:https://ocsigen.org}Ocsigen project}.
+
+{1 Documentation}
+
+- {{!page-intro}Introduction} — installation, programming style and an
+  overview of the available widgets.
+- The server and client API of every widget (use the {e Server API} /
+  {e Client API} switch to move between the two sides).
+
+{1 Installation}
+
+Ocsigen Toolkit is available via OPAM:
+
+{[
+opam install ocsigen-toolkit
+]}
