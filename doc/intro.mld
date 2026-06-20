@@ -34,7 +34,7 @@ sections. The server instance of the code can be used to produce pages
 (with Ocsigen Toolkit widgets) during traditional Web interaction,
 while the client instance can be used to render the same pages and
 widgets on a mobile device without contacting the server. See the
-{{!/eliom/page-mobile-apps}mobile applications
+{{!/eliom/page-"mobile-apps"}mobile applications
 section} of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use
@@ -42,7 +42,7 @@ The widgets generally follow a reactive programming style. We use
 extensively, which allows us to produce this reactive content on both
 sides.
 See
-{{!/eliom/page-clientserver-react}the respective manual chapter}
+{{!/eliom/page-"clientserver-react"}the respective manual chapter}
 for more info.
 {!Eliom_shared}
 signals and events appear in the Ocsigen Toolkit APIs, and can be used
