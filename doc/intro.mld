@@ -4,7 +4,7 @@ Ocsigen Toolkit provides various user interface widgets and related
 utilities that assist in the rapid development of interactive Web
 applications.
 
-Ocsigen Toolkit is built with {{:https://ocsigen.org/eliom/}Eliom}.
+Ocsigen Toolkit is built with {{!/eliom/page-index}Eliom}.
 
 {1 Installation and getting started}
 
@@ -15,10 +15,10 @@ opam install ocsigen-toolkit
 v}
 
 You may want to use Ocsigen Toolkit in conjunction with
-{{:https://ocsigen.org/ocsigen-start/}Ocsigen Start}, which provides an application
+{{!/ocsigen-start/page-index}Ocsigen Start}, which provides an application
 template for quickly getting started with Ocsigen. The template
 provides various runnable examples of Ocsigen Toolkit widgets. See the
-{{:https://ocsigen.org/ocsigen-start/latest/intro.html}Ocsigen Start
+{{!/ocsigen-start/page-index}Ocsigen Start
 manual} for details.
 
 See the widgets in action in
@@ -34,7 +34,7 @@ sections. The server instance of the code can be used to produce pages
 (with Ocsigen Toolkit widgets) during traditional Web interaction,
 while the client instance can be used to render the same pages and
 widgets on a mobile device without contacting the server. See the
-{{:https://ocsigen.org/eliom/latest/mobile-apps.html}mobile applications
+{{!/eliom/page-mobile-apps}mobile applications
 section} of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use
@@ -42,7 +42,7 @@ The widgets generally follow a reactive programming style. We use
 extensively, which allows us to produce this reactive content on both
 sides.
 See
-{{:https://ocsigen.org/eliom/latest/clientserver-react.html}the respective manual chapter}
+{{!/eliom/page-clientserver-react}the respective manual chapter}
 for more info.
 {!Eliom_shared}
 signals and events appear in the Ocsigen Toolkit APIs, and can be used
