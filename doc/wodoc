@@ -9,7 +9,7 @@
 (title Toolkit)
 (pub /ocsigen-toolkit)
 (odoc-driver ocsigen-toolkit)
-(landing intro.html)
+(landing index.html)
 (nav
  (section "Ocsigen Toolkit"
   (link "Introduction" intro.html intro)))
