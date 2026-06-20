@@ -8,8 +8,8 @@
 ;; side gets its own API nav, a body colour and a switch; the manual nav is shared.
 (project ocsigen-toolkit)
 (title Toolkit)
-(pub /ocsigen-toolkit)
-(odoc-driver ocsigen-toolkit)
+(url-prefix /ocsigen-toolkit)
+(css /css/style.css /css/ocsigen-odoc.css)  ; shared Ocsigen theme (wodoc css default changed)
 (landing intro.html)
 
 ;; The shared manual nav (only `dev` is ever rebuilt, so this static nav always
