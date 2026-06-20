@@ -22,6 +22,10 @@ provides various runnable examples of Ocsigen Toolkit widgets. See the
 {{!/ocsigen-start/page-index}Ocsigen Start
 manual} for details.
 
+See the widgets in action in
+{{:https://ocsigen.org/ocsigen-start/demo/}Ocsigen Start's demo application}
+(also available for Android and iOS, or in your mobile browser).
+
 {1 Programming style}
 
 Most of the Ocsigen Toolkit widgets can be produced invariably on the
