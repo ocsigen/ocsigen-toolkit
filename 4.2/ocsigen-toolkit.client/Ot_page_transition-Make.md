@@ -22,5 +22,6 @@ val install_global_handler :
   ?transition_duration:float ->
   take_screenshot:((screenshot -> unit) -> unit) ->
   animation_type:(Eliom_client.changepage_event -> animation) ->
+  unit ->
   unit
 ```
