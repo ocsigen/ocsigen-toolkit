@@ -50,7 +50,8 @@ jobs:
         run: |
           curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_129/binaryen-version_129-x86_64-linux.tar.gz | sudo tar xz -C /usr/local --strip-components=1
 
-      - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
+      - run: opam pin -y git+https://github.com/ocsigen/ocsigenserver#master
+      - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git#deriving
 
       - run: opam install . --deps-only
 
