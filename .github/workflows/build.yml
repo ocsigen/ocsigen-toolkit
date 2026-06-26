@@ -50,7 +50,13 @@ jobs:
         run: |
           curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_129/binaryen-version_129-x86_64-linux.tar.gz | sudo tar xz -C /usr/local --strip-components=1
 
-      - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
+      # Pin the Ocsigen Server 8 development branches until 8.0 is released
+      # (eliom's default branch is still the Server 7 line).
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
+      - run: opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
 
       - run: opam install . --deps-only
 
