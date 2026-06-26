@@ -6,3 +6,8 @@
  (section share)
  (files
   (glob_files css/*.css)))
+
+(env
+ (_
+  (flags
+   (:standard -w +A-4-9-16-27-32-33-39-44-48-60-70))))
