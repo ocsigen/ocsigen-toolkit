@@ -13,7 +13,7 @@ bug-reports: "https://github.com/ocsigen/ocsigen-toolkit/issues"
 depends: [
   "dune" {>= "3.18"}
   "ocaml" {>= "4.08.0"}
-  "js_of_ocaml" {>= "6.0.0"}
+  "js_of_ocaml" {>= "6.4.0"}
   "eliom" {>= "13.0~" & < "14.0.0"}
   "calendar" {>= "2.0.0"}
   "lwt_ppx"

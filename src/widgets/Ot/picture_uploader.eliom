@@ -42,9 +42,10 @@ type%shared ('a, 'b) service =
     , 'b Eliom.Service.ocaml )
     Eliom.Service.t
 
-let%client process_file input callback =
+let%client process_file (input : Dom_html.inputElement Js.t) callback =
+  (* Since js_of_ocaml 6.4, inputElement##.files is a nullable [Js.opt]. *)
   Js.Opt.case
-    input##.files##(item 0)
+    (Js.Opt.bind input##.files (fun files -> files##(item 0)))
     (fun () -> Lwt.return_unit)
     (fun x -> callback x)
 
@@ -429,7 +430,7 @@ let%client bind_input input preview ?container ?reset () =
   Lwt.async (fun () ->
     Lwt_js_events.changes input (fun _ _ ->
       Js.Opt.case
-        (input##.files##item 0)
+        (Js.Opt.bind input##.files (fun files -> files##item 0))
         onerror
         (fun file ->
            let () =
