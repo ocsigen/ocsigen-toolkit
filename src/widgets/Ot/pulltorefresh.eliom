@@ -205,8 +205,7 @@ let make
            let timeout = ~%refresh_timeout
            let container = ~%container
            let afterPull = ~%afterPull
-         end
-         in
+         end in
          let module Ptr = Make (Ptr_conf) in
          Ptr.init ()
          : unit)];
