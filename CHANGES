@@ -1,3 +1,38 @@
+===== 5.0.0~dev =====
+* Module namespace modernization
+** Public modules are now accessed as Ot.Form, Ot.Carousel,
+   Ot.Popup, Ot.Spinner, ... instead of the legacy flat Ot_xxx
+   prefix. Implemented with (include_subdirs qualified) +
+   (wrapped false) in dune.
+** New ocsigen-toolkit-compat opam package: provides the legacy
+   Ot_xxx module names as include-aliases of the new Ot.Xxx
+   modules, to ease migration of existing code.
+* Eliom 13 required: all references to Eliom_xxx modules have been
+  migrated to the new wrapped style (Eliom.Content.Html,
+  Eliom.Service, Eliom.Client, ...). The opam constraint is bumped
+  to "eliom" {>= "13.0.0"}.
+* Ot.Icons gains a documented .eliomi exposing the Ot.Icons.S
+  signature; Ot.Icons.Make is now parameterised on
+  Eliom.Content.Html.T (the shared signature exposed by Eliom 13)
+  instead of an ad-hoc ICON_HTML signature.
+* API regression: Ot.Form.password_toggle now takes the less
+  polymorphic type [`Input] elt instead of [< Html_types.input] elt.
+  This is a workaround for an Eliom PPX weak-type issue under the
+  wrapped HTML modules and will be reverted once upstream is fixed.
+* Build system
+** Use ocsigen-dune-rules (gen sub-command) to drive client/server
+   PPX rules (new opam dependency).
+** CSS files are now installed via dune
+   (install (section share) (files (glob_files css/*.css))),
+   replacing the legacy ocsigen-toolkit.install file.
+** Add explicit dependency on lwt_ppx (already used by the
+   widgets' preprocess clauses).
+** Internal: the server library no longer links js_of_ocaml at
+   runtime (uses -I include flags for type definitions, like
+   Eliom), so it can be loaded via Dynlink.
+** Suppress Eliom PPX preprocessor warning 22 in the widgets
+   library (temporary workaround until upstream is fixed).
+
 ===== 4.1.0 =====
 * Compatibility with WASM
 
