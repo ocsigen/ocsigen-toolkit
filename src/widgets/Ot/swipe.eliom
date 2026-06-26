@@ -49,12 +49,12 @@ let%client dispatch_event ~ev elt name x y =
         let touch = Js.Unsafe.global##.Touch in
         let touch =
           new%js touch
-            (object%js
-               val identifier = identifier ev
-               val target = target
-               val clientX = x
-               val clientY = y
-            end)
+            object%js
+              val identifier = identifier ev
+              val target = target
+              val clientX = x
+              val clientY = y
+            end
         in
         if touch##.target = Js.null then failwith "new Touch() not supported";
         let opt =

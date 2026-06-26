@@ -179,11 +179,11 @@ let select_action ?(size = 1) selector action =
       Lwt.return_unit))
 
 let build_calendar
-          ?prehilight
-          ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year}
-          ~intl
-          ~period
-          day
+      ?prehilight
+      ~button_labels:{b_prev_year; b_prev_month; b_next_month; b_next_year}
+      ~intl
+      ~period
+      day
   =
   let today = CalendarLib.Date.today () in
   let fst_dow = fst_dow ~intl day
