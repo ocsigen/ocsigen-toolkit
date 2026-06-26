@@ -91,7 +91,7 @@ let%client
       (Dom_html.document##getElementsByClassName (Js.string "ot-popup"))##.length
       = 1
     then reset ();
-    let () = Eliom.Lib.Option.iter Manip.removeSelf !popup in
+    let () = Option.iter Manip.removeSelf !popup in
     stop_thread (); onclose ()
   in
   Eliom.Client.Page_status.oninactive ~stop reset;

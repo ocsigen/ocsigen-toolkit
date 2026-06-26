@@ -14,15 +14,8 @@ module type S = sig
     -> unit
     -> [> Html_types.i] elt
 
-  val user :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
-
-  val plus :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+  val user : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
+  val plus : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val spinner :
      ?a:Html_types.i_attrib attrib list
@@ -44,10 +37,7 @@ module type S = sig
     -> unit
     -> [> Html_types.i] elt
 
-  val close :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+  val close : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val question :
      ?a:Html_types.i_attrib attrib list
