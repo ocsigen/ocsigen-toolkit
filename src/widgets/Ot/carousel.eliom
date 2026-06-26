@@ -230,7 +230,7 @@ let%shared
              | `No_header -> Some 0
              | `Header (f : unit -> int) -> Some (f ())
            in
-           Eliom.Lib.Option.iter
+           Option.iter
              (fun dist ->
                 let delta = max 0 (dist - int_of_float (Size.client_top d)) in
                 let pos = React.S.value pos_signal in
@@ -262,7 +262,7 @@ let%shared
            | `No_header, _ -> Some 0
            | `Header (f : unit -> int), _ -> Some (f ())
          in
-         Eliom.Lib.Option.iter
+         Option.iter
            (fun dist ->
               let delta = -max 0 (dist - int_of_float (Size.client_top d)) in
               let pos = React.S.value pos_signal in
@@ -310,7 +310,7 @@ let%shared
                Lwt.return_unit
              else Lwt.return_unit
            in
-           Eliom.Lib.Option.iter (fun f -> f ()) transitionend;
+           Option.iter (fun f -> f ()) transitionend;
            Manip.Class.remove ~%d2 ot_swiping;
            ~%pos_post_set pos;
            (* Remove swiping after calling f,
@@ -513,7 +513,7 @@ let%shared
          Lwt.async (fun () -> Lwt_js_events.touchends d touchend);
          Lwt.async (fun () -> Lwt_js_events.touchcancels d touchcancel));
        ignore
-         (Eliom.Lib.Option.map
+         (Option.map
             (fun update ->
                Eliom.Lib.Dom_reference.retain d
                  ~keep:
@@ -749,9 +749,7 @@ let%shared
   let nb_pages = List.length l in
   let the_ul = D.ul ~a:[a_class ["ot-car-ribbon-list"]] l in
   let cursor_elt =
-    Eliom.Lib.Option.map
-      (fun _ -> D.div ~a:[a_class ["ot-car-cursor"]] [])
-      cursor
+    Option.map (fun _ -> D.div ~a:[a_class ["ot-car-cursor"]] []) cursor
   in
   let cursor_l = match cursor_elt with None -> [] | Some c -> [c] in
   let container =
@@ -766,7 +764,7 @@ let%shared
        let container' = To_dom.of_element container in
        let initial_gap = ~%initial_gap in
        let the_ul' = To_dom.of_element the_ul in
-       let cursor_elt' = Eliom.Lib.Option.map To_dom.of_element ~%cursor_elt in
+       let cursor_elt' = Option.map To_dom.of_element ~%cursor_elt in
        let containerwidth, set_containerwidth =
          React.S.create container'##.offsetWidth
        in
@@ -854,11 +852,11 @@ let%shared
                          (* Carousel is being swiped.
                       Removing transition on cursor. *)
                          moving := true;
-                         Eliom.Lib.Option.iter remove_transition cursor_elt');
+                         Option.iter remove_transition cursor_elt');
                        if offset = 0. && !moving
                        then (
                          moving := false;
-                         Eliom.Lib.Option.iter add_transition cursor_elt');
+                         Option.iter add_transition cursor_elt');
                        let firstselectedelt = Manip.nth the_ul pos in
                        let lastselectedelt =
                          Manip.nth the_ul (pos + size - 1)
@@ -927,7 +925,7 @@ let%shared
          let* () = Nodeready.nodeready container' in
          let* () = Lwt_js_events.request_animation_frame () in
          add_transition the_ul';
-         Eliom.Lib.Option.iter add_transition cursor_elt';
+         Option.iter add_transition cursor_elt';
          Lwt.return_unit);
        (* Moving the ribbon with fingers: *)
        let fmax () = initial_gap in
@@ -952,9 +950,8 @@ let%shared
            let pos = min (fmax ()) pos in
            let pos = max (fmin ()) pos in
            set_curleft pos)
-         ~onstart:(fun _ _ ->
-           Eliom.Lib.Option.iter remove_transition cursor_elt')
-         ~onend:(fun ev _ -> Eliom.Lib.Option.iter add_transition cursor_elt')
+         ~onstart:(fun _ _ -> Option.iter remove_transition cursor_elt')
+         ~onend:(fun ev _ -> Option.iter add_transition cursor_elt')
          the_ul;
        Lwt.return_unit
        : _)];

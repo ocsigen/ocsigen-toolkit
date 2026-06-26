@@ -420,13 +420,13 @@ let%client loads ?cancel_handler ?use_capture t =
 
 let%client bind_input input preview ?container ?reset () =
   let onerror () =
-    Eliom.Lib.Option.iter
+    Option.iter
       (fun container -> container##.classList##add (Js.string "ot-no-file"))
       container;
     preview##.src := Js.string "";
     Lwt.return_unit
   in
-  Eliom.Lib.Option.iter
+  Option.iter
     (fun f ->
        Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
     reset;
@@ -443,7 +443,7 @@ let%client bind_input input preview ?container ?reset () =
                 let () =
                   file_reader (Js.Unsafe.coerce file) (fun data ->
                     preview##.src := data;
-                    Eliom.Lib.Option.iter
+                    Option.iter
                       (fun container ->
                          container##.classList##remove
                            (Js.string "ot-no-file"))
@@ -462,7 +462,7 @@ type 'a upload =
 
 let%client ocaml_service_upload ~service ~arg ?progress ?cropping file =
   Eliom.Client.call_ocaml_service ~service () ?upload_progress:progress
-    (arg, (Eliom.Lib.Option.map React.S.value cropping, file))
+    (arg, (Option.map React.S.value cropping, file))
 
 let%client do_submit input ?progress ?cropping ~upload () =
   process_file input @@ fun file ->
