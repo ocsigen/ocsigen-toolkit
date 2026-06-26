@@ -143,7 +143,7 @@ let%shared
          Lwt_js_events.async (fun () ->
            let* _ = Lwt_js_events.transitionend (To_dom.of_element ~%d) in
            remove_class ~%bckgrnd "closing";
-           Eliom.Lib.Option.iter (fun f -> f ()) ~%onclose;
+           Option.iter (fun f -> f ()) ~%onclose;
            Lwt.return_unit)
        : unit -> unit)]
   in
@@ -153,7 +153,7 @@ let%shared
       (fun () ->
          ~%scroll_pos := Js.to_float Dom_html.window##.scrollY;
          add_class ~%bckgrnd "open";
-         Eliom.Lib.Option.iter (fun f -> f ()) ~%onopen;
+         Option.iter (fun f -> f ()) ~%onopen;
          Dom_html.document##.body##.style##.top
          := Js.string (Printf.sprintf "%.2fpx" (-. !(~%scroll_pos)));
          add_class ~%bckgrnd "opening";

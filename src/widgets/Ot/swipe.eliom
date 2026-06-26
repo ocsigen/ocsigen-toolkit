@@ -128,7 +128,7 @@ let%shared
            add_transition ~%transition_duration elt';
            let left = ~%compute_final_pos ev (truncate (clX ev -. !startx)) in
            elt'##.style##.left := px_of_int left;
-           Eliom.Lib.Option.iter (fun f -> f ev left) ~%onend;
+           Option.iter (fun f -> f ev left) ~%onend;
            Lwt.async (fun () ->
              let* _ = Lwt_js_events.transitionend elt' in
              Manip.Class.remove elt "ot-swiping";
@@ -156,13 +156,13 @@ let%shared
                (* We decide to take the event *)
                Manip.Class.add elt "ot-swiping";
                remove_transition elt';
-               Eliom.Lib.Option.iter (fun f -> f ev (truncate left)) ~%onstart;
+               Option.iter (fun f -> f ev (truncate left)) ~%onstart;
                (* We send a touchcancel to the parent (who received the start) *)
                dispatch_event ~ev elt' "touchcancel" (clX ev) (clY ev);
                In_progress)
              else !status;
-         let min = Eliom.Lib.Option.map (fun f -> f ()) ~%min in
-         let max = Eliom.Lib.Option.map (fun f -> f ()) ~%max in
+         let min = Option.map (fun f -> f ()) ~%min in
+         let max = Option.map (fun f -> f ()) ~%max in
          if !status = In_progress
          then (
            match min, max with
@@ -171,7 +171,7 @@ let%shared
                     We stop the movement of this element
                     and dispatch it to the parent. *)
                status := Below;
-               Eliom.Lib.Option.iter (fun f -> f ev min) ~%onmove;
+               Option.iter (fun f -> f ev min) ~%onmove;
                do_pan min;
                (* We send a touchstart event to the parent *)
                dispatch_event ~ev elt' "touchstart"
@@ -184,7 +184,7 @@ let%shared
                     We stop the movement of this element
                     and dispatch it to the parent. *)
                status := Above;
-               Eliom.Lib.Option.iter (fun f -> f ev max) ~%onmove;
+               Option.iter (fun f -> f ev max) ~%onmove;
                do_pan max;
                (* We send a touchstart event to the parent *)
                dispatch_event ~ev elt' "touchstart"
@@ -195,7 +195,7 @@ let%shared
            | _ ->
                Dom_html.stopPropagation ev;
                Dom.preventDefault ev;
-               Eliom.Lib.Option.iter (fun f -> f ev (truncate left)) ~%onmove;
+               Option.iter (fun f -> f ev (truncate left)) ~%onmove;
                do_pan (int_of_float (left +. 0.5));
                Lwt.return_unit)
          else
