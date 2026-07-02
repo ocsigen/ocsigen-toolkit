@@ -34,11 +34,14 @@
   (ocaml
    (>= "4.08.0"))
   (js_of_ocaml
-   (>= "6.0.0"))
+   (and
+    (>= "6.0.0")
+    (< "6.4.0")))
   (eliom
    (>= "11.0.0"))
   (calendar
    (>= "2.0.0"))
+  lwt_ppx
   ; ocsigen-dune-rules dependencies
   cmdliner
   ocsigen-ppx-rpc))
