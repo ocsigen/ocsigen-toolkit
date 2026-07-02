@@ -78,10 +78,10 @@ jobs:
         run: |
           # Pin dune below 3.24. dune 3.24's leading-"./" path form
           # (ocaml/dune#15156) breaks the wasm_of_ocaml runtime build ("The
-          # runtime contains unknown imports"). The upstream fix is in
-          # js_of_ocaml 6.4.1 (ocsigen/js_of_ocaml#2371), but we cap
-          # js_of_ocaml below 6.4, and the 6.3.x wasm runtime has the same
-          # bug, so it still needs an older dune.
+          # runtime contains unknown imports"). We now require js_of_ocaml
+          # >= 6.4.0, whose wasm runtime still has this bug; the upstream fix
+          # is in js_of_ocaml 6.4.1 (ocsigen/js_of_ocaml#2371), not yet in the
+          # opam repository. Drop this pin once 6.4.1 is available.
           opam pin add -n dune 3.23.1
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver

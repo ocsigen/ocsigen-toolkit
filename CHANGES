@@ -1,6 +1,9 @@
-===== unreleased =====
+===== 4.3.0 (2026-07-02) =====
 * Ot_picture_uploader: fix build with js_of_ocaml >= 6.4.0, where
-  inputElement##.files is now a nullable File.fileList Js.t Js.opt
+  inputElement##.files is now a nullable File.fileList Js.t Js.opt.
+  js_of_ocaml >= 6.4.0 is now required.
+* Declare lwt_ppx as an explicit dependency (previously pulled in
+  transitively).
 
 ===== 4.1.0 =====
 * Compatibility with WASM

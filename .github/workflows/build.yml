@@ -56,10 +56,11 @@ jobs:
       # Pin dune below 3.24. dune 3.24 changed dune-variable paths to a
       # leading-"./" form (ocaml/dune#15156), which makes the wasm_of_ocaml
       # runtime (pulled in via eliom) emit malformed "module:path" lines and
-      # fail to build with "The runtime contains unknown imports". The fix
-      # only landed in js_of_ocaml 6.4.1 (ocsigen/js_of_ocaml#2371), but we
-      # cap js_of_ocaml below 6.4 (see the opam file), so the 6.3.x wasm
-      # runtime -- which has the same bug -- still needs an older dune.
+      # fail to build with "The runtime contains unknown imports". We now
+      # require js_of_ocaml >= 6.4.0 (see the opam file), whose wasm runtime
+      # still has this bug; it is fixed only in js_of_ocaml 6.4.1
+      # (ocsigen/js_of_ocaml#2371), not yet in the opam repository. Drop this
+      # pin once 6.4.1 is available.
       - run: opam pin add -n dune 3.23.1
 
       - run: opam install . --deps-only
