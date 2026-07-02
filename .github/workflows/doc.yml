@@ -76,6 +76,12 @@ jobs:
         # Cache miss only: build the dependency tree and wodoc once, then re-cache.
         if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
+          # Pin dune below 3.24 until js_of_ocaml 6.4.1 reaches the opam
+          # repository. dune 3.24's leading-"./" path form (ocaml/dune#15156)
+          # breaks the wasm_of_ocaml-compiler 6.4.0 build ("The runtime
+          # contains unknown imports"); fixed upstream in js_of_ocaml 6.4.1
+          # (ocsigen/js_of_ocaml#2371).
+          opam pin add -n dune 3.23.1
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),

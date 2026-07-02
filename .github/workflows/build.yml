@@ -52,6 +52,14 @@ jobs:
 
       - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
 
+      # Pin dune below 3.24 until js_of_ocaml 6.4.1 reaches the opam
+      # repository. dune 3.24 changed dune-variable paths to a leading-"./"
+      # form (ocaml/dune#15156), which makes wasm_of_ocaml-compiler 6.4.0
+      # emit malformed "module:path" lines and fail to build with
+      # "The runtime contains unknown imports" (fixed upstream in
+      # js_of_ocaml 6.4.1, ocsigen/js_of_ocaml#2371).
+      - run: opam pin add -n dune 3.23.1
+
       - run: opam install . --deps-only
 
       - run: opam exec -- dune build @install
