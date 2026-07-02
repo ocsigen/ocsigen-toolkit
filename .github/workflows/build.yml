@@ -43,21 +43,23 @@ jobs:
         if: runner.os == 'macOS'
         run: brew update && brew reinstall openssl@3
 
-      - name: Install external dependencies
-        # The version of binaryen available in ubuntu is too old and doesn't
-        # contain wasm-merge needed by wasm_of_ocaml.
-        if: runner.os == 'Linux'
-        run: |
-          curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_129/binaryen-version_129-x86_64-linux.tar.gz | sudo tar xz -C /usr/local --strip-components=1
+      - name: Set up Binaryen
+        # ocsigen-toolkit depends on wasm_of_ocaml-compiler, whose build needs a
+        # recent binaryen (wasm-merge); distro binaryen is too old. Same action as
+        # js_of_ocaml's own CI.
+        uses: Aandreba/setup-binaryen@v1.0.0
+        with:
+          token: ${{ github.token }}
 
       - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
 
-      # Pin dune below 3.24 until js_of_ocaml 6.4.1 reaches the opam
-      # repository. dune 3.24 changed dune-variable paths to a leading-"./"
-      # form (ocaml/dune#15156), which makes wasm_of_ocaml-compiler 6.4.0
-      # emit malformed "module:path" lines and fail to build with
-      # "The runtime contains unknown imports" (fixed upstream in
-      # js_of_ocaml 6.4.1, ocsigen/js_of_ocaml#2371).
+      # Pin dune below 3.24. dune 3.24 changed dune-variable paths to a
+      # leading-"./" form (ocaml/dune#15156), which makes the wasm_of_ocaml
+      # runtime (pulled in via eliom) emit malformed "module:path" lines and
+      # fail to build with "The runtime contains unknown imports". The fix
+      # only landed in js_of_ocaml 6.4.1 (ocsigen/js_of_ocaml#2371), but we
+      # cap js_of_ocaml below 6.4 (see the opam file), so the 6.3.x wasm
+      # runtime -- which has the same bug -- still needs an older dune.
       - run: opam pin add -n dune 3.23.1
 
       - run: opam install . --deps-only
