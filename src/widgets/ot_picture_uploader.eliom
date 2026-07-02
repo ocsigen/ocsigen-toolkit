@@ -44,9 +44,13 @@ type%shared ('a, 'b) service =
 
 let%client process_file input callback =
   Js.Opt.case
-    input##.files##(item 0)
+    input##.files
     (fun () -> Lwt.return_unit)
-    (fun x -> callback x)
+    (fun files ->
+       Js.Opt.case
+         files##(item 0)
+         (fun () -> Lwt.return_unit)
+         (fun x -> callback x))
 
 let%client file_reader file callback =
   let reader = new%js File.fileReader in
@@ -429,18 +433,23 @@ let%client bind_input input preview ?container ?reset () =
   Lwt.async (fun () ->
     Lwt_js_events.changes input (fun _ _ ->
       Js.Opt.case
-        (input##.files##item 0)
+        input##.files
         onerror
-        (fun file ->
-           let () =
-             file_reader (Js.Unsafe.coerce file) (fun data ->
-               preview##.src := data;
-               Eliom_lib.Option.iter
-                 (fun container ->
-                    container##.classList##remove (Js.string "ot-no-file"))
-                 container)
-           in
-           Lwt.return_unit)))
+        (fun files ->
+           Js.Opt.case
+             files##(item 0)
+             onerror
+             (fun file ->
+                let () =
+                  file_reader (Js.Unsafe.coerce file) (fun data ->
+                    preview##.src := data;
+                    Eliom_lib.Option.iter
+                      (fun container ->
+                         container##.classList##remove
+                           (Js.string "ot-no-file"))
+                      container)
+                in
+                Lwt.return_unit))))
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t

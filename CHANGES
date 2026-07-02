@@ -1,3 +1,7 @@
+===== unreleased =====
+* Ot_picture_uploader: fix build with js_of_ocaml >= 6.4.0, where
+  inputElement##.files is now a nullable File.fileList Js.t Js.opt
+
 ===== 4.1.0 =====
 * Compatibility with WASM
 
