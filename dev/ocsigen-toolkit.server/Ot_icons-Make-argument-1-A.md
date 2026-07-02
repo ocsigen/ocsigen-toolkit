@@ -1,15 +1,14 @@
 
 # Parameter `Make.A`
 
-Creation of **F**unctional HTML5 content (copy-able but not referable, see also ` <<a_api|module Eliom_content>> `).
+Creation of **F**unctional HTML5 content (copy-able but not referable, see also [`Eliom_content`](./../../eliom/eliom.server/Eliom_content.md)).
 
 
 ### Content creation
 
-See ` <<a_api project="tyxml" | module Html_sigs.T >> `. If you want to create an untyped form, you will have to use `
-        <<a_api|module Eliom_content.Html.F.Raw>> ` otherwise, use Eliom form widgets. For more information, see ` <<a_manual chapter="server-links" fragment="forms"|the manual>> `.
+See [`Html_sigs.T`](./../../tyxml/tyxml.functor/Html_sigs-module-type-T.md). If you want to create an untyped form, you will have to use [`Eliom_content.Html.F.Raw`](./../../eliom/eliom.server/Eliom_content-Html-F-Raw.md) otherwise, use Eliom form widgets. For more information, see `the manual`.
 
-See ` <<a_api project="tyxml" | module Html_sigs.T >> `.
+See [`Html_sigs.T`](./../../tyxml/tyxml.functor/Html_sigs-module-type-T.md).
 
 ```ocaml
 module Raw : sig ... end
@@ -1811,9 +1810,7 @@ If given the optional parameter `~fragment` is prefixed by `#` and appended to t
 
 The optional parameter `keep_nl_params` allows one to override the `keep_nl_params` parameter used when creating the `service`, see [`Eliom_service.create`](./../../eliom/eliom.server/Eliom_service.md#val-create) for a detailed description.
 
-The optional parameter `nl_params` allows one to add non localized GET parameter to the URL. See the eliom manual for more information about ` <<a_manual chapter="server-params"
-      fragment="nonlocalizedparameters"|non localized
-      parameters>>`.
+The optional parameter `nl_params` allows one to add non localized GET parameter to the URL. See the eliom manual for more information about `non localized parameters`.
 
 ```ocaml
 val uri_of_string : (unit -> string) -> uri
@@ -1881,11 +1878,9 @@ val a :
 ```
 The function `a service a_content get_params` creates a `<a>` node that link to `service` applied to GET parameters `get_params` and whose content is `a_content`. By default, the `href` attribute is a relative URL recomputed at each request with [`make_uri`](./#val-make_uri).
 
-By default, the link is implemented in a way that allows the client-side Eliom application to keep running, irrespectable of the usage of the link (cf. ` <<a_api project="eliom"
-      subproject="client" | val Eliom_client.change_page>> `).
+By default, the link is implemented in a way that allows the client-side Eliom application to keep running, irrespectable of the usage of the link (cf. `Eliom_client.change_page`).
 
-By contrast, if the optional parameter `~xhr:false` is given, the link is realized as a standard HTML link and clicking it discontinues the Eliom application. The `~xhr` parameter has no effect outside an Eliom application. The default value of `~xhr` is configurable through ` <<a_api project="eliom" subproject="server" | val
-      Eliom_config.set_default_links_xhr >> `.
+By contrast, if the optional parameter `~xhr:false` is given, the link is realized as a standard HTML link and clicking it discontinues the Eliom application. The `~xhr` parameter has no effect outside an Eliom application. The default value of `~xhr` is configurable through [`Eliom_config.set_default_links_xhr`](./../../eliom/eliom.server/Eliom_config.md#val-set_default_links_xhr).
 
 The optional parameter `~a` allows one to add extra HTML attributes to the generated node.
 

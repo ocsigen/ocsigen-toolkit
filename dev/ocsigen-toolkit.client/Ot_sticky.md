@@ -45,7 +45,7 @@ NOTE: Do not forget to include the CSS attributes as defined in the file css/ot\
 
 If `?force` is `true`, will apply the polyfill even if the browser supports sticky position (default is `false`).
 
-See in [`Ot_lib`](./../ocsigen-toolkit.server/Ot_lib.md) for documentation of `~ios_html_scroll_hack`.
+See in [`Ot_lib`](./Ot_lib.md) for documentation of `~ios_html_scroll_hack`.
 
 ```ocaml
 val keep_in_sight : 
