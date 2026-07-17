@@ -1,3 +1,12 @@
+===== dev =====
+* Fix untyped Js.Unsafe reads that trap ("bad cast") under
+  wasm_of_ocaml (#271). Ot_popup.disable_page_scroll read
+  window.pageYOffset as an int; the value is fractional on displays
+  with a device pixel ratio, so every popup opened from a scrolled
+  page crashed. Same bug class fixed in Ot_size.pageYOffset
+  (innerHeight, pageYOffset) and Ot_form (checkValidity read as a
+  bool, which silently disabled client-side validation under wasm).
+
 ===== 4.3.0 (2026-07-02) =====
 * Ot_picture_uploader: fix build with js_of_ocaml >= 6.4.0, where
   inputElement##.files is now a nullable File.fileList Js.t Js.opt.
