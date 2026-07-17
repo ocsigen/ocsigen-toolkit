@@ -47,7 +47,10 @@ let%client set_validity e b =
 
 let%client valid e =
   try
-    (Js.Unsafe.coerce e)##checkValidity
+    (* [checkValidity] returns a JS boolean: convert it. Under
+       wasm_of_ocaml, using it directly as an OCaml [bool] traps with
+       "bad cast" (JS booleans cross the FFI boundary as opaque values). *)
+    Js.to_bool (Js.Unsafe.coerce e)##checkValidity
     && not (Js.to_bool (e##.classList##contains (Js.string "ot-invalid")))
   with _ -> true
 
@@ -578,7 +581,9 @@ let%shared
   ignore
   @@ [%client
        (let inp = Eliom_content.Html.To_dom.of_input ~%inp in
-        let f () = set_validity inp (Js.Unsafe.coerce inp)##checkValidity in
+        let f () =
+          set_validity inp (Js.to_bool (Js.Unsafe.coerce inp)##checkValidity)
+        in
         Lwt.async @@ fun () ->
         let* _ = Lwt_js_events.blur inp in
         f ();

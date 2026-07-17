@@ -137,8 +137,14 @@ let pageYOffset () =
     Dom_html.document##.documentElement##.clientHeight
   in
   (* on some browsers innerHeight is not available -> fall back to clientHeight *)
+  (* [innerHeight] and [pageYOffset] are floats (fractional whenever the
+     device pixel ratio is): read them as JS numbers. Under wasm_of_ocaml,
+     reading them directly as [int]s traps with "bad cast" as soon as the
+     value is fractional. *)
   let get_innerHeight () =
-    try (Js.Unsafe.coerce Dom_html.window)##.innerHeight
+    try
+      int_of_float
+        (Js.float_of_number (Js.Unsafe.coerce Dom_html.window)##.innerHeight)
     with _ -> get_clientHeight ()
   in
   max 0
@@ -146,4 +152,5 @@ let pageYOffset () =
   (* overscroll at the top *)
   min (* overscroll at the bottom *)
     (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
-    (Js.Unsafe.coerce Dom_html.window)##.pageYOffset
+    (int_of_float
+       (Js.float_of_number (Js.Unsafe.coerce Dom_html.window)##.pageYOffset))
