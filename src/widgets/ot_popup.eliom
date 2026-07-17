@@ -52,18 +52,24 @@ let%client disable_page_scroll, enable_page_scroll =
   ( (fun () ->
       if !scroll_pos = None
       then (
-        let pos = (Js.Unsafe.coerce Dom_html.window)##.pageYOffset in
+        (* [pageYOffset] is a float (it is fractional whenever the device
+           pixel ratio is): read it as a JS number. Under wasm_of_ocaml,
+           reading it directly as an [int] traps with "bad cast" as soon
+           as the value is fractional. *)
+        let pos =
+          Js.float_of_number (Js.Unsafe.coerce Dom_html.window)##.pageYOffset
+        in
         scroll_pos := Some pos;
         html_ManipClass_add (html ()) "ot-with-popup";
         Dom_html.document##.body##.style##.top
-        := Js.string (Printf.sprintf "%dpx" (-pos))))
+        := Js.string (Printf.sprintf "%gpx" (-.pos))))
   , fun () ->
       match !scroll_pos with
       | None -> ()
       | Some pos ->
           html_ManipClass_remove (html ()) "ot-with-popup";
           Dom_html.document##.body##.style##.top := Js.string "";
-          Dom_html.window##scrollTo (Js.float 0.) (Js.float (float pos));
+          Dom_html.window##scrollTo (Js.float 0.) (Js.float pos);
           scroll_pos := None )
 
 let%client
