@@ -51,7 +51,13 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      - run: opam pin add -n eliom https://github.com/ocsigen/eliom.git
+      # Pin the Ocsigen Server 8 development branches until 8.0 is released
+      # (eliom's default branch is still the Server 7 line).
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
+      - run: opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
 
       # Pin dune below 3.24. dune 3.24 changed dune-variable paths to a
       # leading-"./" form (ocaml/dune#15156), which makes the wasm_of_ocaml

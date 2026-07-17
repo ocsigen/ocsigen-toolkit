@@ -1,0 +1,120 @@
+[%%client
+(* Ocsigen
+ * http://www.ocsigen.org
+ *
+ * Copyright (C) 2015-09
+ *      Vincent Balat
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+open Js_of_ocaml
+open Lwt.Syntax]
+
+[%%client open Js_of_ocaml_lwt]
+
+let%client onloads handler =
+  let rec loop () = Eliom.Client.onload @@ fun () -> handler (); loop () in
+  loop ()
+
+let%client onresizes handler =
+  let stop, stop_thread = React.E.create () in
+  Eliom.Client.Page_status.while_active ~stop (fun () ->
+    Lwt_js_events.onresizes handler);
+  Lwt.finalize
+    (fun () -> fst @@ Lwt.wait ())
+    (fun () -> stop_thread (); Lwt.return_unit)
+
+let%client window_scroll ?use_capture () =
+  Lwt_js_events.make_event Dom_html.Event.scroll ?use_capture Dom_html.window
+
+let%client window_scrolls ?(ios_html_scroll_hack = false) ?use_capture handler =
+  let stop, stop_thread = React.E.create () in
+  let cur = ref Lwt.return_unit in
+  Eliom.Client.Page_status.while_active ~stop (fun () ->
+    cur :=
+      if ios_html_scroll_hack
+      then
+        let rec loop () =
+          let* e =
+            Lwt.pick
+              (List.map
+                 (* We listen to several elements because scroll events are
+                   not happening on the same element on every platform. *)
+                 (fun element -> Lwt_js_events.scroll ?use_capture element)
+                 [ (Dom_html.window :> Dom_html.eventTarget Js.t)
+                 ; (Dom_html.document##.documentElement
+                     :> Dom_html.eventTarget Js.t)
+                 ; (Dom_html.document##.body :> Dom_html.eventTarget Js.t) ])
+          in
+          let continue = ref true in
+          let w =
+            Lwt.catch
+              (fun () -> fst (Lwt.task ()))
+              (function
+                | Lwt.Canceled ->
+                    continue := false;
+                    Lwt.return_unit
+                | exc -> Lwt.reraise exc)
+          in
+          let* () = handler e w in
+          if !continue then loop () else Lwt.return_unit
+        in
+        loop ()
+      else
+        Lwt_js_events.seq_loop
+          (Lwt_js_events.make_event Dom_html.Event.scroll)
+          ?use_capture Dom_html.window handler;
+    !cur);
+  Lwt.finalize
+    (fun () -> fst @@ Lwt.task ())
+    (fun () -> stop_thread (); Lwt.cancel !cur; Lwt.return_unit)
+
+let%client rec in_ancestors ~elt ~ancestor =
+  Js.strict_equals elt (ancestor : Dom_html.element Js.t)
+  || (not (Js.strict_equals elt Dom_html.document##.body))
+     && Js.Opt.case elt##.parentNode
+          (fun () -> false)
+          (fun parent ->
+             Js.Opt.case
+               (Dom_html.CoerceTo.element parent)
+               (fun () -> false)
+               (fun elt -> in_ancestors ~elt ~ancestor))
+
+let%client rec
+    click_outside
+      ?use_capture
+      ?(inside = (Dom_html.document##.body :> Dom_html.element Js.t))
+      elt
+  =
+  let* ev = Lwt_js_events.click ?use_capture inside in
+  Js.Opt.case ev##.target
+    (fun () -> click_outside ?use_capture elt)
+    (fun target ->
+       if in_ancestors ~elt:target ~ancestor:(elt :> Dom_html.element Js.t)
+       then click_outside ?use_capture ~inside elt
+       else Lwt.return ev)
+
+[%%shared
+module List = struct
+  let iteri2 f l1 l2 =
+    let rec aux i l1 l2 =
+      match l1, l2 with
+      | a :: ll1, b :: ll2 ->
+          f i a b;
+          aux (i + 1) ll1 ll2
+      | _ -> ()
+    in
+    aux 0 l1 l2
+end]

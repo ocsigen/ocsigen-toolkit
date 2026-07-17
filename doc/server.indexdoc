@@ -1,0 +1,42 @@
+{1 Ocsigen Toolkit server API}
+
+{!modules:
+Lib
+}
+
+{2 Widgets}
+
+{!modules:
+Buttons
+Calendar
+Carousel
+Color_picker
+Drawer
+Form
+Icons
+Page_transition
+Picture_uploader
+Popup
+Pulltorefresh
+Range
+Spinner
+Sticky
+Style
+Swipe
+Time_picker
+Toggle
+Tongue
+}
+
+{2 DOM utilities}
+
+{!modules:
+Nodeready
+Noderesize
+Size
+Tip
+}
+
+{2 Indexes}
+
+{!indexlist}
