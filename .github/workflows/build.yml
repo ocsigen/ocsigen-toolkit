@@ -51,13 +51,18 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      # Pin the Ocsigen Server 8 development branches until 8.0 is released
-      # (eliom's default branch is still the Server 7 line).
-      - run: opam pin -yn git+https://github.com/ocsigen/ocsigenserver#master
-      - run: opam pin -yn git+https://github.com/ocsigen/ocsipersist#master
-      - run: opam pin -yn git+https://github.com/ocsigen/eliom#deriving
+      # Ocsigen Server 8.0.0 and ocsipersist 3.1.0 are released on GitHub but
+      # not yet published on opam (ocaml/opam-repository#30806): pin the
+      # release tags until then. ocsipersist needs explicit versions, as opam
+      # infers a pinned package's version from opam-repository when the
+      # project declares none. Eliom 13 and ocsigen-ppx-rpc 2.0 are merged
+      # but unreleased; ocsigen-dune-rules is still on its development branch.
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
+      - run: opam pin -yn ocsipersist-lib.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+      - run: opam pin -yn ocsipersist.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+      - run: opam pin -yn git+https://github.com/ocsigen/eliom#master
       - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
-      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#modernize
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
 
       # Pin dune below 3.24. dune 3.24 changed dune-variable paths to a
       # leading-"./" form (ocaml/dune#15156), which makes the wasm_of_ocaml
