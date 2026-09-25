@@ -87,8 +87,6 @@ jobs:
           opam pin -yn git+https://github.com/ocsigen/eliom#master
           opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
           opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
-          # Pin dune below 3.24 (wasm_of_ocaml runtime breakage, see build.yml).
-          opam pin add -n dune 3.23.1
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),
