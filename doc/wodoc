@@ -7,8 +7,8 @@
 ;; its own API nav, a body colour and a switch; the manual nav is shared.
 (project ocsigen-toolkit)
 (title Toolkit)
-(pub /ocsigen-toolkit)
-(odoc-driver ocsigen-toolkit)
+(url-prefix /ocsigen-toolkit)
+(css /css/style.css /css/ocsigen-odoc.css)  ; shared Ocsigen theme (wodoc's default is a built-in one)
 (landing index.html)
 (nav
  (section "Ocsigen Toolkit"
