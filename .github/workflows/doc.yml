@@ -76,13 +76,17 @@ jobs:
         # Cache miss only: build the dependency tree and wodoc once, then re-cache.
         if: steps.switch-cache.outputs.cache-hit != 'true'
         run: |
-          # Pin dune below 3.24. dune 3.24's leading-"./" path form
-          # (ocaml/dune#15156) breaks the wasm_of_ocaml runtime build ("The
-          # runtime contains unknown imports"). We now require js_of_ocaml
-          # >= 6.4.0, whose wasm runtime still has this bug; the upstream fix
-          # is in js_of_ocaml 6.4.1 (ocsigen/js_of_ocaml#2371), not yet in the
-          # opam repository. Drop this pin once 6.4.1 is available.
-          opam pin add -n dune 3.23.1
+          # Same pins as build.yml: released Ocsigen artifacts not yet on
+          # opam (ocaml/opam-repository#30806), development branches for the
+          # rest. ocsipersist needs explicit versions, as opam infers a
+          # pinned package's version from opam-repository when the project
+          # declares none.
+          opam pin -yn git+https://github.com/ocsigen/ocsigenserver#8.0.0
+          opam pin -yn ocsipersist-lib.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+          opam pin -yn ocsipersist.3.1.0 git+https://github.com/ocsigen/ocsipersist#3.1.0
+          opam pin -yn git+https://github.com/ocsigen/eliom#master
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver
           # from the balat/odoc fork (the cross-library link fix, not yet upstream),
