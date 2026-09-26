@@ -1,9 +1,0 @@
-# Module `Ot_buttons`
-
-```ocaml
-val dropdown : 
-  ?a:Html_types.div_attrib Eliom_content.Html.attrib list ->
-  menu:Html_types.div_content Eliom_content.Html.elt list ->
-  Html_types.div_content Eliom_content.Html.elt list ->
-  Html_types.div_content Eliom_content.Html.elt
-```
