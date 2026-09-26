@@ -1,4 +1,3 @@
-
 # Module `A.Xml`
 
 Underlying XML data-structure

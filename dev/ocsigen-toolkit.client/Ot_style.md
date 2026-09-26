@@ -1,4 +1,3 @@
-
 # Module `Ot_style`
 
 This module is an interface to getComputedStyle.

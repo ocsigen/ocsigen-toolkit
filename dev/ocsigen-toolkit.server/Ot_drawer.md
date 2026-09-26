@@ -1,6 +1,4 @@
-
 # Module `Ot_drawer`
-
 
 ### Drawer menu for mobile and Web applications
 

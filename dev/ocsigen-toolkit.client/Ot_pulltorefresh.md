@@ -1,4 +1,3 @@
-
 # Module `Ot_pulltorefresh`
 
 Pull to refresh This widget can handle any element that needs to be refreshed after being pulled down.

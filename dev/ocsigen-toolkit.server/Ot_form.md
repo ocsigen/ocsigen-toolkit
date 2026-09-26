@@ -1,6 +1,4 @@
-
 # Module `Ot_form`
-
 
 ### Reactive form widgets
 
@@ -11,9 +9,7 @@ type 'a react_component =
 ```
 A reactive component: a signal and its setter.
 
-
 #### Client-side utilities
-
 
 #### Buttons
 
@@ -27,7 +23,6 @@ val disableable_button :
 ```
 A button that can be reactively disabled.
 
-
 #### Toggle button
 
 ```ocaml
@@ -39,7 +34,6 @@ val reactive_toggle_button :
   [> `Button ] Eliom_content.Html.elt * bool react_component
 ```
 A toggle button that alternates between on/off states. The CSS classes `"ot-toggle-on"` and `"ot-toggle-off"` are set reactively on the button element.
-
 
 #### Radio buttons
 
@@ -77,7 +71,6 @@ val radio_selector :
   [> `Div ] Eliom_content.Html.elt
 ```
 A styled container with label for a group of radio buttons.
-
 
 #### Reactive inputs
 
@@ -128,7 +121,6 @@ val reactive_textarea :
 ```
 Create a reactive textarea.
 
-
 #### Debounced input
 
 ```ocaml
@@ -144,7 +136,6 @@ val debounced_input :
      * (string -> unit) Eliom_client_value.t)
 ```
 A reactive input where the debounced signal updates only after `delay` seconds (default 0\.3) of inactivity. Returns `(input, (raw_signal, debounced_signal, setter))`. `raw_signal` updates on every keystroke; `debounced_signal` waits for the user to stop typing.
-
 
 #### Enter key binding
 
@@ -167,7 +158,6 @@ val lwt_bound_input_enter :
   [> `Input ] Eliom_content.Html.elt
 ```
 Create an input with an Lwt action triggered on Enter key.
-
 
 #### Checkboxes
 
@@ -254,7 +244,6 @@ val graceful_invalid_style : [ `Input ] Eliom_content.Html.elt -> unit
 ```
 Adds the `"ot-invalid"` class after each blur. This allows styling for invalidity without showing errors before the user interacts. Inspired by `:-moz-ui-invalid`.
 
-
 #### Integer inputs
 
 ```ocaml
@@ -278,7 +267,6 @@ val int_input :
 ```
 An integer input with \+/- buttons. Always contains a value.
 
-
 #### Password input
 
 ```ocaml
@@ -292,7 +280,6 @@ val password_input :
 ```
 A password input with a visibility toggle button. Returns `(container, input, (visible_signal, set_visible))`. The toggle switches between `type=password` and `type=text`. CSS classes: `ot-password-container`, `ot-password-input`, `ot-password-toggle`, `ot-password-toggle-show`, `ot-password-toggle-hide`.
 
-
 #### Password toggle (non-reactive)
 
 ```ocaml
@@ -301,7 +288,6 @@ val password_toggle :
   [> `Div ] Eliom_content.Html.elt
 ```
 `password_toggle inp` wraps an existing password input element `inp` in a container with a visibility toggle button. Unlike [`password_input`](./#val-password_input), this does not use reactive signals: it manipulates the DOM directly on click, making it suitable for use with `D.Form.input` in Eliom forms. CSS classes: `ot-password-container`, `ot-password-toggle`, `ot-password-toggle-show`, `ot-password-toggle-hide`.
-
 
 #### Prevent double submit
 
@@ -315,7 +301,6 @@ val prevent_double_submit :
 ```
 A button that disables itself while the action `f` is running, preventing double submissions.
 
-
 #### Reactive select
 
 ```ocaml
@@ -327,7 +312,6 @@ val reactive_select :
   [> `Select ] Eliom_content.Html.elt * string react_component
 ```
 `reactive_select ~options ()` creates a `<select>` element with reactive selection tracking. `options` is a list of `(value, label)` pairs. Returns the element and a `(signal, setter)` pair. The setter can be used to change the selection programmatically.
-
 
 #### Misc
 
@@ -341,7 +325,6 @@ val none_input_value : string
 ```
 The string `"-"`, used as placeholder for empty optional int inputs.
 
-
 #### Reactive fieldset
 
 ```ocaml
@@ -352,7 +335,6 @@ val reactive_fieldset :
   [> `Fieldset ] Eliom_content.Html.elt
 ```
 A fieldset that can be reactively disabled. When disabled, all form elements inside are disabled by the browser.
-
 
 #### Date and time inputs
 
@@ -393,6 +375,5 @@ val reactive_time_input :
   [> `Input ] Eliom_content.Html.elt * (int * int) option react_component
 ```
 A reactive HTML5 time input. The signal carries `Some (hours, minutes)` or `None` when empty.
-
 
 ### Tab cycling (client-only)

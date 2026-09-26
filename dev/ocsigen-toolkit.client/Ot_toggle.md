@@ -1,6 +1,4 @@
-
 # Module `Ot_toggle`
-
 
 ### Binary toggle widget
 

@@ -1,10 +1,8 @@
-
 # Introduction
 
 Ocsigen Toolkit provides various user interface widgets and related utilities that assist in the rapid development of interactive Web applications.
 
 Ocsigen Toolkit is built with `Eliom`.
-
 
 ## Installation and getting started
 
@@ -17,13 +15,11 @@ You may want to use Ocsigen Toolkit in conjunction with `Ocsigen Start`, which p
 
 See the widgets in action in [Ocsigen Start's demo application](https://ocsigen.org/ocsigen-start/demo/) (also available for Android and iOS, or in your mobile browser).
 
-
 ## Programming style
 
 Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the `mobile applications section` of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use `Eliom_shared` extensively, which allows us to produce this reactive content on both sides. See `the respective manual chapter` for more info. `Eliom_shared` signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
-
 
 ## CSS
 
@@ -34,7 +30,6 @@ Most widgets need appropriate CSS to display properly. We provide default CSS fi
 Ocsigen Start uses these files by default. If your application does not use Ocsigen Start, you will need to include the CSS manually.
 
 Of course, you are free to modify the style to suit the desired look.
-
 
 ## Widgets overview
 

@@ -1,6 +1,4 @@
-
 # Module `Ot_carousel`
-
 
 ### Carousel
 

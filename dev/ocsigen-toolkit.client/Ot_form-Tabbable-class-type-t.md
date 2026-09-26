@@ -1,4 +1,3 @@
-
 # Class type `Tabbable.t`
 
 An HTML element which can be selected by pressing the tab key.

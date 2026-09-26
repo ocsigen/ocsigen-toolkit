@@ -1,2 +1,1 @@
-
 # Module `Ot_sticky`

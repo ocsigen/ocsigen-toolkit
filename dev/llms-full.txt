@@ -11,7 +11,6 @@ Ocsigen Toolkit provides various user interface widgets and related utilities th
 
 Ocsigen Toolkit is built with `Eliom`.
 
-
 ## Installation and getting started
 
 You can install Ocsigen Toolkit via OPAM:
@@ -23,13 +22,11 @@ You may want to use Ocsigen Toolkit in conjunction with `Ocsigen Start`, which p
 
 See the widgets in action in [Ocsigen Start's demo application](https://ocsigen.org/ocsigen-start/demo/) (also available for Android and iOS, or in your mobile browser).
 
-
 ## Programming style
 
 Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the `mobile applications section` of the Eliom manual for details.
 
 The widgets generally follow a reactive programming style. We use `Eliom_shared` extensively, which allows us to produce this reactive content on both sides. See `the respective manual chapter` for more info. `Eliom_shared` signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
-
 
 ## CSS
 
@@ -40,7 +37,6 @@ Most widgets need appropriate CSS to display properly. We provide default CSS fi
 Ocsigen Start uses these files by default. If your application does not use Ocsigen Start, you will need to include the CSS manually.
 
 Of course, you are free to modify the style to suit the desired look.
-
 
 ## Widgets overview
 
@@ -76,7 +72,6 @@ Ocsigen Toolkit is a set of reusable user-interface widgets for `Eliom` applicat
 
 Ocsigen Toolkit is part of the [Ocsigen project](https://ocsigen.org).
 
-
 ## Documentation
 
 - [Introduction](./intro.md) — installation, programming style and an overview of the available widgets.
@@ -95,29 +90,29 @@ opam install ocsigen-toolkit
 
 # Library `ocsigen-toolkit.client`
 
-[`Ot_buttons`](./Ot_buttons.md) 
-[`Ot_calendar`](./Ot_calendar.md) 
-[`Ot_carousel`](./Ot_carousel.md) 
+[`Ot_buttons`](./Ot_buttons.md)
+[`Ot_calendar`](./Ot_calendar.md)
+[`Ot_carousel`](./Ot_carousel.md)
 [`Ot_color_picker`](./Ot_color_picker.md) This module implements a color picker.
-[`Ot_drawer`](./Ot_drawer.md) 
-[`Ot_form`](./Ot_form.md) 
-[`Ot_icons`](./Ot_icons.md) 
-[`Ot_lib`](./Ot_lib.md) 
-[`Ot_nodeready`](./Ot_nodeready.md) 
-[`Ot_noderesize`](./Ot_noderesize.md) 
-[`Ot_page_transition`](./Ot_page_transition.md) 
-[`Ot_picture_uploader`](./Ot_picture_uploader.md) 
+[`Ot_drawer`](./Ot_drawer.md)
+[`Ot_form`](./Ot_form.md)
+[`Ot_icons`](./Ot_icons.md)
+[`Ot_lib`](./Ot_lib.md)
+[`Ot_nodeready`](./Ot_nodeready.md)
+[`Ot_noderesize`](./Ot_noderesize.md)
+[`Ot_page_transition`](./Ot_page_transition.md)
+[`Ot_picture_uploader`](./Ot_picture_uploader.md)
 [`Ot_popup`](./Ot_popup.md) Popup widget
 [`Ot_pulltorefresh`](./Ot_pulltorefresh.md) Pull to refresh This widget can handle any element that needs to be refreshed after being pulled down.
 [`Ot_range`](./Ot_range.md) Range selection widget
-[`Ot_size`](./Ot_size.md) 
-[`Ot_spinner`](./Ot_spinner.md) 
-[`Ot_sticky`](./Ot_sticky.md) 
+[`Ot_size`](./Ot_size.md)
+[`Ot_spinner`](./Ot_spinner.md)
+[`Ot_sticky`](./Ot_sticky.md)
 [`Ot_style`](./Ot_style.md) This module is an interface to getComputedStyle.
-[`Ot_swipe`](./Ot_swipe.md) 
+[`Ot_swipe`](./Ot_swipe.md)
 [`Ot_time_picker`](./Ot_time_picker.md) This module implements a clock-style time picker.
-[`Ot_tip`](./Ot_tip.md) 
-[`Ot_toggle`](./Ot_toggle.md) 
+[`Ot_tip`](./Ot_tip.md)
+[`Ot_toggle`](./Ot_toggle.md)
 [`Ot_tongue`](./Ot_tongue.md)
 
 
@@ -125,29 +120,29 @@ opam install ocsigen-toolkit
 
 # Library `ocsigen-toolkit.server`
 
-[`Ot_buttons`](./Ot_buttons.md) 
+[`Ot_buttons`](./Ot_buttons.md)
 [`Ot_calendar`](./Ot_calendar.md) Calendar widget
-[`Ot_carousel`](./Ot_carousel.md) 
+[`Ot_carousel`](./Ot_carousel.md)
 [`Ot_color_picker`](./Ot_color_picker.md) This module implements a color picker.
-[`Ot_drawer`](./Ot_drawer.md) 
-[`Ot_form`](./Ot_form.md) 
-[`Ot_icons`](./Ot_icons.md) 
-[`Ot_lib`](./Ot_lib.md) 
-[`Ot_nodeready`](./Ot_nodeready.md) 
-[`Ot_noderesize`](./Ot_noderesize.md) 
-[`Ot_page_transition`](./Ot_page_transition.md) 
-[`Ot_picture_uploader`](./Ot_picture_uploader.md) 
+[`Ot_drawer`](./Ot_drawer.md)
+[`Ot_form`](./Ot_form.md)
+[`Ot_icons`](./Ot_icons.md)
+[`Ot_lib`](./Ot_lib.md)
+[`Ot_nodeready`](./Ot_nodeready.md)
+[`Ot_noderesize`](./Ot_noderesize.md)
+[`Ot_page_transition`](./Ot_page_transition.md)
+[`Ot_picture_uploader`](./Ot_picture_uploader.md)
 [`Ot_popup`](./Ot_popup.md) Popup widget
 [`Ot_pulltorefresh`](./Ot_pulltorefresh.md) Pull to refresh This widget can handle any element that needs to be refreshed after being pulled down.
 [`Ot_range`](./Ot_range.md) Range selection widget
-[`Ot_size`](./Ot_size.md) 
-[`Ot_spinner`](./Ot_spinner.md) 
-[`Ot_sticky`](./Ot_sticky.md) 
-[`Ot_style`](./Ot_style.md) 
-[`Ot_swipe`](./Ot_swipe.md) 
+[`Ot_size`](./Ot_size.md)
+[`Ot_spinner`](./Ot_spinner.md)
+[`Ot_sticky`](./Ot_sticky.md)
+[`Ot_style`](./Ot_style.md)
+[`Ot_swipe`](./Ot_swipe.md)
 [`Ot_time_picker`](./Ot_time_picker.md) This module implements a clock-style time picker.
-[`Ot_tip`](./Ot_tip.md) 
-[`Ot_toggle`](./Ot_toggle.md) 
+[`Ot_tip`](./Ot_tip.md)
+[`Ot_toggle`](./Ot_toggle.md)
 [`Ot_tongue`](./Ot_tongue.md)
 
 
@@ -230,7 +225,6 @@ val make_date_picker :
 ---
 
 # Module `Ot_carousel`
-
 
 ### Carousel
 
@@ -444,7 +438,6 @@ val make :
 ---
 
 # Module `Ot_drawer`
-
 
 ### Drawer menu for mobile and Web applications
 
@@ -1739,7 +1732,6 @@ module Info : Xml_sigs.Info
 ```
 Various information about HTML, such as the doctype, ...
 
-
 #### Uri
 
 ```ocaml
@@ -1788,7 +1780,6 @@ Values of the title attribute may be rendered by user agents in a variety of way
 
 The title attribute has an additional role when used with the `link` element to designate an external style sheet. Please consult the section on links and style sheets for details.
 
-
 #### I18N
 
 ```ocaml
@@ -1800,15 +1791,11 @@ val a_lang : Html_types.languagecode wrap -> [> `Lang ] attrib
 
 #### Events
 
-
 ##### Javascript events
-
 
 ##### Mouse events
 
-
 ##### Keyboard events
-
 
 #### Other attributes
 
@@ -1955,7 +1942,7 @@ val a_referrerpolicy :
   Html_types.referrerpolicy wrap ->
   [> `Referrerpolicy ] attrib
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes)
 ```ocaml
 val a_required : unit -> [> `Required ] attrib
 ```
@@ -2519,7 +2506,7 @@ val dialog :
     [> Html_types.dialog ])
     star
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 ```ocaml
 val div : 
   ([< Html_types.div_attrib ],
@@ -3627,7 +3614,6 @@ val cdata_style : string -> elt
 
 Creation of *f*unctional HTML5 content (copy-able but not referable).
 
-
 ### Content creation
 
 See [`Html_sigs.T`](./../../tyxml/tyxml.functor/Html_sigs-module-type-T.md)
@@ -3722,7 +3708,6 @@ module Info : Xml_sigs.Info
 ```
 Various information about HTML, such as the doctype, ...
 
-
 ###### Uri
 
 ```ocaml
@@ -3768,7 +3753,6 @@ Values of the title attribute may be rendered by user agents in a variety of way
 
 The title attribute has an additional role when used with the `link` element to designate an external style sheet. Please consult the section on links and style sheets for details.
 
-
 ###### I18N
 
 ```ocaml
@@ -3779,7 +3763,6 @@ val a_lang : Html_types.languagecode wrap -> [> `Lang ] attrib
 ```
 
 ###### Events
-
 
 ####### Javascript events
 
@@ -4159,7 +4142,7 @@ val a_referrerpolicy :
   Html_types.referrerpolicy wrap ->
   [> `Referrerpolicy ] attrib
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes)
 ```ocaml
 val a_required : unit -> [> `Required ] attrib
 ```
@@ -4723,7 +4706,7 @@ val dialog :
     [> Html_types.dialog ])
     star
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 ```ocaml
 val div : 
   ([< Html_types.div_attrib ],
@@ -4937,7 +4920,6 @@ val var :
 ```
 
 ###### Hypertext
-
 
 ###### Edit
 
@@ -5411,19 +5393,19 @@ The function `make_uri service get_params` returns the URL of the service `servi
 When only the first condition is met (`~absolute_path` is `true`) the returned URL is just the absolute path, but when any other condition is satisfied the returned URL is prefixed with `protocol://hostname[:port]`, where:
 
 - `protocol` is:
-  
+
   - `https` if the `service` has been created with `~https:true` or the optional parameter `~https` is `true`;
   - `http` if the optional parameter `~https` is `false`;
   - the current request protocol if available;
   - `http` in any other case.
 - `hostname` is:
-  
+
   - the optional parameter `~hostname` if given;
   - the attribute `defaulthostname` of `<host>` tag in configuration file or the machine hostname if the option `<usedefaulthostname/>` is set;
   - the `Host` http header of the current request if available;
   - the attribute `defaulthostname` of `<host>` tag in configuration file or the machine hostname in any other case.
 - `port` is:
-  
+
   - the optional parameter `~port` if given;
   - the attribute `defaulthttpsport` (resp. `defaulthttpport`) of `<host>` tag in configuration file or `443` (resp. 80\) if `protocol` is `https` (resp. `http`) and the current request protocol is `http` (resp. `https`);
   - the attribute `defaulthttpsport` (resp. `defaulthttpsport`) of `<host>` tag in configuration file or `443` (resp. 80\) if the option `<usedefaulthostname/>` is set and `protocol` is `https` (resp. `http`);
@@ -5525,7 +5507,6 @@ module Form :
 ---
 
 # Module `Ot_icons.Make`
-
 
 ## Parameters
 
@@ -5707,9 +5688,7 @@ Using it on a node that is never actually added in the DOM will make the node an
 
 # Module `Ot_noderesize`
 
-
 ### Get an event when an element's size changes
-
 
 #### Known issues
 
@@ -5718,7 +5697,6 @@ This only work with elements in the DOM (maybe that the element has to be displa
 Also, if the element is removed, then re-inserted in the DOM, sensor will not work anymore.
 
 If the element to be watched is not positionned, a `position: relative` will be applied.
-
 
 #### Example
 
@@ -5766,7 +5744,6 @@ val screenshot_container :
 `install_global_handler t take_screenshot animation_type` creates a global onchangepage handler which is registered recursively and applies to all pages. `t` is the transition duration of the animation. `take_screenshot callback` takes a screenshot of the current page and then calls `callback`. A callback function is used here because `take_screenshot` is usually asynchronous. `animation_type ev` decides the type of the animation of page transition in an onchangepage event.
 
 TODO: we can avoid the callback function by transforming `take_screenshot` to a function of type `unit -> screenshot Lwt.t`
-
 
 ## Parameters
 
@@ -5841,7 +5818,6 @@ val install_global_handler_withURI :
 ---
 
 # Module `Ot_picture_uploader`
-
 
 ### Picture uploader widget
 
@@ -6115,9 +6091,7 @@ val make :
 
 # Module `Ot_size`
 
-
 ### Size functions for Dom elements
-
 
 #### Size and orientation
 
@@ -6255,7 +6229,6 @@ Current vertical scroll position of the page.
 ---
 
 # Module `Ot_spinner`
-
 
 ### Spinner widget
 
@@ -6574,7 +6547,6 @@ Alias of `make`. Deprecated.
 
 # Module `Ot_tip`
 
-
 ### Tip widget
 
 This module implement a `display` function which actually display a tip (i.e. a box over the page content).
@@ -6624,7 +6596,6 @@ val display :
 ---
 
 # Module `Ot_toggle`
-
 
 ### Binary toggle widget
 
@@ -6780,7 +6751,6 @@ val make_date_picker :
 ---
 
 # Module `Ot_carousel`
-
 
 ### Carousel
 
@@ -6980,7 +6950,6 @@ val make :
 
 # Module `Ot_drawer`
 
-
 ### Drawer menu for mobile and Web applications
 
 ```ocaml
@@ -7017,7 +6986,6 @@ If present, function `onclose` is called just after the drawer is closed, and fu
 
 # Module `Ot_form`
 
-
 ### Reactive form widgets
 
 ```ocaml
@@ -7027,9 +6995,7 @@ type 'a react_component =
 ```
 A reactive component: a signal and its setter.
 
-
 #### Client-side utilities
-
 
 #### Buttons
 
@@ -7043,7 +7009,6 @@ val disableable_button :
 ```
 A button that can be reactively disabled.
 
-
 #### Toggle button
 
 ```ocaml
@@ -7055,7 +7020,6 @@ val reactive_toggle_button :
   [> `Button ] Eliom_content.Html.elt * bool react_component
 ```
 A toggle button that alternates between on/off states. The CSS classes `"ot-toggle-on"` and `"ot-toggle-off"` are set reactively on the button element.
-
 
 #### Radio buttons
 
@@ -7093,7 +7057,6 @@ val radio_selector :
   [> `Div ] Eliom_content.Html.elt
 ```
 A styled container with label for a group of radio buttons.
-
 
 #### Reactive inputs
 
@@ -7144,7 +7107,6 @@ val reactive_textarea :
 ```
 Create a reactive textarea.
 
-
 #### Debounced input
 
 ```ocaml
@@ -7160,7 +7122,6 @@ val debounced_input :
      * (string -> unit) Eliom_client_value.t)
 ```
 A reactive input where the debounced signal updates only after `delay` seconds (default 0\.3) of inactivity. Returns `(input, (raw_signal, debounced_signal, setter))`. `raw_signal` updates on every keystroke; `debounced_signal` waits for the user to stop typing.
-
 
 #### Enter key binding
 
@@ -7183,7 +7144,6 @@ val lwt_bound_input_enter :
   [> `Input ] Eliom_content.Html.elt
 ```
 Create an input with an Lwt action triggered on Enter key.
-
 
 #### Checkboxes
 
@@ -7270,7 +7230,6 @@ val graceful_invalid_style : [ `Input ] Eliom_content.Html.elt -> unit
 ```
 Adds the `"ot-invalid"` class after each blur. This allows styling for invalidity without showing errors before the user interacts. Inspired by `:-moz-ui-invalid`.
 
-
 #### Integer inputs
 
 ```ocaml
@@ -7294,7 +7253,6 @@ val int_input :
 ```
 An integer input with \+/- buttons. Always contains a value.
 
-
 #### Password input
 
 ```ocaml
@@ -7308,7 +7266,6 @@ val password_input :
 ```
 A password input with a visibility toggle button. Returns `(container, input, (visible_signal, set_visible))`. The toggle switches between `type=password` and `type=text`. CSS classes: `ot-password-container`, `ot-password-input`, `ot-password-toggle`, `ot-password-toggle-show`, `ot-password-toggle-hide`.
 
-
 #### Password toggle (non-reactive)
 
 ```ocaml
@@ -7317,7 +7274,6 @@ val password_toggle :
   [> `Div ] Eliom_content.Html.elt
 ```
 `password_toggle inp` wraps an existing password input element `inp` in a container with a visibility toggle button. Unlike [`password_input`](./#val-password_input), this does not use reactive signals: it manipulates the DOM directly on click, making it suitable for use with `D.Form.input` in Eliom forms. CSS classes: `ot-password-container`, `ot-password-toggle`, `ot-password-toggle-show`, `ot-password-toggle-hide`.
-
 
 #### Prevent double submit
 
@@ -7331,7 +7287,6 @@ val prevent_double_submit :
 ```
 A button that disables itself while the action `f` is running, preventing double submissions.
 
-
 #### Reactive select
 
 ```ocaml
@@ -7343,7 +7298,6 @@ val reactive_select :
   [> `Select ] Eliom_content.Html.elt * string react_component
 ```
 `reactive_select ~options ()` creates a `<select>` element with reactive selection tracking. `options` is a list of `(value, label)` pairs. Returns the element and a `(signal, setter)` pair. The setter can be used to change the selection programmatically.
-
 
 #### Misc
 
@@ -7357,7 +7311,6 @@ val none_input_value : string
 ```
 The string `"-"`, used as placeholder for empty optional int inputs.
 
-
 #### Reactive fieldset
 
 ```ocaml
@@ -7368,7 +7321,6 @@ val reactive_fieldset :
   [> `Fieldset ] Eliom_content.Html.elt
 ```
 A fieldset that can be reactively disabled. When disabled, all form elements inside are disabled by the browser.
-
 
 #### Date and time inputs
 
@@ -7409,7 +7361,6 @@ val reactive_time_input :
   [> `Input ] Eliom_content.Html.elt * (int * int) option react_component
 ```
 A reactive HTML5 time input. The signal carries `Some (hours, minutes)` or `None` when empty.
-
 
 ### Tab cycling (client-only)
 
@@ -8243,7 +8194,6 @@ module Info : Xml_sigs.Info
 ```
 Various information about HTML, such as the doctype, ...
 
-
 #### Uri
 
 ```ocaml
@@ -8292,7 +8242,6 @@ Values of the title attribute may be rendered by user agents in a variety of way
 
 The title attribute has an additional role when used with the `link` element to designate an external style sheet. Please consult the section on links and style sheets for details.
 
-
 #### I18N
 
 ```ocaml
@@ -8304,15 +8253,11 @@ val a_lang : Html_types.languagecode wrap -> [> `Lang ] attrib
 
 #### Events
 
-
 ##### Javascript events
-
 
 ##### Mouse events
 
-
 ##### Keyboard events
-
 
 #### Other attributes
 
@@ -8459,7 +8404,7 @@ val a_referrerpolicy :
   Html_types.referrerpolicy wrap ->
   [> `Referrerpolicy ] attrib
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes)
 ```ocaml
 val a_required : unit -> [> `Required ] attrib
 ```
@@ -9023,7 +8968,7 @@ val dialog :
     [> Html_types.dialog ])
     star
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 ```ocaml
 val div : 
   ([< Html_types.div_attrib ],
@@ -10131,7 +10076,6 @@ val cdata_style : string -> elt
 
 Creation of **F**unctional HTML5 content (copy-able but not referable, see also [`Eliom_content`](./../../eliom/eliom.server/Eliom_content.md)).
 
-
 ### Content creation
 
 See [`Html_sigs.T`](./../../tyxml/tyxml.functor/Html_sigs-module-type-T.md). If you want to create an untyped form, you will have to use [`Eliom_content.Html.F.Raw`](./../../eliom/eliom.server/Eliom_content-Html-F-Raw.md) otherwise, use Eliom form widgets. For more information, see `the manual`.
@@ -10226,7 +10170,6 @@ module Info : Xml_sigs.Info
 ```
 Various information about HTML, such as the doctype, ...
 
-
 ###### Uri
 
 ```ocaml
@@ -10272,7 +10215,6 @@ Values of the title attribute may be rendered by user agents in a variety of way
 
 The title attribute has an additional role when used with the `link` element to designate an external style sheet. Please consult the section on links and style sheets for details.
 
-
 ###### I18N
 
 ```ocaml
@@ -10283,7 +10225,6 @@ val a_lang : Html_types.languagecode wrap -> [> `Lang ] attrib
 ```
 
 ###### Events
-
 
 ####### Javascript events
 
@@ -10663,7 +10604,7 @@ val a_referrerpolicy :
   Html_types.referrerpolicy wrap ->
   [> `Referrerpolicy ] attrib
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe\#Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#Attributes)
 ```ocaml
 val a_required : unit -> [> `Required ] attrib
 ```
@@ -11227,7 +11168,7 @@ val dialog :
     [> Html_types.dialog ])
     star
 ```
-see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) 
+see [https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog)
 ```ocaml
 val div : 
   ([< Html_types.div_attrib ],
@@ -11441,7 +11382,6 @@ val var :
 ```
 
 ###### Hypertext
-
 
 ###### Edit
 
@@ -11915,19 +11855,19 @@ The function `make_uri service get_params` returns the URL of the service `servi
 When only the first condition is met (`~absolute_path` is `true`) the returned URL is just the absolute path, but when any other condition is satisfied the returned URL is prefixed with `protocol://hostname[:port]`, where:
 
 - `protocol` is:
-  
+
   - `https` if the `service` has been created with `~https:true` or the optional parameter `~https` is `true`;
   - `http` if the optional parameter `~https` is `false`;
   - the current request protocol if available;
   - `http` in any other case.
 - `hostname` is:
-  
+
   - the optional parameter `~hostname` if given;
   - the attribute `defaulthostname` of `<host>` tag in configuration file or the machine hostname if the option `<usedefaulthostname/>` is set;
   - the `Host` http header of the current request if available;
   - the attribute `defaulthostname` of `<host>` tag in configuration file or the machine hostname in any other case.
 - `port` is:
-  
+
   - the optional parameter `~port` if given;
   - the attribute `defaulthttpsport` (resp. `defaulthttpport`) of `<host>` tag in configuration file or `443` (resp. 80\) if `protocol` is `https` (resp. `http`) and the current request protocol is `http` (resp. `https`);
   - the attribute `defaulthttpsport` (resp. `defaulthttpsport`) of `<host>` tag in configuration file or `443` (resp. 80\) if the option `<usedefaulthostname/>` is set and `protocol` is `https` (resp. `http`);
@@ -12029,7 +11969,6 @@ module Form :
 ---
 
 # Module `Ot_icons.Make`
-
 
 ## Parameters
 
@@ -12154,7 +12093,6 @@ module List : sig ... end
 ---
 
 # Module `Ot_picture_uploader`
-
 
 ### Picture uploader widget
 
@@ -12313,7 +12251,6 @@ val make :
 
 # Module `Ot_spinner`
 
-
 ### Spinner widget
 
 ```ocaml
@@ -12439,7 +12376,6 @@ Alias of `make`. Deprecated.
 ---
 
 # Module `Ot_toggle`
-
 
 ### Binary toggle widget
 

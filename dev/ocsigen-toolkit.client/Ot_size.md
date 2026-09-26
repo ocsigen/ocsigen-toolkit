@@ -1,9 +1,6 @@
-
 # Module `Ot_size`
 
-
 ### Size functions for Dom elements
-
 
 #### Size and orientation
 

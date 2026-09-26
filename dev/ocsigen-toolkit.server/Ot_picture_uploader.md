@@ -1,6 +1,4 @@
-
 # Module `Ot_picture_uploader`
-
 
 ### Picture uploader widget
 

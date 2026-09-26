@@ -1,4 +1,3 @@
-
 # Module `Ot_calendar`
 
 Calendar widget

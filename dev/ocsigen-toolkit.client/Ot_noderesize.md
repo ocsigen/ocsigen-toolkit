@@ -1,9 +1,6 @@
-
 # Module `Ot_noderesize`
 
-
 ### Get an event when an element's size changes
-
 
 #### Known issues
 
@@ -12,7 +9,6 @@ This only work with elements in the DOM (maybe that the element has to be displa
 Also, if the element is removed, then re-inserted in the DOM, sensor will not work anymore.
 
 If the element to be watched is not positionned, a `position: relative` will be applied.
-
 
 #### Example
 

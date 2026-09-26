@@ -1,4 +1,3 @@
-
 # Module `Ot_range`
 
 Range selection widget

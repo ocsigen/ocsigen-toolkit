@@ -1,4 +1,3 @@
-
 # Module `Ot_color_picker`
 
 This module implements a color picker.

@@ -1,4 +1,3 @@
-
 # Module `Ot_time_picker`
 
 This module implements a clock-style time picker.

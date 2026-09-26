@@ -1,6 +1,4 @@
-
 # Module `Ot_icons.Make`
-
 
 ## Parameters
 
