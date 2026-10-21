@@ -45,7 +45,8 @@
    (>= "2.0.0"))
   lwt_ppx
   ocsigen-dune-rules
-  (ocsigen-ppx-rpc (>= "2.0~"))))
+  (ocsigen-ppx-rpc
+   (>= "2.0~"))))
 
 (package
  (name ocsigen-toolkit-compat)
