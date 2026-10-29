@@ -79,7 +79,7 @@ jobs:
           # Same pins as build.yml: the unreleased modernized stack on its
           # branches.
           opam pin -yn git+https://github.com/ocsigen/eliom#master
-          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+          opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#main
           opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
           opam install . --deps-only --with-doc
           # wodoc themes the pages. Its opam pin-depends pulls odoc / odoc-driver

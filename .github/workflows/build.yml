@@ -52,9 +52,9 @@ jobs:
           token: ${{ github.token }}
 
       # Eliom 13 and ocsigen-ppx-rpc 2.0 are merged but unreleased;
-      # ocsigen-dune-rules is still on its development branch.
+      # ocsigen-dune-rules is unreleased.
       - run: opam pin -yn git+https://github.com/ocsigen/eliom#master
-      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#modernize
+      - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-dune-rules#main
       - run: opam pin -yn git+https://github.com/ocsigen/ocsigen-ppx-rpc#main
 
       - run: opam install . --deps-only
