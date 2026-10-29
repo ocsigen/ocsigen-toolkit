@@ -11,12 +11,30 @@
    ocsigen-toolkit
    --libraries
    calendar
-   --server-libraries
-   js_of_ocaml
    --preprocess
    lwt_ppx
    --dune
    %{dep:dune})))
+
+; The server library needs the interfaces of js_of_ocaml for the types of
+; client values in shared signatures (Dom_html.touchEvent Js.t, File.file
+; Js.t...), but must not link it: ocsigenserver loads the library with its
+; dependencies, and the module Js of js_of_ocaml fails at initialisation
+; outside a browser. So only the include directory is added.
+
+(rule
+ (target type_includes)
+ (deps (universe))
+ (action
+  (with-stdout-to
+   %{target}
+   (system "printf '('; ocamlfind query -i-format js_of_ocaml; printf ')'"))))
+
+(env
+ (_
+  (flags
+   (:standard
+    (:include type_includes)))))
 
 ; [ocsigen-dune-rules] Do not remove this line.
 ; Below this line, any changes will be overwritten.
@@ -46,7 +64,7 @@
    js_of_ocaml-ppx_deriving_json
    --rpc-raw
    lwt_ppx))
- (libraries eliom.server js_of_ocaml calendar))
+ (libraries eliom.server calendar))
 
 (subdir
  client
