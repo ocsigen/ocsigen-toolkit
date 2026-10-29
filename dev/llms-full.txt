@@ -80,6 +80,13 @@ Of course, you are free to modify the style to suit the desired look.
 
 ---
 
+# Sources
+
+This contains the rendered source for `ocsigen-toolkit`. Use the sidebar to navigate them.
+
+
+---
+
 # Module `Ot.Buttons`
 
 ```ocaml
