@@ -36,8 +36,8 @@ val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
     the new document is displayed (and thus the new window is there)
     and therefore may be attached to the window that is about to be
     replaced. In most use-cases you should have a line as follows
-    before: let%lwt () = Nodeready.nodeready @@ To_dom.of_element
-    some_elt in *)
+    before: [let%lwt () = Ot.Nodeready.nodeready @@ To_dom.of_element
+    some_elt in]. *)
 
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
 
@@ -48,8 +48,8 @@ val window_scrolls :
   -> unit Lwt.t
 (** If [ios_html_scroll_hack] then listen on window + html + body
     instead of only window.  On iOS (8 and 9), in WkWebView and in
-    Safari, some CSS properties (e.g. html{overflow:scroll;
-    -webkit-overflow-scrolling: touch;}) may move the scroll event
+    Safari, some CSS properties (e.g. [html{overflow:scroll;
+    -webkit-overflow-scrolling: touch;}]) may move the scroll event
     from window to html or to body.  For instance, with (ON) or
     without (OFF) the following CSS:
     [html{overflow:scroll;-webkit-overflow-scrolling: touch;}]
