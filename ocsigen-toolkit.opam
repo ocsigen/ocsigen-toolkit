@@ -37,3 +37,4 @@ build: [
 ]
 dev-repo: "git+https://github.com/ocsigen/ocsigen-toolkit.git"
 x-maintenance-intent: ["(latest)"]
+x-extra-doc-deps: ["ocsigen-start"]
