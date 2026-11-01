@@ -15,6 +15,9 @@ You can install Ocsigen Toolkit via OPAM:
 opam install ocsigen-toolkit
 ]}
 
+Add [ocsigen-toolkit.server] and [ocsigen-toolkit.client] to the
+libraries of the server and client parts of your application.
+
 You may want to use Ocsigen Toolkit in conjunction with
 {{!/ocsigen-start/page-index}Ocsigen Start}, which provides an application
 template for quickly getting started with Ocsigen. The template
@@ -25,6 +28,23 @@ manual} for details.
 See the widgets in action in
 {{:https://ocsigen.org/ocsigen-start/demo/}Ocsigen Start's demo application}
 (also available for Android and iOS, or in your mobile browser).
+
+{1 Migrating from version 4}
+
+Since version 5, the modules of Ocsigen Toolkit are submodules of
+{!Ot}: write [Ot.Popup], [Ot.Carousel] or [Ot.Form] instead of
+[Ot_popup], [Ot_carousel] or [Ot_form]. Ocsigen Toolkit 5 also
+requires Eliom 13, which renames its own modules the same way
+([Eliom.Content.Html] instead of [Eliom_content.Html], for instance).
+
+To migrate progressively, install the [ocsigen-toolkit-compat]
+package and add the libraries [ocsigen-toolkit-compat.server] and
+[ocsigen-toolkit-compat.client] to the server and client parts of your
+application, respectively. They define the old [Ot_xxx] modules, each
+of which includes the new module, so that existing code keeps
+compiling while you rename the references. Eliom provides the same
+kind of help for its own modules with the [eliom-compat] package
+(libraries [eliom-compat.server] and [eliom-compat.client]).
 
 {1 Programming style}
 
@@ -77,10 +97,20 @@ Of course, you are free to modify the style to suit the desired look.
 - {!Ot.Drawer}:
   a drawer menu that typically appears on an edge of the screen.
   It can  appear/disappear via buttons or by swiping.
+- {!Ot.Form}:
+  reactive form elements (inputs, checkboxes, radio buttons, selects,
+  date and time inputs, password fields) and helpers for validation
+  and keyboard navigation
+- {!Ot.Icons}:
+  icon elements styled by the toolkit CSS
+- {!/ocsigen-toolkit.client/Ot.Page_transition} (client only):
+  animated transitions between pages, using screenshots
 - {!Ot.Picture_uploader}:
   user interface for uploading pictures
 - {!Ot.Popup}:
   popup windows that can be controlled in various ways
+- {!Ot.Pulltorefresh}:
+  refresh an element by pulling it down
 - {!Ot.Range}:
   widget for picking one among a range of values
 - {!Ot.Spinner}:
@@ -90,21 +120,23 @@ Of course, you are free to modify the style to suit the desired look.
   make element swipeable on touch screens
 - {!Ot.Time_picker}:
   clock-like widget that allows the user to pick a time
+- {!/ocsigen-toolkit.client/Ot.Tip} (client only):
+  a box displayed over the page content, closed by a click outside it
 - {!Ot.Toggle}:
   binary toggle widget
 
 {2 Non-widget utilities}
 
-- {!Ot.Nodeready}:
+- {!/ocsigen-toolkit.client/Ot.Nodeready} (client only):
   produces an Lwt thread allowing one to wait for a node to be
   inserted in the DOM
-- {!Ot.Noderesize}:
+- {!/ocsigen-toolkit.client/Ot.Noderesize} (client only):
   listen to element resize events
-- {!Ot.Size}:
+- {!/ocsigen-toolkit.client/Ot.Size} (client only):
   utilities to deal with DOM element dimensions
 - {!Ot.Lib}:
   functions useful for other widgets
-- {!Ot.Sticky}:
+- {!/ocsigen-toolkit.client/Ot.Sticky} (client only):
   make elements "sticky", i.e., do not let them go out of sight
-- {!Ot.Style}:
+- {!/ocsigen-toolkit.client/Ot.Style} (client only):
   an interface to [Window.getComputedStyle()]

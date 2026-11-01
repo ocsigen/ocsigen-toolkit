@@ -288,12 +288,7 @@ val%shared password_input :
 
 (** {3 Password toggle (non-reactive)} *)
 
-(* TODO: restore the polymorphic input type [< Html_types.input] once the
-   Eliom PPX no longer produces a weak type variable for wrapped HTML
-   modules. *)
-val%shared password_toggle :
-   [`Input] Eliom.Content.Html.elt
-  -> [> `Div] Eliom.Content.Html.elt
+val%shared password_toggle : [< Html_types.input] elt -> [> `Div] elt
 (** [password_toggle inp] wraps an existing password input element [inp]
     in a container with a visibility toggle button.
     Unlike {!password_input}, this does not use reactive signals: it
