@@ -1,6 +1,6 @@
 # Module `Icons.D`
 
-Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.client/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
+Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.D.elt

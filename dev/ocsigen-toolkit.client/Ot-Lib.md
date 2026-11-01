@@ -14,7 +14,7 @@ val onresizes :
   (Js_of_ocaml.Dom_html.event Js_of_ocaml.Js.t -> unit Lwt.t -> unit Lwt.t) ->
   unit Lwt.t
 ```
-NOTE: be careful when using the functions `onresizes`, `window_scroll`, and `window_scrolls`. They may be called before the new document is displayed (and thus the new window is there) and therefore may be attached to the window that is about to be replaced. In most use-cases you should have a line as follows before: let%lwt () \= Nodeready.nodeready @@ To\_dom.of\_element some\_elt in
+NOTE: be careful when using the functions `onresizes`, `window_scroll`, and `window_scrolls`. They may be called before the new document is displayed (and thus the new window is there) and therefore may be attached to the window that is about to be replaced. In most use-cases you should have a line as follows before: `let%lwt () = Ot.Nodeready.nodeready @@ To_dom.of_element some_elt in`.
 
 ```ocaml
 val window_scroll : 
@@ -29,8 +29,7 @@ val window_scrolls :
   (Js_of_ocaml.Dom_html.event Js_of_ocaml.Js.t -> unit Lwt.t -> unit Lwt.t) ->
   unit Lwt.t
 ```
-If `ios_html_scroll_hack` then listen on window \+ html \+ body instead of only window. On iOS (8 and 9\), in WkWebView and in Safari, some CSS properties (e.g. html`overflow:scroll;
-    -webkit-overflow-scrolling: touch;`) may move the scroll event from window to html or to body. For instance, with (ON) or without (OFF) the following CSS: `html{overflow:scroll;-webkit-overflow-scrolling: touch;}` we may observe this:
+If `ios_html_scroll_hack` then listen on window \+ html \+ body instead of only window. On iOS (8 and 9\), in WkWebView and in Safari, some CSS properties (e.g. `html{overflow:scroll; -webkit-overflow-scrolling: touch;}`) may move the scroll event from window to html or to body. For instance, with (ON) or without (OFF) the following CSS: `html{overflow:scroll;-webkit-overflow-scrolling: touch;}` we may observe this:
 
 ```ocaml
      | capture | elements receiving the scroll events

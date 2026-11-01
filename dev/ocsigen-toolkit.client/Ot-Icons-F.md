@@ -1,6 +1,6 @@
 # Module `Icons.F`
 
-Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.client/Eliom-Content-Html-F.md) (static HTML).
+Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) (static HTML).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.F.elt
