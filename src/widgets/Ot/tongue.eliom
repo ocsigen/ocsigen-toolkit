@@ -50,7 +50,8 @@ type%shared tongue =
   ; stop_signal_after : simple_stop React.S.t Eliom.Client_value.t
   ; swipe_pos : int React.S.t Eliom.Client_value.t
   ; px_signal_before : int React.S.t Eliom.Client_value.t
-  ; px_signal_after : int React.S.t Eliom.Client_value.t }
+  ; px_signal_after : int React.S.t Eliom.Client_value.t
+  }
 
 let%client now () = Js.to_float (new%js Js.date_now)##getTime /. 1000.
 
@@ -158,19 +159,23 @@ let%client closest_stop ~speed ~maxsize size stops =
       + int_of_float
           (sign
           *. Float.(
-               pow (inertia_parameter2 *. abs speed) (1. +. inertia_parameter3))
-          *. inertia_parameter1 /. inertia_parameter2))
+               pow (inertia_parameter2 *. abs speed) (1. +. inertia_parameter3)
+             )
+          *. inertia_parameter1 /. inertia_parameter2
+          )
+      )
   in
   match
     (* Computes the stop with the minimum distance *)
     List.fold_left
       (fun ((closest_d, _, _, _) as closest) (px, stop, interval_info) ->
-         let d = abs (size - px) in
-         if closest_d < d
-         then closest
-         else if px <= maxsize
-         then d, px, (stop, true), interval_info
-         else abs (size - maxsize), maxsize, (`Px maxsize, true), `Point)
+        let d = abs (size - px) in
+        if closest_d < d
+        then closest
+        else if px <= maxsize
+        then d, px, (stop, true), interval_info
+        else abs (size - maxsize), maxsize, (`Px maxsize, true), `Point
+      )
       (max_int, 0, (`Px 0, true), `Point)
       stops
   with
@@ -206,27 +211,26 @@ let%client disable_transition elt =
   Lwt_js_events.request_animation_frame ()
 
 let%client enable_transition ?duration elt =
-  (match duration with
+  ( match duration with
   | None -> ()
   | Some duration ->
       let elt' = To_dom.of_element elt in
       (Js.Unsafe.coerce elt'##.style)##.transitionDuration
-      := Js.string (Printf.sprintf "%.2fs" duration));
+      := Js.string (Printf.sprintf "%.2fs" duration)
+  );
   Manip.Class.remove elt "notransition";
   Lwt_js_events.request_animation_frame ()
 
-let%client
-    bind
-      side
-      stops
-      init
-      handle
-      update
-      set_before_signal
-      set_after_signal
-      set_swipe_pos
-      elt
-  =
+let%client bind
+    side
+    stops
+    init
+    handle
+    update
+    set_before_signal
+    set_after_signal
+    set_swipe_pos
+    elt =
   let open Lwt_js_events in
   let elt' = To_dom.of_element elt in
   let defaultduration = (Js.Unsafe.coerce elt'##.style)##.transitionDuration in
@@ -254,22 +258,24 @@ let%client
     elt'##.style##.transform := make_stop elt side stop;
     set_before_signal stop;
     Lwt.async (fun () ->
-      let* () =
-        if stop <> previousstop
-        then
-          let* _ = Lwt_js_events.transitionend elt' in
-          Lwt.return_unit
-        else Lwt.return_unit
-      in
-      set_after_signal stop; Lwt.return_unit);
+        let* () =
+          if stop <> previousstop
+          then
+            let* _ = Lwt_js_events.transitionend elt' in
+            Lwt.return_unit
+          else Lwt.return_unit
+        in
+        set_after_signal stop; Lwt.return_unit
+    );
     Lwt.return_unit
   in
   Lwt.async (fun () ->
-    (* Initialize size *)
-    let maxsize = full_size elt vert in
-    let px = px_of_simple_stop vert elt init in
-    let stop = if px > maxsize then `Px maxsize else init in
-    set 0. (stop, true));
+      (* Initialize size *)
+      let maxsize = full_size elt vert in
+      let px = px_of_simple_stop vert elt init in
+      let stop = if px > maxsize then `Px maxsize else init in
+      set 0. (stop, true)
+  );
   let pos ev =
     try cl ev with _ -> !currentpos
     (* Firefox (at least on Linux) fails to get touchend touchlist ...
@@ -322,7 +328,8 @@ let%client
       prev_speed := speed;
       previouspos := !currentpos;
       previoustimestamp := timestamp;
-      currentpos := pos);
+      currentpos := pos
+    );
     if not !animation_frame_requested
     then (
       animation_frame_requested := true;
@@ -331,7 +338,8 @@ let%client
       let d = sign *. (!startpos -. !currentpos) in
       let maxsize = full_size elt vert in
       let size = min (truncate (!startsize +. d)) maxsize in
-      set_swipe_pos size; set_tongue_position size; Lwt.return_unit)
+      set_swipe_pos size; set_tongue_position size; Lwt.return_unit
+    )
     else Lwt.return_unit
   in
   let ontouchend ev =
@@ -371,61 +379,67 @@ let%client
         ~keep:(React.E.map (fun stop -> set 0.0 (stop, true)) update)
   | None -> ()
 
-let%shared
-    tongue
-      ?(a = [])
-      ?(side = `Bottom)
-      ?(stops : stop list =
-        [`Px 70; `Percent 100; `Interval (`Percent 100, `Full_content)])
-      ?(init : simple_stop = `Px 70)
-      ?handle
-      ?update
-      content
-  =
+let%shared tongue
+    ?(a = [])
+    ?(side = `Bottom)
+    ?(stops : stop list =
+      [`Px 70; `Percent 100; `Interval (`Percent 100, `Full_content)])
+    ?(init : simple_stop = `Px 70)
+    ?handle
+    ?update
+    content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let class_ = class_of_side side in
   let elt = D.div ~a:(a_class ["ot-tongue"; class_] :: a) content in
   let handle = match handle with None -> elt | Some h -> h in
   let before_signal =
     [%client
-      (React.S.create ~%init
-       : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
+      ( React.S.create ~%init
+        : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit)
+      )]
   in
   let after_signal =
     [%client
-      (React.S.create ~%init
-       : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit))]
+      ( React.S.create ~%init
+        : simple_stop React.S.t * (?step:React.step -> simple_stop -> unit)
+      )]
   in
   let swipe_pos =
     [%client
-      (let vert = ~%side = `Top || ~%side = `Bottom in
-       React.S.create (px_of_simple_stop vert ~%elt ~%init)
-       : int React.S.t * (?step:React.step -> int -> unit))]
+      ( let vert = ~%side = `Top || ~%side = `Bottom in
+        React.S.create (px_of_simple_stop vert ~%elt ~%init)
+        : int React.S.t * (?step:React.step -> int -> unit)
+      )]
   in
   ignore
     [%client
-      (Lwt.async (fun () ->
-         let* () = Nodeready.nodeready (To_dom.of_element ~%elt) in
-         bind ~%side ~%stops ~%init ~%handle
-           ~%(update : simple_stop React.E.t Eliom.Client_value.t option)
-           (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
-         Lwt.return_unit)
-       : unit)];
+      ( Lwt.async (fun () ->
+            let* () = Nodeready.nodeready (To_dom.of_element ~%elt) in
+            bind ~%side ~%stops ~%init ~%handle
+              ~%(update : simple_stop React.E.t Eliom.Client_value.t option)
+              (snd ~%before_signal) (snd ~%after_signal) (snd ~%swipe_pos) ~%elt;
+            Lwt.return_unit
+        )
+        : unit
+      )];
   let px_signal_before =
     [%client
-      (let vert = ~%side = `Top || ~%side = `Bottom in
-       React.S.map (px_of_simple_stop vert ~%elt) (fst ~%before_signal)
-       : int React.S.t)]
+      ( let vert = ~%side = `Top || ~%side = `Bottom in
+        React.S.map (px_of_simple_stop vert ~%elt) (fst ~%before_signal)
+        : int React.S.t
+      )]
   in
   let px_signal_after =
     [%client
-      (let vert = ~%side = `Top || ~%side = `Bottom in
-       React.S.map (px_of_simple_stop vert ~%elt) (fst ~%after_signal)
-       : int React.S.t)]
+      ( let vert = ~%side = `Top || ~%side = `Bottom in
+        React.S.map (px_of_simple_stop vert ~%elt) (fst ~%after_signal)
+        : int React.S.t
+      )]
   in
   { elt
   ; stop_signal_before = [%client (fst ~%before_signal : simple_stop React.S.t)]
   ; stop_signal_after = [%client (fst ~%after_signal : simple_stop React.S.t)]
   ; swipe_pos = [%client (fst ~%swipe_pos : int React.S.t)]
   ; px_signal_before
-  ; px_signal_after }
+  ; px_signal_after
+  }

@@ -25,7 +25,8 @@
 type intl =
   { i_days : string list
   ; i_months : string list
-  ; i_start : [`Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat] }
+  ; i_start : [`Sun | `Mon | `Tue | `Wed | `Thu | `Fri | `Sat]
+  }
 (** [intl] is the type of internationalization specifiers. [i_days]
     contains the names of the weekdays, starting with
     Sunday. [i_months] contains the names of the months, starting with
@@ -35,12 +36,13 @@ type button_labels =
   { b_prev_year : string
   ; b_prev_month : string
   ; b_next_month : string
-  ; b_next_year : string }
+  ; b_next_year : string
+  }
 (** An instance of [button_labels] is used to customize the button
     labels. The defaults are "<<", "<", ">", and ">>". *)
 
 val make :
-   ?init:int * int * int
+     ?init:int * int * int
   -> ?highlight:(int -> int -> int list Lwt.t) Eliom.Client_value.t
   -> ?click_non_highlighted:bool
   -> ?update:(int * int * int) React.E.t Eliom.Client_value.t
@@ -70,7 +72,7 @@ val make :
     *)
 
 val make_date_picker :
-   ?init:int * int * int
+     ?init:int * int * int
   -> ?update:(int * int * int) React.E.t Eliom.Client_value.t
   -> ?button_labels:button_labels
   -> ?intl:intl

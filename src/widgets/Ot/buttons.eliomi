@@ -8,7 +8,7 @@ open Eliom.Content.Html
    displayed when the button is being hovered over with the mouse (on mobile
    devices: when tapped on) and functions purely by CSS. *)
 val dropdown :
-   ?a:div_attrib attrib list
+     ?a:div_attrib attrib list
   -> menu:div_content elt list
   -> div_content elt list
   -> div_content elt

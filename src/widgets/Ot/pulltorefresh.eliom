@@ -46,15 +46,17 @@ module Make (Conf : CONF) = struct
 
   let touchstart_handler ev _ =
     Dom_html.stopPropagation ev;
-    (if !refreshFlag || !joinRefreshFlag
-     then Dom.preventDefault ev
-     else
-       let touch = ev##.changedTouches##item 0 in
-       Js.Optdef.iter touch (fun touch ->
-         dragStart := Js.to_float touch##.clientY;
-         scrollXStart := Js.to_float touch##.clientX);
-       first_move := true;
-       Manip.Class.remove container "ot-pull-refresh-transition-on");
+    ( if !refreshFlag || !joinRefreshFlag
+      then Dom.preventDefault ev
+      else
+        let touch = ev##.changedTouches##item 0 in
+        Js.Optdef.iter touch (fun touch ->
+            dragStart := Js.to_float touch##.clientY;
+            scrollXStart := Js.to_float touch##.clientX
+        );
+        first_move := true;
+        Manip.Class.remove container "ot-pull-refresh-transition-on"
+    );
     Lwt.return_unit
 
   let touchmove_handler_ ev =
@@ -80,18 +82,21 @@ module Make (Conf : CONF) = struct
         then (
           let target = ev##.changedTouches##item 0 in
           Js.Optdef.iter target (fun target ->
-            let dY = -. !dragStart +. Js.to_float target##.clientY in
-            distance := Float.sqrt dY *. scale;
-            if !first_move
-            then
-              scrollingX :=
-                abs_float (!scrollXStart -. Js.to_float target##.clientX)
-                > abs_float dY);
+              let dY = -. !dragStart +. Js.to_float target##.clientY in
+              distance := Float.sqrt dY *. scale;
+              if !first_move
+              then
+                scrollingX :=
+                  abs_float (!scrollXStart -. Js.to_float target##.clientX)
+                  > abs_float dY
+          );
           (*move the container if and only if at the top of the document and
             the page is scrolled down*)
           if !top && !distance > 0. && not !scrollingX
           then touchmove_handler_ ev
-          else joinRefreshFlag := false));
+          else joinRefreshFlag := false
+        )
+    );
     first_move := false;
     Lwt.return_unit
 
@@ -103,33 +108,42 @@ module Make (Conf : CONF) = struct
          ("translateY(" ^ (string_of_float @@ Conf.dragThreshold) ^ "px)");
     refreshFlag := true;
     Lwt.async (fun () ->
-      let* b =
-        Lwt.pick
-          [ Conf.afterPull ()
-          ; (let* () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
-             Lwt.return_false) ]
-      in
-      if b
-      then
-        (*if page refresh succeeds*)
-        ignore
-          (Dom_html.window##setTimeout
-             (Js.wrap_callback (fun () ->
-                Conf.set_state @@ Some Succeeded;
-                js_container##.style##.transform := Js.string "translateY(0)";
-                refreshFlag := false))
-             (Js.float 700.))
-        (*if the page refreshing finishes instantaneously,
+        let* b =
+          Lwt.pick
+            [ Conf.afterPull ()
+            ; (let* () = Js_of_ocaml_lwt.Lwt_js.sleep Conf.timeout in
+               Lwt.return_false
+              )
+            ]
+        in
+        if b
+        then
+          (*if page refresh succeeds*)
+          ignore
+            (Dom_html.window##setTimeout
+               (Js.wrap_callback (fun () ->
+                    Conf.set_state @@ Some Succeeded;
+                    js_container##.style##.transform
+                    := Js.string "translateY(0)";
+                    refreshFlag := false
+                )
+               )
+               (Js.float 700.)
+            )
+          (*if the page refreshing finishes instantaneously,
               setTimeout is used to show the animation*)
-      else (
-        (*if page refresh fails*)
-        Conf.set_state @@ Some Failed;
-        js_container##.style##.transform := Js.string "translateY(0)";
-        ignore
-          (Dom_html.window##setTimeout
-             (Js.wrap_callback (fun () -> refreshFlag := false))
-             (Js.float 500.)));
-      Lwt.return_unit)
+        else (
+          (*if page refresh fails*)
+          Conf.set_state @@ Some Failed;
+          js_container##.style##.transform := Js.string "translateY(0)";
+          ignore
+            (Dom_html.window##setTimeout
+               (Js.wrap_callback (fun () -> refreshFlag := false))
+               (Js.float 500.)
+            )
+        );
+        Lwt.return_unit
+    )
 
   let scroll_back () =
     Conf.set_state None;
@@ -141,7 +155,9 @@ module Make (Conf : CONF) = struct
       ignore
         (Dom_html.window##setTimeout
            (Js.wrap_callback (fun () -> refreshFlag := false))
-           (Js.float 500.)))
+           (Js.float 500.)
+        )
+    )
 
   let touchend_handler ev _ =
     if !top && !distance > 0. && !dragStart >= 0.
@@ -155,7 +171,8 @@ module Make (Conf : CONF) = struct
         (*reinitialize paramaters*)
         joinRefreshFlag := false;
         dragStart := -1.;
-        distance := 0.);
+        distance := 0.
+      );
     scrollXStart := -1.;
     scrollingX := false;
     Lwt.return_unit
@@ -169,15 +186,14 @@ module Make (Conf : CONF) = struct
 end]
 
 let make
-      ?(a : [< Html_types.div_attrib > `Class] H.attrib list = [])
-      ?(app_only = true)
-      ?(scale = 5.)
-      ?(dragThreshold = 80.)
-      ?(refresh_timeout = 20.)
-      ?(header = [%shared default_header])
-      ~(content : Html_types.div_content H.elt)
-      (afterPull : (unit -> bool Lwt.t) Eliom.Client_value.t)
-  =
+    ?(a : [< Html_types.div_attrib > `Class] H.attrib list = [])
+    ?(app_only = true)
+    ?(scale = 5.)
+    ?(dragThreshold = 80.)
+    ?(refresh_timeout = 20.)
+    ?(header = [%shared default_header])
+    ~(content : Html_types.div_content H.elt)
+    (afterPull : (unit -> bool Lwt.t) Eliom.Client_value.t) =
   if app_only && not (Eliom.Client.is_client_app ())
   then div ~a [content]
   else
@@ -198,17 +214,19 @@ let make
     in
     ignore
       [%client
-        (let module Ptr_conf = struct
-           let set_state = ~%set_state
-           let scale = ~%scale
-           let dragThreshold = ~%dragThreshold
-           let timeout = ~%refresh_timeout
-           let container = ~%container
-           let afterPull = ~%afterPull
-         end in
-         let module Ptr = Make (Ptr_conf) in
-         Ptr.init ()
-         : unit)];
+        ( let module Ptr_conf = struct
+            let set_state = ~%set_state
+            let scale = ~%scale
+            let dragThreshold = ~%dragThreshold
+            let timeout = ~%refresh_timeout
+            let container = ~%container
+            let afterPull = ~%afterPull
+          end in
+          let module Ptr = Make (Ptr_conf) in
+          Ptr.init ()
+          : unit
+        )];
     let open H in
-    (F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
-      :> [> `Div] elt)
+    ( F.div ~a:(F.a_class ["ot-pull-refresh-wrapper"] :: a) [container]
+      :> [> `Div] elt
+    )

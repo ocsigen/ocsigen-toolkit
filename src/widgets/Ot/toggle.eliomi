@@ -23,7 +23,7 @@
 (** {2 Binary toggle widget} *)
 
 val make :
-   ?init_up:bool
+     ?init_up:bool
   -> ?up_txt:string
   -> ?down_txt:string
   -> ?update:bool React.E.t Eliom.Client_value.t

@@ -47,14 +47,17 @@ let display ?(txt_up = "up") ?(txt_down = "down") e (v, f) =
     [ div
         ~a:
           [ a_class ["ot-r-up"]
-          ; a_onclick [%client (fun _ -> go_up ~%e ~%v ~%f : _ -> _)] ]
+          ; a_onclick [%client (fun _ -> go_up ~%e ~%v ~%f : _ -> _)]
+          ]
         [txt txt_up]
     ; display_aux e v
     ; div
         ~a:
           [ a_class ["ot-r-down"]
-          ; a_onclick [%client (fun _ -> go_down ~%e ~%v ~%f : _ -> _)] ]
-        [txt txt_down] ]
+          ; a_onclick [%client (fun _ -> go_down ~%e ~%v ~%f : _ -> _)]
+          ]
+        [txt txt_down]
+    ]
 
 let make ?txt_up ?txt_down ?f ?(lb = 0) ub =
   assert (ub > lb);

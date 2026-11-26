@@ -24,7 +24,7 @@
 (** {2 Spinner widget} *)
 
 val with_spinner :
-   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?spinner:[< Html_types.div_content] Eliom.Content.Html.elt list
   -> ?fail:(exn -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t)
   -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t
@@ -51,7 +51,7 @@ val with_spinner :
 [%%client.start]
 
 val with_spinner_no_lwt :
-   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?spinner:[< Html_types.div_content] Eliom.Content.Html.elt list
   -> ?fail:(exn -> [< Html_types.div_content] Eliom.Content.Html.elt list)
   -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t
@@ -61,7 +61,7 @@ val with_spinner_no_lwt :
     before sending the page). *)
 
 val replace_content :
-   ?fail:(exn -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t)
+     ?fail:(exn -> [< Html_types.div_content] Eliom.Content.Html.elt list Lwt.t)
   -> 'a Eliom.Content.Html.elt
   -> Html_types.div_content Eliom.Content.Html.elt list Lwt.t
   -> unit Lwt.t
@@ -77,6 +77,5 @@ val onloaded : unit Eliom.Shared.React.E.t
     This can occur multiple times. *)
 
 val set_default_fail :
-   (exn -> [< Html_types.div_content] Eliom.Content.Html.elt list)
-  -> unit
+  (exn -> [< Html_types.div_content] Eliom.Content.Html.elt list) -> unit
 (** Change the default function used to display error messages *)

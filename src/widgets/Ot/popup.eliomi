@@ -27,7 +27,7 @@ open Eliom.Content.Html
 open Html_types
 
 val hcf :
-   ?a:[< div_attrib] attrib list
+     ?a:[< div_attrib] attrib list
   -> ?header:[< header_content_fun] elt list
   -> ?footer:[< footer_content_fun] elt list
   -> [< div_content] elt list
@@ -41,7 +41,7 @@ val hcf :
 [%%client.start]
 
 val popup :
-   ?a:[< div_attrib] attrib list
+     ?a:[< div_attrib] attrib list
   -> ?enable_scrolling_hack:bool
   -> ?close_button:button_content elt list
   -> ?confirmation_onclose:(unit -> bool Lwt.t)
@@ -78,7 +78,7 @@ val popup :
 *)
 
 val ask_question :
-   ?a:[< div_attrib] attrib list
+     ?a:[< div_attrib] attrib list
   -> ?a_hcf:[< div_attrib] attrib list
   -> header:[< header_content] elt list
   -> buttons:
@@ -93,7 +93,7 @@ val ask_question :
     value when the corresponding button is clicked. *)
 
 val confirm :
-   ?a:[< div_attrib] attrib list
+     ?a:[< div_attrib] attrib list
   -> [< header_content_fun] elt list
   -> ([< button_content_fun] as 'a) elt list
   -> 'a elt list

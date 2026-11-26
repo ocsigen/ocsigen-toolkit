@@ -53,29 +53,33 @@ let display_hue_selector ~setter (sel_hue, sel_sat, sel_ltn) =
   let cells =
     Array.map
       (fun i ->
-         let hue = float_of_int i *. step in
-         let is_selected =
-           hue >= float_of_int sel_hue && hue -. step < float_of_int sel_hue
-         in
-         let bgcolor =
-           Printf.sprintf "hsl(%.3f, %.3f%%, %.3f%%)" hue 100.0 50.0
-         in
-         let open D in
-         div
-           ~a:
-             [ a_class
-                 (if is_selected
+        let hue = float_of_int i *. step in
+        let is_selected =
+          hue >= float_of_int sel_hue && hue -. step < float_of_int sel_hue
+        in
+        let bgcolor =
+          Printf.sprintf "hsl(%.3f, %.3f%%, %.3f%%)" hue 100.0 50.0
+        in
+        let open D in
+        div
+          ~a:
+            [ a_class
+                ( if is_selected
                   then
                     [ "ot-color-picker-hue-picker-cell"
-                    ; "ot-color-picker-selected-cell" ]
-                  else ["ot-color-picker-hue-picker-cell"])
-             ; a_style ("background-color: " ^ bgcolor)
-             ; a_onmousedown
-                 [%client
-                   fun _ ->
-                     let hue = int_of_float ~%hue in
-                     ~%setter (hue, ~%sel_sat, ~%sel_ltn)] ]
-           [])
+                    ; "ot-color-picker-selected-cell"
+                    ]
+                  else ["ot-color-picker-hue-picker-cell"]
+                )
+            ; a_style ("background-color: " ^ bgcolor)
+            ; a_onmousedown
+                [%client
+                  fun _ ->
+                    let hue = int_of_float ~%hue in
+                    ~%setter (hue, ~%sel_sat, ~%sel_ltn)]
+            ]
+          []
+      )
       irange
   in
   D.(div ~a:[a_class ["ot-color-picker-hue-picker"]] (Array.to_list cells))
@@ -91,34 +95,37 @@ let display_sl_grid ~setter (sel_hue, sel_sat, sel_ltn) =
   let () =
     Array.iter
       (fun i ->
-         let row = i / dim in
-         let col = i mod dim in
-         let saturation = float_of_int row /. float_of_int dim in
-         let lightness = 1.0 -. (float_of_int col /. float_of_int dim) in
-         let is_selected = saturation = sel_sat && lightness = sel_ltn in
-         let style' =
-           Printf.sprintf
-             "display: inline-block; background-color: %s; height: 100%%"
-             (rgb_to_css (hsv_to_rgb (int_of_float hue) saturation lightness))
-         in
-         let el =
-           let open D in
-           div
-             ~a:
-               [ a_class
-                   (if is_selected
+        let row = i / dim in
+        let col = i mod dim in
+        let saturation = float_of_int row /. float_of_int dim in
+        let lightness = 1.0 -. (float_of_int col /. float_of_int dim) in
+        let is_selected = saturation = sel_sat && lightness = sel_ltn in
+        let style' =
+          Printf.sprintf
+            "display: inline-block; background-color: %s; height: 100%%"
+            (rgb_to_css (hsv_to_rgb (int_of_float hue) saturation lightness))
+        in
+        let el =
+          let open D in
+          div
+            ~a:
+              [ a_class
+                  ( if is_selected
                     then
                       [ "ot-color-picker-sl-picker-cell"
-                      ; "ot-color-picker-selected-cell" ]
-                    else ["ot-color-picker-sl-picker-cell"])
-               ; a_style style'
-               ; a_onmousedown
-                   [%client
-                     fun _ -> ~%setter (~%sel_hue, ~%saturation, ~%lightness)]
-               ]
-             []
-         in
-         rows.(row) <- el :: rows.(row))
+                      ; "ot-color-picker-selected-cell"
+                      ]
+                    else ["ot-color-picker-sl-picker-cell"]
+                  )
+              ; a_style style'
+              ; a_onmousedown
+                  [%client
+                    fun _ -> ~%setter (~%sel_hue, ~%saturation, ~%lightness)]
+              ]
+            []
+        in
+        rows.(row) <- el :: rows.(row)
+      )
       irange
   in
   let rows =
@@ -138,11 +145,10 @@ let display ?a cp_sig =
   fst cp_sig >|= [%shared display_aux ?a:~%a ~setter:~%setter] |> R.node
 
 let make
-      ?(a : [< Html_types.div_attrib > `Class] attrib list option)
-      ?hsv
-      ?(update = [%client (React.E.never : (int * float * float) React.E.t)])
-      ()
-  =
+    ?(a : [< Html_types.div_attrib > `Class] attrib list option)
+    ?hsv
+    ?(update = [%client (React.E.never : (int * float * float) React.E.t)])
+    () =
   let ((cp_sig, cp_set) as cp_react) =
     Eliom.Shared.React.S.create (Option.value hsv ~default:(255, 1.0, 0.0))
   in
@@ -152,9 +158,11 @@ let make
   ignore
     [%client
       (* /!\ How to avoid the effectful signal ? *)
-      (Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
-         ~keep:
-           (React.E.map (fun update -> ~%cp_set update) ~%update
-            : unit React.event)
-       : unit)];
+      ( Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
+          ~keep:
+            ( React.E.map (fun update -> ~%cp_set update) ~%update
+              : unit React.event
+            )
+        : unit
+      )];
   elt, signal

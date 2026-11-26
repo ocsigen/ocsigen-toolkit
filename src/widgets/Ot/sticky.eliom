@@ -22,11 +22,13 @@ let set_position_sticky elt =
   Manip.SetCss.position elt "-webkit-sticky";
   is_position_sticky elt
   ||
-  (Manip.SetCss.position elt "sticky";
-   is_position_sticky elt
-   ||
-   (Manip.SetCss.position elt old_pos;
-    false))
+  ( Manip.SetCss.position elt "sticky";
+    is_position_sticky elt
+    ||
+    ( Manip.SetCss.position elt old_pos;
+      false
+    )
+  )
 
 let supports_position_sticky elt =
   let old_pos = Manip.Css.position elt in
@@ -34,11 +36,13 @@ let supports_position_sticky elt =
     (* Don't use [set_position_sticky] here because if it
        fails to set the "effective position" to sticky, it doesn't mean that
        the web engine doesn't support it. *)
-    (Manip.SetCss.position elt "-webkit-sticky";
-     Js.to_string (To_dom.of_element elt)##.style##.position = "-webkit-sticky")
+    ( Manip.SetCss.position elt "-webkit-sticky";
+      Js.to_string (To_dom.of_element elt)##.style##.position = "-webkit-sticky"
+    )
     ||
-    (Manip.SetCss.position elt "sticky";
-     Js.to_string (To_dom.of_element elt)##.style##.position = "sticky")
+    ( Manip.SetCss.position elt "sticky";
+      Js.to_string (To_dom.of_element elt)##.style##.position = "sticky"
+    )
   in
   Manip.SetCss.position elt old_pos;
   res
@@ -57,14 +61,16 @@ type glue =
   ; (*TODO: support `Bottom and `Right*)
     scroll_thread : unit Lwt.t
   ; resize_thread : (int * int) React.S.t
-  ; dissolve : unit -> unit }
+  ; dissolve : unit -> unit
+  }
 
 let move_content ~from to_elt =
   if (Style.style @@ To_dom.of_element to_elt)##.display <> Js.string "none"
   then (
     let children = Manip.children from in
     Manip.removeChildren from;
-    Manip.appendChildren to_elt children)
+    Manip.appendChildren to_elt children
+  )
 
 let stick ?(force = false) g =
   if force || (not @@ Manip.Class.contain g.fixed "ot-stuck")
@@ -73,7 +79,8 @@ let stick ?(force = false) g =
     Style.set_height g.inline @@ Size.client_height (To_dom.of_element g.inline);
     move_content ~from:g.inline g.fixed;
     Manip.Class.add g.fixed "ot-stuck";
-    Manip.Class.add g.inline "ot-stuck")
+    Manip.Class.add g.inline "ot-stuck"
+  )
 
 let unstick ?(force = false) g =
   if force || Manip.Class.contain g.fixed "ot-stuck"
@@ -82,7 +89,8 @@ let unstick ?(force = false) g =
     Manip.SetCss.height g.inline "";
     move_content ~from:g.fixed g.inline;
     Manip.Class.remove g.fixed "ot-stuck";
-    Manip.Class.remove g.inline "ot-stuck")
+    Manip.Class.remove g.inline "ot-stuck"
+  )
 
 let synchronise g =
   let sync_values () =
@@ -115,12 +123,11 @@ let update_state ?force g =
 
 (* TODO: ensure compatibility with DOM caching *)
 let make_sticky
-      ~dir (* TODO: detect based on CSS attribute? *)
-      ?((*TODO: `Bottom and `Right *)
-        ios_html_scroll_hack = false)
-      ?(force = false)
-      elt
-  =
+    ~dir (* TODO: detect based on CSS attribute? *)
+    ?((*TODO: `Bottom and `Right *)
+      ios_html_scroll_hack = false)
+    ?(force = false)
+    elt =
   let* () = Nodeready.nodeready (To_dom.of_element elt) in
   if (not force) && supports_position_sticky elt
   then Lwt.return_none
@@ -144,7 +151,8 @@ let make_sticky
       ; (* updated below *)
         resize_thread = React.S.const (0, 0)
       ; (* updated below *)
-        dissolve = (fun () -> failwith "undefined") }
+        dissolve = (fun () -> failwith "undefined")
+      }
     in
     let init () =
       unstick ~force:true glue; synchronise glue; update_state glue
@@ -211,8 +219,9 @@ let keep_in_sight ~dir ?ios_html_scroll_hack elt =
         (* the additional initialisation after some delay is due to the inexplicable
        behaviour on Chrome where the initialisation happens too early. *)
         Lwt.async (fun () ->
-          let* _ = Lwt_js.sleep 0.5 in
-          Lwt.return @@ doIt ());
+            let* _ = Lwt_js.sleep 0.5 in
+            Lwt.return @@ doIt ()
+        );
         doIt ()
       in
       init ();

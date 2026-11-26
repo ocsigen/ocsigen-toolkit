@@ -58,7 +58,8 @@ let width_height, width, height =
   (* TODO: MutationObserver? *)
   (let open Lwt_js_events in
    async @@ fun () ->
-   onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ());
+   onresizes @@ fun _ _ -> Lwt.return @@ update_width_height ()
+  );
   let w = React.S.l1 fst wh in
   let h = React.S.l1 snd wh in
   (* Make sure the signals are not destroyed indirectly
@@ -71,17 +72,19 @@ let set_adaptative_width elt f =
   Eliom.Lib.Dom_reference.retain elt
     ~keep:
       (React.S.map
-         (fun w ->
-            elt##.style##.width := Js.string (string_of_int (f w) ^ "px"))
-         height)
+         (fun w -> elt##.style##.width := Js.string (string_of_int (f w) ^ "px"))
+         height
+      )
 
 let set_adaptative_height elt f =
   Eliom.Lib.Dom_reference.retain elt
     ~keep:
       (React.S.map
          (fun w ->
-            elt##.style##.height := Js.string (string_of_int (f w) ^ "px"))
-         height)
+           elt##.style##.height := Js.string (string_of_int (f w) ^ "px")
+         )
+         height
+      )
 
 let of_opt elt = Js.Opt.case elt (fun () -> failwith "of_opt") (fun x -> x)
 
@@ -153,4 +156,5 @@ let pageYOffset () =
   min (* overscroll at the bottom *)
     (Dom_html.document##.documentElement##.scrollHeight - get_innerHeight ())
     (int_of_float
-       (Js.float_of_number (Js.Unsafe.coerce Dom_html.window)##.pageYOffset))
+       (Js.float_of_number (Js.Unsafe.coerce Dom_html.window)##.pageYOffset)
+    )

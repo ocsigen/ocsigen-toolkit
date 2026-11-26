@@ -30,11 +30,13 @@ type%client resize_sensor =
   ; grow_child : Dom_html.element Js.t
   ; shrink : Dom_html.element Js.t
   ; mutable shrink_listener_id : Dom.event_listener_id option
-  ; sensor : Dom_html.element Js.t }
+  ; sensor : Dom_html.element Js.t
+  }
 
 let%client attach watched =
   let style =
-    "display:block; position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1000; visibility: hidden;"
+    "display:block; position: absolute; left: 0; top: 0; right: 0; bottom: 0; \
+     overflow: hidden; z-index: -1000; visibility: hidden;"
   in
   let style_child = "position: absolute; left: 0; top: 0; transition: 0s;" in
   let grow_child = D.div ~a:[a_style style_child] [] in
@@ -62,7 +64,8 @@ let%client attach watched =
   ; shrink
   ; sensor
   ; grow_listener_id = None
-  ; shrink_listener_id = None }
+  ; shrink_listener_id = None
+  }
 
 let%client detach {watched; sensor; shrink_listener_id; grow_listener_id; _} =
   Dom.removeChild watched sensor;
@@ -92,20 +95,25 @@ let%client noderesize_aux reset sensor f =
     let throttle = ref false in
     Dom.addEventListener element Dom_html.Event.scroll
       (Dom.handler (fun _ ->
-         if not !throttle
-         then (
-           throttle := true;
-           ignore
-             (Dom_html.window##requestAnimationFrame
-                ( Js.wrap_callback @@ fun _ ->
-                  let w' = element##.offsetWidth in
-                  let h' = element##.offsetHeight in
-                  if w' <> !w || h' <> !h then f ();
-                  w := w';
-                  h := h';
-                  reset sensor;
-                  throttle := false )));
-         Js.bool true))
+           if not !throttle
+           then (
+             throttle := true;
+             ignore
+               (Dom_html.window##requestAnimationFrame
+                  ( Js.wrap_callback @@ fun _ ->
+                    let w' = element##.offsetWidth in
+                    let h' = element##.offsetHeight in
+                    if w' <> !w || h' <> !h then f ();
+                    w := w';
+                    h := h';
+                    reset sensor;
+                    throttle := false
+                  )
+               )
+           );
+           Js.bool true
+       )
+      )
       (Js.bool false)
   in
   reset sensor;
@@ -118,4 +126,5 @@ let%client noderesize ?(safe = false) ({grow_child; _} as sensor) =
   else (
     grow_child##.style##.width := Js.string "9999px";
     grow_child##.style##.height := Js.string "9999px";
-    noderesize_aux reset_opt sensor)
+    noderesize_aux reset_opt sensor
+  )

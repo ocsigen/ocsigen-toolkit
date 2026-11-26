@@ -3,7 +3,7 @@
 open Js_of_ocaml
 
 val bind :
-   ?transition_duration:float
+     ?transition_duration:float
   -> ?min:(unit -> int) Eliom.Client_value.t
   -> ?max:(unit -> int) Eliom.Client_value.t
   -> compute_final_pos:
@@ -38,7 +38,7 @@ val clY : Dom_html.touchEvent Js.t -> float
 val threshold : float
 
 val dispatch_event :
-   ev:Dom_html.touchEvent Js.t
+     ev:Dom_html.touchEvent Js.t
   -> Dom_html.element Js.t
   -> string
   -> float

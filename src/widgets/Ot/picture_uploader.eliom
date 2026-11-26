@@ -27,20 +27,22 @@ open Js_of_ocaml]
 
 type%shared ('a, 'b) service =
   ( unit
-    , 'a * ((float * float * float * float) option * Eliom.Lib.file_info)
-    , Eliom.Service.post
-    , Eliom.Service.non_att
-    , Eliom.Service.co
-    , Eliom.Service.non_ext
-    , Eliom.Service.reg
-    , [`WithoutSuffix]
-    , unit
-    , [`One of 'a Eliom.Parameter.ocaml] Eliom.Parameter.param_name
-      * ([`One of (float * float * float * float) option Eliom.Parameter.ocaml]
-           Eliom.Parameter.param_name
-        * [`One of Eliom.Lib.file_info] Eliom.Parameter.param_name)
-    , 'b Eliom.Service.ocaml )
-    Eliom.Service.t
+  , 'a * ((float * float * float * float) option * Eliom.Lib.file_info)
+  , Eliom.Service.post
+  , Eliom.Service.non_att
+  , Eliom.Service.co
+  , Eliom.Service.non_ext
+  , Eliom.Service.reg
+  , [`WithoutSuffix]
+  , unit
+  , [`One of 'a Eliom.Parameter.ocaml] Eliom.Parameter.param_name
+    * ( [`One of (float * float * float * float) option Eliom.Parameter.ocaml]
+        Eliom.Parameter.param_name
+      * [`One of Eliom.Lib.file_info] Eliom.Parameter.param_name
+      )
+  , 'b Eliom.Service.ocaml
+  )
+  Eliom.Service.t
 
 let%client process_file (input : Dom_html.inputElement Js.t) callback =
   (* Since js_of_ocaml 6.4, inputElement##.files is a nullable [Js.opt]. *)
@@ -54,13 +56,15 @@ let%client file_reader file callback =
   let () =
     reader##.onload :=
       Dom.handler (fun e ->
-        Js.Opt.case e##.target
-          (fun () -> Js.bool false)
-          (fun target ->
-             let result = File.CoerceTo.string target##.result in
-             Js.Opt.case result
-               (fun () -> Js.bool false)
-               (fun blob -> callback blob; Js.bool false)))
+          Js.Opt.case e##.target
+            (fun () -> Js.bool false)
+            (fun target ->
+              let result = File.CoerceTo.string target##.result in
+              Js.Opt.case result
+                (fun () -> Js.bool false)
+                (fun blob -> callback blob; Js.bool false)
+            )
+      )
   in
   let () = reader##readAsDataURL file in
   ()
@@ -73,19 +77,20 @@ let%client on_animation_frame f =
       ignore
         (Dom_html.window##requestAnimationFrame
            (Js.wrap_callback (fun _ ->
-              match !last with
-              | None -> assert false
-              | Some x ->
-                  last := None;
-                  f x)));
+                match !last with
+                | None -> assert false
+                | Some x ->
+                    last := None;
+                    f x
+            )
+           )
+        );
     last := Some x
 
-let%shared
-    cropper
-      ~(image : Dom_html.element Js.t Eliom.Client_value.t)
-      ?(ratio : float option)
-      ()
-  =
+let%shared cropper
+    ~(image : Dom_html.element Js.t Eliom.Client_value.t)
+    ?(ratio : float option)
+    () =
   let mk_controller style =
     D.div ~a:[a_class ["ot-pup-ctrl"; "ot-pup-ctrl-" ^ style]] []
   in
@@ -121,270 +126,295 @@ let%shared
   let img_h, set_img_h = Eliom.Shared.React.S.create 0. in
   let _ =
     [%client
-      (let open Lwt_js_events in
-       let crop = To_dom.of_element ~%crop in
-       let t_f = To_dom.of_element ~%t_f in
-       let tr_f = To_dom.of_element ~%tr_f in
-       let r_f = To_dom.of_element ~%r_f in
-       let br_f = To_dom.of_element ~%br_f in
-       let b_f = To_dom.of_element ~%b_f in
-       let bl_f = To_dom.of_element ~%bl_f in
-       let l_f = To_dom.of_element ~%l_f in
-       let tl_f = To_dom.of_element ~%tl_f in
-       let x = ref 0. in
-       let y = ref 0. in
-       Eliom.Lib.Dom_reference.retain crop
-         ~keep:
-           (React.S.map
-              ( on_animation_frame @@ fun x ->
-                let top = Js.string (Printf.sprintf "%g%%" x) in
-                let () = t_f##.style##.height := top in
-                let () = tr_f##.style##.height := top in
-                let () = tl_f##.style##.height := top in
-                let () = l_f##.style##.top := top in
-                let () = r_f##.style##.top := top in
-                crop##.style##.top := top )
-              ~%top);
-       Eliom.Lib.Dom_reference.retain crop
-         ~keep:
-           (React.S.map
-              ( on_animation_frame @@ fun x ->
-                let bottom = Js.string (Printf.sprintf "%g%%" x) in
-                let () = b_f##.style##.height := bottom in
-                let () = br_f##.style##.height := bottom in
-                let () = bl_f##.style##.height := bottom in
-                let () = l_f##.style##.bottom := bottom in
-                let () = r_f##.style##.bottom := bottom in
-                crop##.style##.bottom := bottom )
-              ~%bottom);
-       Eliom.Lib.Dom_reference.retain crop
-         ~keep:
-           (React.S.map
-              ( on_animation_frame @@ fun x ->
-                let right = Js.string (Printf.sprintf "%g%%" x) in
-                let () = r_f##.style##.width := right in
-                let () = tr_f##.style##.width := right in
-                let () = br_f##.style##.width := right in
-                let () = t_f##.style##.right := right in
-                let () = b_f##.style##.right := right in
-                crop##.style##.right := right )
-              ~%right);
-       Eliom.Lib.Dom_reference.retain crop
-         ~keep:
-           (React.S.map
-              ( on_animation_frame @@ fun x ->
-                let left = Js.string (Printf.sprintf "%g%%" x) in
-                let () = l_f##.style##.width := left in
-                let () = tl_f##.style##.width := left in
-                let () = bl_f##.style##.width := left in
-                let () = t_f##.style##.left := left in
-                let () = b_f##.style##.left := left in
-                crop##.style##.left := left )
-              ~%left);
-       let update_top dy =
-         ~%set_top
-         @@ min (100. -. React.S.value ~%bottom)
-         @@ max (React.S.value ~%top +. dy) 0.
-       in
-       let update_bottom dy =
-         ~%set_bottom
-         @@ min (100. -. React.S.value ~%top)
-         @@ max (React.S.value ~%bottom -. dy) 0.
-       in
-       let update_right dx =
-         ~%set_right
-         @@ min (100. -. React.S.value ~%left)
-         @@ max (React.S.value ~%right -. dx) 0.
-       in
-       let update_left dx =
-         ~%set_left
-         @@ min (100. -. React.S.value ~%right)
-         @@ max (React.S.value ~%left +. dx) 0.
-       in
-       let plus x : float = +.x in
-       let minus x : float = -.x in
-       let move_listener cx cy =
-         let dx = (cx -. !x) /. React.S.value ~%img_w in
-         let dy = (cy -. !y) /. React.S.value ~%img_h in
-         let dx =
-           if dx > 0.
-           then min (React.S.value ~%right) dx
-           else max (-.React.S.value ~%left) dx
-         in
-         let dy =
-           if dy > 0.
-           then min (React.S.value ~%bottom) dy
-           else max (-.React.S.value ~%top) dy
-         in
-         update_right dx;
-         update_left dx;
-         update_top dy;
-         update_bottom dy;
-         x := cx;
-         y := cy;
-         Js.bool true
-       in
-       let mk_listener_ratio ?x_axis ?y_axis ~dir ~ratio () cx cy =
-         let cx = match x_axis with None -> !x | _ -> cx in
-         let cy = match y_axis with None -> !y | _ -> cy in
-         let dx =
-           (match x_axis with Some f -> f (cx -. !x) | None -> cx -. !x)
-           /. React.S.value ~%img_w
-         in
-         let dy =
-           (match y_axis with Some f -> f (cy -. !y) | None -> cy -. !y)
-           /. ratio /. React.S.value ~%img_w
-         in
-         let dx = if abs_float dx > abs_float dy then dx else dy in
-         let dy =
-           dx *. ratio *. (React.S.value ~%img_w /. React.S.value ~%img_h)
-         in
-         let t, r, b, l =
-           match dir with
-           | `T -> 1., 0.5, 0., 0.5
-           | `TR -> 1., 1., 0., 0.
-           | `R -> 0.5, 1., 0.5, 0.
-           | `BR -> 0., 1., 1., 0.
-           | `B -> 0., 0.5, 1., 0.5
-           | `BL -> 0., 0., 1., 1.
-           | `L -> 0.5, 0., 0.5, 1.
-           | `TL -> 1., 0., 0., 1.
-         in
-         if
-           React.S.value ~%right >= r *. dx
-           && React.S.value ~%left >= l *. dx
-           && React.S.value ~%top >= t *. dy
-           && React.S.value ~%bottom >= b *. dy
-         then (
-           update_top (-.t *. dy);
-           update_bottom (b *. dy);
-           update_left (-.l *. dx);
-           update_right (r *. dx));
-         x := cx;
-         y := cy;
-         Js.bool true
-       in
-       let mk_listener ?move_x ?move_y () cx cy =
-         let cx, move_x =
-           match move_x with Some f -> cx, f | None -> !x, fun _ -> ()
-         in
-         let cy, move_y =
-           match move_y with Some f -> cy, f | None -> !y, fun _ -> ()
-         in
-         let dx = (cx -. !x) /. React.S.value ~%img_w in
-         let dy = (cy -. !y) /. React.S.value ~%img_h in
-         if dx <> 0.
-         then (
-           move_x dx;
-           x := cx);
-         if dy <> 0.
-         then (
-           move_y dy;
-           y := cy);
-         Js.bool true
-       in
-       let bind_handler add_trigger event rm_trigger get_x get_y (dom, handler) =
-         Lwt.async (fun () ->
-           add_trigger (To_dom.of_element dom) (fun ev _ ->
-             Dom.preventDefault ev;
-             Dom_html.stopPropagation ev;
-             let () = x := get_x ev in
-             let () = y := get_y ev in
-             let x =
-               Dom_html.addEventListener Dom_html.document event
-                 (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev)))
-                 (Js.bool false)
-             in
-             let* _ =
-               Lwt.pick @@ List.map (fun e -> e Dom_html.document) rm_trigger
-             in
-             Dom_html.removeEventListener x;
-             Lwt.return_unit))
-       in
-       let listeners =
-         match ~%ratio with
-         | Some ratio ->
-             [ move_listener
-             ; mk_listener_ratio ~dir:`T ~y_axis:minus ~ratio ()
-             ; mk_listener_ratio ~dir:`TR ~x_axis:plus ~y_axis:minus ~ratio ()
-             ; mk_listener_ratio ~dir:`R ~x_axis:plus ~ratio ()
-             ; mk_listener_ratio ~dir:`BR ~x_axis:plus ~y_axis:plus ~ratio ()
-             ; mk_listener_ratio ~dir:`B ~y_axis:plus ~ratio ()
-             ; mk_listener_ratio ~dir:`BL ~x_axis:minus ~y_axis:plus ~ratio ()
-             ; mk_listener_ratio ~dir:`L ~x_axis:minus ~ratio ()
-             ; mk_listener_ratio ~dir:`TL ~x_axis:minus ~y_axis:minus ~ratio ()
-             ]
-         | None ->
-             [ move_listener
-             ; mk_listener ~move_y:update_top ()
-             ; mk_listener ~move_x:update_right ~move_y:update_top ()
-             ; mk_listener ~move_x:update_right ()
-             ; mk_listener ~move_x:update_right ~move_y:update_bottom ()
-             ; mk_listener ~move_y:update_bottom ()
-             ; mk_listener ~move_x:update_left ~move_y:update_bottom ()
-             ; mk_listener ~move_x:update_left ()
-             ; mk_listener ~move_x:update_left ~move_y:update_top () ]
-       in
-       List.iter2
-         (fun x y ->
+      ( let open Lwt_js_events in
+        let crop = To_dom.of_element ~%crop in
+        let t_f = To_dom.of_element ~%t_f in
+        let tr_f = To_dom.of_element ~%tr_f in
+        let r_f = To_dom.of_element ~%r_f in
+        let br_f = To_dom.of_element ~%br_f in
+        let b_f = To_dom.of_element ~%b_f in
+        let bl_f = To_dom.of_element ~%bl_f in
+        let l_f = To_dom.of_element ~%l_f in
+        let tl_f = To_dom.of_element ~%tl_f in
+        let x = ref 0. in
+        let y = ref 0. in
+        Eliom.Lib.Dom_reference.retain crop
+          ~keep:
+            (React.S.map
+               ( on_animation_frame @@ fun x ->
+                 let top = Js.string (Printf.sprintf "%g%%" x) in
+                 let () = t_f##.style##.height := top in
+                 let () = tr_f##.style##.height := top in
+                 let () = tl_f##.style##.height := top in
+                 let () = l_f##.style##.top := top in
+                 let () = r_f##.style##.top := top in
+                 crop##.style##.top := top
+               )
+               ~%top
+            );
+        Eliom.Lib.Dom_reference.retain crop
+          ~keep:
+            (React.S.map
+               ( on_animation_frame @@ fun x ->
+                 let bottom = Js.string (Printf.sprintf "%g%%" x) in
+                 let () = b_f##.style##.height := bottom in
+                 let () = br_f##.style##.height := bottom in
+                 let () = bl_f##.style##.height := bottom in
+                 let () = l_f##.style##.bottom := bottom in
+                 let () = r_f##.style##.bottom := bottom in
+                 crop##.style##.bottom := bottom
+               )
+               ~%bottom
+            );
+        Eliom.Lib.Dom_reference.retain crop
+          ~keep:
+            (React.S.map
+               ( on_animation_frame @@ fun x ->
+                 let right = Js.string (Printf.sprintf "%g%%" x) in
+                 let () = r_f##.style##.width := right in
+                 let () = tr_f##.style##.width := right in
+                 let () = br_f##.style##.width := right in
+                 let () = t_f##.style##.right := right in
+                 let () = b_f##.style##.right := right in
+                 crop##.style##.right := right
+               )
+               ~%right
+            );
+        Eliom.Lib.Dom_reference.retain crop
+          ~keep:
+            (React.S.map
+               ( on_animation_frame @@ fun x ->
+                 let left = Js.string (Printf.sprintf "%g%%" x) in
+                 let () = l_f##.style##.width := left in
+                 let () = tl_f##.style##.width := left in
+                 let () = bl_f##.style##.width := left in
+                 let () = t_f##.style##.left := left in
+                 let () = b_f##.style##.left := left in
+                 crop##.style##.left := left
+               )
+               ~%left
+            );
+        let update_top dy =
+          ~%set_top
+          @@ min (100. -. React.S.value ~%bottom)
+          @@ max (React.S.value ~%top +. dy) 0.
+        in
+        let update_bottom dy =
+          ~%set_bottom
+          @@ min (100. -. React.S.value ~%top)
+          @@ max (React.S.value ~%bottom -. dy) 0.
+        in
+        let update_right dx =
+          ~%set_right
+          @@ min (100. -. React.S.value ~%left)
+          @@ max (React.S.value ~%right -. dx) 0.
+        in
+        let update_left dx =
+          ~%set_left
+          @@ min (100. -. React.S.value ~%right)
+          @@ max (React.S.value ~%left +. dx) 0.
+        in
+        let plus x : float = +.x in
+        let minus x : float = -.x in
+        let move_listener cx cy =
+          let dx = (cx -. !x) /. React.S.value ~%img_w in
+          let dy = (cy -. !y) /. React.S.value ~%img_h in
+          let dx =
+            if dx > 0.
+            then min (React.S.value ~%right) dx
+            else max (-.React.S.value ~%left) dx
+          in
+          let dy =
+            if dy > 0.
+            then min (React.S.value ~%bottom) dy
+            else max (-.React.S.value ~%top) dy
+          in
+          update_right dx;
+          update_left dx;
+          update_top dy;
+          update_bottom dy;
+          x := cx;
+          y := cy;
+          Js.bool true
+        in
+        let mk_listener_ratio ?x_axis ?y_axis ~dir ~ratio () cx cy =
+          let cx = match x_axis with None -> !x | _ -> cx in
+          let cy = match y_axis with None -> !y | _ -> cy in
+          let dx =
+            (match x_axis with Some f -> f (cx -. !x) | None -> cx -. !x)
+            /. React.S.value ~%img_w
+          in
+          let dy =
+            (match y_axis with Some f -> f (cy -. !y) | None -> cy -. !y)
+            /. ratio /. React.S.value ~%img_w
+          in
+          let dx = if abs_float dx > abs_float dy then dx else dy in
+          let dy =
+            dx *. ratio *. (React.S.value ~%img_w /. React.S.value ~%img_h)
+          in
+          let t, r, b, l =
+            match dir with
+            | `T -> 1., 0.5, 0., 0.5
+            | `TR -> 1., 1., 0., 0.
+            | `R -> 0.5, 1., 0.5, 0.
+            | `BR -> 0., 1., 1., 0.
+            | `B -> 0., 0.5, 1., 0.5
+            | `BL -> 0., 0., 1., 1.
+            | `L -> 0.5, 0., 0.5, 1.
+            | `TL -> 1., 0., 0., 1.
+          in
+          if
+            React.S.value ~%right >= r *. dx
+            && React.S.value ~%left >= l *. dx
+            && React.S.value ~%top >= t *. dy
+            && React.S.value ~%bottom >= b *. dy
+          then (
+            update_top (-.t *. dy);
+            update_bottom (b *. dy);
+            update_left (-.l *. dx);
+            update_right (r *. dx)
+          );
+          x := cx;
+          y := cy;
+          Js.bool true
+        in
+        let mk_listener ?move_x ?move_y () cx cy =
+          let cx, move_x =
+            match move_x with Some f -> cx, f | None -> !x, fun _ -> ()
+          in
+          let cy, move_y =
+            match move_y with Some f -> cy, f | None -> !y, fun _ -> ()
+          in
+          let dx = (cx -. !x) /. React.S.value ~%img_w in
+          let dy = (cy -. !y) /. React.S.value ~%img_h in
+          if dx <> 0.
+          then (
+            move_x dx;
+            x := cx
+          );
+          if dy <> 0.
+          then (
+            move_y dy;
+            y := cy
+          );
+          Js.bool true
+        in
+        let bind_handler add_trigger event rm_trigger get_x get_y (dom, handler)
+            =
+          Lwt.async (fun () ->
+              add_trigger (To_dom.of_element dom) (fun ev _ ->
+                  Dom.preventDefault ev;
+                  Dom_html.stopPropagation ev;
+                  let () = x := get_x ev in
+                  let () = y := get_y ev in
+                  let x =
+                    Dom_html.addEventListener Dom_html.document event
+                      (Dom_html.handler (fun ev -> handler (get_x ev) (get_y ev))
+                      )
+                      (Js.bool false)
+                  in
+                  let* _ =
+                    Lwt.pick
+                    @@ List.map (fun e -> e Dom_html.document) rm_trigger
+                  in
+                  Dom_html.removeEventListener x;
+                  Lwt.return_unit
+              )
+          )
+        in
+        let listeners =
+          match ~%ratio with
+          | Some ratio ->
+              [ move_listener
+              ; mk_listener_ratio ~dir:`T ~y_axis:minus ~ratio ()
+              ; mk_listener_ratio ~dir:`TR ~x_axis:plus ~y_axis:minus ~ratio ()
+              ; mk_listener_ratio ~dir:`R ~x_axis:plus ~ratio ()
+              ; mk_listener_ratio ~dir:`BR ~x_axis:plus ~y_axis:plus ~ratio ()
+              ; mk_listener_ratio ~dir:`B ~y_axis:plus ~ratio ()
+              ; mk_listener_ratio ~dir:`BL ~x_axis:minus ~y_axis:plus ~ratio ()
+              ; mk_listener_ratio ~dir:`L ~x_axis:minus ~ratio ()
+              ; mk_listener_ratio ~dir:`TL ~x_axis:minus ~y_axis:minus ~ratio ()
+              ]
+          | None ->
+              [ move_listener
+              ; mk_listener ~move_y:update_top ()
+              ; mk_listener ~move_x:update_right ~move_y:update_top ()
+              ; mk_listener ~move_x:update_right ()
+              ; mk_listener ~move_x:update_right ~move_y:update_bottom ()
+              ; mk_listener ~move_y:update_bottom ()
+              ; mk_listener ~move_x:update_left ~move_y:update_bottom ()
+              ; mk_listener ~move_x:update_left ()
+              ; mk_listener ~move_x:update_left ~move_y:update_top ()
+              ]
+        in
+        List.iter2
+          (fun x y ->
             bind_handler mousedowns Dom_html.Event.mousemove
               [Lwt_js_events.mouseup]
               (fun ev -> Js.to_float ev##.clientX)
               (fun ev -> Js.to_float ev##.clientY)
-              (x, y))
-         [~%crop; ~%t_c; ~%tr_c; ~%r_c; ~%br_c; ~%b_c; ~%bl_c; ~%l_c; ~%tl_c]
-         listeners;
-       List.iter2
-         (fun x y ->
+              (x, y)
+          )
+          [~%crop; ~%t_c; ~%tr_c; ~%r_c; ~%br_c; ~%b_c; ~%bl_c; ~%l_c; ~%tl_c]
+          listeners;
+        List.iter2
+          (fun x y ->
             List.iter
               (fun x ->
-                 bind_handler touchstarts Dom_html.Event.touchmove
-                   [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
-                   (fun ev ->
-                      Js.Optdef.case
-                        (ev##.touches##item 0)
-                        (fun () -> assert false)
-                        (fun x -> Js.to_float x##.clientX))
-                   (fun ev ->
-                      Js.Optdef.case
-                        (ev##.touches##item 0)
-                        (fun () -> assert false)
-                        (fun x -> Js.to_float x##.clientY))
-                   (x, y))
-              x)
-         [ [~%crop]
-         ; [~%t_f; ~%t_c]
-         ; [~%tr_f; ~%tr_c]
-         ; [~%r_f; ~%r_c]
-         ; [~%br_f; ~%br_c]
-         ; [~%b_f; ~%b_c]
-         ; [~%bl_f; ~%bl_c]
-         ; [~%l_f; ~%l_c]
-         ; [~%tl_f; ~%tl_c] ]
-         listeners
-       : unit)]
+                bind_handler touchstarts Dom_html.Event.touchmove
+                  [Lwt_js_events.touchend; Lwt_js_events.touchcancel]
+                  (fun ev ->
+                    Js.Optdef.case
+                      (ev##.touches##item 0)
+                      (fun () -> assert false)
+                      (fun x -> Js.to_float x##.clientX)
+                  )
+                  (fun ev ->
+                    Js.Optdef.case
+                      (ev##.touches##item 0)
+                      (fun () -> assert false)
+                      (fun x -> Js.to_float x##.clientY)
+                  )
+                  (x, y)
+              )
+              x
+          )
+          [ [~%crop]
+          ; [~%t_f; ~%t_c]
+          ; [~%tr_f; ~%tr_c]
+          ; [~%r_f; ~%r_c]
+          ; [~%br_f; ~%br_c]
+          ; [~%b_f; ~%b_c]
+          ; [~%bl_f; ~%bl_c]
+          ; [~%l_f; ~%l_c]
+          ; [~%tl_f; ~%tl_c]
+          ]
+          listeners
+        : unit
+      )]
   in
   let reset =
     [%client
-      (fun () ->
-         let bb = ~%image##getBoundingClientRect in
-         let bb_w = Js.to_float bb##.right -. Js.to_float bb##.left in
-         let bb_h = Js.to_float bb##.bottom -. Js.to_float bb##.top in
-         let w, h =
-           match ~%ratio with
-           | Some ratio ->
-               if ratio *. bb_w <= bb_h
-               then bb_w, ratio *. bb_w
-               else bb_h /. ratio, bb_h
-           | None -> bb_w, bb_h
-         in
-         ~%set_img_w (bb_w /. 100.);
-         ~%set_img_h (bb_h /. 100.);
-         ~%set_top 0.;
-         ~%set_right ((bb_w -. w) /. (bb_w /. 100.));
-         ~%set_bottom ((bb_h -. h) /. (bb_h /. 100.));
-         ~%set_left 0.
-       : unit -> unit)]
+      ( fun () ->
+          let bb = ~%image##getBoundingClientRect in
+          let bb_w = Js.to_float bb##.right -. Js.to_float bb##.left in
+          let bb_h = Js.to_float bb##.bottom -. Js.to_float bb##.top in
+          let w, h =
+            match ~%ratio with
+            | Some ratio ->
+                if ratio *. bb_w <= bb_h
+                then bb_w, ratio *. bb_w
+                else bb_h /. ratio, bb_h
+            | None -> bb_w, bb_h
+          in
+          ~%set_img_w (bb_w /. 100.);
+          ~%set_img_h (bb_h /. 100.);
+          ~%set_top 0.;
+          ~%set_right ((bb_w -. w) /. (bb_w /. 100.));
+          ~%set_bottom ((bb_h -. h) /. (bb_h /. 100.));
+          ~%set_left 0.
+        : unit -> unit
+      )]
   in
   ( reset
   , Eliom.Shared.React.S.l4
@@ -425,29 +455,35 @@ let%client bind_input input preview ?container ?reset () =
   in
   Option.iter
     (fun f ->
-       Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ())))
+      Lwt.async (fun () -> loads preview (fun _ _ -> Lwt.return @@ f ()))
+    )
     reset;
   Lwt.async (fun () ->
-    Lwt_js_events.changes input (fun _ _ ->
-      Js.Opt.case
-        (Js.Opt.bind input##.files (fun files -> files##item 0))
-        onerror
-        (fun file ->
-           let () =
-             file_reader (Js.Unsafe.coerce file) (fun data ->
-               preview##.src := data;
-               Option.iter
-                 (fun container ->
-                    container##.classList##remove (Js.string "ot-no-file"))
-                 container)
-           in
-           Lwt.return_unit)))
+      Lwt_js_events.changes input (fun _ _ ->
+          Js.Opt.case
+            (Js.Opt.bind input##.files (fun files -> files##item 0))
+            onerror
+            (fun file ->
+              let () =
+                file_reader (Js.Unsafe.coerce file) (fun data ->
+                    preview##.src := data;
+                    Option.iter
+                      (fun container ->
+                        container##.classList##remove (Js.string "ot-no-file")
+                      )
+                      container
+                )
+              in
+              Lwt.return_unit
+            )
+      )
+  )
 
 [%%shared
 type cropping = (float * float * float * float) React.S.t
 
 type 'a upload =
-  ?progress:(int -> int -> unit)
+     ?progress:(int -> int -> unit)
   -> ?cropping:cropping
   -> File.file Js.t
   -> 'a Lwt.t]
@@ -461,25 +497,24 @@ let%client do_submit input ?progress ?cropping ~upload () =
   let* () = upload ?progress ?cropping file in
   Lwt.return_unit
 
-let%client
-    bind_submit
-      (input : Dom_html.inputElement Js.t Eliom.Client_value.t)
-      button
-      ?cropping
-      ~upload
-      ~after_submit
-      ()
-  =
+let%client bind_submit
+    (input : Dom_html.inputElement Js.t Eliom.Client_value.t)
+    button
+    ?cropping
+    ~upload
+    ~after_submit
+    () =
   Lwt.async (fun () ->
-    Lwt_js_events.clicks button (fun ev _ ->
-      Dom.preventDefault ev;
-      Dom_html.stopPropagation ev;
-      let* () = do_submit input ?cropping ~upload () in
-      after_submit ()))
+      Lwt_js_events.clicks button (fun ev _ ->
+          Dom.preventDefault ev;
+          Dom_html.stopPropagation ev;
+          let* () = do_submit input ?cropping ~upload () in
+          after_submit ()
+      )
+  )
 
-let%client
-    bind ?container ~input ~preview ?crop ~submit ~upload ~after_submit ()
-  =
+let%client bind
+    ?container ~input ~preview ?crop ~submit ~upload ~after_submit () =
   let reset, cropping =
     match crop with Some (x, y) -> Some x, Some y | _ -> None, None
   in
@@ -495,17 +530,17 @@ let%server mk_service name arg_deriver =
          , let open Eliom.Parameter in
            ocaml "service_arg" arg_deriver
            ** ocaml "cropping" [%json: (float * float * float * float) option]
-           ** file "f" ))
+           ** file "f"
+         )
+      )
     ()
 
-let%shared
-    mk_form
-      ?(after_submit = fun () -> Lwt.return_unit)
-      ?crop
-      ?input:(input_a, input_content = [], [])
-      ?submit:(submit_a, submit_content = [], [])
-      (upload : unit upload)
-  =
+let%shared mk_form
+    ?(after_submit = fun () -> Lwt.return_unit)
+    ?crop
+    ?input:(input_a, input_content = [], [])
+    ?submit:(submit_a, submit_content = [], [])
+    (upload : unit upload) =
   let preview = preview () in
   let input, input_label = input ~a:input_a input_content in
   let submit = submit ~a:submit_a submit_content in
@@ -523,14 +558,16 @@ let%shared
       ~a:[a_class ["ot-pup-form"; "ot-no-file"]]
       [ input_label
       ; div ~a:[a_class ["ot-pup-container"]] (preview :: cropper_dom)
-      ; submit ]
+      ; submit
+      ]
   in
   let _ =
     [%client
-      (bind ~container:(To_dom.of_form ~%form) ~input:(To_dom.of_input ~%input)
-         ~preview:(To_dom.of_img ~%preview) ?crop:~%crop
-         ~submit:(To_dom.of_button ~%submit)
-         ~upload:~%upload ~after_submit:~%after_submit ()
-       : unit)]
+      ( bind ~container:(To_dom.of_form ~%form) ~input:(To_dom.of_input ~%input)
+          ~preview:(To_dom.of_img ~%preview) ?crop:~%crop
+          ~submit:(To_dom.of_button ~%submit)
+          ~upload:~%upload ~after_submit:~%after_submit ()
+        : unit
+      )]
   in
   Lwt.return form
