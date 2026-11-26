@@ -2,7 +2,7 @@
 
 (name ocsigen-toolkit)
 
-(version 5.0.0~dev)
+(version 5.0.0)
 
 (generate_opam_files true)
 
