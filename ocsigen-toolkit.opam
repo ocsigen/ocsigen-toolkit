@@ -14,11 +14,11 @@ depends: [
   "dune" {>= "3.18"}
   "ocaml" {>= "4.08.0"}
   "js_of_ocaml" {>= "6.4.1"}
-  "eliom" {>= "13.0~" & < "14.0.0"}
+  "eliom" {>= "13.0.0" & < "14.0.0"}
   "calendar" {>= "2.0.0"}
   "lwt_ppx"
-  "ocsigen-dune-rules"
-  "ocsigen-ppx-rpc" {>= "2.0~"}
+  "ocsigen-dune-rules" {>= "1.0.0"}
+  "ocsigen-ppx-rpc" {>= "2.0"}
   "odoc" {with-doc}
 ]
 build: [

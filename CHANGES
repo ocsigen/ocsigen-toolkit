@@ -8,7 +8,7 @@
    provides the legacy Ot_xxx module names as include-aliases of the
    new Ot.Xxx modules, to ease migration of existing code.
 * Dependencies
-** Eliom 13 required ("eliom" {>= "13.0~" & < "14.0.0"}), hence
+** Eliom 13 required ("eliom" {>= "13.0.0" & < "14.0.0"}), hence
    Ocsigen Server 8: all references to Eliom_xxx modules have been
    migrated to the new wrapped style (Eliom.Content.Html,
    Eliom.Service, Eliom.Client, ...).
@@ -30,7 +30,7 @@
   bool, which silently disabled client-side validation under wasm).
 * Build system
 ** Use ocsigen-dune-rules to generate the dune rules of the client
-   and server libraries (new opam dependency).
+   and server libraries (new opam dependency, >= 1.0.0).
 ** Internal: the server library no longer links js_of_ocaml at
    runtime (uses -I include flags for type definitions, like
    Eliom), so it can be loaded via Dynlink.
