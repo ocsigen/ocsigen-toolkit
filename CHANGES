@@ -30,7 +30,8 @@
   bool, which silently disabled client-side validation under wasm).
 * Build system
 ** Use ocsigen-dune-rules to generate the dune rules of the client
-   and server libraries (new opam dependency, >= 1.0.0).
+   and server libraries (new opam dependency, exactly version 1.0.0,
+   since each new version changes the generated rules).
 ** Internal: the server library no longer links js_of_ocaml at
    runtime (uses -I include flags for type definitions, like
    Eliom), so it can be loaded via Dynlink.
