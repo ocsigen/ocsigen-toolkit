@@ -42,7 +42,7 @@ module type S = sig
   type 'a attrib
 
   val icon :
-     string list
+       string list
     -> ?a:Html_types.i_attrib attrib list
     -> unit
     -> [> Html_types.i] elt
@@ -60,37 +60,27 @@ module type S = sig
   (** Predefined "plus" / add icon (CSS class [ot-plus]). *)
 
   val spinner :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Animated spinner icon
       (CSS classes [ot-icon-spinner ot-icon-animation-spinning]). *)
 
   val shutdown :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Shutdown / power icon (CSS class [ot-icon-power]). *)
 
   val config :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Configuration / gear icon (CSS class [ot-icon-gear]). *)
 
   val signout :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Sign out / logout icon (CSS class [ot-icon-sign-out]). *)
 
   val close : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Close icon (CSS class [ot-icon-close]). *)
 
   val question :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
   (** Question mark / help icon (CSS class [ot-icon-question]). *)
 end
 
@@ -102,12 +92,12 @@ module Make (A : Eliom.Content.Html.T) :
 (** Icons built with {!Eliom.Content.Html.F} (static HTML). *)
 module F :
   S
-  with type 'a elt = 'a Eliom.Content.Html.F.elt
-   and type 'a attrib = 'a Eliom.Content.Html.F.attrib
+    with type 'a elt = 'a Eliom.Content.Html.F.elt
+     and type 'a attrib = 'a Eliom.Content.Html.F.attrib
 
 (** Icons built with {!Eliom.Content.Html.D} (HTML with DOM identity,
     suitable for being referenced from client-side code). *)
 module D :
   S
-  with type 'a elt = 'a Eliom.Content.Html.D.elt
-   and type 'a attrib = 'a Eliom.Content.Html.D.attrib
+    with type 'a elt = 'a Eliom.Content.Html.D.elt
+     and type 'a attrib = 'a Eliom.Content.Html.D.attrib

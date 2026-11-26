@@ -52,11 +52,12 @@ type 'a t =
   ; pos : int Eliom.Shared.React.S.t
   ; pos_post : int Eliom.Shared.React.S.t
   ; vis_elts : int Eliom.Shared.React.S.t
-  ; swipe_pos : float React.S.t Eliom.Client_value.t }
+  ; swipe_pos : float React.S.t Eliom.Client_value.t
+  }
 (** see [make] *)
 
 val make :
-   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -70,10 +71,11 @@ val make :
   -> ?make_transform:
        (vertical:bool -> ?delta:int -> int -> string) Eliom.Shared.Value.t
   -> ?make_page_attribute:
-       (vertical:bool
+       (   vertical:bool
         -> int
-        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list)
-         Eliom.Shared.Value.t
+        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list
+       )
+       Eliom.Shared.Value.t
   -> [< Html_types.div_content] Eliom.Content.Html.elt list
   -> [> `Div] t
 (**
@@ -129,7 +131,7 @@ val make :
 *)
 
 val make_lazy :
-   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -143,14 +145,15 @@ val make_lazy :
   -> ?make_transform:
        (vertical:bool -> ?delta:int -> int -> string) Eliom.Shared.Value.t
   -> ?make_page_attribute:
-       (vertical:bool
+       (   vertical:bool
         -> int
-        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list)
-         Eliom.Shared.Value.t
+        -> Html_types.div_attrib Eliom.Content.Html.D.attrib list
+       )
+       Eliom.Shared.Value.t
   -> ?spinner:(unit -> Html_types.div_content Eliom.Content.Html.elt)
   -> (unit -> [< Html_types.div_content] Eliom.Content.Html.elt Lwt.t)
-       Eliom.Shared.Value.t
-       list
+     Eliom.Shared.Value.t
+     list
   -> [> `Div] t Lwt.t
 (** same as [make] except for the last argument. Instead of supplying the
     contents for each page directly, supply a for each page a shared content
@@ -163,7 +166,7 @@ val make_lazy :
 *)
 
 val wheel :
-   ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib > `Class] Eliom.Content.Html.attrib list
   -> ?vertical:bool
   -> ?position:int
   -> ?transition_duration:float
@@ -192,7 +195,7 @@ val wheel :
  *)
 
 val bullets :
-   ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
   -> ?attributes:[< Html_types.li_attrib] Eliom.Content.Html.attrib list list
   -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t
   -> pos:int Eliom.Shared.React.S.t
@@ -216,7 +219,7 @@ val bullets :
  *)
 
 val ribbon :
-   ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.ul_attrib] Eliom.Content.Html.attrib list
   -> change:([`Goto of int | `Next | `Prev] -> unit) Eliom.Client_value.t
   -> pos:int Eliom.Shared.React.S.t
   -> ?size:int Eliom.Shared.React.S.t
@@ -242,7 +245,7 @@ val ribbon :
  *)
 
 val previous :
-   ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
   -> change:([> `Prev | `Goto of int] -> unit) Eliom.Client_value.t
   -> ?offset:int Eliom.Shared.React.S.t
   -> pos:int Eliom.Shared.React.S.t
@@ -251,7 +254,7 @@ val previous :
 (** Button to go to the previous page (or mores page if [offset] is present). *)
 
 val next :
-   ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.button_attrib] Eliom.Content.Html.attrib list
   -> change:([> `Next | `Goto of int] -> unit) Eliom.Client_value.t
   -> ?offset:int Eliom.Shared.React.S.t
   -> pos:int Eliom.Shared.React.S.t
@@ -276,13 +279,12 @@ val next :
 (*  Make arrow keys cause event change.
     Returns a thread that never stops until you call [Lwt.cancel] on it. *)
 val bind_arrow_keys :
-   ?use_capture:bool
+     ?use_capture:bool
   -> ?vertical:bool
   -> change:([> `Goto of int | `Next | `Prev] -> unit)
   -> #Dom_html.eventTarget Js.t
   -> unit Lwt.t
 
 val set_default_fail :
-   (exn -> [< Html_types.div_content] Eliom.Content.Html.elt)
-  -> unit
+  (exn -> [< Html_types.div_content] Eliom.Content.Html.elt) -> unit
 (** Change the default function used to display error messages *)

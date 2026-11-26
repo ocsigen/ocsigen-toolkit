@@ -9,7 +9,7 @@ module type S = sig
   type 'a attrib
 
   val icon :
-     string list
+       string list
     -> ?a:Html_types.i_attrib attrib list
     -> unit
     -> [> Html_types.i] elt
@@ -18,31 +18,21 @@ module type S = sig
   val plus : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val spinner :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val shutdown :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val config :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val signout :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val close : ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 
   val question :
-     ?a:Html_types.i_attrib attrib list
-    -> unit
-    -> [> Html_types.i] elt
+    ?a:Html_types.i_attrib attrib list -> unit -> [> Html_types.i] elt
 end
 
 module Make (A : Eliom.Content.Html.T) :
@@ -56,10 +46,9 @@ module Make (A : Eliom.Content.Html.T) :
    * with predefined icons.
    *)
   let icon
-        classes
-        ?(a = ([] : Html_types.i_attrib Eliom.Content.Html.attrib list))
-        ()
-    =
+      classes
+      ?(a = ([] : Html_types.i_attrib Eliom.Content.Html.attrib list))
+      () =
     A.i ~a:(A.a_class ("ot-icon" :: classes) :: a) []
 
   (* Predefined icons. See ot-icons.css *)

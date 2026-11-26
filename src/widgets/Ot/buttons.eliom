@@ -11,13 +11,16 @@ let%shared dropdown ?(a = []) ~menu content =
       ~a:(a_class ["ot-dropdown"] :: a)
       [ div ~a:[a_class ["ot-dropdown-button"]] content
       ; div ~a:[a_class ["ot-dropdown-background"]] []
-      ; div ~a:[a_class ["ot-dropdown-menu"]] menu ]
+      ; div ~a:[a_class ["ot-dropdown-menu"]] menu
+      ]
   in
   (* the following does nothing, but still fixes hover anomalies on iPad *)
   ignore
     [%client
-      (Lwt.async @@ fun () ->
-       Lwt_js_events.clicks (To_dom.of_element ~%dropdown) (fun _ev _ ->
-         Lwt.return_unit)
-       : _)];
+      ( Lwt.async @@ fun () ->
+        Lwt_js_events.clicks (To_dom.of_element ~%dropdown) (fun _ev _ ->
+            Lwt.return_unit
+        )
+        : _
+      )];
   dropdown

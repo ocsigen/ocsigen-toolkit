@@ -40,9 +40,7 @@ val%client valid : Dom_html.element Js.t -> bool
 (** [valid e] checks HTML5 validity and absence of the ["ot-invalid"] class. *)
 
 val%client set_custom_validity :
-   Dom_html.element Js.t
-  -> (string, string) result
-  -> unit
+  Dom_html.element Js.t -> (string, string) result -> unit
 (** [set_custom_validity e r] sets the HTML5 custom validity message on [e]. *)
 
 val%client select_input_value : Dom_html.event Js.t -> unit
@@ -50,16 +48,14 @@ val%client select_input_value : Dom_html.event Js.t -> unit
     that triggered [ev]. *)
 
 val%client on_enter :
-   f:(string -> unit Lwt.t)
-  -> Dom_html.inputElement Js.t
-  -> unit
+  f:(string -> unit Lwt.t) -> Dom_html.inputElement Js.t -> unit
 (** [on_enter ~f inp] calls [f] with the input value when the user
     presses Enter, provided the input is valid. *)
 
 (** {3 Buttons} *)
 
 val%shared disableable_button :
-   ?a:[< Html_types.button_attrib] attrib list
+     ?a:[< Html_types.button_attrib] attrib list
   -> ?button_type:[< Eliom.Form_sigs.button_type]
   -> disabled:bool Eliom.Shared.React.S.t
   -> [< Html_types.button_content] elt list
@@ -69,7 +65,7 @@ val%shared disableable_button :
 (** {3 Toggle button} *)
 
 val%shared reactive_toggle_button :
-   ?a:[< Html_types.button_attrib] attrib list
+     ?a:[< Html_types.button_attrib] attrib list
   -> ?init:bool
   -> ?ctrl:bool react_component
   -> [< Html_types.button_content] elt list
@@ -81,7 +77,7 @@ val%shared reactive_toggle_button :
 (** {3 Radio buttons} *)
 
 val%shared radio :
-   ?a:[< Html_types.label_attrib] attrib list
+     ?a:[< Html_types.label_attrib] attrib list
   -> ?disabled_s:bool Eliom.Shared.React.S.t
   -> ?checked_s:bool Eliom.Shared.React.S.t
   -> ?name:string
@@ -91,7 +87,7 @@ val%shared radio :
 (** A single radio button with label. *)
 
 val%shared radio_buttons :
-   ?a:[< Html_types.label_attrib] attrib list
+     ?a:[< Html_types.label_attrib] attrib list
   -> ?disabled_s:int list Eliom.Shared.React.S.t
   -> selection_react:int option react_component
   -> name:string
@@ -100,7 +96,7 @@ val%shared radio_buttons :
 (** A group of radio buttons with reactive selection. *)
 
 val%shared radio_selector :
-   ?a:[< Html_types.div_attrib > `Class] attrib list
+     ?a:[< Html_types.div_attrib > `Class] attrib list
   -> selection_react:int option react_component
   -> name:string
   -> label:[< Html_types.div_content] elt list
@@ -111,7 +107,7 @@ val%shared radio_selector :
 (** {3 Reactive inputs} *)
 
 val%shared reactify_input :
-   ?input_r:string react_component
+     ?input_r:string react_component
   -> ?value:string
   -> ?validate:(string -> bool) Eliom.Client_value.t
   -> [`Input | `Textarea] elt
@@ -120,7 +116,7 @@ val%shared reactify_input :
     Returns a signal tracking the current value and a setter. *)
 
 val%shared reactive_input :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?input_r:string react_component
   -> ?value:string
   -> ?validate:(string -> bool) Eliom.Client_value.t
@@ -131,7 +127,7 @@ val%shared reactive_input :
     a (signal, setter) pair. *)
 
 val%shared textarea :
-   ?a:[< Html_types.textarea_attrib] attrib list
+     ?a:[< Html_types.textarea_attrib] attrib list
   -> ?a_rows:int
   -> ?resize:bool
   -> ?a_placeholder:string
@@ -140,7 +136,7 @@ val%shared textarea :
 (** Create a textarea, optionally with auto-resize. *)
 
 val%shared reactive_textarea :
-   ?a:[< Html_types.textarea_attrib] attrib list
+     ?a:[< Html_types.textarea_attrib] attrib list
   -> ?a_rows:int
   -> ?resize:bool
   -> ?a_placeholder:string
@@ -154,15 +150,16 @@ val%shared reactive_textarea :
 (** {3 Debounced input} *)
 
 val%shared debounced_input :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?delay:float
   -> ?value:string
   -> ?validate:(string -> bool) Eliom.Client_value.t
   -> unit
   -> [> `Input] elt
-     * (string Eliom.Shared.React.S.t
+     * ( string Eliom.Shared.React.S.t
        * string Eliom.Shared.React.S.t
-       * (string -> unit) Eliom.Client_value.t)
+       * (string -> unit) Eliom.Client_value.t
+       )
 (** A reactive input where the debounced signal updates only after
     [delay] seconds (default 0.3) of inactivity. Returns
     [(input, (raw_signal, debounced_signal, setter))].
@@ -172,7 +169,7 @@ val%shared debounced_input :
 (** {3 Enter key binding} *)
 
 val%shared lwt_bind_input_enter :
-   ?validate:(string -> bool) Eliom.Client_value.t
+     ?validate:(string -> bool) Eliom.Client_value.t
   -> ?button:[`Button] elt
   -> [`Input] elt
   -> (string -> unit Lwt.t) Eliom.Client_value.t
@@ -181,7 +178,7 @@ val%shared lwt_bind_input_enter :
     or optional button click. *)
 
 val%shared lwt_bound_input_enter :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?button:[`Button] elt
   -> ?validate:(string -> bool) Eliom.Client_value.t
   -> (string -> unit Lwt.t) Eliom.Client_value.t
@@ -194,7 +191,7 @@ type%shared checkbox_position = [`Left | `Right | `None]
 type%shared checkbox_style = [`Box | `Bullet | `Small_bullet | `Toggle]
 
 val%shared checkbox :
-   ?a:[< Html_types.label_attrib] attrib list
+     ?a:[< Html_types.label_attrib] attrib list
   -> ?a_inp:[< Html_types.input_attrib] attrib list
   -> ?required:bool
   -> ?position:checkbox_position
@@ -208,7 +205,7 @@ val%shared checkbox :
 (** A customizable checkbox with position and style options. *)
 
 val%shared reactive_checkbox :
-   ?a:[< Html_types.label_attrib] attrib list
+     ?a:[< Html_types.label_attrib] attrib list
   -> ?a_inp:[< Html_types.input_attrib] attrib list
   -> ?position:checkbox_position
   -> ?checked:bool
@@ -233,11 +230,11 @@ val%shared reactive_checkbox :
 (** {3 Validation} *)
 
 val%shared input_validation_tools :
-   ?init:string
+     ?init:string
   -> ?set_focus:(bool -> unit) Eliom.Client_value.t
   -> ?result_iter:
        (Js_of_ocaml.Dom_html.inputElement Js_of_ocaml.Js.t -> string -> unit)
-         Eliom.Client_value.t
+       Eliom.Client_value.t
   -> ?invalid_class:string
   -> (string -> (string, string) Result.t) Eliom.Shared.Value.t
   -> [> Html_types.input_attrib] attrib list
@@ -257,7 +254,7 @@ val%shared graceful_invalid_style : [`Input] elt -> unit
 (** {3 Integer inputs} *)
 
 val%shared optional_int_input :
-   ?min:int
+     ?min:int
   -> ?max:int
   -> ?size:int
   -> int option
@@ -266,7 +263,7 @@ val%shared optional_int_input :
     Displays ["-"] when empty. *)
 
 val%shared int_input :
-   ?min:int
+     ?min:int
   -> ?max:int
   -> ?size:int
   -> int
@@ -276,7 +273,7 @@ val%shared int_input :
 (** {3 Password input} *)
 
 val%shared password_input :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?placeholder:string
   -> unit
   -> [> `Div] elt * [> `Input] elt * bool react_component
@@ -300,7 +297,7 @@ val%shared password_toggle : [< Html_types.input] elt -> [> `Div] elt
 (** {3 Prevent double submit} *)
 
 val%shared prevent_double_submit :
-   ?a:[< Html_types.button_attrib] attrib list
+     ?a:[< Html_types.button_attrib] attrib list
   -> ?button_type:[< Eliom.Form_sigs.button_type]
   -> f:(unit -> unit Lwt.t) Eliom.Client_value.t
   -> [< Html_types.button_content] elt list
@@ -311,7 +308,7 @@ val%shared prevent_double_submit :
 (** {3 Reactive select} *)
 
 val%shared reactive_select :
-   ?a:[< Html_types.select_attrib] attrib list
+     ?a:[< Html_types.select_attrib] attrib list
   -> options:(string * string) list
   -> ?selected:string
   -> unit
@@ -334,7 +331,7 @@ val%shared none_input_value : string
 (** {3 Reactive fieldset} *)
 
 val%shared reactive_fieldset :
-   ?a:[< Html_types.fieldset_attrib] attrib list
+     ?a:[< Html_types.fieldset_attrib] attrib list
   -> disabled:bool Eliom.Shared.React.S.t
   -> [< Html_types.fieldset_content] elt list
   -> [> `Fieldset] elt
@@ -356,7 +353,7 @@ val%shared string_of_time : int * int -> string
 (** Format a [(hours, minutes)] pair as [HH:MM]. *)
 
 val%shared reactive_date_input :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?value:int * int * int
   -> unit
   -> [> `Input] elt * (int * int * int) option react_component
@@ -364,7 +361,7 @@ val%shared reactive_date_input :
     [Some (year, month, day)] or [None] when empty. *)
 
 val%shared reactive_time_input :
-   ?a:[< Html_types.input_attrib] attrib list
+     ?a:[< Html_types.input_attrib] attrib list
   -> ?value:int * int
   -> unit
   -> [> `Input] elt * (int * int) option react_component

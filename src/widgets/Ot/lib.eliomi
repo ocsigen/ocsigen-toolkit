@@ -24,9 +24,7 @@
 open Js_of_ocaml
 
 val in_ancestors :
-   elt:Dom_html.element Js.t
-  -> ancestor:Dom_html.element Js.t
-  -> bool
+  elt:Dom_html.element Js.t -> ancestor:Dom_html.element Js.t -> bool
 
 val onloads : (unit -> unit) -> unit
 
@@ -42,7 +40,7 @@ val onresizes : (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t) -> unit Lwt.t
 val window_scroll : ?use_capture:bool -> unit -> Dom_html.event Js.t Lwt.t
 
 val window_scrolls :
-   ?ios_html_scroll_hack:bool
+     ?ios_html_scroll_hack:bool
   -> ?use_capture:bool
   -> (Dom_html.event Js.t -> unit Lwt.t -> unit Lwt.t)
   -> unit Lwt.t
@@ -74,7 +72,7 @@ val window_scrolls :
     capture=true, to capture the event as early as possible. *)
 
 val click_outside :
-   ?use_capture:bool
+     ?use_capture:bool
   -> ?inside:Dom_html.element Js.t
   -> #Dom_html.element Js.t
   -> Dom_html.mouseEvent Js.t Lwt.t

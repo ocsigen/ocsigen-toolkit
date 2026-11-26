@@ -33,7 +33,8 @@ let%shared hcf ?(a = []) ?(header = []) ?(footer = []) content =
     ~a:(a_class ["ot-hcf"] :: (a :> Html_types.div_attrib attrib list))
     [ F.header ~a:[a_class ["ot-hcf-header"]] header
     ; div ~a:[a_class ["ot-hcf-content"]] content
-    ; F.footer ~a:[a_class ["ot-hcf-footer"]] footer ]
+    ; F.footer ~a:[a_class ["ot-hcf-footer"]] footer
+    ]
 
 let%client disable_page_scroll, enable_page_scroll =
   let scroll_pos = ref None in
@@ -62,7 +63,9 @@ let%client disable_page_scroll, enable_page_scroll =
         scroll_pos := Some pos;
         html_ManipClass_add (html ()) "ot-with-popup";
         Dom_html.document##.body##.style##.top
-        := Js.string (Printf.sprintf "%gpx" (-.pos))))
+        := Js.string (Printf.sprintf "%gpx" (-.pos))
+      )
+    )
   , fun () ->
       match !scroll_pos with
       | None -> ()
@@ -72,17 +75,15 @@ let%client disable_page_scroll, enable_page_scroll =
           Dom_html.window##scrollTo (Js.float 0.) (Js.float pos);
           scroll_pos := None )
 
-let%client
-    popup
-      ?(a = [])
-      ?(enable_scrolling_hack = true)
-      ?close_button
-      ?confirmation_onclose
-      ?(onclose = fun () -> Lwt.return_unit)
-      ?(close_on_background_click = false)
-      ?(close_on_escape = close_button <> None)
-      gen_content
-  =
+let%client popup
+    ?(a = [])
+    ?(enable_scrolling_hack = true)
+    ?close_button
+    ?confirmation_onclose
+    ?(onclose = fun () -> Lwt.return_unit)
+    ?(close_on_background_click = false)
+    ?(close_on_escape = close_button <> None)
+    gen_content =
   let a = (a :> Html_types.div_attrib attrib list) in
   let gen_content =
     (gen_content :> (unit -> unit Lwt.t) -> Html_types.div_content elt Lwt.t)
@@ -90,7 +91,8 @@ let%client
   let popup = ref None in
   let stop, stop_thread = React.E.create () in
   Eliom.Client.Page_status.onactive ~stop (fun () ->
-    if enable_scrolling_hack then disable_page_scroll ());
+      if enable_scrolling_hack then disable_page_scroll ()
+  );
   let reset () = if enable_scrolling_hack then enable_page_scroll () in
   let do_close () =
     if
@@ -107,7 +109,8 @@ let%client
     | Some f ->
         Lwt.bind (f ()) (function
           | true -> do_close ()
-          | false -> Lwt.return_unit)
+          | false -> Lwt.return_unit
+        )
   in
   (* FIXME: use a list for gen_content return type *)
   let* c =
@@ -123,7 +126,8 @@ let%client
           ~a:
             [ a_button_type `Button
             ; a_class ["ot-popup-close"]
-            ; a_onclick (fun _ev -> Lwt.async (fun () -> close ())) ]
+            ; a_onclick (fun _ev -> Lwt.async (fun () -> close ()))
+            ]
           but
         :: content
     | None -> content
@@ -134,14 +138,16 @@ let%client
   if close_on_background_click
   then
     Eliom.Client.Page_status.while_active ~stop (fun () ->
-      (* Close the popup when user clicks on background *)
-      let* event = Lwt_js_events.click box_dom in
-      if event##.target = Js.some box_dom then close () else Lwt.return_unit);
+        (* Close the popup when user clicks on background *)
+        let* event = Lwt_js_events.click box_dom in
+        if event##.target = Js.some box_dom then close () else Lwt.return_unit
+    );
   if close_on_escape
   then
     Eliom.Client.Page_status.while_active ~stop (fun () ->
-      Lwt_js_events.keydowns Dom_html.window @@ fun ev _ ->
-      if ev##.keyCode = 27 then close () else Lwt.return_unit);
+        Lwt_js_events.keydowns Dom_html.window @@ fun ev _ ->
+        if ev##.keyCode = 27 then close () else Lwt.return_unit
+    );
   popup := Some box;
   Manip.appendToBody box;
   Lwt.return box
@@ -150,21 +156,25 @@ let%client ask_question ?a ?a_hcf ~header ~buttons contents =
   let t, w = Lwt.wait () in
   let* _ =
     popup ?a (fun do_close ->
-      let answers =
-        List.map
-          (fun (content, action, btn_class) ->
-             let btn = D.Raw.button ~a:[a_class btn_class] content in
-             (* Onlick, give t the selected value
+        let answers =
+          List.map
+            (fun (content, action, btn_class) ->
+              let btn = D.Raw.button ~a:[a_class btn_class] content in
+              (* Onlick, give t the selected value
                 and close question popup. *)
-             Lwt.async (fun () ->
-               Lwt_js_events.clicks (To_dom.of_element btn) (fun _ _ ->
-                 let* r = action () in
-                 let* result = do_close () in
-                 Lwt.wakeup w r; Lwt.return result));
-             btn)
-          buttons
-      in
-      Lwt.return (hcf ?a:a_hcf ~header ~footer:answers contents))
+              Lwt.async (fun () ->
+                  Lwt_js_events.clicks (To_dom.of_element btn) (fun _ _ ->
+                      let* r = action () in
+                      let* result = do_close () in
+                      Lwt.wakeup w r; Lwt.return result
+                  )
+              );
+              btn
+            )
+            buttons
+        in
+        Lwt.return (hcf ?a:a_hcf ~header ~footer:answers contents)
+    )
   in
   t
 
@@ -175,5 +185,6 @@ let%client confirm ?(a = []) question yes no =
     ~header:question
     ~buttons:
       [ yes, (fun () -> Lwt.return_true), ["ot-popup-yes"]
-      ; no, (fun () -> Lwt.return_false), ["ot-popup-no"] ]
+      ; no, (fun () -> Lwt.return_false), ["ot-popup-no"]
+      ]
     []

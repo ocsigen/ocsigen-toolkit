@@ -32,7 +32,8 @@ type t =
   { node : Dom.node Js.t
   ; thread : unit Lwt.t
   ; resolver : unit Lwt.u
-  ; stop_ondead : unit -> unit }
+  ; stop_ondead : unit -> unit
+  }
 
 let watched = ref []
 
@@ -44,13 +45,15 @@ let log ~n:node s =
     ignore node;
     print_endline
     @@ Printf.sprintf "Nodeready: %s; watching %n elements" s
-         (List.length !watched))
+         (List.length !watched)
+  )
 
 let handler records observer =
   let changes = ref false in
   for i = 0 to records##.length - 1 do
     Js.Optdef.iter (Js.array_get records i) (fun r ->
-      if r##.addedNodes##.length > 0 then changes := true)
+        if r##.addedNodes##.length > 0 then changes := true
+    )
   done;
   if !changes
   then (
@@ -61,7 +64,9 @@ let handler records observer =
     if not_ready = [] then observer##disconnect;
     ready
     |> List.iter (fun {resolver; stop_ondead; _} ->
-      stop_ondead (); Lwt.wakeup resolver ()))
+        stop_ondead (); Lwt.wakeup resolver ()
+    )
+  )
 
 let observer =
   new%js MutationObserver.mutationObserver (Js.wrap_callback handler)
@@ -77,7 +82,8 @@ let nodeready n =
   if node_in_document n
   then (
     log ~n "already in document";
-    Lwt.return_unit)
+    Lwt.return_unit
+  )
   else (
     if !watched = [] then observer##observe Dom_html.document config;
     try
@@ -94,13 +100,16 @@ let nodeready n =
         stop_ondead ()
       in
       Eliom.Client.Page_status.ondead ~stop (fun () ->
-        let instances_of_node, rest =
-          List.partition (fun {node; _} -> Js.strict_equals n node) !watched
-        in
-        watched := rest;
-        instances_of_node
-        |> List.iter (fun {resolver; _} ->
-          log ~n "deinstalled"; Lwt.wakeup resolver ()));
+          let instances_of_node, rest =
+            List.partition (fun {node; _} -> Js.strict_equals n node) !watched
+          in
+          watched := rest;
+          instances_of_node
+          |> List.iter (fun {resolver; _} ->
+              log ~n "deinstalled"; Lwt.wakeup resolver ()
+          )
+      );
       watched := {node = n; thread = t; resolver = s; stop_ondead} :: !watched;
       log ~n "installed";
-      t)
+      t
+  )

@@ -24,18 +24,20 @@
 (** {2 Drawer menu for mobile and Web applications} *)
 
 val drawer :
-   ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
+     ?a:[< Html_types.div_attrib] Eliom.Content.Html.attrib list
   -> ?position:[`Top | `Right | `Bottom | `Left]
   -> ?opened:bool
   -> ?swipe:bool
   -> ?onclose:(unit -> unit) Eliom.Client_value.t
   -> ?onopen:(unit -> unit) Eliom.Client_value.t
   -> ?wrap_close:
-       ((unit -> unit) Eliom.Client_value.t
-        -> (unit -> unit) Eliom.Client_value.t)
+       (   (unit -> unit) Eliom.Client_value.t
+        -> (unit -> unit) Eliom.Client_value.t
+       )
   -> ?wrap_open:
-       ((unit -> unit) Eliom.Client_value.t
-        -> (unit -> unit) Eliom.Client_value.t)
+       (   (unit -> unit) Eliom.Client_value.t
+        -> (unit -> unit) Eliom.Client_value.t
+       )
   -> [< Html_types.div_content] Eliom.Content.Html.elt list
   -> [> `Div] Eliom.Content.Html.elt
      * (unit -> unit) Eliom.Client_value.t

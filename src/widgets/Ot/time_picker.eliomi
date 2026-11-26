@@ -23,7 +23,7 @@
 (** This module implements a clock-style time picker. *)
 
 val make :
-   ?action:(int * int -> unit Lwt.t) Eliom.Client_value.t
+     ?action:(int * int -> unit Lwt.t) Eliom.Client_value.t
   -> ?init:int * int
   -> ?update:(int * int) React.E.t Eliom.Client_value.t
   -> ?round_5:bool
@@ -56,7 +56,7 @@ val make :
     is a function that can be called to go back to hours selection. *)
 
 val make_hours_minutes_seq :
-   ?action:(int * int -> unit Lwt.t) Eliom.Client_value.t
+     ?action:(int * int -> unit Lwt.t) Eliom.Client_value.t
   -> ?init:int * int
   -> ?update:(int * int) React.E.t Eliom.Client_value.t
   -> ?round_5:bool

@@ -37,39 +37,45 @@ let display_toggle ?(up_txt = "up") ?(down_txt = "down") f =
         ; div
             ~a:
               [ a_class ["ot-inactive"; "ot-down"]
-              ; a_onclick [%client (fun _ -> ~%f T_Down : _ -> _)] ]
-            [txt down_txt] ]
+              ; a_onclick [%client (fun _ -> ~%f T_Down : _ -> _)]
+              ]
+            [txt down_txt]
+        ]
   | T_Down ->
       div
         ~a:[a_class ["ot-toggle"]]
         [ div
             ~a:
               [ a_class ["ot-inactive"; "ot-up"]
-              ; a_onclick [%client (fun _ -> ~%f T_Up : _ -> _)] ]
+              ; a_onclick [%client (fun _ -> ~%f T_Up : _ -> _)]
+              ]
             [txt up_txt]
-        ; div ~a:[a_class ["ot-active"; "ot-down"]] [txt down_txt] ]
+        ; div ~a:[a_class ["ot-active"; "ot-down"]] [txt down_txt]
+        ]
 
 let make
-      ?(init_up = false)
-      ?up_txt
-      ?down_txt
-      ?(update : bool React.E.t Eliom.Client_value.t option)
-      ()
-  =
+    ?(init_up = false)
+    ?up_txt
+    ?down_txt
+    ?(update : bool React.E.t Eliom.Client_value.t option)
+    () =
   let e, f = Eliom.Shared.React.S.create (if init_up then T_Up else T_Down) in
   let elt =
     D.div
       [ e
         >|= [%shared display_toggle ~%f ?up_txt:~%up_txt ?down_txt:~%down_txt]
-        |> R.node ]
+        |> R.node
+      ]
   in
-  (match update with
+  ( match update with
   | Some update ->
       ignore
       @@ [%client
-           (let f b = ~%f (up_for_true b) in
-            Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
-              ~keep:(Eliom.Shared.React.E.map f ~%update)
-            : unit)]
-  | None -> ());
+           ( let f b = ~%f (up_for_true b) in
+             Eliom.Lib.Dom_reference.retain (To_dom.of_element ~%elt)
+               ~keep:(Eliom.Shared.React.E.map f ~%update)
+             : unit
+           )]
+  | None -> ()
+  );
   elt, e >|= [%shared function T_Up -> true | _ -> false]

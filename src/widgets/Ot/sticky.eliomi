@@ -22,7 +22,8 @@ type glue =
   ; dir : [`Top | `Left]
   ; scroll_thread : unit Lwt.t
   ; resize_thread : (int * int) React.S.t
-  ; dissolve : unit -> unit }
+  ; dissolve : unit -> unit
+  }
 (** returned by [make sticky] (if position:sticky is not supported). You only
     need this value if you want to manipulate the stickiness later (as
     [keep_in_sight] does.
@@ -38,7 +39,7 @@ type glue =
 *)
 
 val make_sticky :
-   dir:[`Left | `Top]
+     dir:[`Left | `Top]
   -> ?ios_html_scroll_hack:bool
   -> ?force:bool
   -> div_content elt
@@ -64,7 +65,7 @@ val make_sticky :
 *)
 
 val keep_in_sight :
-   dir:[`Left | `Top]
+     dir:[`Left | `Top]
   -> ?ios_html_scroll_hack:bool
   -> div_content elt
   -> (unit -> unit) Lwt.t
