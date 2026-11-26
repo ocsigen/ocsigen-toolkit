@@ -257,14 +257,8 @@ let%shared
              else Lwt.return_unit)
          in
          (* let hammer = Hammer.make_hammer bckgrnd in *)
-         let startx =
-           ref 0.
-           (* position when touch starts *)
-         in
-         let starty =
-           ref 0.
-           (* position when touch starts *)
-         in
+         let startx = ref 0. (* position when touch starts *) in
+         let starty = ref 0. (* position when touch starts *) in
          let status = ref Stopped in
          let onpan ev _ =
            let left = clX ev -. !startx in

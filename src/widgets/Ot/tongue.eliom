@@ -240,10 +240,7 @@ let%client
   let currentpos = ref 0. in
   let previouspos = ref 0. in
   let previoustimestamp = ref 0. in
-  let startsize =
-    ref 0.
-    (* height or width of visible part in pixel *)
-  in
+  let startsize = ref 0. (* height or width of visible part in pixel *) in
   let animation_frame_requested = ref false in
   let set speed (stop, is_attractor) =
     let previousstop = !currentstop in

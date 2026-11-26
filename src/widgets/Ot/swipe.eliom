@@ -113,14 +113,8 @@ let%shared
     [%client
       (let elt = (~%elt :> Html_types.div_content elt) in
        let elt' = To_dom.of_element elt in
-       let startx =
-         ref 0.
-         (* position when touch starts *)
-       in
-       let starty =
-         ref 0.
-         (* position when touch starts *)
-       in
+       let startx = ref 0. (* position when touch starts *) in
+       let starty = ref 0. (* position when touch starts *) in
        let status = ref Stopped in
        let onpanend ev _ =
          if !status <> Start
