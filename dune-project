@@ -39,14 +39,15 @@
    (>= "6.4.1"))
   (eliom
    (and
-    (>= "13.0~")
+    (>= "13.0.0")
     (< "14.0.0")))
   (calendar
    (>= "2.0.0"))
   lwt_ppx
-  ocsigen-dune-rules
+  (ocsigen-dune-rules
+   (>= "1.0.0"))
   (ocsigen-ppx-rpc
-   (>= "2.0~"))))
+   (>= "2.0"))))
 
 (package
  (name ocsigen-toolkit-compat)
