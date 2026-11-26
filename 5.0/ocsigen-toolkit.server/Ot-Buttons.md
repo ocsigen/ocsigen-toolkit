@@ -1,0 +1,9 @@
+# Module `Ot.Buttons`
+
+```ocaml
+val dropdown : 
+  ?a:Html_types.div_attrib Eliom.Content.Html.attrib list ->
+  menu:Html_types.div_content Eliom.Content.Html.elt list ->
+  Html_types.div_content Eliom.Content.Html.elt list ->
+  Html_types.div_content Eliom.Content.Html.elt
+```
