@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../ocsigen-toolkit.server/Ot/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../ocsigen-toolkit.client/Ot/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../ocsigen-toolkit.server/Ot/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../ocsigen-toolkit.client/Ot/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,21 +209,17 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../ocsigen-toolkit.server/Ot/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec module anchored" id="module-Buttons"><code><span><span class="keyword">module</span> <a href="Buttons/index.html">Buttons</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Calendar"><code><span><span class="keyword">module</span> <a href="Calendar/index.html">Calendar</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Carousel"><code><span><span class="keyword">module</span> <a href="Carousel/index.html">Carousel</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Color_picker"><code><span><span class="keyword">module</span> <a href="Color_picker/index.html">Color_picker</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This module implements a color picker.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Drawer"><code><span><span class="keyword">module</span> <a href="Drawer/index.html">Drawer</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Form"><code><span><span class="keyword">module</span> <a href="Form/index.html">Form</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Icons"><code><span><span class="keyword">module</span> <a href="Icons/index.html">Icons</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Lib"><code><span><span class="keyword">module</span> <a href="Lib/index.html">Lib</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Nodeready"><code><span><span class="keyword">module</span> <a href="Nodeready/index.html">Nodeready</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Noderesize"><code><span><span class="keyword">module</span> <a href="Noderesize/index.html">Noderesize</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Page_transition"><code><span><span class="keyword">module</span> <a href="Page_transition/index.html">Page_transition</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Picture_uploader"><code><span><span class="keyword">module</span> <a href="Picture_uploader/index.html">Picture_uploader</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Popup"><code><span><span class="keyword">module</span> <a href="Popup/index.html">Popup</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>Popup widget</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Pulltorefresh"><code><span><span class="keyword">module</span> <a href="Pulltorefresh/index.html">Pulltorefresh</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>Pull to refresh This widget can handle any element that needs to be refreshed after being pulled down.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Range"><code><span><span class="keyword">module</span> <a href="Range/index.html">Range</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>Range selection widget</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Size"><code><span><span class="keyword">module</span> <a href="Size/index.html">Size</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Spinner"><code><span><span class="keyword">module</span> <a href="Spinner/index.html">Spinner</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Sticky"><code><span><span class="keyword">module</span> <a href="Sticky/index.html">Sticky</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Style"><code><span><span class="keyword">module</span> <a href="Style/index.html">Style</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This module is an interface to getComputedStyle.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Swipe"><code><span><span class="keyword">module</span> <a href="Swipe/index.html">Swipe</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Time_picker"><code><span><span class="keyword">module</span> <a href="Time_picker/index.html">Time_picker</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div><div class="spec-doc"><p>This module implements a clock-style time picker.</p></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Tip"><code><span><span class="keyword">module</span> <a href="Tip/index.html">Tip</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Toggle"><code><span><span class="keyword">module</span> <a href="Toggle/index.html">Toggle</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div><div class="odoc-spec"><div class="spec module anchored" id="module-Tongue"><code><span><span class="keyword">module</span> <a href="Tongue/index.html">Tongue</a></span><span> : <span class="keyword">sig</span> ... <span class="keyword">end</span></span></code></div></div></div>
       </article>
     </div>
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

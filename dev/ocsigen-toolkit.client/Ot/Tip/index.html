@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Tip/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Tip/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Tip/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Tip/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Tip</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-toolkit.server/Ot/Tip/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Tip</span></code></h1></header>
         <div class="odoc-content"><h3 id="tip-widget">Tip widget</h3><p>This module implement a <code>display</code> function which actually display a tip (i.e. a box over the page content).</p><p>It appends an element (which is called here &quot;the filter&quot;) to body. The filter is meant take the whole page space, in order to capture clicks to close the tip. The filter also contains another element, called the menu which is the container for content to be displayed.</p><p><code>filter_a</code>: filter attributes default is <code> a_class [&quot;ot-drp-filter&quot;] </code> and will be overriden if you provide this argument.</p><p><code>menu_a</code>: menu attributes default is <code> [ a_class [&quot;ot-drp-menu&quot;] ] </code> and will be overriden if you provide this argument.</p><p><code>position</code>: specify how the tip whould be positioned horizontally with respect to the <code>origin</code> element. By default, the tip is above the <code>origin</code> element when there is more space above than below the <code>origin</code> element and vice versa. When position is <code>`Forced_top</code> or <code>`Forced_bottom</code>, the tip is always above (resp. the below) the <code>origin</code> element. When position is <code>`Top</code> or <code>`Bottom</code>, the tip is above (resp. the below) the <code>origin</code> element unless the tip is off the screen and in this case the tip will be below (resp. the above) the <code>origin</code> element. When position is <code>`Ratio r</code>, the tip is below the <code>origin</code> element if the <code>origin</code> element is on the top <code>r</code> part of the screen otherwise the tip will be above the <code>origin</code> element.</p><p><code>side</code>: specify how the tip whould be positioned vertically with respect to the <code>origin</code> element. By default, the tip is centered; if it would not fit on screen, its right hand side or left hand side is aligned with the middle of the <code>origin</code> element. When side is <code>`Left</code> or <code>`Right</code>, the tip and the <code>origin</code> element are aligned on the right (resp. the left).</p><p><code>origin</code> is the element from which the tip is supposed to pop out.</p><p><code>onopen filter menu side</code> is called after the filter is append to body.</p><p><code>onclose filter menu side</code> is called after the tip has been closed.</p><p><code>content</code> is the function generating the main content. It takes the function to close the tip as parameter</p><div class="odoc-spec"><div class="spec value anchored" id="val-display"><code><span><span class="keyword">val</span> display : 
   <span><span class="optlabel">?container_a</span>:<span><span><span>[&lt; <a href="../../../../../tyxml/dev/tyxml/Html_types/index.html#type-div_attrib">Html_types.div_attrib</a> Class ]</span> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-attrib">Eliom.Content.Html.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?filter_a</span>:
@@ -235,14 +239,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

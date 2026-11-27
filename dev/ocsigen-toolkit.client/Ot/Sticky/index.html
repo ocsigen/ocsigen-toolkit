@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Sticky/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Sticky/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Sticky/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Sticky/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Sticky</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-toolkit.server/Ot/Sticky/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Sticky</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-is_position_sticky"><code><span><span class="keyword">val</span> is_position_sticky : <span><span><span class="type-var">'a</span> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-elt">Eliom.Content.Html.elt</a></span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p>whether computed CSS attribute &quot;position&quot; equals &quot;sticky&quot;</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-set_position_sticky"><code><span><span class="keyword">val</span> set_position_sticky : <span><span><span class="type-var">'a</span> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-elt">Eliom.Content.Html.elt</a></span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p>try to set CSS attribute &quot;position&quot; to &quot;sticky&quot;. <code>false</code> if unsuccessful</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-supports_position_sticky"><code><span><span class="keyword">val</span> supports_position_sticky : <span><span><span class="type-var">'a</span> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-elt">Eliom.Content.Html.elt</a></span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-is_sticky"><code><span><span class="keyword">val</span> is_sticky : <span><span><span class="type-var">'a</span> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-elt">Eliom.Content.Html.elt</a></span> <span class="arrow">&#45;&gt;</span></span> bool</span></code></div><div class="spec-doc"><p>whether element is sticky, either due to CSS attribute position:sticky or due to position:sticky polyfill <code>make_sticky</code></p></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-glue"><code><span><span class="keyword">type</span> glue</span><span> = </span><span>{</span></code><ol><li id="type-glue.fixed" class="def record field anchored"><code><span>fixed : <span><a href="../../../../../tyxml/dev/tyxml/Html_types/index.html#type-div_content">Html_types.div_content</a> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/D/index.html#type-elt">Eliom.Content.Html.D.elt</a></span>;</span></code></li><li id="type-glue.inline" class="def record field anchored"><code><span>inline : <span><a href="../../../../../tyxml/dev/tyxml/Html_types/index.html#type-div_content">Html_types.div_content</a> <a href="../../../../../eliom/dev/eliom.client/Eliom/Content/Html/D/index.html#type-elt">Eliom.Content.Html.D.elt</a></span>;</span></code></li><li id="type-glue.dir" class="def record field anchored"><code><span>dir : <span>[ `Top <span>| `Left</span> ]</span>;</span></code></li><li id="type-glue.scroll_thread" class="def record field anchored"><code><span>scroll_thread : <span>unit <a href="https://ocaml.org/p/lwt/6.1.3/doc/Lwt/index.html#type-t">Lwt.t</a></span>;</span></code></li><li id="type-glue.resize_thread" class="def record field anchored"><code><span>resize_thread : <span><span>(int * int)</span> <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span>;</span></code></li><li id="type-glue.dissolve" class="def record field anchored"><code><span>dissolve : <span>unit <span class="arrow">&#45;&gt;</span></span> unit;</span></code></li></ol><code><span>}</span></code></div><div class="spec-doc"><p>returned by <code>make sticky</code> (if position:sticky is not supported). You only need this value if you want to manipulate the stickiness later (as <code>keep_in_sight</code> does. <code>fixed</code>: element cloned from the element supplied to <code>make_sticky</code>; <code>inline</code>: original element supplied to <code>make_sticky</code>; <code>dir</code>: see <code>make_sticky</code>; <code>scroll_thread</code>: thread that makes either <code>fixed</code> or <code>inline</code> visible, depending on the scroll position; <code>resize_thread</code>: thread that resizes the fixed element according to the inline element on window resize; <code>dissolve</code>: undo <code>make_sticky</code> i.e. kill <code>scroll_thread</code> and <code>resize_thread</code> and remove <code>fixed</code> from the DOM tree.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-make_sticky"><code><span><span class="keyword">val</span> make_sticky : 
   <span><span class="label">dir</span>:<span>[ `Left <span>| `Top</span> ]</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?ios_html_scroll_hack</span>:bool <span class="arrow">&#45;&gt;</span></span>
@@ -225,14 +229,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

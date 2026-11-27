@@ -87,9 +87,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../../ocsigen-toolkit.server/Ot/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../../ocsigen-toolkit.client/Ot/Page_transition/module-type-PAGE_TRANSITION_CONF/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -154,9 +154,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../../ocsigen-toolkit.server/Ot/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../../ocsigen-toolkit.client/Ot/Page_transition/module-type-PAGE_TRANSITION_CONF/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -208,7 +208,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module type <code><span>Page_transition.PAGE_TRANSITION_CONF</span></code></h1><p>Suppose that screenshots are stored in objects of type <code>screenshot</code>. Users need to provide a module which specifies the type screenshot (e.g. string) and a function <code>screenshot_container</code> that creates a html element from the screenshot.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p>This page has no equivalent in the <a href="../../../../ocsigen-toolkit.server/Ot/index.html">Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module type <code><span>Page_transition.PAGE_TRANSITION_CONF</span></code></h1><p>Suppose that screenshots are stored in objects of type <code>screenshot</code>. Users need to provide a module which specifies the type screenshot (e.g. string) and a function <code>screenshot_container</code> that creates a html element from the screenshot.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-screenshot"><code><span><span class="keyword">type</span> screenshot</span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-screenshot_container"><code><span><span class="keyword">val</span> screenshot_container : 
   <span><span><a href="#type-screenshot">screenshot</a> option</span> <span class="arrow">&#45;&gt;</span></span>
   <span><a href="../../../../../../tyxml/dev/tyxml/Html_types/index.html#type-div_content">Html_types.div_content</a> <a href="../../../../../../eliom/dev/eliom.client/Eliom/Content/Html/index.html#type-elt">Eliom.Content.Html.elt</a></span></span></code></div></div></div>
@@ -217,14 +221,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

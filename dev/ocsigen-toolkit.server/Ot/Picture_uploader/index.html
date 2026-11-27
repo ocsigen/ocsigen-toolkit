@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-toolkit.server/Ot/Picture_uploader/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-toolkit.client/Ot/Picture_uploader/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server current" aria-current="page" href="../../../ocsigen-toolkit.server/Ot/Picture_uploader/index.html">Server API</a>
+  <a class="wodoc-variant-client" href="../../../ocsigen-toolkit.client/Ot/Picture_uploader/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Picture_uploader</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-server" role="note">
+<p>You are reading the <strong>Server API</strong> documentation. This code runs on the server.</p>
+<p><a href="../../../ocsigen-toolkit.client/Ot/Picture_uploader/index.html">See this page in the Client API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Picture_uploader</span></code></h1></header>
         <div class="odoc-content"><h3 id="picture-uploader-widget">Picture uploader widget</h3><p><code>Picture_uploader</code> allows the user to see a picture he wants to send to the before sending it server. Also, controllers can be added to allow the user to specify a cropping area. No cropping is actually done on the client side, it MUST be handled on server side.</p><div class="odoc-spec"><div class="spec type anchored" id="type-cropping"><code><span><span class="keyword">type</span> cropping</span><span> = <span><span>(float * float * float * float)</span> <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-upload"><code><span><span class="keyword">type</span> <span>'a upload</span></span><span> =
   <span><span class="optlabel">?progress</span>:<span>(<span>int <span class="arrow">&#45;&gt;</span></span> <span>int <span class="arrow">&#45;&gt;</span></span> unit)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?cropping</span>:<a href="#type-cropping">cropping</a> <span class="arrow">&#45;&gt;</span></span>
@@ -254,14 +258,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

@@ -1,6 +1,6 @@
 # Ocsigen Toolkit
 
-Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../eliom/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
+Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../../eliom/dev/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
 
 Ocsigen Toolkit is part of the [Ocsigen project](https://ocsigen.org).
 
@@ -25,9 +25,9 @@ To migrate progressively, install the `ocsigen-toolkit-compat` package and add t
 
 ## Programming style
 
-Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the [mobile applications section](./../eliom/workflow/mobile.md) of the Eliom manual for details.
+Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the [mobile applications section](./../../eliom/dev/workflow/mobile.md) of the Eliom manual for details.
 
-The widgets generally follow a reactive programming style. We use [`Eliom.Shared`](./../eliom/eliom.server/Eliom-Shared.md) extensively, which allows us to produce this reactive content on both sides. See [the respective manual chapter](./../eliom/clientserver/react.md) for more info. [`Eliom.Shared`](./../eliom/eliom.server/Eliom-Shared.md) signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
+The widgets generally follow a reactive programming style. We use [`Eliom.Shared`](./../../eliom/dev/eliom.server/Eliom-Shared.md) extensively, which allows us to produce this reactive content on both sides. See [the respective manual chapter](./../../eliom/dev/clientserver/react.md) for more info. [`Eliom.Shared`](./../../eliom/dev/eliom.server/Eliom-Shared.md) signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
 
 ## CSS
 

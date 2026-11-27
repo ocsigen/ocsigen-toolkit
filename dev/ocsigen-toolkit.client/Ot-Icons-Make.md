@@ -1,6 +1,6 @@
 # Module `Icons.Make`
 
-Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md)).
+Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](../../../eliom/dev/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](../../../eliom/dev/eliom.server/Eliom-Content-Html-D.md)).
 
 ## Parameters
 
