@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Calendar/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Calendar/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Calendar/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Calendar/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Calendar</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-toolkit.server/Ot/Calendar/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Calendar</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-intl"><code><span><span class="keyword">type</span> intl</span><span> = </span><span>{</span></code><ol><li id="type-intl.i_days" class="def record field anchored"><code><span>i_days : <span>string list</span>;</span></code></li><li id="type-intl.i_months" class="def record field anchored"><code><span>i_months : <span>string list</span>;</span></code></li><li id="type-intl.i_start" class="def record field anchored"><code><span>i_start : <span>[ `Sun <span>| `Mon</span> <span>| `Tue</span> <span>| `Wed</span> <span>| `Thu</span> <span>| `Fri</span> <span>| `Sat</span> ]</span>;</span></code></li></ol><code><span>}</span></code></div><div class="spec-doc"><p><code>intl</code> is the type of internationalization specifiers. <code>i_days</code> contains the names of the weekdays, starting with Sunday. <code>i_months</code> contains the names of the months, starting with January. <code>i_start</code> specifies the first day of the week.</p></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-button_labels"><code><span><span class="keyword">type</span> button_labels</span><span> = </span><span>{</span></code><ol><li id="type-button_labels.b_prev_year" class="def record field anchored"><code><span>b_prev_year : string;</span></code></li><li id="type-button_labels.b_prev_month" class="def record field anchored"><code><span>b_prev_month : string;</span></code></li><li id="type-button_labels.b_next_month" class="def record field anchored"><code><span>b_next_month : string;</span></code></li><li id="type-button_labels.b_next_year" class="def record field anchored"><code><span>b_next_year : string;</span></code></li></ol><code><span>}</span></code></div><div class="spec-doc"><p>An instance of <code>button_labels</code> is used to customize the button labels. The defaults are &quot;&lt;&lt;&quot;, &quot;&lt;&quot;, &quot;&gt;&quot;, and &quot;&gt;&gt;&quot;.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-make"><code><span><span class="keyword">val</span> make : 
   <span><span class="optlabel">?init</span>:<span>(int * int * int)</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?highlight</span>:<span><span>(<span>int <span class="arrow">&#45;&gt;</span></span> <span>int <span class="arrow">&#45;&gt;</span></span> <span><span>int list</span> <a href="https://ocaml.org/p/lwt/6.1.3/doc/Lwt/index.html#type-t">Lwt.t</a></span>)</span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span> <span class="arrow">&#45;&gt;</span></span>
@@ -237,14 +241,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

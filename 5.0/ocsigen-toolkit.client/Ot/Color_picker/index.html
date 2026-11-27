@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Color_picker/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Color_picker/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Color_picker/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Color_picker/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Color_picker</span></code></h1><p>This module implements a color picker.</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-toolkit.server/Ot/Color_picker/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Color_picker</span></code></h1><p>This module implements a color picker.</p></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec value anchored" id="val-hsv_to_rgb"><code><span><span class="keyword">val</span> hsv_to_rgb : <span>int <span class="arrow">&#45;&gt;</span></span> <span>float <span class="arrow">&#45;&gt;</span></span> <span>float <span class="arrow">&#45;&gt;</span></span> float * float * float</span></code></div><div class="spec-doc"><p><code>hsv_to_rgb h s v</code> converts HS(V/L) colors to RGB.</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-make"><code><span><span class="keyword">val</span> make : 
   <span><span class="optlabel">?a</span>:<span><span><span>[&lt; <a href="../../../../../tyxml/latest/tyxml/Html_types/index.html#type-div_attrib">Html_types.div_attrib</a> Class ]</span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Content/Html/index.html#type-attrib">Eliom.Content.Html.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?hsv</span>:<span>(int * float * float)</span> <span class="arrow">&#45;&gt;</span></span>
@@ -222,14 +226,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

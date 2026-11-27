@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Tongue/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Tongue/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../ocsigen-toolkit.server/Ot/Tongue/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../ocsigen-toolkit.client/Ot/Tongue/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Ot.Tongue</span></code></h1></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../ocsigen-toolkit.server/Ot/Tongue/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Ot.Tongue</span></code></h1></header>
         <div class="odoc-content"><div class="odoc-spec"><div class="spec type anchored" id="type-simple_stop"><code><span><span class="keyword">type</span> simple_stop</span><span> = </span><span>[ </span></code><ol><li id="type-simple_stop.Percent" class="def variant constructor anchored"><code><span>| </span><span>`Percent <span class="keyword">of</span> int</span></code></li><li id="type-simple_stop.Px" class="def variant constructor anchored"><code><span>| </span><span>`Px <span class="keyword">of</span> int</span></code></li><li id="type-simple_stop.Full_content" class="def variant constructor anchored"><code><span>| </span><span>`Full_content</span></code></li></ol><code><span> ]</span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-stop"><code><span><span class="keyword">type</span> stop</span><span> = </span><span>[ </span></code><ol><li id="type-stop.Percent" class="def variant constructor anchored"><code><span>| </span><span>`Percent <span class="keyword">of</span> int</span></code></li><li id="type-stop.Px" class="def variant constructor anchored"><code><span>| </span><span>`Px <span class="keyword">of</span> int</span></code></li><li id="type-stop.Full_content" class="def variant constructor anchored"><code><span>| </span><span>`Full_content</span></code></li><li id="type-stop.Interval" class="def variant constructor anchored"><code><span>| </span><span>`Interval <span class="keyword">of</span> <a href="#type-simple_stop">simple_stop</a> * <a href="#type-simple_stop">simple_stop</a></span></code></li></ol><code><span> ]</span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-tongue"><code><span><span class="keyword">type</span> tongue</span><span> = </span><span>{</span></code><ol><li id="type-tongue.elt" class="def record field anchored"><code><span>elt : <span><a href="../../../../../tyxml/latest/tyxml/Html_types/index.html#type-div">Html_types.div</a> <a href="../../../../../eliom/latest/eliom.client/Eliom/Content/Html/D/index.html#type-elt">Eliom.Content.Html.D.elt</a></span>;</span></code></li><li id="type-tongue.stop_signal_before" class="def record field anchored"><code><span>stop_signal_before : <span><span><a href="#type-simple_stop">simple_stop</a> <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span>;</span></code></li><li id="type-tongue.stop_signal_after" class="def record field anchored"><code><span>stop_signal_after : <span><span><a href="#type-simple_stop">simple_stop</a> <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span>;</span></code></li><li id="type-tongue.swipe_pos" class="def record field anchored"><code><span>swipe_pos : <span><span>int <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span>;</span></code></li><li id="type-tongue.px_signal_before" class="def record field anchored"><code><span>px_signal_before : <span><span>int <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span>;</span></code></li><li id="type-tongue.px_signal_after" class="def record field anchored"><code><span>px_signal_after : <span><span>int <a href="https://ocaml.org/p/react/1.2.2/doc/React/S/index.html#type-t">React.S.t</a></span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Client_value/index.html#type-t">Eliom.Client_value.t</a></span>;</span></code></li></ol><code><span>}</span></code></div><div class="spec-doc"><p>Signals contain the current position of the tongue, as a <code>simple_stop</code> or as <code>int</code>. Before (resp. after) signals are triggered before (resp. after) transition. <code>swipe_pos</code> represents the position during the swipe of the user</p></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-tongue"><code><span><span class="keyword">val</span> tongue : 
   <span><span class="optlabel">?a</span>:<span><span><span>[&lt; <a href="../../../../../tyxml/latest/tyxml/Html_types/index.html#type-div_attrib">Html_types.div_attrib</a> ]</span> <a href="../../../../../eliom/latest/eliom.client/Eliom/Content/Html/index.html#type-attrib">Eliom.Content.Html.attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?side</span>:<span>[ `Bottom <span>| `Left</span> <span>| `Right</span> <span>| `Top</span> ]</span> <span class="arrow">&#45;&gt;</span></span>
@@ -224,14 +228,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,

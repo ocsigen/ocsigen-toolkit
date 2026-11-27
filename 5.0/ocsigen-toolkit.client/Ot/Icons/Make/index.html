@@ -88,9 +88,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../../ocsigen-toolkit.server/Ot/Icons/Make/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../../ocsigen-toolkit.client/Ot/Icons/Make/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -155,9 +155,9 @@
     </select>
   </label>
 </div>
-<div class="cs-switch">
-  <button type="button" class="cs-server" onclick="wodocSwitch('server')">Server API</button>
-  <button type="button" class="cs-client" onclick="wodocSwitch('client')">Client API</button>
+<div class="wodoc-variant-switch">
+  <a class="wodoc-variant-server" href="../../../../ocsigen-toolkit.server/Ot/Icons/Make/index.html">Server API</a>
+  <a class="wodoc-variant-client current" aria-current="page" href="../../../../ocsigen-toolkit.client/Ot/Icons/Make/index.html">Client API</a>
 </div>
 <div class="page-toc">
   <h3>On this page</h3>
@@ -209,7 +209,11 @@
 
       </nav>
       <article class="rightcol">
-        <header class="odoc-preamble"><h1>Module <code><span>Icons.Make</span></code></h1><p>Build an icon module on top of an Eliom HTML implementation (<a href="../../../../../../eliom/latest/eliom.client/Eliom/Content/Html/F/index.html"><code>Eliom.Content.Html.F</code></a> or <a href="../../../../../../eliom/latest/eliom.client/Eliom/Content/Html/D/index.html"><code>Eliom.Content.Html.D</code></a>).</p></header>
+        <div class="wodoc-variant-notice wodoc-variant-notice-client" role="note">
+<p>You are reading the <strong>Client API</strong> documentation. This code runs in the browser, compiled to JavaScript or WebAssembly.</p>
+<p><a href="../../../../ocsigen-toolkit.server/Ot/Icons/Make/index.html">See this page in the Server API</a>.</p>
+</div>
+<header class="odoc-preamble"><h1>Module <code><span>Icons.Make</span></code></h1><p>Build an icon module on top of an Eliom HTML implementation (<a href="../../../../../../eliom/latest/eliom.client/Eliom/Content/Html/F/index.html"><code>Eliom.Content.Html.F</code></a> or <a href="../../../../../../eliom/latest/eliom.client/Eliom/Content/Html/D/index.html"><code>Eliom.Content.Html.D</code></a>).</p></header>
         <div class="odoc-content"><h2 id="parameters">Parameters</h2><div class="odoc-spec"><div class="spec parameter anchored" id="argument-1-A"><code><span><span class="keyword">module</span> </span><span><a href="argument-1-A/index.html">A</a></span><span> : <a href="../../../../../../eliom/latest/eliom.client/Eliom/Content/Html/module-type-T/index.html">Eliom.Content.Html.T</a></span></code></div></div><h2 id="signature">Signature</h2><div class="odoc-spec"><div class="spec type anchored" id="type-elt"><code><span><span class="keyword">type</span> <span>'a elt</span></span><span> = <span><span class="type-var">'a</span> <a href="argument-1-A/index.html#type-elt">A.elt</a></span></span></code></div></div><div class="odoc-spec"><div class="spec type anchored" id="type-attrib"><code><span><span class="keyword">type</span> <span>'a attrib</span></span><span> = <span><span class="type-var">'a</span> <a href="argument-1-A/index.html#type-attrib">A.attrib</a></span></span></code></div></div><div class="odoc-spec"><div class="spec value anchored" id="val-icon"><code><span><span class="keyword">val</span> icon : 
   <span><span>string list</span> <span class="arrow">&#45;&gt;</span></span>
   <span><span class="optlabel">?a</span>:<span><span><a href="../../../../../../tyxml/latest/tyxml/Html_types/index.html#type-i_attrib">Html_types.i_attrib</a> <a href="#type-attrib">attrib</a></span> list</span> <span class="arrow">&#45;&gt;</span></span>
@@ -235,14 +239,6 @@
   </div>
 
   <script>
-    // Toggle between the server / client API of the same module.
-    function wodocSwitch(side) {
-      var w = { server: 'Ot/', client: 'Ot/' };
-      var p = location.pathname;
-      var np = p.replace(/\/ocsigen-toolkit\.(server|client)\//, '/ocsigen-toolkit.' + side + '/');
-      location.href = np !== p ? np
-        : '../../../../ocsigen-toolkit.' + side + '/' + (w[side] || '') + 'index.html';
-    }
     var wodocPub = "/ocsigen-toolkit";
     // Switch version: keep the current page, swapping only the version segment,
     // unless that page does not exist in the target version (a renamed module,
