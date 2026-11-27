@@ -1,13 +1,13 @@
 # Toolkit
 
-> Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../eliom/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
+> Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../../eliom/latest/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
 
 
 ---
 
 # Ocsigen Toolkit
 
-Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../eliom/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
+Ocsigen Toolkit is a set of reusable user-interface widgets for [Eliom](./../../eliom/latest/index.md) applications. The widgets can be produced on the server or on the client from the same code, which makes them particularly suited to mobile, client-server applications.
 
 Ocsigen Toolkit is part of the [Ocsigen project](https://ocsigen.org).
 
@@ -32,9 +32,9 @@ To migrate progressively, install the `ocsigen-toolkit-compat` package and add t
 
 ## Programming style
 
-Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the [mobile applications section](./../eliom/workflow/mobile.md) of the Eliom manual for details.
+Most of the Ocsigen Toolkit widgets can be produced invariably on the server or on the client (with the same code). This enables a mobile-friendly programming paradigm, where most code lies in shared sections. The server instance of the code can be used to produce pages (with Ocsigen Toolkit widgets) during traditional Web interaction, while the client instance can be used to render the same pages and widgets on a mobile device without contacting the server. See the [mobile applications section](./../../eliom/latest/workflow/mobile.md) of the Eliom manual for details.
 
-The widgets generally follow a reactive programming style. We use [`Eliom.Shared`](./../eliom/eliom.server/Eliom-Shared.md) extensively, which allows us to produce this reactive content on both sides. See [the respective manual chapter](./../eliom/clientserver/react.md) for more info. [`Eliom.Shared`](./../eliom/eliom.server/Eliom-Shared.md) signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
+The widgets generally follow a reactive programming style. We use [`Eliom.Shared`](./../../eliom/latest/eliom.server/Eliom-Shared.md) extensively, which allows us to produce this reactive content on both sides. See [the respective manual chapter](./../../eliom/latest/clientserver/react.md) for more info. [`Eliom.Shared`](./../../eliom/latest/eliom.server/Eliom-Shared.md) signals and events appear in the Ocsigen Toolkit APIs, and can be used as a mechanism for composing different widgets.
 
 ## CSS
 
@@ -859,7 +859,7 @@ val prevent_tab : Js_of_ocaml.Dom_html.element Js_of_ocaml.Js.t -> unit -> unit
 
 # Module `Icons.D`
 
-Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
+Icons built with [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.D.elt
@@ -936,7 +936,7 @@ Question mark / help icon (CSS class `ot-icon-question`).
 
 # Module `Icons.F`
 
-Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) (static HTML).
+Icons built with [`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) (static HTML).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.F.elt
@@ -1618,7 +1618,7 @@ Element constructors are in section [elements](./#elements). Most elements const
 
 The type variable `'a` is used to track the element's type. This allows the OCaml typechecker to check HTML validity.
 
-For example, `div []` is of type `[> `Div] elt`. The [span](./#val-span) function only accepts children of type [`Html_types.span_content`](./../../tyxml/tyxml.functor/Html_types.md#type-span_content). Since ``Div` is not part of it. `span [div []]` will not typecheck.
+For example, `div []` is of type `[> `Div] elt`. The [span](./#val-span) function only accepts children of type [`Html_types.span_content`](../../../tyxml/latest/tyxml/Html_types.md#type-span_content). Since ``Div` is not part of it. `span [div []]` will not typecheck.
 
 Note that the concrete implementation of this type can vary. See [`Xml`](./Ot-Icons-Make-argument-1-A-Xml.md) for details.
 
@@ -1638,7 +1638,7 @@ Attribute constructors are in section [attributes](./#attributes) and their name
 
 Similarly to [elt](./#type-elt), attributes use the OCaml type system to enforce HTML validity.
 
-For example [`a_href`](./#val-a_href) returns a value of type `[> `Href] attrib`. The [div](./#val-div) function only accepts attributes of type [`Html_types.div_attrib`](./../../tyxml/tyxml.functor/Html_types.md#type-div_attrib). Since ``Href` is not part of it, `div ~a:[a_href "ocsigen.org"] []` will not typecheck.
+For example [`a_href`](./#val-a_href) returns a value of type `[> `Href] attrib`. The [div](./#val-div) function only accepts attributes of type [`Html_types.div_attrib`](../../../tyxml/latest/tyxml/Html_types.md#type-div_attrib). Since ``Href` is not part of it, `div ~a:[a_href "ocsigen.org"] []` will not typecheck.
 
 In some cases, attributes have to be disambiguated. The `max` attribute has two version, [`a_max`](./#val-a_max) and [`a_input_max`](./#val-a_input_max), depending on the element. Such disambiguated attribute will contain the name of the associated element.
 
@@ -1663,14 +1663,14 @@ type 'a wrap = 'a Xml.W.t
 ```
 `wrap` is a container for elements and values.
 
-In most cases, `'a wrap = 'a`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`React.S.t`](./../../react/react/React-S.md#type-t).
+In most cases, `'a wrap = 'a`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`React.S.t`](https://ocaml.org/p/react/1.2.2/doc/react/React/S/index.html#type-t).
 
 ```ocaml
 type 'a list_wrap = 'a Xml.W.tlist
 ```
 `list_wrap` is a container for list of elements.
 
-In most cases, `'a list_wrap = 'a list`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`ReactiveData.RList.t`](./../../reactiveData/reactiveData/ReactiveData-RList.md#type-t).
+In most cases, `'a list_wrap = 'a list`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`ReactiveData.RList.t`](../../../reactiveData/latest/ReactiveData-RList.md#type-t).
 
 ```ocaml
 type ('a, 'b) nullary = ?a:'a attrib list -> unit -> 'b elt
@@ -3747,7 +3747,7 @@ val of_seq : Xml_stream.signal Seq.t -> 'a elt list_wrap
 ```
 `import signal` converts the given XML signal into Tyxml elements. It can be used with HTML and SVG parsing libraries, such as Markup.
 
-raises [`Xml_stream.Malformed_stream`](./../../tyxml/tyxml.functor/Xml_stream.md#exception-Malformed_stream) if the stream is malformed.
+raises [`Xml_stream.Malformed_stream`](../../../tyxml/latest/tyxml/Xml_stream.md#exception-Malformed_stream) if the stream is malformed.
 ```ocaml
 val tot : Xml.elt -> 'a elt
 ```
@@ -3928,7 +3928,7 @@ module Form :
 
 # Module `Icons.Make`
 
-Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md)).
+Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md)).
 
 ## Parameters
 
@@ -4100,7 +4100,7 @@ module Make
   (A : Eliom.Content.Html.T) : 
   S with type 'a elt = 'a A.elt and type 'a attrib = 'a A.attrib
 ```
-Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md)).
+Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md)).
 
 ```ocaml
 module F : 
@@ -4108,7 +4108,7 @@ module F :
     with type 'a elt = 'a Eliom.Content.Html.F.elt
      and type 'a attrib = 'a Eliom.Content.Html.F.attrib
 ```
-Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) (static HTML).
+Icons built with [`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) (static HTML).
 
 ```ocaml
 module D : 
@@ -4116,7 +4116,7 @@ module D :
     with type 'a elt = 'a Eliom.Content.Html.D.elt
      and type 'a attrib = 'a Eliom.Content.Html.D.attrib
 ```
-Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
+Icons built with [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
 
 
 ---
@@ -5984,7 +5984,7 @@ A reactive HTML5 time input. The signal carries `Some (hours, minutes)` or `None
 
 # Module `Icons.D`
 
-Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
+Icons built with [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.D.elt
@@ -6061,7 +6061,7 @@ Question mark / help icon (CSS class `ot-icon-question`).
 
 # Module `Icons.F`
 
-Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) (static HTML).
+Icons built with [`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) (static HTML).
 
 ```ocaml
 type 'a elt = 'a Eliom.Content.Html.F.elt
@@ -6743,7 +6743,7 @@ Element constructors are in section [elements](./#elements). Most elements const
 
 The type variable `'a` is used to track the element's type. This allows the OCaml typechecker to check HTML validity.
 
-For example, `div []` is of type `[> `Div] elt`. The [span](./#val-span) function only accepts children of type [`Html_types.span_content`](./../../tyxml/tyxml.functor/Html_types.md#type-span_content). Since ``Div` is not part of it. `span [div []]` will not typecheck.
+For example, `div []` is of type `[> `Div] elt`. The [span](./#val-span) function only accepts children of type [`Html_types.span_content`](../../../tyxml/latest/tyxml/Html_types.md#type-span_content). Since ``Div` is not part of it. `span [div []]` will not typecheck.
 
 Note that the concrete implementation of this type can vary. See [`Xml`](./Ot-Icons-Make-argument-1-A-Xml.md) for details.
 
@@ -6763,7 +6763,7 @@ Attribute constructors are in section [attributes](./#attributes) and their name
 
 Similarly to [elt](./#type-elt), attributes use the OCaml type system to enforce HTML validity.
 
-For example [`a_href`](./#val-a_href) returns a value of type `[> `Href] attrib`. The [div](./#val-div) function only accepts attributes of type [`Html_types.div_attrib`](./../../tyxml/tyxml.functor/Html_types.md#type-div_attrib). Since ``Href` is not part of it, `div ~a:[a_href "ocsigen.org"] []` will not typecheck.
+For example [`a_href`](./#val-a_href) returns a value of type `[> `Href] attrib`. The [div](./#val-div) function only accepts attributes of type [`Html_types.div_attrib`](../../../tyxml/latest/tyxml/Html_types.md#type-div_attrib). Since ``Href` is not part of it, `div ~a:[a_href "ocsigen.org"] []` will not typecheck.
 
 In some cases, attributes have to be disambiguated. The `max` attribute has two version, [`a_max`](./#val-a_max) and [`a_input_max`](./#val-a_input_max), depending on the element. Such disambiguated attribute will contain the name of the associated element.
 
@@ -6788,7 +6788,7 @@ type 'a wrap = 'a Xml.W.t
 ```
 `wrap` is a container for elements and values.
 
-In most cases, `'a wrap = 'a`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`React.S.t`](./../../react/react/React-S.md#type-t).
+In most cases, `'a wrap = 'a`. For `R` modules (in eliom or js\_of\_ocaml), It will be [`React.S.t`](https://ocaml.org/p/react/1.2.2/doc/react/React/S/index.html#type-t).
 
 ```ocaml
 type 'a list_wrap = 'a Xml.W.tlist
@@ -8872,7 +8872,7 @@ val of_seq : Xml_stream.signal Seq.t -> 'a elt list_wrap
 ```
 `import signal` converts the given XML signal into Tyxml elements. It can be used with HTML and SVG parsing libraries, such as Markup.
 
-raises [`Xml_stream.Malformed_stream`](./../../tyxml/tyxml.functor/Xml_stream.md#exception-Malformed_stream) if the stream is malformed.
+raises [`Xml_stream.Malformed_stream`](../../../tyxml/latest/tyxml/Xml_stream.md#exception-Malformed_stream) if the stream is malformed.
 ```ocaml
 val tot : Xml.elt -> 'a elt
 ```
@@ -9053,7 +9053,7 @@ module Form :
 
 # Module `Icons.Make`
 
-Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md)).
+Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md)).
 
 ## Parameters
 
@@ -9219,7 +9219,7 @@ Helpers to build `<i>` icon elements styled by the toolkit's CSS.
 
 Each icon is rendered as an empty `<i class="ot-icon ...">` element whose CSS classes select the actual glyph. The toolkit ships an `ot_icons.css` stylesheet that defines all the `ot-icon-*` and `ot-*` classes used by the predefined icons below. Include that file (or your own equivalent) in your application for the icons to actually render.
 
-Use [`Ot.Icons.F`](./Ot-Icons-F.md) for static HTML and [`Ot.Icons.D`](./Ot-Icons-D.md) for HTML with DOM identity (typically when you need to refer to the produced element from client code), the same way Eliom exposes [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) and [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md).
+Use [`Ot.Icons.F`](./Ot-Icons-F.md) for static HTML and [`Ot.Icons.D`](./Ot-Icons-D.md) for HTML with DOM identity (typically when you need to refer to the produced element from client code), the same way Eliom exposes [`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) and [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md).
 
 ```ocaml
 module type S = sig ... end
@@ -9231,7 +9231,7 @@ module Make
   (A : Eliom.Content.Html.T) : 
   S with type 'a elt = 'a A.elt and type 'a attrib = 'a A.attrib
 ```
-Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md)).
+Build an icon module on top of an Eliom HTML implementation ([`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) or [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md)).
 
 ```ocaml
 module F : 
@@ -9239,7 +9239,7 @@ module F :
     with type 'a elt = 'a Eliom.Content.Html.F.elt
      and type 'a attrib = 'a Eliom.Content.Html.F.attrib
 ```
-Icons built with [`Eliom.Content.Html.F`](./../../eliom/eliom.server/Eliom-Content-Html-F.md) (static HTML).
+Icons built with [`Eliom.Content.Html.F`](../../../eliom/latest/eliom.server/Eliom-Content-Html-F.md) (static HTML).
 
 ```ocaml
 module D : 
@@ -9247,7 +9247,7 @@ module D :
     with type 'a elt = 'a Eliom.Content.Html.D.elt
      and type 'a attrib = 'a Eliom.Content.Html.D.attrib
 ```
-Icons built with [`Eliom.Content.Html.D`](./../../eliom/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
+Icons built with [`Eliom.Content.Html.D`](../../../eliom/latest/eliom.server/Eliom-Content-Html-D.md) (HTML with DOM identity, suitable for being referenced from client-side code).
 
 
 ---
